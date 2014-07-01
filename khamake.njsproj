@@ -15,15 +15,17 @@
     <StartWebBrowser>True</StartWebBrowser>
     <NodeExeArguments>
     </NodeExeArguments>
-    <ScriptArguments>flash</ScriptArguments>
+    <ScriptArguments>flash "mp3=C:\Users\Robert\Projekte\Tools\Kha-asset-converter\win\lame.exe -S -h {in} {out}"</ScriptArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
+    <Compile Include="Converter.js" />
     <Compile Include="Exporter.js" />
     <Compile Include="Files.js" />
     <Compile Include="FlashExporter.js" />
     <Compile Include="GraphicsApi.js" />
+    <Compile Include="Haxe.js" />
     <Compile Include="KhaExporter.js" />
     <Compile Include="khamake.js" />
     <Compile Include="main.js" />

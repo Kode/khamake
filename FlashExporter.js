@@ -1,5 +1,7 @@
 var KhaExporter = require('./KhaExporter.js');
+var Converter = require('./Converter.js');
 var Files = require('./Files.js');
+var Haxe = require('./Haxe.js');
 var Options = require('./Options.js');
 var Paths = require('./Paths.js');
 
@@ -141,20 +143,20 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	if (Options.compilation) {
 		var options = [];
 		options.push("project-" + this.sysdir() + ".hxml");
-		//executeHaxe(haxeDirectory, options);
+		Haxe.executeHaxe(haxeDirectory, options);
 	}
 };
 
 FlashExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	//convert(from, directory.resolve(sysdir()).resolve(to.toString() + ".mp3"), mp3Encoder);
-	if (this.embed) this.sounds.push(to.toString() + ".mp3");
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), mp3Encoder);
+	if (this.embed) this.sounds.push(to.toString() + '.mp3');
 };
 
 FlashExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	//convert(from, directory.resolve(sysdir()).resolve(to.toString() + ".mp3"), mp3Encoder);
-	if (this.embed) this.sounds.push(to.toString() + ".mp3");
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), mp3Encoder);
+	if (this.embed) this.sounds.push(to.toString() + '.mp3');
 };
 
 FlashExporter.prototype.copyImage = function (platform, from, to, asset) {
@@ -169,7 +171,7 @@ FlashExporter.prototype.copyBlob = function (platform, from, to) {
 
 FlashExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	//convert(from, directory.resolve(sysdir()).resolve(to.toString() + '.mp4'), h264Encoder);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp4'), h264Encoder);
 };
 
 FlashExporter.prototype.addShader = function (shader) {

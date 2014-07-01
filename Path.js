@@ -51,7 +51,7 @@ Path.prototype.isAbsolute = function () {
 
 Path.prototype.toAbsolutePath = function () {
 	if (this.isAbsolute()) return this;
-	return new Path(path.resolve(__dirname, this.path));
+	return new Path(path.resolve(process.cwd(), this.path));
 };
 
 module.exports = Path;
