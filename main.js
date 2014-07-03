@@ -1,5 +1,6 @@
+var child_process = require('child_process');
 var fs = require('fs');
-
+var os = require('os');
 var Files = require('./Files.js');
 var Options = require('./Options.js');
 var Path = require('./Path.js');
@@ -36,7 +37,19 @@ if (!String.prototype.endsWith) {
 
 function compileShader(kfx, type, from, to, temp) {
 	if (kfx !== '') {
-		//executeSync(kfx, [type, from.toString(), to.toString(), temp.toString()]);
+		var kfx_process = child_process.spawn(kfx, [type, from.toString(), to.toString(), temp.toString()]);
+
+		kfx_process.stdout.on('data', function (data) {
+			console.log('kfx stdout: ' + data);
+		});
+
+		kfx_process.stderr.on('data', function (data) {
+			console.log('kfx stderr: ' + data);
+		});
+
+		kfx_process.on('close', function (code) {
+			if (code !== 0) console.log('kfx process exited with code ' + code);
+		});
 	}
 }
 
@@ -56,7 +69,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 		switch (platform) {
 			case Platform.Flash: {
 				if (Files.exists(shaderPath.resolve(name + '.agal'))) Files.copy(shaderPath.resolve(name + '.agal'), to.resolve(name + '.agal'), true);
-				else compileShader(kfx, 'agal', shader, to.resolve(name + '.agal'), temp);
+				else compileShader(kfx, 'agal', shaderPath.resolve(name + '.glsl'), to.resolve(name + '.agal'), temp);
 				addShader(project, name, '.agal');
 				exporter.addShader(name + '.agal');
 				break;
@@ -280,13 +293,16 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 		}
 
 		//exportKoreProject(directory);
-//#ifdef SYS_WINDOWS
-		var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake.exe"));
-//#elif defined SYS_OSX
-//		Path kake = from.resolve(Paths::get("Kha", "Kore", "Tools", "kake", "kake-osx"));
-//#elif defined SYS_LINUX
-//		Path kake = from.resolve(Paths::get("Kha", "Kore", "Tools", "kake", "kake-linux"));
-//#endif
+
+		if (os.platform() === "linux") {
+			var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake-linux"));
+		}
+		else if (os.platform() === "win32") {
+			var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake.exe"));
+		}
+		else {
+			var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake-osx"));
+		}
 
 		var gfx = "unknown";
 		switch (Options.getGraphicsApi()) {
@@ -355,7 +371,15 @@ exports.main = function () {
 	var from = ".";
 	var to = "build";
 
-	var platform = 'windows'; // Windows, Linux, OSX
+	if (os.platform() === "linux") {
+		var platform = Platform.Linux;
+	}
+	else if (os.platform() === "win32") {
+		var platform = Platform.Windows;
+	}
+	else {
+		var platform = Platform.OSX;
+	}
 
 	var haxeDirectory = new Path('');
 	var oggEncoder = '';
@@ -406,24 +430,28 @@ exports.main = function () {
 	}
 
 	if (kfx === '') {
-		//#ifdef SYS_WINDOWS
-		var path = Paths.get(from).resolve(Paths.get('Kha', 'Kore', 'Tools', 'kfx', 'kfx.exe'));
-		//#elif defined SYS_OSX
-		//		var path = Paths.get(from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-osx"));
-		//#elif defined SYS_LINUX
-		//		var path = Paths.get(from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-linux"));
-		//#endif
+		if (os.platform() === "linux") {
+			var path = Paths.get(from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-linux"));
+		}
+		else if (os.platform() === "win32") {
+			var path = Paths.get(from).resolve(Paths.get('Kha', 'Kore', 'Tools', 'kfx', 'kfx.exe'));
+		}
+		else {
+			var path = Paths.get(from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-osx"));
+		}
 		if (Files.exists(path)) kfx = path.toString();
 	}
 
 	if (oggEncoder === '') {
-		//#ifdef SYS_WINDOWS
-		var path = Paths.get(from).resolve(Paths.get('Kha', 'Tools', 'oggenc2.exe'));
-		//#elif defined SYS_OSX
-		//		Path path = Paths::get(from).resolve(Paths::get("Kha", "Tools", "oggenc-osx"));
-		//#elif defined SYS_LINUX
-		//		Path path = Paths::get(from).resolve(Paths::get("Kha", "Tools", "oggenc-linux"));
-		//#endif
+		if (os.platform() === "linux") {
+			var path = Paths.get(from).resolve(Paths.get("Kha", "Tools", "oggenc-linux"));
+		}
+		else if (os.platform() === "win32") {
+			var path = Paths.get(from).resolve(Paths.get('Kha', 'Tools', 'oggenc2.exe'));
+		}
+		else {
+			var path = Paths.get(from).resolve(Paths.get("Kha", "Tools", "oggenc-osx"));
+		}
 		if (Files.exists(path)) oggEncoder = path.toString() + ' {in} -o {out}';
 	}
 
