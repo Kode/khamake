@@ -21,17 +21,15 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Compile Include="Converter.js" />
-    <Compile Include="Exporter.js" />
-    <Compile Include="Files.js" />
     <Compile Include="FlashExporter.js" />
     <Compile Include="GraphicsApi.js" />
     <Compile Include="Haxe.js" />
     <Compile Include="KhaExporter.js" />
     <Compile Include="khamake.js" />
+    <Compile Include="KoreExporter.js" />
+    <Compile Include="korepath.js" />
     <Compile Include="main.js" />
     <Compile Include="Options.js" />
-    <Compile Include="Path.js" />
-    <Compile Include="Paths.js" />
     <Compile Include="Platform.js" />
     <Compile Include="VisualStudioVersion.js" />
   </ItemGroup>

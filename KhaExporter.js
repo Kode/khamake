@@ -1,5 +1,6 @@
-var Exporter = require('./Exporter.js');
-var Files = require('./Files.js');
+var korepath = require('./korepath.js');
+var Exporter = require(korepath + 'Exporter.js');
+var Files = require(korepath + 'Files.js');
 
 var KhaExporter = function () {
 	Exporter.call(this);

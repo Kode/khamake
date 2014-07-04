@@ -1,11 +1,12 @@
 var KhaExporter = require('./KhaExporter.js');
+var korepath = require('./korepath.js');
 var Converter = require('./Converter.js');
-var Files = require('./Files.js');
+var Files = require(korepath + 'Files.js');
 var Haxe = require('./Haxe.js');
 var Options = require('./Options.js');
-var Paths = require('./Paths.js');
+var Paths = require(korepath + 'Paths.js');
 
-var FlashExporter = function (directory, embedflashassets) {
+function FlashExporter(directory, embedflashassets) {
 	KhaExporter.call(this);
 	this.directory = directory;
 	this.embed = embedflashassets;

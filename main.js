@@ -1,13 +1,15 @@
 var child_process = require('child_process');
 var fs = require('fs');
 var os = require('os');
-var Files = require('./Files.js');
+var korepath = require('./korepath.js');
+var Files = require(korepath + 'Files.js');
 var Options = require('./Options.js');
-var Path = require('./Path.js');
-var Paths = require('./Paths.js');
+var Path = require(korepath + 'Path.js');
+var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
 
 var FlashExporter = require('./FlashExporter.js');
+var KoreExporter = require('./KoreExporter.js');
 
 if (!String.prototype.startsWith) {
 	Object.defineProperty(String.prototype, 'startsWith', {
@@ -392,7 +394,7 @@ exports.main = function () {
 	var khafolders = true;
 	var embedflashassets = false;
 
-	for (var i = 1; i < args.length; ++i) {
+	for (var i = 2; i < args.length; ++i) {
 		var arg = args[i];
 		
 		if (arg === 'pch') Options.precompiledHeaders = true;
