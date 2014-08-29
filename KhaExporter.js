@@ -23,10 +23,12 @@ KhaExporter.prototype.copyFile = function (from, to) {
 };
 
 KhaExporter.prototype.copyDirectory = function (from, to) {
-	createDirectory(to);
-	for (var file in Files.newDirectoryStream(from)) {
-		if (Files.isDirectory(file)) copyDirectory(file, to.resolve(file));
-		else copyFile(file, to.resolve(file));
+	this.createDirectory(to);
+	var files = Files.newDirectoryStream(from);
+	for (var f in files) {
+		var file = Paths.get(from, files[f]);
+		if (Files.isDirectory(file)) this.copyDirectory(file, to.resolve(file));
+		else this.copyFile(file, to.resolve(file));
 	}
 };
 
