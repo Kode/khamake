@@ -3,10 +3,12 @@ var fs = require('fs');
 var os = require('os');
 var korepath = require('./korepath.js');
 var Files = require(korepath + 'Files.js');
+var GraphicsApi = require('./GraphicsApi.js');
 var Options = require('./Options.js');
 var Path = require(korepath + 'Path.js');
 var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
+var VisualStudioVersion = require('./VisualStudioVersion.js');
 
 var FlashExporter = require('./FlashExporter.js');
 var KoreExporter = require('./KoreExporter.js');
@@ -86,12 +88,12 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 				break;
 			}
 			case Platform.Windows: {
-				if (Options.getGraphicsApi() == OpenGL || Options.getGraphicsApi() == OpenGL2) {
+				if (Options.graphicsApi == GraphicsApi.OpenGL || Options.graphicsApi == GraphicsApi.OpenGL2) {
 					if (kfx == "") Files.copy(shaderPath.resolve(name + ".glsl"), to.resolve(name + ".glsl"), true);
 					else compileShader(kfx, "glsl", shader, to.resolve(name + ".glsl"), temp);
 					addShader(project, name, ".glsl");
 				}
-				else if (Options.getGraphicsApi() == Direct3D11) {
+				else if (Options.graphicsApi == GraphicsApi.Direct3D11) {
 					if (Files.exists(shaderPath.resolve(name + ".d3d11"))) Files.copy(shaderPath.resolve(name + ".d3d11"), to.resolve(name + ".d3d11"), true);
 					else compileShader(kfx, "d3d11", shader, to.resolve(name + ".d3d11"), temp);
 					addShader(project, name, ".d3d11");
@@ -227,9 +229,9 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			
 	if (haxeDirectory.path !== '' && kore) {			
 		{
-			var out = new ofstream(from.resolve("kake.lua").toString().c_str());
-			out << "solution = Solution.new(\"" << name << "\")\n";
-			out << "project = Project.new(\"" << name << "\")\n";
+			var out = '';
+			out += "solution = Solution.new(\"" + name + "\")\n";
+			out += "project = Project.new(\"" + name + "\")\n";
 			var files = [];
 			files.push("Kha/Backends/kxcpp/src/**.h");
 			files.push("Kha/Backends/kxcpp/src/**.cpp");
@@ -237,61 +239,62 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			//"Kha/Backends/kxcpp/project/libs/nekoapi/**.cpp"
 			files.push("Kha/Backends/kxcpp/project/libs/common/**.h");
 			files.push("Kha/Backends/kxcpp/project/libs/common/**.cpp");
-			if (platform == Windows) files.push_back("Kha/Backends/kxcpp/project/libs/msvccompat/**.cpp");
-			if (platform == Linux) files.push_back("Kha/Backends/kxcpp/project/libs/linuxcompat/**.cpp");
-			files.push_back("Kha/Backends/kxcpp/project/libs/regexp/**.h");
-			files.push_back("Kha/Backends/kxcpp/project/libs/regexp/**.cpp");
-			files.push_back("Kha/Backends/kxcpp/project/libs/std/**.h");
-			files.push_back("Kha/Backends/kxcpp/project/libs/std/**.cpp");
+			if (platform == Platform.Windows) files.push("Kha/Backends/kxcpp/project/libs/msvccompat/**.cpp");
+			if (platform == Platform.Linux) files.push("Kha/Backends/kxcpp/project/libs/linuxcompat/**.cpp");
+			files.push("Kha/Backends/kxcpp/project/libs/regexp/**.h");
+			files.push("Kha/Backends/kxcpp/project/libs/regexp/**.cpp");
+			files.push("Kha/Backends/kxcpp/project/libs/std/**.h");
+			files.push("Kha/Backends/kxcpp/project/libs/std/**.cpp");
 			//"Kha/Backends/kxcpp/project/libs/zlib/**.cpp"
-			files.push_back("Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.h");
-			files.push_back("Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.c");
+			files.push("Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.h");
+			files.push("Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.c");
 			//"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.cc"
-			files.push_back("Kha/Backends/Kore/*.cpp");
-			files.push_back("Kha/Backends/Kore/*.h");
-			files.push(replace(to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.h", '\\', '/'));
-			files.push(replace(to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp", '\\', '/'));
-			out << "project:addFiles(\n";
-			out << "\"" + files[0] + "\"";
-			for (var i = 1; i < files.size(); ++i) {
-				out << ", \"" + files[i] + "\"";
+			files.push("Kha/Backends/Kore/*.cpp");
+			files.push("Kha/Backends/Kore/*.h");
+			files.push(to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.h".replace('\\', '/'));
+			files.push(to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp".replace('\\', '/'));
+			out += "project:addFiles(\n";
+			out += "\"" + files[0] + "\"";
+			for (var i = 1; i < files.length; ++i) {
+				out += ", \"" + files[i] + "\"";
 			}
-			out << ")\n";
-			out << "project:addExcludes(\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/dftables.c\", "
-				<< "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcredemo.c\", "
-				<< "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcregrep.c\", "
-				<< "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcretest.c\", "
-				<< "\"Kha/Backends/kxcpp/src/ExampleMain.cpp\", "
-				<< "\"Kha/Backends/kxcpp/src/hx/Scriptable.cpp\", "
-				<< "\"Kha/Backends/kxcpp/src/hx/Cppia.cpp\", "
-				<< "\"Kha/Backends/kxcpp/src/hx/CppiaBuiltin.cpp\", "
-				<< "\"**/src/__main__.cpp\", "
-				<< "\"Kha/Backends/kxcpp/src/hx/NekoAPI.cpp\")\n";
-			out << "project:addIncludeDirs(\"Kha/Backends/kxcpp/include\", \"" + replace(to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(), '\\', '/') + "/Sources/include\", "
-				<< "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8\", \"Kha/Backends/kxcpp/project/libs/nekoapi\");\n";
-			out << "project:setDebugDir(\"" + replace(to.resolve(Paths.get(exporter.sysdir())).toString(), '\\', '/') + "\")\n";
-			if (platform == Windows) out << "project:addDefine(\"HX_WINDOWS\")\n";
-			if (platform == WindowsRT) out << "project:addDefine(\"HX_WINRT\")\n";
-			if (platform == OSX) {
-				out << "project:addDefine(\"HXCPP_M64\")\n";
-				out << "project:addDefine(\"HX_MACOS\")\n";
+			out += ")\n";
+			out += "project:addExcludes(\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/dftables.c\", "
+				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcredemo.c\", "
+				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcregrep.c\", "
+				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcretest.c\", "
+				+ "\"Kha/Backends/kxcpp/src/ExampleMain.cpp\", "
+				+ "\"Kha/Backends/kxcpp/src/hx/Scriptable.cpp\", "
+				+ "\"Kha/Backends/kxcpp/src/hx/Cppia.cpp\", "
+				+ "\"Kha/Backends/kxcpp/src/hx/CppiaBuiltin.cpp\", "
+				+ "\"**/src/__main__.cpp\", "
+				+ "\"Kha/Backends/kxcpp/src/hx/NekoAPI.cpp\")\n";
+			out += "project:addIncludeDirs(\"Kha/Backends/kxcpp/include\", \"" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString().replace('\\', '/') + "/Sources/include\", "
+				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8\", \"Kha/Backends/kxcpp/project/libs/nekoapi\");\n";
+			out += "project:setDebugDir(\"" + to.resolve(Paths.get(exporter.sysdir())).toString().replace('\\', '/') + "\")\n";
+			if (platform == Platform.Windows) out += "project:addDefine(\"HX_WINDOWS\")\n";
+			if (platform == Platform.WindowsRT) out += "project:addDefine(\"HX_WINRT\")\n";
+			if (platform == Platform.OSX) {
+				out += "project:addDefine(\"HXCPP_M64\")\n";
+				out += "project:addDefine(\"HX_MACOS\")\n";
 			}
-			if (platform == Linux) out << "project:addDefine(\"HX_LINUX\")\n";
-			if (platform == iOS) out << "project:addDefine(\"IPHONE\")\n";
-			if (platform == Android) out << "project:addDefine(\"ANDROID\")\n";
-			if (platform == OSX) out << "project:addDefine(\"KORE_DEBUGDIR=\\\"osx\\\"\")\n";
-			if (platform == iOS) out << "project:addDefine(\"KORE_DEBUGDIR=\\\"ios\\\"\")\n";
+			if (platform == Platform.Linux) out += "project:addDefine(\"HX_LINUX\")\n";
+			if (platform == Platform.iOS) out += "project:addDefine(\"IPHONE\")\n";
+			if (platform == Platform.Android) out += "project:addDefine(\"ANDROID\")\n";
+			if (platform == Platform.OSX) out += "project:addDefine(\"KORE_DEBUGDIR=\\\"osx\\\"\")\n";
+			if (platform == Platform.iOS) out += "project:addDefine(\"KORE_DEBUGDIR=\\\"ios\\\"\")\n";
 			//out << "project:addDefine(\"HXCPP_SCRIPTABLE\")\n";
-			out << "project:addDefine(\"STATIC_LINK\")\n";
-			out << "project:addDefine(\"PCRE_STATIC\")\n";
-			out << "project:addDefine(\"HXCPP_SET_PROP\")\n";
-			out << "project:addDefine(\"HXCPP_VISIT_ALLOCS\")\n";
-			out << "project:addDefine(\"KORE\")\n";
-			out << "project:addDefine(\"ROTATE90\")\n";
-			if (platform == Windows) out << "project:addLib(\"ws2_32\")\n";
-			out << "project:addSubProject(Solution.createProject(\"Kha/Kore\"))\n";
-			if (Files.exists(from.resolve("KoreVideo"))) out << "project:addSubProject(Solution.createProject(\"KoreVideo\"))\n";
-			out << "solution:addProject(project)\n";
+			out += "project:addDefine(\"STATIC_LINK\")\n";
+			out += "project:addDefine(\"PCRE_STATIC\")\n";
+			out += "project:addDefine(\"HXCPP_SET_PROP\")\n";
+			out += "project:addDefine(\"HXCPP_VISIT_ALLOCS\")\n";
+			out += "project:addDefine(\"KORE\")\n";
+			out += "project:addDefine(\"ROTATE90\")\n";
+			if (platform == Platform.Windows) out += "project:addLib(\"ws2_32\")\n";
+			out += "project:addSubProject(Solution.createProject(\"Kha/Kore\"))\n";
+			if (Files.exists(from.resolve("KoreVideo"))) out += "project:addSubProject(Solution.createProject(\"KoreVideo\"))\n";
+			out += "solution:addProject(project)\n";
+			fs.writeFileSync(from.resolve("kake.lua").toString(), out);
 		}
 
 		//exportKoreProject(directory);
@@ -307,30 +310,30 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 		}
 
 		var gfx = "unknown";
-		switch (Options.getGraphicsApi()) {
-		case OpenGL:
+		switch (Options.graphicsApi) {
+		case GraphicsApi.OpenGL:
 			gfx = "opengl";
 			break;
-		case OpenGL2:
+		case GraphicsApi.OpenGL2:
 			gfx = "opengl2";
 			break;
-		case Direct3D9:
+		case GraphicsApi.Direct3D9:
 			gfx = "direct3d9";
 			break;
-		case Direct3D11:
+		case GraphicsApi.Direct3D11:
 			gfx = "direct3d11";
 			break;
 		}
 
 		var vs = "unknown";
-		switch (Options.getVisualStudioVersion()) {
-		case VS2010:
+		switch (Options.visualStudioVersion) {
+		case VisualStudioVersion.VS2010:
 			vs = "vs2010";
 			break;
-		case VS2012:
+		case VisualStudioVersion.VS2012:
 			vs = "vs2012";
 			break;
-		case VS2013:
+		case VisualStudioVersion.VS2013:
 			vs = "vs2013";
 			break;
 		}
@@ -340,12 +343,12 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			var options = [];
 			options.push(platform);
 			//+ " pch=" + Options::getPrecompiledHeaders()
-			if (Options.getIntermediateDrive() != "") options.push("intermediate=" + Options.getIntermediateDrive());
-			options.push_back("gfx=" + gfx);
-			options.push_back("vs=" + vs);
-			if (from.toString() != ".") options.push_back("from=" + from.toString());
-			options.push_back("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
-			executeSync(exe, options);
+			if (Options.intermediateDrive !== "") options.push("intermediate=" + Options.intermediateDrive);
+			options.push("gfx=" + gfx);
+			options.push("vs=" + vs);
+			if (from.toString() != ".") options.push("from=" + from.toString());
+			options.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
+			//**executeSync(exe, options);
 		}
 	}
 	

@@ -1,12 +1,16 @@
 var KhaExporter = require('./KhaExporter.js');
+var korepath = require('./korepath.js');
 var Converter = require('./Converter.js');
+var Files = require(korepath + 'Files.js');
 var Haxe = require('./Haxe.js');
+var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
 
 function KoreExporter(platform, directory) {
+	KhaExporter.call(this);
 	this.platform = platform;
 	this.directory = directory;
-	addSourceDirectory('Kha/Backends/Kore');
+	this.addSourceDirectory('Kha/Backends/Kore');
 }
 
 KoreExporter.prototype = Object.create(KhaExporter.prototype);
@@ -93,11 +97,11 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 
 KoreExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(sysdir()).resolve(to.toString() + '.ogg'), oggEncoder);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogg'), oggEncoder);
 };
 
 KoreExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
-	copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.wav'));
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.wav'));
 };
 
 KoreExporter.prototype.copyImage = function (platform, from, to, asset) {
@@ -105,9 +109,11 @@ KoreExporter.prototype.copyImage = function (platform, from, to, asset) {
 };
 
 KoreExporter.prototype.copyBlob = function (platform, from, to) {
-	copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
 };
 
 KoreExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
 	
 };
+
+module.exports = KoreExporter;
