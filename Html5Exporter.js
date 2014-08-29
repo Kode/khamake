@@ -5,6 +5,7 @@ var Files = require(korepath + 'Files.js');
 var Haxe = require('./Haxe.js');
 var Options = require('./Options.js');
 var Paths = require(korepath + 'Paths.js');
+var exportImage = require('./ImageTool.js');
 var fs = require('fs');
 var path = require('path');
 
@@ -39,12 +40,12 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	this.p("<movie minorVersion=\"0\" />", 2);
 	this.p("<movie platform=\"JavaScript\" />", 2);
 	this.p("<movie background=\"#FFFFFF\" />", 2);
-	if (Files.isDirectory(haxeDirectory)) this.p("<movie preferredSDK=\"../" + haxeDirectory.toString() + "\" />", 2);
+	if (Files.isDirectory(haxeDirectory)) this.p('<movie preferredSDK="' + from.resolve('build').relativize(haxeDirectory).toString() + '" />', 2);
 	this.p("</output>", 1);
 	this.p("<!-- Other classes to be compiled into your SWF -->", 1);
 	this.p("<classpaths>", 1);
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("<class path=\"..\\" + this.sources[i].replace('/', '\\') + "\" />", 2);
+		this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
 	}
 	this.p("</classpaths>", 1);
 	this.p("<!-- Build options -->", 1);
@@ -88,7 +89,7 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 		protoindex = protoindex.replace("{Name}", name);
 		protoindex = protoindex.replace("{Width}", this.width);
 		protoindex = protoindex.replace("{Height}", this.height);
-		fs.writeFileSync(index.toString());
+		fs.writeFileSync(index.toString(), protoindex);
 	}
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
@@ -119,7 +120,7 @@ Html5Exporter.prototype.copySound = function (platform, from, to, oggEncoder, aa
 };
 
 Html5Exporter.prototype.copyImage = function (platform, from, to, asset) {
-	//exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset);
 };
 
 Html5Exporter.prototype.copyBlob = function (platform, from, to) {

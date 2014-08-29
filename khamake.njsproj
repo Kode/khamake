@@ -15,7 +15,7 @@
     <StartWebBrowser>True</StartWebBrowser>
     <NodeExeArguments>
     </NodeExeArguments>
-    <ScriptArguments>flash "mp3=C:\Users\Robert\Projekte\Tools\Kha-asset-converter\win\lame.exe -S -h {in} {out}"</ScriptArguments>
+    <ScriptArguments>html5 "mp3=C:\Users\Robert\Projekte\Tools\Kha-asset-converter\win\lame.exe -S -h {in} {out}"</ScriptArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -24,6 +24,8 @@
     <Compile Include="FlashExporter.js" />
     <Compile Include="GraphicsApi.js" />
     <Compile Include="Haxe.js" />
+    <Compile Include="Html5Exporter.js" />
+    <Compile Include="ImageTool.js" />
     <Compile Include="KhaExporter.js" />
     <Compile Include="khamake.js" />
     <Compile Include="KoreExporter.js" />
