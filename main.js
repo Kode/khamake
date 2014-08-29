@@ -15,6 +15,7 @@ var FlashExporter = require('./FlashExporter.js');
 var Html5Exporter = require('./Html5Exporter.js');
 var JavaExporter = require('./JavaExporter.js');
 var KoreExporter = require('./KoreExporter.js');
+var PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
 
 if (!String.prototype.startsWith) {
 	Object.defineProperty(String.prototype, 'startsWith', {
