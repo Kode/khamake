@@ -21,11 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Compile Include="Converter.js" />
+    <Compile Include="DalvikExporter.js" />
     <Compile Include="FlashExporter.js" />
     <Compile Include="GraphicsApi.js" />
     <Compile Include="Haxe.js" />
     <Compile Include="Html5Exporter.js" />
     <Compile Include="ImageTool.js" />
+    <Compile Include="JavaExporter.js" />
     <Compile Include="KhaExporter.js" />
     <Compile Include="khamake.js" />
     <Compile Include="KoreExporter.js" />

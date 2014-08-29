@@ -10,8 +10,10 @@ var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
 var VisualStudioVersion = require('./VisualStudioVersion.js');
 
+var DalvikExporter = require('./DalvikExporter.js');
 var FlashExporter = require('./FlashExporter.js');
 var Html5Exporter = require('./Html5Exporter.js');
+var JavaExporter = require('./JavaExporter.js');
 var KoreExporter = require('./KoreExporter.js');
 
 if (!String.prototype.startsWith) {
