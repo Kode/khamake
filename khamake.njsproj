@@ -15,12 +15,13 @@
     <StartWebBrowser>True</StartWebBrowser>
     <NodeExeArguments>
     </NodeExeArguments>
-    <ScriptArguments>html5 "mp3=C:\Users\Robert\Projekte\Tools\Kha-asset-converter\win\lame.exe -S -h {in} {out}"</ScriptArguments>
+    <ScriptArguments>psm "mp3=C:\Users\Robert\Projekte\Tools\Kha-asset-converter\win\lame.exe -S -h {in} {out}"</ScriptArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Compile Include="Converter.js" />
+    <Compile Include="CSharpExporter.js" />
     <Compile Include="DalvikExporter.js" />
     <Compile Include="FlashExporter.js" />
     <Compile Include="GraphicsApi.js" />
@@ -35,7 +36,11 @@
     <Compile Include="main.js" />
     <Compile Include="Options.js" />
     <Compile Include="Platform.js" />
+    <Compile Include="PlayStationMobileExporter.js" />
+    <Compile Include="uuid.js" />
     <Compile Include="VisualStudioVersion.js" />
+    <Compile Include="WpfExporter.js" />
+    <Compile Include="XnaExporter.js" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

@@ -2,7 +2,8 @@ var cp = require('child_process');
 var os = require('os');
 var path = require('path');
 
-module.exports = function (from, to, asset) {
+module.exports = function (from, to, asset, format) {
+	if (format === undefined) format = 'png';
 	var exe = "kraffiti-osx";
 	if (os.platform() === "linux") {
 		exe = "kraffiti-linux";
@@ -11,7 +12,7 @@ module.exports = function (from, to, asset) {
 		exe = "kraffiti.exe";
 	}
 	
-	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), ['from=' + from, 'to=' + to, 'format=png']);
+	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), ['from=' + from, 'to=' + to, 'format=' + format]);
 	
 	child.stdout.on('data', function (data) {
 		console.log('kraffiti stdout: ' + data);
