@@ -300,7 +300,10 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				out += "project.addDefine('HXCPP_VISIT_ALLOCS');\n";
 				out += "project.addDefine('KORE');\n";
 				out += "project.addDefine('ROTATE90');\n";
-				if (platform == Platform.Windows) out += "project.addLib('ws2_32');\n";
+				if (platform === Platform.Windows) {
+					out += "project.addDefine('_WINSOCK_DEPRECATED_NO_WARNINGS');\n";
+					out += "project.addLib('ws2_32');\n";
+				}
 				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
 				if (Files.exists(from.resolve("KoreVideo"))) out += "project.addSubProject(Solution.createProject('KoreVideo'));\n";
 				out += "solution.addProject(project);\n";
@@ -362,7 +365,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				require(korepath + 'main.js').run(
 				{
 					from: from,
-					to: to,
+					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
 					platform: platform
 				},
 				{
