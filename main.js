@@ -355,7 +355,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			options.push("vs=" + vs);
 			if (from.toString() != ".") options.push("from=" + from.toString());
 			options.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
-			//**executeSync(exe, options);
+			require(korepath + 'main.js').main();
 		}
 	}
 	
