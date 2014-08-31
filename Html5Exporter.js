@@ -86,9 +86,9 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	var index = this.directory.resolve(Paths.get(this.sysdir(), "index.html"));
 	if (!Files.exists(index)) {
 		var protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'html5', 'index.html'), { encoding: 'utf8' });
-		protoindex = protoindex.replace("{Name}", name);
-		protoindex = protoindex.replace("{Width}", this.width);
-		protoindex = protoindex.replace("{Height}", this.height);
+		protoindex = protoindex.replaceAll("{Name}", name);
+		protoindex = protoindex.replaceAll("{Width}", this.width);
+		protoindex = protoindex.replaceAll("{Height}", this.height);
 		fs.writeFileSync(index.toString(), protoindex);
 	}
 

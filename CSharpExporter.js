@@ -25,7 +25,7 @@ CSharpExporter.prototype.includeFiles = function (dir, baseDir) {
 		var file = files[f];
 		if (Files.isDirectory(file)) this.includeFiles(file, baseDir);
 		else if (file.getFileName().endsWith(".cs")) {
-			this.p("<Compile Include=\"" + baseDir.relativize(file).toString().replace('/', '\\') + "\" />", 2);
+			this.p("<Compile Include=\"" + baseDir.relativize(file).toString().replaceAll('/', '\\') + "\" />", 2);
 		}
 	}
 };
