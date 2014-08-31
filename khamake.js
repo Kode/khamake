@@ -1,9 +1,11 @@
 ﻿var os = require('os');
 var korepath = require('./korepath.js');
 var Files = require(korepath + 'Files.js');
+var GraphicsApi = require('./GraphicsApi.js');
 var Path = require(korepath + 'Path.js');
 var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
+var VisualStudioVersion = require('./VisualStudioVersion.js');
 
 if (!String.prototype.startsWith) {
 	Object.defineProperty(String.prototype, 'startsWith', {
@@ -56,14 +58,16 @@ var wmvEncoder = '';
 var kfx = '';
 var khafolders = true;
 var embedflashassets = false;
+var gfx = GraphicsApi.Direct3D9;
+var vs = VisualStudioVersion.VS2013;
 
 for (var i = 2; i < args.length; ++i) {
 	var arg = args[i];
 	
 	if (arg === 'pch') Options.precompiledHeaders = true;
 	else if (arg.startsWith('intermediate=')) Options.setIntermediateDrive(arg.substr(13));
-	else if (arg.startsWith('gfx=')) Options.setGraphicsApi(arg.substr(4));
-	else if (arg.startsWith("vs=")) Options.setVisualStudioVersion(arg.substr(3));
+	else if (arg.startsWith('gfx=')) gfx = arg.substr(4);
+	else if (arg.startsWith("vs=")) vs = arg.substr(3);
 	else if (arg.startsWith("haxe=")) haxeDirectory = arg.substr(5);
 	else if (arg.startsWith("ogg=")) oggEncoder = arg.substr(4);
 	else if (arg.startsWith("aac=")) aacEncoder = arg.substr(4);
@@ -103,7 +107,9 @@ require('./main.js').run(
 		wmv: wmvEncoder,
 		kfx: kfx,
 		khafolders: khafolders,
-		embedflashassets: embedflashassets
+		embedflashassets: embedflashassets,
+		graphicsApi: gfx,
+		visualStudioVersion: vs
 	},
 	{
 		info: console.log,

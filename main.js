@@ -374,7 +374,9 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				{
 					from: from,
 					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
-					platform: platform
+					platform: platform,
+					graphicsApi: Options.graphicsApi,
+					visualStudioVersion: Options.visualStudioVersion
 				},
 				{
 					info: log.info,
@@ -441,6 +443,14 @@ exports.run = function (options, loglog, callback) {
 			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Tools", "oggenc-osx"));
 		}
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out}';
+	}
+	
+	if (options.graphicsApi !== undefined) {
+		Options.graphicsApi = options.graphicsApi;
+	}
+	
+	if (options.visualStudioVersion !== undefined) {
+		Options.visualStudioVersion = options.visualStudioVersion;	
 	}
 
 	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.kfx, options.khafolders, options.embedflashassets, callback);
