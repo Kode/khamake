@@ -5,6 +5,7 @@ var Files = require(korepath + 'Files.js');
 var Haxe = require('./Haxe.js');
 var Options = require('./Options.js');
 var Paths = require(korepath + 'Paths.js');
+var exportImage = require('./ImageTool.js');
 
 function FlashExporter(directory, embedflashassets) {
 	KhaExporter.call(this);
@@ -144,7 +145,7 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	if (Options.compilation) {
 		var options = [];
 		options.push("project-" + this.sysdir() + ".hxml");
-		Haxe.executeHaxe(haxeDirectory, options, callback);
+		Haxe.executeHaxe(from, haxeDirectory, options, callback);
 	}
 	else {
 		callback();
@@ -164,7 +165,7 @@ FlashExporter.prototype.copySound = function (platform, from, to, oggEncoder, aa
 };
 
 FlashExporter.prototype.copyImage = function (platform, from, to, asset) {
-	//exportImage(from, directory.resolve(sysdir()).resolve(to), asset);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset);
 	if (this.embed) this.images.push(to.toString());
 };
 

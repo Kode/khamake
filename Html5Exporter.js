@@ -103,7 +103,7 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	if (Options.compilation) {
 		var options = [];
 		options.push("project-" + this.sysdir() + ".hxml");
-		Haxe.executeHaxe(haxeDirectory, options, callback);
+		Haxe.executeHaxe(from, haxeDirectory, options, callback);
 	}
 	else {
 		callback();

@@ -33,6 +33,7 @@
     <Compile Include="khamake.js" />
     <Compile Include="KoreExporter.js" />
     <Compile Include="korepath.js" />
+    <Compile Include="log.js" />
     <Compile Include="main.js" />
     <Compile Include="Options.js" />
     <Compile Include="Platform.js" />

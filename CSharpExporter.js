@@ -110,7 +110,7 @@ CSharpExporter.prototype.exportSolution = function (name, platform, haxeDirector
 	var options = [];
 	options.push("project-" + this.sysdir() + ".hxml");
 	var self = this;
-	Haxe.executeHaxe(haxeDirectory, options, function () {
+	Haxe.executeHaxe(from, haxeDirectory, options, function () {
 		var projectUuid = uuid.v4();
 		self.exportSLN(projectUuid);
 		self.exportCsProj(projectUuid);

@@ -99,7 +99,7 @@ JavaExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	var options = [];
 	options.push("project-" + this.sysdir() + ".hxml");
 	var self = this;
-	Haxe.executeHaxe(haxeDirectory, options, function () {
+	Haxe.executeHaxe(from, haxeDirectory, options, function () {
 		self.exportEclipseProject();
 		callback();
 	});

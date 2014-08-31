@@ -2,6 +2,7 @@ var child_process = require('child_process');
 var fs = require('fs');
 var os = require('os');
 var korepath = require('./korepath.js');
+var log = require('./log.js');
 var Files = require(korepath + 'Files.js');
 var GraphicsApi = require('./GraphicsApi.js');
 var Options = require('./Options.js');
@@ -50,15 +51,19 @@ function compileShader(kfx, type, from, to, temp) {
 		var kfx_process = child_process.spawn(kfx, [type, from.toString(), to.toString(), temp.toString()]);
 
 		kfx_process.stdout.on('data', function (data) {
-			if (data.toString().trim() !== '') console.log('kfx stdout: ' + data);
+			if (data.toString().trim() !== '') log.info('kfx stdout: ' + data);
 		});
 
 		kfx_process.stderr.on('data', function (data) {
-			if (data.toString().trim() !== '') console.log('kfx stderr: ' + data);
+			if (data.toString().trim() !== '') log.info('kfx stderr: ' + data);
+		});
+		
+		kfx_process.on('error', function (err) {
+			log.error('kfx error: ' + err);
 		});
 
 		kfx_process.on('close', function (code) {
-			if (code !== 0) console.log('kfx process exited with code ' + code);
+			if (code !== 0) log.info('kfx process exited with code ' + code);
 		});
 	}
 }
@@ -132,7 +137,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 }
 
 function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, callback) {
-	console.log('Generating Kha project.');
+	log.info('Generating Kha project.');
 	
 	Files.createDirectories(to);
 	var temp = to.resolve('temp');
@@ -354,14 +359,19 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				options.push("vs=" + vs);
 				if (from.toString() != ".") options.push("from=" + from.toString());
 				options.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
-				require(korepath + 'main.js').run(function () {
-					console.log('Done.');
+				require(korepath + 'main.js').run(
+				{
+					info: log.info,
+					error: log.error
+				},
+				function () {
+					log.info('Done.');
 					callback(name);
 				});
 			}
 		}
 		else {
-			console.log('Done.');
+			log.info('Done.');
 			callback(name);
 		}
 	});
@@ -376,100 +386,46 @@ function exportProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder
 		exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, callback);
 	}
 	else {
-		console.log('Kha directory not found.');
+		log.error('Kha directory not found.');
 		callback('Unknown');
 	}
 }
 
-exports.run = function (callback) {
-	var args = process.argv;
+exports.api = 1;
+
+exports.run = function (options, loglog, callback) {
+	log.set(loglog);
+
+	if (options.haxe === '') {
+		var path = Paths.get(options.from).resolve(Paths.get('Kha', 'Tools', 'haxe'));
+		if (Files.isDirectory(path)) options.haxe = path.toString();
+	}
 	
-	var from = ".";
-	var to = "build";
-
-	if (os.platform() === "linux") {
-		var platform = Platform.Linux;
-	}
-	else if (os.platform() === "win32") {
-		var platform = Platform.Windows;
-	}
-	else {
-		var platform = Platform.OSX;
-	}
-
-	var haxeDirectory = new Path('');
-	var oggEncoder = '';
-	var aacEncoder = '';
-	var mp3Encoder = '';
-	var h264Encoder = '';
-	var webmEncoder = '';
-	var wmvEncoder = '';
-	var kfx = '';
-	var khafolders = true;
-	var embedflashassets = false;
-
-	for (var i = 2; i < args.length; ++i) {
-		var arg = args[i];
-		
-		if (arg === 'pch') Options.precompiledHeaders = true;
-		else if (arg.startsWith('intermediate=')) Options.setIntermediateDrive(arg.substr(13));
-		else if (arg.startsWith('gfx=')) Options.setGraphicsApi(arg.substr(4));
-		else if (arg.startsWith("vs=")) Options.setVisualStudioVersion(arg.substr(3));
-		else if (arg.startsWith("haxe=")) haxeDirectory = Paths.get(arg.substr(5));
-		else if (arg.startsWith("ogg=")) oggEncoder = arg.substr(4);
-		else if (arg.startsWith("aac=")) aacEncoder = arg.substr(4);
-		else if (arg.startsWith("mp3=")) mp3Encoder = arg.substr(4);
-		else if (arg.startsWith("h264=")) h264Encoder = arg.substr(5);
-		else if (arg.startsWith("webm=")) webmEncoder = arg.substr(5);
-		else if (arg.startsWith("wmv=")) wmvEncoder = arg.substr(4);
-		else if (arg.startsWith("kfx=")) kfx = arg.substr(4);
-
-		else if (arg.startsWith("from=")) from = arg.substr(5);
-		else if (arg.startsWith("to=")) to = arg.substr(3);
-
-		else if (arg === 'nokhafolders') khafolders = false;
-		else if (arg === 'embedflashassets') embedflashassets = true;
-		else if (arg === 'nocompile') Options.setCompilation(false);
-
-		else {
-			for (p in Platform) {
-				if (arg === Platform[p]) {
-					platform = Platform[p];
-				}
-			}
-		}
-	}
-
-	if (haxeDirectory.path === '') {
-		var path = Paths.get(from).resolve(Paths.get('Kha', 'Tools', 'haxe'));
-		if (Files.isDirectory(path)) haxeDirectory = path;
-	}
-
-	if (kfx === '') {
+	if (options.kfx === '') {
 		if (os.platform() === "linux") {
-			var path = Paths.get(from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-linux"));
+			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-linux"));
 		}
 		else if (os.platform() === "win32") {
-			var path = Paths.get(from).resolve(Paths.get('Kha', 'Kore', 'Tools', 'kfx', 'kfx.exe'));
+			var path = Paths.get(options.from).resolve(Paths.get('Kha', 'Kore', 'Tools', 'kfx', 'kfx.exe'));
 		}
 		else {
-			var path = Paths.get(from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-osx"));
+			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-osx"));
 		}
-		if (Files.exists(path)) kfx = path.toString();
+		if (Files.exists(path)) options.kfx = path.toString();
 	}
-
-	if (oggEncoder === '') {
+	
+	if (options.ogg === '') {
 		if (os.platform() === "linux") {
-			var path = Paths.get(from).resolve(Paths.get("Kha", "Tools", "oggenc-linux"));
+			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Tools", "oggenc-linux"));
 		}
 		else if (os.platform() === "win32") {
-			var path = Paths.get(from).resolve(Paths.get('Kha', 'Tools', 'oggenc2.exe'));
+			var path = Paths.get(options.from).resolve(Paths.get('Kha', 'Tools', 'oggenc2.exe'));
 		}
 		else {
-			var path = Paths.get(from).resolve(Paths.get("Kha", "Tools", "oggenc-osx"));
+			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Tools", "oggenc-osx"));
 		}
-		if (Files.exists(path)) oggEncoder = path.toString() + ' {in} -o {out}';
+		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out}';
 	}
 
-	exportProject(Paths.get(from), Paths.get(to), platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, callback);
+	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.kfx, options.khafolders, options.embedflashassets, callback);
 };

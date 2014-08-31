@@ -5,6 +5,7 @@ var Files = require(korepath + 'Files.js');
 var Haxe = require('./Haxe.js');
 var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
+var exportImage = require('./ImageTool.js');
 
 function KoreExporter(platform, directory) {
 	KhaExporter.call(this);
@@ -92,7 +93,7 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 
 	var options = [];
 	options.push("project-" + this.sysdir() + ".hxml");
-	Haxe.executeHaxe(haxeDirectory, options, callback);
+	Haxe.executeHaxe(from, haxeDirectory, options, callback);
 };
 
 KoreExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
@@ -105,7 +106,7 @@ KoreExporter.prototype.copySound = function (platform, from, to, oggEncoder, aac
 };
 
 KoreExporter.prototype.copyImage = function (platform, from, to, asset) {
-	//exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, true);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, true);
 };
 
 KoreExporter.prototype.copyBlob = function (platform, from, to) {
