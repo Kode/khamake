@@ -26,7 +26,6 @@ WpfExporter.prototype.backend = function () {
 	return "WPF";
 };
 
-
 WpfExporter.prototype.exportResources = function () {
 	Files.createDirectories(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Properties")));
 

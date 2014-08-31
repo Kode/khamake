@@ -36,12 +36,12 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	this.p("<movie minorVersion=\"0\" />", 2);
 	this.p("<movie platform=\"C++\" />", 2);
 	this.p("<movie background=\"#FFFFFF\" />", 2);
-	if (Files.isDirectory(haxeDirectory)) this.p("<movie preferredSDK=\"../" + haxeDirectory.toString() + "\" />", 2);
+	if (Files.isDirectory(haxeDirectory)) this.p('<movie preferredSDK="' + from.resolve('build').relativize(haxeDirectory).toString() + '" />', 2);
 	this.p("</output>", 1);
 	this.p("<!-- Other classes to be compiled into your SWF -->", 1);
 	this.p("<classpaths>", 1);
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("<class path=\"..\\" + this.sources[i].replace('/', '\\') + "\" />", 2);
+		this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
 	}
 	this.p("</classpaths>", 1);
 	this.p("<!-- Build options -->", 1);
@@ -83,7 +83,7 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("-cp " + from.resolve(Paths.get("../", this.sources[i])).toString());
+		this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 	}
 	this.p("-cpp " + Paths.get(this.sysdir() + "-build", "Sources").toString());
 	this.p("-D no-compilation");

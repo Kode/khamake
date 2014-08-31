@@ -236,8 +236,8 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 	if (haxeDirectory.path !== '' && kore) {			
 		{
 			var out = '';
-			out += "solution = Solution.new(\"" + name + "\")\n";
-			out += "project = Project.new(\"" + name + "\")\n";
+			out += "var solution = new Solution('" + name + "');\n";
+			out += "var project = new Project('" + name + "');\n";
 			var files = [];
 			files.push("Kha/Backends/kxcpp/src/**.h");
 			files.push("Kha/Backends/kxcpp/src/**.cpp");
@@ -257,50 +257,51 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			//"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.cc"
 			files.push("Kha/Backends/Kore/*.cpp");
 			files.push("Kha/Backends/Kore/*.h");
-			files.push(to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.h".replace('\\', '/'));
-			files.push(to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp".replace('\\', '/'));
-			out += "project:addFiles(\n";
-			out += "\"" + files[0] + "\"";
+			files.push((to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.h").replace('\\', '/'));
+			files.push((to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp").replace('\\', '/'));
+			out += "project.addFiles(";
+			out += "'" + files[0] + "'";
 			for (var i = 1; i < files.length; ++i) {
-				out += ", \"" + files[i] + "\"";
+				out += ", '" + files[i] + "'";
 			}
-			out += ")\n";
-			out += "project:addExcludes(\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/dftables.c\", "
-				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcredemo.c\", "
-				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcregrep.c\", "
-				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcretest.c\", "
-				+ "\"Kha/Backends/kxcpp/src/ExampleMain.cpp\", "
-				+ "\"Kha/Backends/kxcpp/src/hx/Scriptable.cpp\", "
-				+ "\"Kha/Backends/kxcpp/src/hx/Cppia.cpp\", "
-				+ "\"Kha/Backends/kxcpp/src/hx/CppiaBuiltin.cpp\", "
-				+ "\"**/src/__main__.cpp\", "
-				+ "\"Kha/Backends/kxcpp/src/hx/NekoAPI.cpp\")\n";
-			out += "project:addIncludeDirs(\"Kha/Backends/kxcpp/include\", \"" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString().replace('\\', '/') + "/Sources/include\", "
-				+ "\"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8\", \"Kha/Backends/kxcpp/project/libs/nekoapi\");\n";
-			out += "project:setDebugDir(\"" + to.resolve(Paths.get(exporter.sysdir())).toString().replace('\\', '/') + "\")\n";
-			if (platform == Platform.Windows) out += "project:addDefine(\"HX_WINDOWS\")\n";
-			if (platform == Platform.WindowsRT) out += "project:addDefine(\"HX_WINRT\")\n";
+			out += ");\n";
+			out += "project.addExcludes('Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/dftables.c', "
+				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcredemo.c', "
+				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcregrep.c', "
+				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcretest.c', "
+				+ "'Kha/Backends/kxcpp/src/ExampleMain.cpp', "
+				+ "'Kha/Backends/kxcpp/src/hx/Scriptable.cpp', "
+				+ "'Kha/Backends/kxcpp/src/hx/Cppia.cpp', "
+				+ "'Kha/Backends/kxcpp/src/hx/CppiaBuiltin.cpp', "
+				+ "'**/src/__main__.cpp', "
+				+ "'Kha/Backends/kxcpp/src/hx/NekoAPI.cpp');\n";
+			out += "project.addIncludeDirs('Kha/Backends/kxcpp/include', '" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString().replace('\\', '/') + "/Sources/include', "
+				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8', 'Kha/Backends/kxcpp/project/libs/nekoapi');\n";
+			out += "project.setDebugDir('" + to.resolve(Paths.get(exporter.sysdir())).toString().replace('\\', '/') + "');\n";
+			if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
+			if (platform == Platform.WindowsRT) out += "project.addDefine('HX_WINRT');\n";
 			if (platform == Platform.OSX) {
-				out += "project:addDefine(\"HXCPP_M64\")\n";
-				out += "project:addDefine(\"HX_MACOS\")\n";
+				out += "project.addDefine('HXCPP_M64');\n";
+				out += "project.addDefine('HX_MACOS');\n";
 			}
-			if (platform == Platform.Linux) out += "project:addDefine(\"HX_LINUX\")\n";
-			if (platform == Platform.iOS) out += "project:addDefine(\"IPHONE\")\n";
-			if (platform == Platform.Android) out += "project:addDefine(\"ANDROID\")\n";
-			if (platform == Platform.OSX) out += "project:addDefine(\"KORE_DEBUGDIR=\\\"osx\\\"\")\n";
-			if (platform == Platform.iOS) out += "project:addDefine(\"KORE_DEBUGDIR=\\\"ios\\\"\")\n";
+			if (platform == Platform.Linux) out += "project.addDefine('HX_LINUX');\n";
+			if (platform == Platform.iOS) out += "project.addDefine('IPHONE');\n";
+			if (platform == Platform.Android) out += "project.addDefine('ANDROID');\n";
+			if (platform == Platform.OSX) out += "project.addDefine('KORE_DEBUGDIR=\"osx\"');\n";
+			if (platform == Platform.iOS) out += "project.addDefine('KORE_DEBUGDIR=\"ios\"');\n";
 			//out << "project:addDefine(\"HXCPP_SCRIPTABLE\")\n";
-			out += "project:addDefine(\"STATIC_LINK\")\n";
-			out += "project:addDefine(\"PCRE_STATIC\")\n";
-			out += "project:addDefine(\"HXCPP_SET_PROP\")\n";
-			out += "project:addDefine(\"HXCPP_VISIT_ALLOCS\")\n";
-			out += "project:addDefine(\"KORE\")\n";
-			out += "project:addDefine(\"ROTATE90\")\n";
-			if (platform == Platform.Windows) out += "project:addLib(\"ws2_32\")\n";
-			out += "project:addSubProject(Solution.createProject(\"Kha/Kore\"))\n";
-			if (Files.exists(from.resolve("KoreVideo"))) out += "project:addSubProject(Solution.createProject(\"KoreVideo\"))\n";
-			out += "solution:addProject(project)\n";
-			fs.writeFileSync(from.resolve("kake.lua").toString(), out);
+			out += "project.addDefine('STATIC_LINK');\n";
+			out += "project.addDefine('PCRE_STATIC');\n";
+			out += "project.addDefine('HXCPP_SET_PROP');\n";
+			out += "project.addDefine('HXCPP_VISIT_ALLOCS');\n";
+			out += "project.addDefine('KORE');\n";
+			out += "project.addDefine('ROTATE90');\n";
+			if (platform == Platform.Windows) out += "project.addLib('ws2_32');\n";
+			out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
+			if (Files.exists(from.resolve("KoreVideo"))) out += "project.addSubProject(Solution.createProject('KoreVideo'));\n";
+			out += "solution.addProject(project);\n";
+			out += 'return solution;\n';
+			fs.writeFileSync(from.resolve("korefile.js").toString(), out);
 		}
 
 		//exportKoreProject(directory);
