@@ -361,6 +361,11 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				options.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
 				require(korepath + 'main.js').run(
 				{
+					from: from,
+					to: to,
+					platform: platform
+				},
+				{
 					info: log.info,
 					error: log.error
 				},
