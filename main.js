@@ -269,8 +269,8 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				//"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.cc"
 				files.push("Kha/Backends/Kore/*.cpp");
 				files.push("Kha/Backends/Kore/*.h");
-				files.push((to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.h").replaceAll('\\', '/'));
-				files.push((to.resolve(Paths.get(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp").replaceAll('\\', '/'));
+				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.h").replaceAll('\\', '/'));
+				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp").replaceAll('\\', '/'));
 				out += "project.addFiles(";
 				out += "'" + files[0] + "'";
 				for (var i = 1; i < files.length; ++i) {
@@ -287,9 +287,9 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				+ "'Kha/Backends/kxcpp/src/hx/CppiaBuiltin.cpp', " 
 				+ "'**/src/__main__.cpp', " 
 				+ "'Kha/Backends/kxcpp/src/hx/NekoAPI.cpp');\n";
-				out += "project.addIncludeDirs('Kha/Backends/kxcpp/include', '" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "/Sources/include', " 
+				out += "project.addIncludeDirs('Kha/Backends/kxcpp/include', '" + from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "/Sources/include', " 
 				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8', 'Kha/Backends/kxcpp/project/libs/nekoapi');\n";
-				out += "project.setDebugDir('" + to.resolve(Paths.get(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
+				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 				if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
 				if (platform == Platform.WindowsRT) out += "project.addDefine('HX_WINRT');\n";
 				if (platform == Platform.OSX) {
