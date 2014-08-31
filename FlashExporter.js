@@ -30,7 +30,7 @@ FlashExporter.prototype.sysdir = function () {
 	return 'flash';
 };
 
-FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from) {
+FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
 	this.createDirectory(this.directory.resolve(this.sysdir()));
 
 	this.writeFile(this.directory.resolve('project-' + this.sysdir() + '.hxproj'));
@@ -144,7 +144,10 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	if (Options.compilation) {
 		var options = [];
 		options.push("project-" + this.sysdir() + ".hxml");
-		Haxe.executeHaxe(haxeDirectory, options);
+		Haxe.executeHaxe(haxeDirectory, options, callback);
+	}
+	else {
+		callback();
 	}
 };
 

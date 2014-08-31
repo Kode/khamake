@@ -22,7 +22,7 @@ Html5Exporter.prototype.sysdir = function () {
 	return 'html5';
 };
 
-Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory, from) {
+Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
 	this.createDirectory(this.directory.resolve(this.sysdir()));
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxproj"));
@@ -103,7 +103,10 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	if (Options.compilation) {
 		var options = [];
 		options.push("project-" + this.sysdir() + ".hxml");
-		Haxe.executeHaxe(haxeDirectory, options);
+		Haxe.executeHaxe(haxeDirectory, options, callback);
+	}
+	else {
+		callback();
 	}
 };
 

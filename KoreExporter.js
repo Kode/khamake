@@ -20,7 +20,7 @@ KoreExporter.prototype.sysdir = function () {
 	return this.platform;
 };
 
-KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from) {
+KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxproj"));
 	this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 	this.p("<project version=\"2\">");
@@ -92,7 +92,7 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 
 	var options = [];
 	options.push("project-" + this.sysdir() + ".hxml");
-	Haxe.executeHaxe(haxeDirectory, options);
+	Haxe.executeHaxe(haxeDirectory, options, callback);
 };
 
 KoreExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {

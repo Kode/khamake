@@ -21,7 +21,7 @@ JavaExporter.prototype.sysdir = function () {
 	return 'java';
 };
 
-JavaExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from) {
+JavaExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
 	this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 	this.createDirectory(this.directory.resolve(this.sysdir()));
@@ -98,9 +98,11 @@ JavaExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 
 	var options = [];
 	options.push("project-" + this.sysdir() + ".hxml");
-	Haxe.executeHaxe(haxeDirectory, options);
-
-	this.exportEclipseProject();
+	var self = this;
+	Haxe.executeHaxe(haxeDirectory, options, function () {
+		self.exportEclipseProject();
+		callback();
+	});
 };
 
 JavaExporter.prototype.backend = function () {

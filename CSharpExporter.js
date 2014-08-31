@@ -30,7 +30,7 @@ CSharpExporter.prototype.includeFiles = function (dir, baseDir) {
 	}
 };
 
-CSharpExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from) {
+CSharpExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
 	this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 	this.createDirectory(this.directory.resolve(this.sysdir()));
@@ -109,12 +109,14 @@ CSharpExporter.prototype.exportSolution = function (name, platform, haxeDirector
 
 	var options = [];
 	options.push("project-" + this.sysdir() + ".hxml");
-	Haxe.executeHaxe(haxeDirectory, options);
-
-	var projectUuid = uuid.v4();
-	this.exportSLN(projectUuid);
-	this.exportCsProj(projectUuid);
-	this.exportResources();
+	var self = this;
+	Haxe.executeHaxe(haxeDirectory, options, function () {
+		var projectUuid = uuid.v4();
+		self.exportSLN(projectUuid);
+		self.exportCsProj(projectUuid);
+		self.exportResources();
+		callback();
+	});
 };
 
 CSharpExporter.prototype.exportSLN = function (projectUuid) {

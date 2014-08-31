@@ -2,7 +2,7 @@ var child_process = require('child_process');
 var os = require('os');
 var path = require('path');
 
-exports.executeHaxe = function (haxeDirectory, options) {
+exports.executeHaxe = function (haxeDirectory, options, callback) {
 	if (os.platform() === "linux") {
 		var exe = haxeDirectory.resolve('haxe-linux').toAbsolutePath();
 	}
@@ -27,5 +27,6 @@ exports.executeHaxe = function (haxeDirectory, options) {
 
 	haxe.on('close', function (code) {
 		if (code !== 0) console.log('Haxe process exited with code ' + code);
+		callback();
 	});
 };
