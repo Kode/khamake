@@ -22,7 +22,7 @@ CSharpExporter.prototype.includeFiles = function (dir, baseDir) {
 	if (dir.path.length == 0 || !Files.exists(dir)) return;
 	var files = Files.newDirectoryStream(dir);
 	for (var f in files) {
-		var file = files[f];
+		var file = dir.resolve(files[f]);
 		if (Files.isDirectory(file)) this.includeFiles(file, baseDir);
 		else if (file.getFileName().endsWith(".cs")) {
 			this.p("<Compile Include=\"" + baseDir.relativize(file).toString().replaceAll('/', '\\') + "\" />", 2);
