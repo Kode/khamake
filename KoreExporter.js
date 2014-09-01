@@ -106,7 +106,7 @@ KoreExporter.prototype.copySound = function (platform, from, to, oggEncoder, aac
 };
 
 KoreExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset); //, true);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', true);
 };
 
 KoreExporter.prototype.copyBlob = function (platform, from, to) {

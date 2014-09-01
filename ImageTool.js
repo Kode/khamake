@@ -3,7 +3,7 @@ var os = require('os');
 var path = require('path');
 var log = require('./log.js');
 
-module.exports = function (from, to, asset, format) {
+module.exports = function (from, to, asset, format, prealpha) {
 	if (format === undefined) format = 'png';
 	var exe = "kraffiti-osx";
 	if (os.platform() === "linux") {
@@ -13,7 +13,15 @@ module.exports = function (from, to, asset, format) {
 		exe = "kraffiti.exe";
 	}
 	
-	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), ['from=' + from, 'to=' + to, 'format=' + format]);
+	var params = ['from=' + from, 'to=' + to, 'format=' + format, 'filter=nearest'];
+	if (prealpha) params.push('prealpha');
+	if (asset.scale !== undefined && asset.scale !== 1) {
+		params.push('scale=' + asset.scale);	
+	}
+	if (asset.background !== undefined) {
+		params.push('transparent=' + ((asset.background.red << 24) | (asset.background.green << 16) | (asset.background.blue << 8) | 0xff).toString(16));
+	}
+	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
 	
 	child.stdout.on('data', function (data) {
 		log.info('kraffiti stdout: ' + data);
