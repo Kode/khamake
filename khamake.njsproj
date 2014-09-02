@@ -15,7 +15,7 @@
     <StartWebBrowser>True</StartWebBrowser>
     <NodeExeArguments>
     </NodeExeArguments>
-    <ScriptArguments>psm "mp3=C:\Users\Robert\Projekte\Tools\Kha-asset-converter\win\lame.exe -S -h {in} {out}"</ScriptArguments>
+    <ScriptArguments>flash "mp3=C:\Users\Robert\Projekte\Tools\Kha-asset-converter\win\lame.exe -S -h {in} {out}"</ScriptArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />

@@ -82,7 +82,6 @@ function addShader(project, name, extension) {
 
 function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 	if (!Files.isDirectory(shaderPath)) return;
-	project.shaders = [];
 	var shaders = Files.newDirectoryStream(shaderPath);
 	for (var s in shaders) {
 		var shader = shaders[s];
@@ -231,6 +230,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			}
 		}
 		
+		project.shaders = [];
 		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
 		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), kfx);
 		for (var i = 0; i < sources.length; ++i) {
@@ -238,7 +238,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			exporter.addSourceDirectory(sources[i]);
 		}
 		
-		fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project), { encoding: 'utf8' });
+		fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 		exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'));
 	}
 
