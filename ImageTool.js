@@ -1,9 +1,14 @@
 var cp = require('child_process');
 var os = require('os');
 var path = require('path');
+var korepath = require('./korepath.js')
+var Paths = require(korepath + 'Paths.js');
+var Files = require(korepath + 'Files.js');
 var log = require('./log.js');
 
 module.exports = function (from, to, asset, format, prealpha) {
+	Files.createDirectories(Paths.get(path.dirname(to)));
+
 	if (format === undefined) format = 'png';
 	var exe = "kraffiti-osx";
 	if (os.platform() === "linux") {
@@ -36,6 +41,6 @@ module.exports = function (from, to, asset, format, prealpha) {
 	});
 	
 	child.on('close', function (code) {
-		if (code !== 0) log.error('kraffiti process exited with code ' + code);
+		if (code !== 0) log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + asset.name);
 	});
 };
