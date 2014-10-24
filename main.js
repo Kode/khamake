@@ -1,6 +1,7 @@
 var child_process = require('child_process');
 var fs = require('fs');
 var os = require('os');
+var pathlib = require('path');
 var korepath = require('./korepath.js');
 var log = require('./log.js');
 var Files = require(korepath + 'Files.js');
@@ -143,7 +144,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 	}
 }
 
-function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, callback) {
+function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, options, callback) {
 	log.info('Generating Kha project.');
 	
 	Files.createDirectories(to);
@@ -362,21 +363,23 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			
 			{
 				var exe = kake.toString();
-				var options = [];
-				options.push(platform);
+				var opts = [];
+				opts.push(platform);
 				//+ " pch=" + Options::getPrecompiledHeaders()
-				if (Options.intermediateDrive !== "") options.push("intermediate=" + Options.intermediateDrive);
-				options.push("gfx=" + gfx);
-				options.push("vs=" + vs);
-				if (from.toString() != ".") options.push("from=" + from.toString());
-				options.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
+				if (Options.intermediateDrive !== "") opts.push("intermediate=" + Options.intermediateDrive);
+				opts.push("gfx=" + gfx);
+				opts.push("vs=" + vs);
+				if (from.toString() != ".") opts.push("from=" + from.toString());
+				opts.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
 				require(korepath + 'main.js').run(
 				{
 					from: from,
 					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
 					platform: platform,
 					graphicsApi: Options.graphicsApi,
-					visualStudioVersion: Options.visualStudioVersion
+					visualStudioVersion: Options.visualStudioVersion,
+					compile: options.compile,
+					run: options.run
 				},
 				{
 					info: log.info,
@@ -399,9 +402,9 @@ function isKhaProject(directory) {
 	return Files.exists(directory.resolve('Kha')) || Files.exists(directory.resolve('project.kha'));
 }
 
-function exportProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, callback) {
+function exportProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, options, callback) {
 	if (isKhaProject(from)) {
-		exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, callback);
+		exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, options, callback);
 	}
 	else {
 		log.error('Kha directory not found.');
@@ -413,6 +416,29 @@ exports.api = 1;
 
 exports.run = function (options, loglog, callback) {
 	log.set(loglog);
+
+	var done = function (name) {
+		if (options.platform === Platform.Linux && options.run) {
+			log.info('Running...');
+			var run = child_process.spawn(
+				pathlib.join(process.cwd(), options.to, 'linux-build', name),
+				[],
+				{ cwd: pathlib.join(process.cwd(), options.to, 'linux') });
+
+			run.stdout.on('data', function (data) {
+				log.info(data.toString());
+			});
+
+			run.stderr.on('data', function (data) {
+				log.error(data.toString());
+			});
+
+			run.on('close', function (code) {
+				callback(name);
+			});
+		}
+		else callback(name);
+	};
 
 	if (options.haxe === '') {
 		var path = Paths.get(options.from).resolve(Paths.get('Kha', 'Tools', 'haxe'));
@@ -453,5 +479,5 @@ exports.run = function (options, loglog, callback) {
 		Options.visualStudioVersion = options.visualStudioVersion;	
 	}
 
-	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.kfx, options.khafolders, options.embedflashassets, callback);
+	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.kfx, options.khafolders, options.embedflashassets, options, done);
 };

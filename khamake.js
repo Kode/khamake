@@ -60,6 +60,8 @@ var khafolders = true;
 var embedflashassets = false;
 var gfx = GraphicsApi.Direct3D9;
 var vs = VisualStudioVersion.VS2013;
+var compile = false;
+var run = false;
 
 for (var i = 2; i < args.length; ++i) {
 	var arg = args[i];
@@ -83,6 +85,12 @@ for (var i = 2; i < args.length; ++i) {
 	else if (arg === 'nokhafolders') khafolders = false;
 	else if (arg === 'embedflashassets') embedflashassets = true;
 	else if (arg === 'nocompile') Options.setCompilation(false);
+
+	else if (arg === 'compile') compile = true;
+	else if (arg === 'run') {
+		compile = true;
+		run = true;
+	}
 
 	else {
 		for (p in Platform) {
@@ -109,7 +117,9 @@ require('./main.js').run(
 		khafolders: khafolders,
 		embedflashassets: embedflashassets,
 		graphicsApi: gfx,
-		visualStudioVersion: vs
+		visualStudioVersion: vs,
+		compile: compile,
+		run: run
 	},
 	{
 		info: console.log,
