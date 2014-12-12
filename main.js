@@ -314,7 +314,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 					out += "project.addLib('ws2_32');\n";
 				}
 				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
-				if (Files.exists(from.resolve("KoreVideo"))) out += "project.addSubProject(Solution.createProject('KoreVideo'));\n";
+				if (Files.exists(from.resolve('Kha/KoreVideo'))) out += "project.addSubProject(Solution.createProject('Kha/KoreVideo'));\n";
 				out += "solution.addProject(project);\n";
 				out += 'return solution;\n';
 				fs.writeFileSync(from.resolve("korefile.js").toString(), out);
