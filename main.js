@@ -299,7 +299,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				}
 				if (platform == Platform.Linux) out += "project.addDefine('HX_LINUX');\n";
 				if (platform == Platform.iOS) out += "project.addDefine('IPHONE');\n";
-				if (platform == Platform.Android) out += "project.addDefine('ANDROID');\n";
+				if (platform == Platform.Android) out += "project.addDefine('ANDROID');\nproject.addDefine('_ANDROID');\n";
 				if (platform == Platform.OSX) out += "project.addDefine('KORE_DEBUGDIR=\"osx\"');\n";
 				if (platform == Platform.iOS) out += "project.addDefine('KORE_DEBUGDIR=\"ios\"');\n";
 				//out << "project:addDefine(\"HXCPP_SCRIPTABLE\")\n";
