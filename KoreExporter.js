@@ -80,7 +80,7 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	this.p("</project>");
 	this.closeFile();
 
-	Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
+	//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
 	for (var i = 0; i < this.sources.length; ++i) {
