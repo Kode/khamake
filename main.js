@@ -284,8 +284,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcretest.c', " 
 				+ "'Kha/Backends/kxcpp/src/ExampleMain.cpp', " 
 				+ "'Kha/Backends/kxcpp/src/hx/Scriptable.cpp', " 
-				+ "'Kha/Backends/kxcpp/src/hx/Cppia.cpp', " 
-				+ "'Kha/Backends/kxcpp/src/hx/CppiaBuiltin.cpp', " 
+				+ "'Kha/Backends/kxcpp/src/hx/cppia/**', " 
 				+ "'**/src/__main__.cpp', " 
 				+ "'Kha/Backends/kxcpp/src/hx/NekoAPI.cpp');\n";
 				out += "project.addIncludeDirs('Kha/Backends/kxcpp/include', '" + from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "/Sources/include', " 
