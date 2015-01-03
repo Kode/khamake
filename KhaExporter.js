@@ -49,6 +49,15 @@ KhaExporter.prototype.addSourceDirectory = function (path) {
 	this.sources.push(path);
 };
 
+KhaExporter.prototype.removeSourceDirectory = function (path) {
+	for (var i in this.sources) {
+		if (this.sources[i] === path) {
+			this.sources.splice(i, 1);
+			return;
+		}
+	}
+};
+
 KhaExporter.prototype.copyImage = function (platform, from, to, asset) { };
 KhaExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) { };
 KhaExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) { };

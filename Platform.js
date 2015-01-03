@@ -8,6 +8,7 @@ module.exports = {
 	Xbox360: 'xbox360',
 	Linux: 'linux',
 	HTML5: 'html5',
+	HTML5Worker: 'html5worker',
 	Flash: 'flash',
 	WPF: 'wpf',
 	XNA: 'xna',

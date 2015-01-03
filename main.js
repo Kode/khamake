@@ -15,6 +15,7 @@ var VisualStudioVersion = require('./VisualStudioVersion.js');
 var DalvikExporter = require('./DalvikExporter.js');
 var FlashExporter = require('./FlashExporter.js');
 var Html5Exporter = require('./Html5Exporter.js');
+var Html5WorkerExporter = require('./Html5WorkerExporter.js');
 var JavaExporter = require('./JavaExporter.js');
 var KoreExporter = require('./KoreExporter.js');
 var PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
@@ -159,6 +160,9 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			break;
 		case Platform.HTML5:
 			exporter = new Html5Exporter(to);
+			break;
+		case Platform.HTML5Worker:
+			exporter = new Html5WorkerExporter(to);
 			break;
 		case Platform.WPF:
 			exporter = new WpfExporter(to);
