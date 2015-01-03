@@ -32,7 +32,7 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	this.p("<output>", 1);
 	this.p("<movie outputType=\"Application\" />", 2);
 	this.p("<movie input=\"\" />", 2);
-	this.p("<movie path=\"html5\\kha.js\" />", 2);
+	this.p("<movie path=\"" + this.sysdir() + "\\kha.js\" />", 2);
 	this.p("<movie fps=\"0\" />", 2);
 	this.p("<movie width=\"0\" />", 2);
 	this.p("<movie height=\"0\" />", 2);
@@ -76,7 +76,7 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	this.p("<options>", 1);
 	this.p("<option showHiddenPaths=\"False\" />", 2);
 	this.p("<option testMovie=\"Webserver\" />", 2);
-	this.p("<option testMovieCommand=\"html5/index.html\" />", 2);
+	this.p("<option testMovieCommand=\"" + this.sysdir() + "/index.html\" />", 2);
 	this.p("</options>", 1);
 	this.p("<!-- Plugin storage -->", 1);
 	this.p("<storage />", 1);

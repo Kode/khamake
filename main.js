@@ -99,6 +99,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 				break;
 			}
 			case Platform.HTML5:
+			case Platform.HTML5Worker:
 			case Platform.Android:
 			case Platform.Tizen:
 			case Platform.iOS: {
