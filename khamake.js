@@ -2,6 +2,7 @@
 var korepath = require('./korepath.js');
 var Files = require(korepath + 'Files.js');
 var GraphicsApi = require('./GraphicsApi.js');
+var Options = require('./Options.js');
 var Path = require(korepath + 'Path.js');
 var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
@@ -67,7 +68,7 @@ for (var i = 2; i < args.length; ++i) {
 	var arg = args[i];
 	
 	if (arg === 'pch') Options.precompiledHeaders = true;
-	else if (arg.startsWith('intermediate=')) Options.setIntermediateDrive(arg.substr(13));
+	else if (arg.startsWith('intermediate=')) Options.intermediateDrive = arg.substr(13);
 	else if (arg.startsWith('gfx=')) gfx = arg.substr(4);
 	else if (arg.startsWith("vs=")) vs = arg.substr(3);
 	else if (arg.startsWith("haxe=")) haxeDirectory = arg.substr(5);
@@ -84,7 +85,7 @@ for (var i = 2; i < args.length; ++i) {
 
 	else if (arg === 'nokhafolders') khafolders = false;
 	else if (arg === 'embedflashassets') embedflashassets = true;
-	else if (arg === 'nocompile') Options.setCompilation(false);
+	else if (arg === 'nocompile') Options.compile = false;
 
 	else if (arg === 'compile') compile = true;
 	else if (arg === 'run') {
