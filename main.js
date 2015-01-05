@@ -146,7 +146,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 	}
 }
 
-function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, options, callback) {
+function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
 	log.info('Generating Kha project.');
 	
 	Files.createDirectories(to);
@@ -232,7 +232,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 				var file;
 				if (khafolders) file = from.resolve(Paths.get('Assets', 'Video', asset.file));
 				else file = from.resolve(asset.file);
-				exporter.copyVideo(platform, file, Paths.get(asset.file), h264Encoder, webmEncoder, wmvEncoder);
+				exporter.copyVideo(platform, file, Paths.get(asset.file), h264Encoder, webmEncoder, wmvEncoder, theoraEncoder);
 			}
 		}
 		
@@ -406,9 +406,9 @@ function isKhaProject(directory) {
 	return Files.exists(directory.resolve('Kha')) || Files.exists(directory.resolve('project.kha'));
 }
 
-function exportProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, options, callback) {
+function exportProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
 	if (isKhaProject(from)) {
-		exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, kfx, khafolders, embedflashassets, options, callback);
+		exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback);
 	}
 	else {
 		log.error('Kha directory not found.');
@@ -483,5 +483,5 @@ exports.run = function (options, loglog, callback) {
 		Options.visualStudioVersion = options.visualStudioVersion;	
 	}
 
-	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.kfx, options.khafolders, options.embedflashassets, options, done);
+	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.kfx, options.khafolders, options.embedflashassets, options, done);
 };

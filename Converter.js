@@ -5,7 +5,7 @@ var log = require('./log.js');
 exports.convert = function (inFilename, outFilename, encoder) {
 	if (fs.existsSync(outFilename.toString()) && fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) return;
 	
-	if (encoder === '') return;
+	if (encoder === undefined || encoder === '') return;
 	var parts = encoder.split(' ');
 	var options = [];
 	for (var i = 1; i < parts.length; ++i) {

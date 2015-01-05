@@ -54,6 +54,7 @@ var oggEncoder = '';
 var aacEncoder = '';
 var mp3Encoder = '';
 var h264Encoder = '';
+var theoraEncoder = '';
 var webmEncoder = '';
 var wmvEncoder = '';
 var kfx = '';
@@ -78,6 +79,7 @@ for (var i = 2; i < args.length; ++i) {
 	else if (arg.startsWith("h264=")) h264Encoder = arg.substr(5);
 	else if (arg.startsWith("webm=")) webmEncoder = arg.substr(5);
 	else if (arg.startsWith("wmv=")) wmvEncoder = arg.substr(4);
+	else if (arg.startsWith("theora=")) theoraEncoder = arg.substr(7);
 	else if (arg.startsWith("kfx=")) kfx = arg.substr(4);
 
 	else if (arg.startsWith("from=")) from = arg.substr(5);
@@ -114,6 +116,7 @@ require('./main.js').run(
 		h264: h264Encoder, 
 		webm: webmEncoder,
 		wmv: wmvEncoder,
+		theora: theoraEncoder,
 		kfx: kfx,
 		khafolders: khafolders,
 		embedflashassets: embedflashassets,

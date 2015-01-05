@@ -113,8 +113,9 @@ KoreExporter.prototype.copyBlob = function (platform, from, to) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
 };
 
-KoreExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
-	
+KoreExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder) {
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.theora'), theoraEncoder);
 };
 
 module.exports = KoreExporter;
