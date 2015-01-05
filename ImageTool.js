@@ -8,7 +8,7 @@ var Files = require(korepath + 'Files.js');
 var log = require('./log.js');
 
 module.exports = function (from, to, asset, format, prealpha) {
-	if (fs.statSync(to).mtime.getTime() > fs.statSync(from).mtime.getTime()) return;
+	if (fs.existsSync(to.toString()) && fs.statSync(to.toString()).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) return;
 
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
