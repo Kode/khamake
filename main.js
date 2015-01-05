@@ -203,6 +203,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 		}
 
 		for (var i = 0; i < project.assets.length; ++i) {
+			log.info('Exporting asset ' + (i + 1) + ' of ' + project.assets.length + '.');
 			var asset = project.assets[i];
 			if (asset.type === 'image') {
 				var file;
