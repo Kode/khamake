@@ -1,4 +1,5 @@
 var cp = require('child_process');
+var fs = require('fs');
 var os = require('os');
 var path = require('path');
 var korepath = require('./korepath.js')
@@ -7,6 +8,8 @@ var Files = require(korepath + 'Files.js');
 var log = require('./log.js');
 
 module.exports = function (from, to, asset, format, prealpha) {
+	if (fs.statSync(to).mtime.getTime() > fs.statSync(from).mtime.getTime()) return;
+
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
 	if (format === undefined) format = 'png';

@@ -2,6 +2,8 @@ var child_process = require('child_process');
 var log = require('./log.js');
 
 exports.convert = function (inFilename, outFilename, encoder) {
+	if (fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) return;
+	
 	if (encoder === '') return;
 	var parts = encoder.split(' ');
 	var options = [];
