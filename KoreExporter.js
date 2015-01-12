@@ -106,7 +106,15 @@ KoreExporter.prototype.copySound = function (platform, from, to, oggEncoder, aac
 };
 
 KoreExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', true);
+	if (platform === Platform.iOS) {
+		var index = to.toString().lastIndexOf('.');
+		to = to.toString().substr(0, index) + '.pvr';
+		asset.file = to.toString();
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true);
+	}
+	else {
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', true);
+	}
 };
 
 KoreExporter.prototype.copyBlob = function (platform, from, to) {
