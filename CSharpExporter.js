@@ -145,24 +145,25 @@ CSharpExporter.prototype.exportSLN = function (projectUuid) {
 	this.closeFile();
 };
 
-CSharpExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
-	
+CSharpExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
-CSharpExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
-	
+CSharpExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
-CSharpExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset);
+CSharpExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', false, callback);
 };
 
-CSharpExporter.prototype.copyBlob = function (platform, from, to) {
+CSharpExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
+	callback();
 };
 
-CSharpExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
-	
+CSharpExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
 module.exports = CSharpExporter;

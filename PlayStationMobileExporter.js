@@ -148,26 +148,27 @@ PlayStationMobileExporter.prototype.exportCsProj = function (projectUuid) {
 }
 
 
-PlayStationMobileExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
-	
+PlayStationMobileExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
-PlayStationMobileExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
-	
+PlayStationMobileExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
-PlayStationMobileExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset);
+PlayStationMobileExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	this.files.push(Paths.get(asset["file"]));
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', false, callback);
 };
 
-PlayStationMobileExporter.prototype.copyBlob = function (platform, from, to) {
+PlayStationMobileExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
 	this.files.push(to);
+	callback();
 };
 
-PlayStationMobileExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
-	
+PlayStationMobileExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
 module.exports = PlayStationMobileExporter;

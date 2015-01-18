@@ -7,8 +7,11 @@ var Paths = require(korepath + 'Paths.js');
 var Files = require(korepath + 'Files.js');
 var log = require('./log.js');
 
-module.exports = function (from, to, asset, format, prealpha) {
-	if (fs.existsSync(to.toString()) && fs.statSync(to.toString()).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) return;
+module.exports = function (from, to, asset, format, prealpha, callback) {
+	if (fs.existsSync(to.toString()) && fs.statSync(to.toString()).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
+		callback();
+		return;
+	}
 
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
@@ -41,9 +44,11 @@ module.exports = function (from, to, asset, format, prealpha) {
 	
 	child.on('error', function (err) {
 		log.error('kraffiti error: ' + err);
+		callback();
 	});
 	
 	child.on('close', function (code) {
 		if (code !== 0) log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + asset.name);
+		callback();
 	});
 };

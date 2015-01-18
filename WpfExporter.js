@@ -277,18 +277,19 @@ WpfExporter.prototype.exportCsProj = function (projectUuid) {
 	this.closeFile();
 };
 
-WpfExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+WpfExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".mp4"), aacEncoder);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".mp4"), encoders.aacEncoder, callback);
 };
 
-WpfExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+WpfExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wav"));
+	callback();
 };
 
-WpfExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
+WpfExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wmv"), wmvEncoder);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wmv"), encoders.wmvEncoder, callback);
 };
 
 module.exports = WpfExporter;

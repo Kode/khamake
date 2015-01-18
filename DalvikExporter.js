@@ -182,25 +182,27 @@ DalvikExporter.prototype.exportEclipseProject = function () {
 	this.createDirectory(this.directory.resolve(Paths.get(this.sysdir(), "gen")));
 };
 
-DalvikExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+DalvikExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), "assets", to.toString() + ".ogg")), oggEncoder);
+	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), "assets", to.toString() + ".ogg")), encoders.oggEncoder, callback);
 };
 
-DalvikExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+DalvikExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
 	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), "assets", to.toString() + ".wav")));
+	callback();
 };
 
-DalvikExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), "assets")).resolve(to), asset);
+DalvikExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
+	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), "assets")).resolve(to), asset, 'png', false, callback());
 };
 
-DalvikExporter.prototype.copyBlob = function (platform, from, to) {
+DalvikExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), "assets")).resolve(to));
+	callback();
 };
 
-DalvikExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
-	
+DalvikExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
 module.exports = DalvikExporter;

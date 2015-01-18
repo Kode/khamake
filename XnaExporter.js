@@ -260,9 +260,9 @@ XnaExporter.prototype.exportCsProj = function (projectUuid) {
 }
 
 
-XnaExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve("xna").resolve(to), asset);
+XnaExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	this.images.push(asset["file"]);
+	exportImage(from, this.directory.resolve("xna").resolve(to), asset, 'png', false, callback);
 };
 
 module.exports = XnaExporter;

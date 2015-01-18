@@ -152,31 +152,32 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	}
 };
 
-FlashExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), mp3Encoder);
+FlashExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	if (this.embed) this.sounds.push(to.toString() + '.mp3');
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), encoders.mp3Encoder, callback);
 };
 
-FlashExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), mp3Encoder);
+FlashExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
 	if (this.embed) this.sounds.push(to.toString() + '.mp3');
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), encoders.mp3Encoder, callback);
 };
 
-FlashExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset);
+FlashExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	if (this.embed) this.images.push(to.toString());
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', false, callback);
 };
 
-FlashExporter.prototype.copyBlob = function (platform, from, to) {
+FlashExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
 	if (this.embed) this.blobs.push(to.toString());
+	callback();
 };
 
-FlashExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
+FlashExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp4'), h264Encoder);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp4'), encoders.h264Encoder, callback);
 };
 
 FlashExporter.prototype.addShader = function (shader) {

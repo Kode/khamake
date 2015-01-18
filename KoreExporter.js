@@ -96,34 +96,36 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	Haxe.executeHaxe(from, haxeDirectory, options, callback);
 };
 
-KoreExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+KoreExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogg'), oggEncoder);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogg'), encoders.oggEncoder, callback);
 };
 
-KoreExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+KoreExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.wav'));
+	callback();
 };
 
-KoreExporter.prototype.copyImage = function (platform, from, to, asset) {
+KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	if (platform === Platform.iOS) {
 		var index = to.toString().lastIndexOf('.');
 		to = to.toString().substr(0, index) + '.pvr';
 		asset.file = to.toString();
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true, callback);
 	}
 	else {
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', true);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', true, callback);
 	}
 };
 
-KoreExporter.prototype.copyBlob = function (platform, from, to) {
+KoreExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
+	callback();
 };
 
-KoreExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder) {
+KoreExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), theoraEncoder);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), encoders.theoraEncoder, callback);
 };
 
 module.exports = KoreExporter;

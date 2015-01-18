@@ -146,6 +146,55 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, kfx) {
 	}
 }
 
+function exportAssets(assets, index, exporter, from, khafolders, platform, encoders, callback) {
+	if (index >= assets.length) {
+		callback();
+		return;
+	}
+	var asset = assets[index];
+	log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + asset.file + ').');
+	if (asset.type === 'image') {
+		var file;
+		if (khafolders) file = from.resolve(Paths.get('Assets', 'Graphics', asset.file));
+		else file = from.resolve(asset.file);
+		exporter.copyImage(platform, file, Paths.get(asset.file), asset, function () {
+			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
+		});
+	}
+	else if (asset.type === 'music') {
+		var file;
+		if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
+		else file = from.resolve(asset.file + '.wav');
+		exporter.copyMusic(platform, file, Paths.get(asset.file), encoders, function () {
+			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
+		});
+	}
+	else if (asset.type === 'sound') {
+		var file;
+		if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
+		else file = from.resolve(asset.file + '.wav');
+		exporter.copySound(platform, file, Paths.get(asset.file), encoders, function () {
+			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
+		});
+	}
+	else if (asset.type === 'blob') {
+		var file;
+		if (khafolders) file = from.resolve(Paths.get('Assets', asset.file));
+		else file = from.resolve(asset.file);
+		exporter.copyBlob(platform, file, Paths.get(asset.file), function () {
+			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
+		});
+	}
+	else if (asset.type === 'video') {
+		var file;
+		if (khafolders) file = from.resolve(Paths.get('Assets', 'Video', asset.file));
+		else file = from.resolve(asset.file);
+		exporter.copyVideo(platform, file, Paths.get(asset.file), encoders, function () {
+			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
+		});
+	}
+}
+
 function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
 	log.info('Generating Kha project.');
 	
@@ -202,40 +251,18 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			}
 		}
 
-		for (var i = 0; i < project.assets.length; ++i) {
-			log.info('Exporting asset ' + (i + 1) + ' of ' + project.assets.length + '.');
-			var asset = project.assets[i];
-			if (asset.type === 'image') {
-				var file;
-				if (khafolders) file = from.resolve(Paths.get('Assets', 'Graphics', asset.file));
-				else file = from.resolve(asset.file);
-				exporter.copyImage(platform, file, Paths.get(asset.file), asset);
-			}
-			else if (asset.type === 'music') {
-				var file;
-				if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
-				else file = from.resolve(asset.file + '.wav');
-				exporter.copyMusic(platform, file, Paths.get(asset.file), oggEncoder, aacEncoder, mp3Encoder);
-			}
-			else if (asset.type === 'sound') {
-				var file;
-				if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
-				else file = from.resolve(asset.file + '.wav');
-				exporter.copySound(platform, file, Paths.get(asset.file), oggEncoder, aacEncoder, mp3Encoder);
-			}
-			else if (asset.type === 'blob') {
-				var file;
-				if (khafolders) file = from.resolve(Paths.get('Assets', asset.file));
-				else file = from.resolve(asset.file);
-				exporter.copyBlob(platform, file, Paths.get(asset.file));
-			}
-			else if (asset.type === 'video') {
-				var file;
-				if (khafolders) file = from.resolve(Paths.get('Assets', 'Video', asset.file));
-				else file = from.resolve(asset.file);
-				exporter.copyVideo(platform, file, Paths.get(asset.file), h264Encoder, webmEncoder, wmvEncoder, theoraEncoder);
-			}
-		}
+		var encoders = {
+			oggEncoder: oggEncoder,
+			aacEncoder: aacEncoder,
+			mp3Encoder: mp3Encoder,
+			h264Encoder: h264Encoder,
+			webmEncoder: webmEncoder,
+			wmvEncoder: wmvEncoder,
+			theoraEncoder: theoraEncoder
+		};
+		exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
+			log.info('Assets done.');
+		});
 		
 		project.shaders = [];
 		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
@@ -246,7 +273,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 		}
 		
 		fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
-		exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'));
+		exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {});
 	}
 
 	if (name === '') name = from.toAbsolutePath().getFileName();

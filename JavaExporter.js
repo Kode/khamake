@@ -140,24 +140,27 @@ JavaExporter.prototype.exportEclipseProject = function () {
 	this.closeFile();
 };
 
-JavaExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+JavaExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wav"));
+	callback();
 };
 
-JavaExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) {
+JavaExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wav"));
+	callback();
 };
 
-JavaExporter.prototype.copyImage = function (platform, from, to, asset) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset);
+JavaExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', false, callback);
 };
 
-JavaExporter.prototype.copyBlob = function (platform, from, to) {
+JavaExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
+	callback();
 };
 
-JavaExporter.prototype.copyVideo = function (platform, from, to, h264Encoder, webmEncoder, wmvEncoder) {
-	
+JavaExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
+	callback();
 };
 
 module.exports = JavaExporter;

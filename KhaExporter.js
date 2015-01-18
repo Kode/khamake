@@ -58,10 +58,10 @@ KhaExporter.prototype.removeSourceDirectory = function (path) {
 	}
 };
 
-KhaExporter.prototype.copyImage = function (platform, from, to, asset) { };
-KhaExporter.prototype.copyMusic = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) { };
-KhaExporter.prototype.copySound = function (platform, from, to, oggEncoder, aacEncoder, mp3Encoder) { };
-KhaExporter.prototype.copyVideo = function (platform, from, to, mp4Encoder, webmEncoder, wmvEncoder) { };
-KhaExporter.prototype.copyBlob = function (platform, from, to) { };
+KhaExporter.prototype.copyImage = function (platform, from, to, asset, callback) { callback(); };
+KhaExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) { callback(); };
+KhaExporter.prototype.copySound = function (platform, from, to, encoders, callback) { callback(); };
+KhaExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) { callback(); };
+KhaExporter.prototype.copyBlob = function (platform, from, to, callback) { callback(); };
 
 module.exports = KhaExporter;

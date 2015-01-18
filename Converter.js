@@ -2,10 +2,16 @@ var child_process = require('child_process');
 var fs = require('fs');
 var log = require('./log.js');
 
-exports.convert = function (inFilename, outFilename, encoder) {
-	if (fs.existsSync(outFilename.toString()) && fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) return;
+exports.convert = function (inFilename, outFilename, encoder, callback) {
+	if (fs.existsSync(outFilename.toString()) && fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) {
+		callback();
+		return;
+	}
 	
-	if (encoder === undefined || encoder === '') return;
+	if (encoder === undefined || encoder === '') {
+		callback();
+		return;
+	}
 	var parts = encoder.split(' ');
 	var options = [];
 	for (var i = 1; i < parts.length; ++i) {
@@ -25,9 +31,11 @@ exports.convert = function (inFilename, outFilename, encoder) {
 	
 	child.on('error', function (err) {
 		log.error(encoder + ' error: ' + err);
+		callback();
 	});
 	
 	child.on('close', function (code) {
 		if (code !== 0) log.error(encoder + ' process exited with code ' + code);
+		callback();
 	});
 };
