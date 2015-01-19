@@ -261,19 +261,19 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			theoraEncoder: theoraEncoder
 		};
 		exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
-			log.info('Assets done.');
+			project.shaders = [];
+			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
+			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), kfx);
+			for (var i = 0; i < sources.length; ++i) {
+				addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx);
+				exporter.addSourceDirectory(sources[i]);
+			}
+			
+			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
+			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
+				log.info('Assets done.');
+			});
 		});
-		
-		project.shaders = [];
-		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
-		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), kfx);
-		for (var i = 0; i < sources.length; ++i) {
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx);
-			exporter.addSourceDirectory(sources[i]);
-		}
-		
-		fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
-		exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {});
 	}
 
 	if (name === '') name = from.toAbsolutePath().getFileName();
