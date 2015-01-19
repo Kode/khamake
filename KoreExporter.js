@@ -110,7 +110,7 @@ KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback
 	if (platform === Platform.iOS) {
 		var index = to.toString().lastIndexOf('.');
 		to = to.toString().substr(0, index) + '.pvr';
-		asset.file = to.toString();
+		asset.file = to.toString().replaceAll('\\', '/');
 		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true, callback);
 	}
 	else {
