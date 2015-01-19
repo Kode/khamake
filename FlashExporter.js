@@ -63,8 +63,8 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	this.p("<option flashStrict=\"False\" />", 2);
 	this.p("<option mainClass=\"Main\" />", 2);
 	this.p("<option enabledebug=\"True\" />", 2);
-	if (this.embed) this.p("<option additional=\"-D KHA_EMBEDDED_ASSETS\" />", 2);
-	else this.p("<option additional=\"\" />", 2);
+	if (this.embed) this.p("<option additional=\"-D swf-script-timeout=60 -D KHA_EMBEDDED_ASSETS\" />", 2);
+	else this.p("<option additional=\"-D swf-script-timeout=60\" />", 2);
 	this.p("</build>", 1);
 	this.p("<!-- haxelib libraries -->", 1);
 	this.p("<haxelib>", 1);
@@ -101,6 +101,7 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 		this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 	}
 	if (this.embed) this.p("-D KHA_EMBEDDED_ASSETS");
+	this.p("-D swf-script-timeout=60");
 	this.p("-swf " + Paths.get(this.sysdir(), "kha.swf").toString());
 	this.p("-swf-version 11.6");
 	this.p("-main Main");
