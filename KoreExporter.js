@@ -107,7 +107,7 @@ KoreExporter.prototype.copySound = function (platform, from, to, encoders, callb
 };
 
 KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	if (platform === Platform.iOS) {
+	if (platform === Platform.iOS && asset.compressed) {
 		var index = to.toString().lastIndexOf('.');
 		to = to.toString().substr(0, index) + '.pvr';
 		asset.file = to.toString().replaceAll('\\', '/');
