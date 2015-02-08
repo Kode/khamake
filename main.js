@@ -195,90 +195,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	}
 }
 
-function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
-	log.info('Generating Kha project.');
-	
-	Files.createDirectories(to);
-	var temp = to.resolve('temp');
-	Files.createDirectories(temp);
-	
-	var exporter = null;
-	var kore = false;
-	switch (platform) {
-		case Platform.Flash:
-			exporter = new FlashExporter(to, embedflashassets);
-			break;
-		case Platform.HTML5:
-			exporter = new Html5Exporter(to);
-			break;
-		case Platform.HTML5Worker:
-			exporter = new Html5WorkerExporter(to);
-			break;
-		case Platform.WPF:
-			exporter = new WpfExporter(to);
-			break;
-		case Platform.XNA:
-			exporter = new XnaExporter(to);
-			break;
-		case Platform.Java:
-			exporter = new JavaExporter(to);
-			break;
-		case Platform.PlayStationMobile:
-			exporter = new PlayStationMobileExporter(to);
-			break;
-		case Platform.Dalvik:
-			exporter = new DalvikExporter(to);
-			break;
-		default:
-			kore = true;
-			exporter = new KoreExporter(platform, to);
-			break;
-	}
-
-	Files.createDirectories(to.resolve(exporter.sysdir()));
-	
-	var name = '';
-	var sources = [];
-	if (Files.exists(from.resolve('project.kha'))) {
-		var project = JSON.parse(fs.readFileSync(from.resolve('project.kha').toString(), { encoding: 'utf8' }));
-
-		name = project.game.name;
-		exporter.setWidthAndHeight(project.game.width, project.game.height);
-
-		if (project.sources !== undefined) {
-			for (var i = 0; i < project.sources.length; ++i) {
-				sources.push(project.sources[i]);
-			}
-		}
-
-		var encoders = {
-			oggEncoder: oggEncoder,
-			aacEncoder: aacEncoder,
-			mp3Encoder: mp3Encoder,
-			h264Encoder: h264Encoder,
-			webmEncoder: webmEncoder,
-			wmvEncoder: wmvEncoder,
-			theoraEncoder: theoraEncoder
-		};
-		exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
-			project.shaders = [];
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), kfx);
-			for (var i = 0; i < sources.length; ++i) {
-				addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx);
-				exporter.addSourceDirectory(sources[i]);
-			}
-			
-			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
-			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
-				log.info('Assets done.');
-			});
-		});
-	}
-
-	if (name === '') name = from.toAbsolutePath().getFileName();
-
-	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirectory, from, function () {
+function exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback) {
+if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirectory, from, function () {
 		if (haxeDirectory.path !== '' && kore) {
 			{
 				var out = '';
@@ -428,6 +346,94 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			callback(name);
 		}
 	});
+}
+
+function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
+	log.info('Generating Kha project.');
+	
+	Files.createDirectories(to);
+	var temp = to.resolve('temp');
+	Files.createDirectories(temp);
+	
+	var exporter = null;
+	var kore = false;
+	switch (platform) {
+		case Platform.Flash:
+			exporter = new FlashExporter(to, embedflashassets);
+			break;
+		case Platform.HTML5:
+			exporter = new Html5Exporter(to);
+			break;
+		case Platform.HTML5Worker:
+			exporter = new Html5WorkerExporter(to);
+			break;
+		case Platform.WPF:
+			exporter = new WpfExporter(to);
+			break;
+		case Platform.XNA:
+			exporter = new XnaExporter(to);
+			break;
+		case Platform.Java:
+			exporter = new JavaExporter(to);
+			break;
+		case Platform.PlayStationMobile:
+			exporter = new PlayStationMobileExporter(to);
+			break;
+		case Platform.Dalvik:
+			exporter = new DalvikExporter(to);
+			break;
+		default:
+			kore = true;
+			exporter = new KoreExporter(platform, to);
+			break;
+	}
+
+	Files.createDirectories(to.resolve(exporter.sysdir()));
+	
+	var name = '';
+	var sources = [];
+	if (Files.exists(from.resolve('project.kha'))) {
+		var project = JSON.parse(fs.readFileSync(from.resolve('project.kha').toString(), { encoding: 'utf8' }));
+
+		name = project.game.name;
+		exporter.setWidthAndHeight(project.game.width, project.game.height);
+
+		if (project.sources !== undefined) {
+			for (var i = 0; i < project.sources.length; ++i) {
+				sources.push(project.sources[i]);
+			}
+		}
+
+		var encoders = {
+			oggEncoder: oggEncoder,
+			aacEncoder: aacEncoder,
+			mp3Encoder: mp3Encoder,
+			h264Encoder: h264Encoder,
+			webmEncoder: webmEncoder,
+			wmvEncoder: wmvEncoder,
+			theoraEncoder: theoraEncoder
+		};
+		exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
+			project.shaders = [];
+			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
+			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), kfx);
+			for (var i = 0; i < sources.length; ++i) {
+				addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx);
+				exporter.addSourceDirectory(sources[i]);
+			}
+			
+			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
+			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
+				log.info('Assets done.');
+				if (name === '') name = from.toAbsolutePath().getFileName();
+				exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback);
+			});
+		});
+	}
+	else {
+		if (name === '') name = from.toAbsolutePath().getFileName();
+		exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback);
+	}
 }
 
 function isKhaProject(directory) {
