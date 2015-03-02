@@ -155,40 +155,70 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + asset.file + ').');
 	if (asset.type === 'image') {
 		var file;
-		if (khafolders) file = from.resolve(Paths.get('Assets', 'Graphics', asset.file));
-		else file = from.resolve(asset.file);
+		if (asset.libdir !== undefined) {
+			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Graphics', asset.file));
+			else file = from.resolve(Paths.get(asset.libdir, asset.file));
+		}
+		else {
+			if (khafolders) file = from.resolve(Paths.get('Assets', 'Graphics', asset.file));
+			else file = from.resolve(asset.file);
+		}
 		exporter.copyImage(platform, file, Paths.get(asset.file), asset, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
 	else if (asset.type === 'music') {
 		var file;
-		if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
-		else file = from.resolve(asset.file + '.wav');
+		if (asset.libdir !== undefined) {
+			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Sound', asset.file + '.wav'));
+			else file = from.resolve(Paths.get(asset.libdir, asset.file + '.wav'));
+		}
+		else {
+			if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
+			else file = from.resolve(asset.file + '.wav');
+		}
 		exporter.copyMusic(platform, file, Paths.get(asset.file), encoders, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
 	else if (asset.type === 'sound') {
 		var file;
-		if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
-		else file = from.resolve(asset.file + '.wav');
+		if (asset.libdir !== undefined) {
+			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Sound', asset.file + '.wav'));
+			else file = from.resolve(Paths.get(asset.libdir, asset.file + '.wav'));
+		}
+		else {
+			if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
+			else file = from.resolve(asset.file + '.wav');
+		}
 		exporter.copySound(platform, file, Paths.get(asset.file), encoders, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
 	else if (asset.type === 'blob') {
 		var file;
-		if (khafolders) file = from.resolve(Paths.get('Assets', asset.file));
-		else file = from.resolve(asset.file);
+		if (asset.libdir !== undefined) {
+			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
+			else file = from.resolve(Paths.get(asset.libdir, asset.file));
+		}
+		else {
+			if (khafolders) file = from.resolve(Paths.get('Assets', asset.file));
+			else file = from.resolve(asset.file);
+		}
 		exporter.copyBlob(platform, file, Paths.get(asset.file), function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
 	else if (asset.type === 'video') {
 		var file;
-		if (khafolders) file = from.resolve(Paths.get('Assets', 'Video', asset.file));
-		else file = from.resolve(asset.file);
+		if (asset.libdir !== undefined) {
+			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Video', asset.file));
+			else file = from.resolve(Paths.get(asset.libdir, asset.file));
+		}
+		else {
+			if (khafolders) file = from.resolve(Paths.get('Assets', 'Video', asset.file));
+			else file = from.resolve(asset.file);
+		}
 		exporter.copyVideo(platform, file, Paths.get(asset.file), encoders, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
@@ -269,6 +299,15 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 					else out += "project.addSubProject(Solution.createProject('Kha/KoreVideo'));\n";
 				}
 				out += "solution.addProject(project);\n";
+
+				out += "var libraries = fs.readdirSync('Libraries');\n";
+				out += "for (var l in libraries) {\n";
+				out += "var lib = libraries[l];\n";
+				out += "if (fs.existsSync(path.join('Libraries', lib, 'korefile.js'))) {\n";
+				out += "project.addSubProject(Solution.createProject('Libraries/' + lib));\n";
+				out += "}\n";
+				out += "}\n";
+
 				out += 'return solution;\n';
 				fs.writeFileSync(from.resolve("korefile.js").toString(), out);
 			}
@@ -398,12 +437,55 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 	if (Files.exists(from.resolve('project.kha'))) {
 		var project = JSON.parse(fs.readFileSync(from.resolve('project.kha').toString(), { encoding: 'utf8' }));
 
+		var libraries = [];
+		if (Files.isDirectory(from.resolve('Libraries'))) {
+			var dirs = Files.newDirectoryStream(from.resolve('Libraries'));
+			for (var d in dirs) {
+				var dir = dirs[d];
+				if (Files.isDirectory(from.resolve(Paths.get('Libraries', dir)))) {
+					var lib = {
+						directory: 'Libraries/' + dir,
+						project: {
+							assets: [],
+							rooms: []
+						}
+					};
+					if (Files.exists(from.resolve(Paths.get('Libraries', dir, 'project.kha')))) {
+						lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', dir, 'project.kha').toString(), { encoding: 'utf8' }));
+					}
+					libraries.push(lib);
+				}
+			}
+		}
+
 		name = project.game.name;
 		exporter.setWidthAndHeight(project.game.width, project.game.height);
 
 		if (project.sources !== undefined) {
 			for (var i = 0; i < project.sources.length; ++i) {
 				sources.push(project.sources[i]);
+			}
+		}
+		for (var l in libraries) {
+			var lib = libraries[l];
+
+			for (var a in lib.project.assets) {
+				var asset = lib.project.assets[a];
+				asset.libdir = lib.directory;
+				project.assets.push(asset);
+			}
+			for (var r in lib.project.rooms) {
+				var room = lib.project.rooms[r];
+				project.rooms.push(room);
+			}
+
+			if (Files.isDirectory(from.resolve(Paths.get(lib.directory, 'Sources')))) {
+				sources.push(lib.directory + '/Sources');
+			}
+			if (lib.project.sources !== undefined) {
+				for (var i = 0; i < project.sources.length; ++i) {
+					sources.push(lib.directory + '/' + project.sources[i]);
+				}
 			}
 		}
 
