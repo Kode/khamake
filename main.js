@@ -300,12 +300,14 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 				}
 				out += "solution.addProject(project);\n";
 
-				out += "var libraries = fs.readdirSync('Libraries');\n";
-				out += "for (var l in libraries) {\n";
-				out += "var lib = libraries[l];\n";
-				out += "if (fs.existsSync(path.join('Libraries', lib, 'korefile.js'))) {\n";
-				out += "project.addSubProject(Solution.createProject('Libraries/' + lib));\n";
-				out += "}\n";
+				out += "if (fs.existsSync('Libraries')) {\n"
+				out += "\tvar libraries = fs.readdirSync('Libraries');\n";
+				out += "\tfor (var l in libraries) {\n";
+				out += "\t\tvar lib = libraries[l];\n";
+				out += "\t\tif (fs.existsSync(path.join('Libraries', lib, 'korefile.js'))) {\n";
+				out += "\t\t\tproject.addSubProject(Solution.createProject('Libraries/' + lib));\n";
+				out += "\t\t}\n";
+				out += "\t}\n";
 				out += "}\n";
 
 				out += 'return solution;\n';
