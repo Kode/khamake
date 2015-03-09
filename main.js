@@ -436,91 +436,106 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 	
 	var name = '';
 	var sources = [];
+	var project = {
+		format: 1,
+		game: {
+			name: "Unknown",
+			width: 640,
+			height: 480
+		},
+		assets: [],
+		rooms: []
+	};
+
+	var foundProjectFile = false;
+	if (name === '') name = from.toAbsolutePath().getFileName();
+	project.game.name = name;
+	
 	if (Files.exists(from.resolve('project.kha'))) {
-		var project = JSON.parse(fs.readFileSync(from.resolve('project.kha').toString(), { encoding: 'utf8' }));
-
-		var libraries = [];
-		if (Files.isDirectory(from.resolve('Libraries'))) {
-			var dirs = Files.newDirectoryStream(from.resolve('Libraries'));
-			for (var d in dirs) {
-				var dir = dirs[d];
-				if (Files.isDirectory(from.resolve(Paths.get('Libraries', dir)))) {
-					var lib = {
-						directory: 'Libraries/' + dir,
-						project: {
-							assets: [],
-							rooms: []
-						}
-					};
-					if (Files.exists(from.resolve(Paths.get('Libraries', dir, 'project.kha')))) {
-						lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', dir, 'project.kha').toString(), { encoding: 'utf8' }));
+		project = JSON.parse(fs.readFileSync(from.resolve('project.kha').toString(), { encoding: 'utf8' }));
+		foundProjectFile = true;
+	}
+	var libraries = [];
+	if (Files.isDirectory(from.resolve('Libraries'))) {
+		var dirs = Files.newDirectoryStream(from.resolve('Libraries'));
+		for (var d in dirs) {
+			var dir = dirs[d];
+			if (Files.isDirectory(from.resolve(Paths.get('Libraries', dir)))) {
+				var lib = {
+					directory: 'Libraries/' + dir,
+					project: {
+						assets: [],
+						rooms: []
 					}
-					libraries.push(lib);
+				};
+				if (Files.exists(from.resolve(Paths.get('Libraries', dir, 'project.kha')))) {
+					lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', dir, 'project.kha').toString(), { encoding: 'utf8' }));
 				}
+				libraries.push(lib);
 			}
 		}
+	}
 
-		name = project.game.name;
-		exporter.setWidthAndHeight(project.game.width, project.game.height);
+	name = project.game.name;
+	exporter.setWidthAndHeight(project.game.width, project.game.height);
 
-		if (project.sources !== undefined) {
+	if (project.sources !== undefined) {
+		for (var i = 0; i < project.sources.length; ++i) {
+			sources.push(project.sources[i]);
+		}
+	}
+	for (var l in libraries) {
+		var lib = libraries[l];
+
+		for (var a in lib.project.assets) {
+			var asset = lib.project.assets[a];
+			asset.libdir = lib.directory;
+			project.assets.push(asset);
+		}
+		for (var r in lib.project.rooms) {
+			var room = lib.project.rooms[r];
+			project.rooms.push(room);
+		}
+
+		if (Files.isDirectory(from.resolve(Paths.get(lib.directory, 'Sources')))) {
+			sources.push(lib.directory + '/Sources');
+		}
+		if (lib.project.sources !== undefined) {
 			for (var i = 0; i < project.sources.length; ++i) {
-				sources.push(project.sources[i]);
+				sources.push(lib.directory + '/' + project.sources[i]);
 			}
 		}
-		for (var l in libraries) {
-			var lib = libraries[l];
+	}
 
-			for (var a in lib.project.assets) {
-				var asset = lib.project.assets[a];
-				asset.libdir = lib.directory;
-				project.assets.push(asset);
-			}
-			for (var r in lib.project.rooms) {
-				var room = lib.project.rooms[r];
-				project.rooms.push(room);
-			}
-
-			if (Files.isDirectory(from.resolve(Paths.get(lib.directory, 'Sources')))) {
-				sources.push(lib.directory + '/Sources');
-			}
-			if (lib.project.sources !== undefined) {
-				for (var i = 0; i < project.sources.length; ++i) {
-					sources.push(lib.directory + '/' + project.sources[i]);
-				}
-			}
+	var encoders = {
+		oggEncoder: oggEncoder,
+		aacEncoder: aacEncoder,
+		mp3Encoder: mp3Encoder,
+		h264Encoder: h264Encoder,
+		webmEncoder: webmEncoder,
+		wmvEncoder: wmvEncoder,
+		theoraEncoder: theoraEncoder
+	};
+	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
+		project.shaders = [];
+		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
+		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), kfx);
+		for (var i = 0; i < sources.length; ++i) {
+			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx);
+			exporter.addSourceDirectory(sources[i]);
 		}
-
-		var encoders = {
-			oggEncoder: oggEncoder,
-			aacEncoder: aacEncoder,
-			mp3Encoder: mp3Encoder,
-			h264Encoder: h264Encoder,
-			webmEncoder: webmEncoder,
-			wmvEncoder: wmvEncoder,
-			theoraEncoder: theoraEncoder
-		};
-		exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
-			project.shaders = [];
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), kfx);
-			for (var i = 0; i < sources.length; ++i) {
-				addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx);
-				exporter.addSourceDirectory(sources[i]);
-			}
-			
+		
+		if (foundProjectFile) {	
 			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
 				log.info('Assets done.');
-				if (name === '') name = from.toAbsolutePath().getFileName();
 				exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback);
 			});
-		});
-	}
-	else {
-		if (name === '') name = from.toAbsolutePath().getFileName();
-		exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback);
-	}
+		}
+		else {
+			exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback);
+		}
+	});
 }
 
 function isKhaProject(directory) {
