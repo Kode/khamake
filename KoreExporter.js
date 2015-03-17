@@ -88,8 +88,9 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	}
 	this.p("-cpp " + Paths.get(this.sysdir() + "-build", "Sources").toString());
 	this.p("-D no-compilation");
-	//this.p("-D ANDROID");
-	this.p("-D WINDOWS");
+	// Add a flag for the target platform to use in Haxe
+	this.p("-D " + platform.toUpperCase());
+	
 	this.p("-main Main");
 	this.closeFile();
 
