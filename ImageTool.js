@@ -15,7 +15,10 @@ module.exports = function (from, to, asset, format, prealpha, callback) {
 
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
-	if (format === undefined) format = 'png';
+	if (format === undefined) {
+		if (to.toString().endsWith('.png')) format = 'png';
+		else format = 'jpg';
+	}
 	var exe = "kraffiti-osx";
 	if (os.platform() === "linux") {
 		exe = "kraffiti-linux";
