@@ -125,7 +125,12 @@ KoreExporter.prototype.copyBlob = function (platform, from, to, callback) {
 
 KoreExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), encoders.theoraEncoder, callback);
+	if (platform === Platform.iOS) {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp4'), encoders.h264Encoder, callback);
+	}
+	else {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), encoders.theoraEncoder, callback);
+	}
 };
 
 module.exports = KoreExporter;
