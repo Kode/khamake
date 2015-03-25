@@ -6,6 +6,7 @@ var korepath = require('./korepath.js');
 var log = require('./log.js');
 var Files = require(korepath + 'Files.js');
 var GraphicsApi = require('./GraphicsApi.js');
+var VrApi = require('./VrApi.js');
 var Options = require('./Options.js');
 var Path = require(korepath + 'Path.js');
 var Paths = require(korepath + 'Paths.js');
@@ -289,6 +290,13 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 				out += "project.addDefine('HXCPP_VISIT_ALLOCS');\n";
 				out += "project.addDefine('KORE');\n";
 				out += "project.addDefine('ROTATE90');\n";
+				console.log("VrApi (main.js): " + Options.VrApi);
+				if (Options.vrApi === "gearvr") {
+          out += "project.addDefine('VR_GEAR_VR');\n";
+				} else if (Options.vrApi === "cardboard") {
+          out += "project.addDefine('VR_CARDBOARD');\n";
+				}
+				
 				if (platform === Platform.Windows) {
 					out += "project.addDefine('_WINSOCK_DEPRECATED_NO_WARNINGS');\n";
 					out += "project.addLib('ws2_32');\n";
@@ -299,6 +307,9 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 					else out += "project.addSubProject(Solution.createProject('Kha/KoreVideo'));\n";
 				}
 				out += "solution.addProject(project);\n";
+				
+				
+				
 
 				out += "if (fs.existsSync('Libraries')) {\n"
 				out += "\tvar libraries = fs.readdirSync('Libraries');\n";
@@ -371,6 +382,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
 					platform: platform,
 					graphicsApi: Options.graphicsApi,
+					vrApi: Options.vrApi,
 					visualStudioVersion: Options.visualStudioVersion,
 					compile: options.compile,
 					run: options.run
@@ -428,7 +440,7 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			break;
 		default:
 			kore = true;
-			exporter = new KoreExporter(platform, to);
+			exporter = new KoreExporter(platform, Options.vrApi, to);
 			break;
 	}
 
@@ -613,6 +625,11 @@ exports.run = function (options, loglog, callback) {
 	
 	if (options.graphicsApi !== undefined) {
 		Options.graphicsApi = options.graphicsApi;
+	}
+	
+	if (options.vrApi != undefined) {
+    Options.vrApi = options.vrApi;
+    log.info("Vr API is: " + Options.vrApi);
 	}
 	
 	if (options.visualStudioVersion !== undefined) {

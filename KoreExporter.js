@@ -7,10 +7,11 @@ var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
 var exportImage = require('./ImageTool.js');
 
-function KoreExporter(platform, directory) {
+function KoreExporter(platform, vr, directory) {
 	KhaExporter.call(this);
 	this.platform = platform;
 	this.directory = directory;
+	this.vr = vr;
 	this.addSourceDirectory('Kha/Backends/Kore');
 }
 
@@ -90,6 +91,13 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	this.p("-D no-compilation");
 	// Add a flag for the target platform to use in Haxe
 	this.p("-D " + platform.toUpperCase());
+	
+	// TODO: Add to arguments of the call to khamake
+	if (this.vr == 'gearvr') {
+    this.p("-D VR_GEAR_VR");
+  } else if (this.vr == "cardboard") {
+    this.p("-D VR_CARDBOARD");
+  }
 	
 	this.p("-main Main");
 	this.closeFile();

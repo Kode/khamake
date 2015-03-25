@@ -2,6 +2,7 @@
 var korepath = require('./korepath.js');
 var Files = require(korepath + 'Files.js');
 var GraphicsApi = require('./GraphicsApi.js');
+var VrApi = require('./VrApi.js');
 var Options = require('./Options.js');
 var Path = require(korepath + 'Path.js');
 var Paths = require(korepath + 'Paths.js');
@@ -61,6 +62,7 @@ var kfx = '';
 var khafolders = true;
 var embedflashassets = false;
 var gfx = GraphicsApi.Direct3D9;
+var vr = VrApi.None;
 var vs = VisualStudioVersion.VS2013;
 var compile = false;
 var run = false;
@@ -71,6 +73,7 @@ for (var i = 2; i < args.length; ++i) {
 	if (arg === 'pch') Options.precompiledHeaders = true;
 	else if (arg.startsWith('intermediate=')) Options.intermediateDrive = arg.substr(13);
 	else if (arg.startsWith('gfx=')) gfx = arg.substr(4);
+	else if (arg.startsWith('vr=')) vr = arg.substr(3);
 	else if (arg.startsWith("vs=")) vs = arg.substr(3);
 	else if (arg.startsWith("haxe=")) haxeDirectory = arg.substr(5);
 	else if (arg.startsWith("ogg=")) oggEncoder = arg.substr(4);
@@ -121,6 +124,7 @@ require('./main.js').run(
 		khafolders: khafolders,
 		embedflashassets: embedflashassets,
 		graphicsApi: gfx,
+		vrApi: vr,
 		visualStudioVersion: vs,
 		compile: compile,
 		run: run
