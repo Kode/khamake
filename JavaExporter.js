@@ -151,7 +151,7 @@ JavaExporter.prototype.copySound = function (platform, from, to, encoders, callb
 };
 
 JavaExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', false, callback);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, callback);
 };
 
 JavaExporter.prototype.copyBlob = function (platform, from, to, callback) {

@@ -125,7 +125,7 @@ KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback
 		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true, callback);
 	}
 	else {
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', true, callback);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, true, callback);
 	}
 };
 

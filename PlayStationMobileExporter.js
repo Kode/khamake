@@ -158,7 +158,7 @@ PlayStationMobileExporter.prototype.copySound = function (platform, from, to, en
 
 PlayStationMobileExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	this.files.push(Paths.get(asset["file"]));
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', false, callback);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, callback);
 };
 
 PlayStationMobileExporter.prototype.copyBlob = function (platform, from, to, callback) {

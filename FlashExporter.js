@@ -167,7 +167,7 @@ FlashExporter.prototype.copySound = function (platform, from, to, encoders, call
 
 FlashExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	if (this.embed) this.images.push(to.toString());
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'png', false, callback);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, callback);
 };
 
 FlashExporter.prototype.copyBlob = function (platform, from, to, callback) {
