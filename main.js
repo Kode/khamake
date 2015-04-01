@@ -295,7 +295,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 				}
 				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
 				if (Files.exists(from.resolve('Kha/KoreVideo'))) {
-					if (platform === Platform.iOS) out += "project.addDefine('KOREVIDEO');\n";
+					if (platform === Platform.iOS || platform === Platform.Android) out += "project.addDefine('KOREVIDEO');\n";
 					else out += "project.addSubProject(Solution.createProject('Kha/KoreVideo'));\n";
 				}
 				out += "solution.addProject(project);\n";
