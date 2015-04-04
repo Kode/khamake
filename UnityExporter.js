@@ -102,13 +102,17 @@ UnityExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	options.push("project-" + this.sysdir() + ".hxml");
 	var self = this;
 	Haxe.executeHaxe(from, haxeDirectory, options, function () {
-		var settingsFiles = fs.readdirSync(path.join(__dirname, 'Data', 'unity', 'ProjectSettings'));
-		self.createDirectory(self.directory.resolve(Paths.get(self.sysdir(), 'ProjectSettings')));
-		for (var f in settingsFiles) {
-			var file = settingsFiles[f];
-			var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', 'ProjectSettings', file), { encoding: 'utf8' });
-			fs.writeFileSync(self.directory.resolve(Paths.get(self.sysdir(), 'ProjectSettings', file)).toString(), text);
-		}
+		var copyDirectory = function (name) {
+			var files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', name));
+			self.createDirectory(self.directory.resolve(Paths.get(self.sysdir(), name)));
+			for (var f in files) {
+				var file = files[f];
+				var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', name, file), { encoding: 'utf8' });
+				fs.writeFileSync(self.directory.resolve(Paths.get(self.sysdir(), name, file)).toString(), text);
+			}
+		};
+		copyDirectory('Assets');
+		copyDirectory('ProjectSettings');
 		callback();
 	});
 };
@@ -122,11 +126,11 @@ UnityExporter.prototype.copySound = function (platform, from, to, encoders, call
 };
 
 UnityExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Images', to)), asset, undefined, false, callback);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Images', to)), asset, undefined, false, callback);
 };
 
 UnityExporter.prototype.copyBlob = function (platform, from, to, callback) {
-	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Blobs', to)));
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to + '.bytes')));
 	callback();
 };
 
