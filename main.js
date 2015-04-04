@@ -21,6 +21,7 @@ var KoreExporter = require('./KoreExporter.js');
 var PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
 var WpfExporter = require('./WpfExporter.js');
 var XnaExporter = require('./XnaExporter.js');
+var UnityExporter = require('./UnityExporter.js');
 
 if (!String.prototype.startsWith) {
 	Object.defineProperty(String.prototype, 'startsWith', {
@@ -425,6 +426,9 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			break;
 		case Platform.Dalvik:
 			exporter = new DalvikExporter(to);
+			break;
+		case Platform.Unity:
+			exporter = new UnityExporter(to);
 			break;
 		default:
 			kore = true;
