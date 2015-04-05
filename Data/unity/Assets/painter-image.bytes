@@ -1,0 +1,48 @@
+﻿Shader "Custom/painter-image" {
+	SubShader {
+        Pass {
+
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "UnityCG.cginc"
+            
+            uniform sampler2D _tex;
+            uniform float4x4 _projectionMatrix;
+            
+            struct VS_INPUT
+			{
+				float2 texPosition : TEXCOORD0;
+				float4 vertexColor : TEXCOORD1;
+				float3 vertexPosition : TEXCOORD2;
+			};
+
+            struct VS_OUTPUT
+			{
+				float4 position : POSITION;
+			    float4 color : TEXCOORD0;
+			    float2 texCoord : TEXCOORD1;
+			};
+
+            VS_OUTPUT vert (VS_INPUT input)
+            {
+				VS_OUTPUT output;
+			    output.position = mul(transpose(_projectionMatrix), float4(input.vertexPosition, 1.0));
+				output.texCoord = input.texPosition;
+				output.color = input.vertexColor;
+			    return output;
+            }
+
+            fixed4 frag (VS_OUTPUT input) : SV_Target
+            {
+			    fixed4 texcolor = tex2D(_tex, input.texCoord) * input.color;
+				texcolor.xyz *= input.color.w;
+				return texcolor;
+            }
+            
+            ENDCG
+
+        }
+    }
+}
