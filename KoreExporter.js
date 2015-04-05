@@ -97,6 +97,8 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
     this.p("-D VR_GEAR_VR");
   } else if (this.vr == "cardboard") {
     this.p("-D VR_CARDBOARD");
+  } else if (this.vr == "rift") {
+    this.p("-D VR_RIFT");
   }
 	
 	this.p("-main Main");

@@ -271,6 +271,14 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 				+ "'Kha/Backends/kxcpp/src/hx/NekoAPI.cpp');\n";
 				out += "project.addIncludeDirs('Kha/Backends/kxcpp/include', '" + from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "/Sources/include', " 
 				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8', 'Kha/Backends/kxcpp/project/libs/nekoapi');\n";
+				
+				if (options.vrApi == "rift") {
+          out += "project.addIncludeDirs('C:/khaviar/LibOVRKernel/Src/');\n";
+          out += "project.addIncludeDirs('C:/khaviar/LibOVR/Include/');\n";
+				}
+				
+				
+				
 				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 				if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
 				if (platform == Platform.WindowsRT) out += "project.addDefine('HX_WINRT');\n";
@@ -295,12 +303,21 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
           out += "project.addDefine('VR_GEAR_VR');\n";
 				} else if (Options.vrApi === "cardboard") {
           out += "project.addDefine('VR_CARDBOARD');\n";
+				} else if (Options.vrApi === "rift") {
+          out += "project.addDefine('VR_RIFT');\n";
+				}
+				
+				if (options.vrApi == "rift") {
+          out += "project.addLib('C:/khaviar/LibOVRKernel/Lib/Windows/Win32/Release/VS2013/LibOVRKernel');\n";
+          out += "project.addLib('C:/khaviar/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR');\n";
 				}
 				
 				if (platform === Platform.Windows) {
 					out += "project.addDefine('_WINSOCK_DEPRECATED_NO_WARNINGS');\n";
 					out += "project.addLib('ws2_32');\n";
 				}
+				
+				
 				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
 				if (Files.exists(from.resolve('Kha/KoreVideo'))) {
 					if (platform === Platform.iOS) out += "project.addDefine('KOREVIDEO');\n";
