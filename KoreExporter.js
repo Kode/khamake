@@ -128,6 +128,9 @@ KoreExporter.prototype.copyVideo = function (platform, from, to, encoders, callb
 	if (platform === Platform.iOS) {
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp4'), encoders.h264Encoder, callback);
 	}
+	else if (platform === Platform.Android) {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ts'), encoders.h264Encoder, callback);
+	}
 	else {
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), encoders.theoraEncoder, callback);
 	}
