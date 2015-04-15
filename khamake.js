@@ -49,6 +49,7 @@ else {
 	var platform = Platform.OSX;
 }
 
+var khaDirectory = '';
 var haxeDirectory = '';
 var oggEncoder = '';
 var aacEncoder = '';
@@ -72,6 +73,7 @@ for (var i = 2; i < args.length; ++i) {
 	else if (arg.startsWith('intermediate=')) Options.intermediateDrive = arg.substr(13);
 	else if (arg.startsWith('gfx=')) gfx = arg.substr(4);
 	else if (arg.startsWith("vs=")) vs = arg.substr(3);
+	else if (arg.startsWith("kha=")) khaDirectory = arg.substr(4);
 	else if (arg.startsWith("haxe=")) haxeDirectory = arg.substr(5);
 	else if (arg.startsWith("ogg=")) oggEncoder = arg.substr(4);
 	else if (arg.startsWith("aac=")) aacEncoder = arg.substr(4);
@@ -109,6 +111,7 @@ require('./main.js').run(
 		from: from,
 		to: to,
 		platform: platform,
+		kha: khaDirectory,
 		haxe: haxeDirectory,
 		ogg: oggEncoder,
 		aac: aacEncoder,

@@ -9,11 +9,11 @@ var exportImage = require('./ImageTool.js');
 var fs = require('fs');
 var path = require('path');
 
-function Html5WorkerExporter(directory) {
-	Html5Exporter.call(this);
+function Html5WorkerExporter(khaDirectory, directory) {
+	Html5Exporter.call(this, khaDirectory);
 	this.directory = directory;
-	this.removeSourceDirectory("Kha/Backends/HTML5");
-	this.addSourceDirectory("Kha/Backends/HTML5-Worker");
+	this.sources.pop();
+	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5-Worker'));
 };
 
 Html5WorkerExporter.prototype = Object.create(Html5Exporter.prototype);

@@ -10,8 +10,8 @@ var fs = require('fs');
 var path = require('path');
 var uuid = require('./uuid.js');
 
-function PlayStationMobileExporter(directory) {
-	CSharpExporter.call(this);
+function PlayStationMobileExporter(khaDirectory, directory) {
+	CSharpExporter.call(this, khaDirectory);
 	this.directory = directory;
 	this.files = [];
 };

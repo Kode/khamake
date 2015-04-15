@@ -9,8 +9,8 @@ var exportImage = require('./ImageTool.js');
 var fs = require('fs');
 var path = require('path');
 
-function JavaExporter(directory) {
-	KhaExporter.call(this);
+function JavaExporter(khaDirectory, directory) {
+	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
 };
 
@@ -21,7 +21,7 @@ JavaExporter.prototype.sysdir = function () {
 	return 'java';
 };
 
-JavaExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
+JavaExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 	this.createDirectory(this.directory.resolve(this.sysdir()));
@@ -46,7 +46,12 @@ JavaExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 		this.p("<!-- Other classes to be compiled into your SWF -->", 1);
 		this.p("<classpaths>", 1);
 		for (var i = 0; i < this.sources.length; ++i) {
-			this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+			if (path.isAbsolute(this.sources[i])) {
+				this.p('<class path="' + this.sources[i] + '" />', 2);
+			}
+			else {
+				this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+			}
 		}
 		this.p("</classpaths>", 1);
 		this.p("<!-- Build options -->", 1);
@@ -88,7 +93,12 @@ JavaExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		if (path.isAbsolute(this.sources[i])) {
+			this.p("-cp " + this.sources[i]);
+		}
+		else {
+			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		}
 	}
 	this.p("-java " + Paths.get(this.sysdir(), "Sources").toString());
 	this.p("-main Main");

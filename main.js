@@ -225,8 +225,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	}
 }
 
-function exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback) {
-if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirectory, from, function () {
+function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback) {
+if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, function () {
 		if (haxeDirectory.path !== '' && kore) {
 			{
 				var out = '';
@@ -392,7 +392,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, haxeDirec
 	});
 }
 
-function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
+function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
 	log.info('Generating Kha project.');
 	
 	Files.createDirectories(to);
@@ -403,32 +403,32 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 	var kore = false;
 	switch (platform) {
 		case Platform.Flash:
-			exporter = new FlashExporter(to, embedflashassets);
+			exporter = new FlashExporter(khaDirectory, to, embedflashassets);
 			break;
 		case Platform.HTML5:
-			exporter = new Html5Exporter(to);
+			exporter = new Html5Exporter(khaDirectory, to);
 			break;
 		case Platform.HTML5Worker:
-			exporter = new Html5WorkerExporter(to);
+			exporter = new Html5WorkerExporter(khaDirectory, to);
 			break;
 		case Platform.WPF:
-			exporter = new WpfExporter(to);
+			exporter = new WpfExporter(khaDirectory, to);
 			break;
 		case Platform.XNA:
-			exporter = new XnaExporter(to);
+			exporter = new XnaExporter(khaDirectory, to);
 			break;
 		case Platform.Java:
-			exporter = new JavaExporter(to);
+			exporter = new JavaExporter(khaDirectory, to);
 			break;
 		case Platform.PlayStationMobile:
-			exporter = new PlayStationMobileExporter(to);
+			exporter = new PlayStationMobileExporter(khaDirectory, to);
 			break;
 		case Platform.Dalvik:
-			exporter = new DalvikExporter(to);
+			exporter = new DalvikExporter(khaDirectory, to);
 			break;
 		default:
 			kore = true;
-			exporter = new KoreExporter(platform, to);
+			exporter = new KoreExporter(platform, khaDirectory, to);
 			break;
 	}
 
@@ -529,11 +529,11 @@ function exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEnco
 			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
 				log.info('Assets done.');
-				exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback);
+				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
 			});
 		}
 		else {
-			exportProjectFiles(name, from, to, options, exporter, platform, haxeDirectory, kore, callback);
+			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
 		}
 	});
 }
@@ -542,12 +542,12 @@ function isKhaProject(directory) {
 	return Files.exists(directory.resolve('Kha')) || Files.exists(directory.resolve('project.kha'));
 }
 
-function exportProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
+function exportProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback) {
 	if (isKhaProject(from)) {
-		exportKhaProject(from, to, platform, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback);
+		exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, khafolders, embedflashassets, options, callback);
 	}
 	else {
-		log.error('Kha directory not found.');
+		log.error('Neither Kha directory nor project.kha found.');
 		callback('Unknown');
 	}
 }
@@ -580,33 +580,38 @@ exports.run = function (options, loglog, callback) {
 		else callback(name);
 	};
 
+	if (options.kha === undefined || options.kha === '') {
+		var path = Paths.get(options.from).resolve(Paths.get('Kha'));
+		if (Files.isDirectory(path)) options.kha = path.toString();
+	}
+
 	if (options.haxe === '') {
-		var path = Paths.get(options.from).resolve(Paths.get('Kha', 'Tools', 'haxe'));
+		var path = Paths.get(options.kha, 'Tools', 'haxe');
 		if (Files.isDirectory(path)) options.haxe = path.toString();
 	}
 	
 	if (options.kfx === '') {
 		if (os.platform() === "linux") {
-			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-linux"));
+			var path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx-linux");
 		}
 		else if (os.platform() === "win32") {
-			var path = Paths.get(options.from).resolve(Paths.get('Kha', 'Kore', 'Tools', 'kfx', 'kfx.exe'));
+			var path = Paths.get(options.kha, 'Kore', 'Tools', 'kfx', 'kfx.exe');
 		}
 		else {
-			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Kore", "Tools", "kfx", "kfx-osx"));
+			var path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx-osx");
 		}
 		if (Files.exists(path)) options.kfx = path.toString();
 	}
 	
 	if (options.ogg === '') {
 		if (os.platform() === "linux") {
-			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Tools", "oggenc-linux"));
+			var path = Paths.get(options.kha, "Tools", "oggenc-linux");
 		}
 		else if (os.platform() === "win32") {
-			var path = Paths.get(options.from).resolve(Paths.get('Kha', 'Tools', 'oggenc2.exe'));
+			var path = Paths.get(options.kha, 'Tools', 'oggenc2.exe');
 		}
 		else {
-			var path = Paths.get(options.from).resolve(Paths.get("Kha", "Tools", "oggenc-osx"));
+			var path = Paths.get(options.kha, "Tools", "oggenc-osx");
 		}
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out}';
 	}
@@ -619,5 +624,5 @@ exports.run = function (options, loglog, callback) {
 		Options.visualStudioVersion = options.visualStudioVersion;	
 	}
 
-	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.kfx, options.khafolders, options.embedflashassets, options, done);
+	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.kfx, options.khafolders, options.embedflashassets, options, done);
 };
