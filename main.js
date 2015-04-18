@@ -283,6 +283,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				if (platform == Platform.OSX) out += "project.addDefine('KORE_DEBUGDIR=\"osx\"');\n";
 				if (platform == Platform.iOS) out += "project.addDefine('KORE_DEBUGDIR=\"ios\"');\n";
 				//out << "project:addDefine(\"HXCPP_SCRIPTABLE\")\n";
+				out += "project.addDefine('HXCPP_API_LEVEL=320');\n";
 				out += "project.addDefine('STATIC_LINK');\n";
 				out += "project.addDefine('PCRE_STATIC');\n";
 				out += "project.addDefine('HXCPP_SET_PROP');\n";
@@ -294,10 +295,6 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 					out += "project.addLib('ws2_32');\n";
 				}
 				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
-				if (Files.exists(from.resolve('Kha/KoreVideo'))) {
-					if (platform === Platform.iOS || platform === Platform.Android) out += "project.addDefine('KOREVIDEO');\n";
-					else out += "project.addSubProject(Solution.createProject('Kha/KoreVideo'));\n";
-				}
 				out += "solution.addProject(project);\n";
 
 				out += "if (fs.existsSync('Libraries')) {\n"
