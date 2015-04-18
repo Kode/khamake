@@ -233,22 +233,22 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				out += "var solution = new Solution('" + name + "');\n";
 				out += "var project = new Project('" + name + "');\n";
 				var files = [];
-				files.push("Kha/Backends/kxcpp/src/**.h");
-				files.push("Kha/Backends/kxcpp/src/**.cpp");
-				files.push("Kha/Backends/kxcpp/include/**.h");
-				//"Kha/Backends/kxcpp/project/libs/nekoapi/**.cpp"
-				files.push("Kha/Backends/kxcpp/project/libs/common/**.h");
-				files.push("Kha/Backends/kxcpp/project/libs/common/**.cpp");
-				if (platform == Platform.Windows) files.push("Kha/Backends/kxcpp/project/libs/msvccompat/**.cpp");
-				if (platform == Platform.Linux) files.push("Kha/Backends/kxcpp/project/libs/linuxcompat/**.cpp");
-				files.push("Kha/Backends/kxcpp/project/libs/regexp/**.h");
-				files.push("Kha/Backends/kxcpp/project/libs/regexp/**.cpp");
-				files.push("Kha/Backends/kxcpp/project/libs/std/**.h");
-				files.push("Kha/Backends/kxcpp/project/libs/std/**.cpp");
-				//"Kha/Backends/kxcpp/project/libs/zlib/**.cpp"
-				files.push("Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.h");
-				files.push("Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.c");
-				//"Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/**.cc"
+				files.push("Kha/Backends/Kore/khacpp/src/**.h");
+				files.push("Kha/Backends/Kore/khacpp/src/**.cpp");
+				files.push("Kha/Backends/Kore/khacpp/include/**.h");
+				//"Kha/Backends/Kore/khacpp/project/libs/nekoapi/**.cpp"
+				files.push("Kha/Backends/Kore/khacpp/project/libs/common/**.h");
+				files.push("Kha/Backends/Kore/khacpp/project/libs/common/**.cpp");
+				if (platform == Platform.Windows) files.push("Kha/Backends/Kore/khacpp/project/libs/msvccompat/**.cpp");
+				if (platform == Platform.Linux) files.push("Kha/Backends/Kore/khacpp/project/libs/linuxcompat/**.cpp");
+				files.push("Kha/Backends/Kore/khacpp/project/libs/regexp/**.h");
+				files.push("Kha/Backends/Kore/khacpp/project/libs/regexp/**.cpp");
+				files.push("Kha/Backends/Kore/khacpp/project/libs/std/**.h");
+				files.push("Kha/Backends/Kore/khacpp/project/libs/std/**.cpp");
+				//"Kha/Backends/Kore/khacpp/project/libs/zlib/**.cpp"
+				files.push("Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/**.h");
+				files.push("Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/**.c");
+				//"Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/**.cc"
 				files.push("Kha/Backends/Kore/*.cpp");
 				files.push("Kha/Backends/Kore/*.h");
 				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.h").replaceAll('\\', '/'));
@@ -259,17 +259,17 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 					out += ", '" + files[i] + "'";
 				}
 				out += ");\n";
-				out += "project.addExcludes('Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/dftables.c', " 
-				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcredemo.c', " 
-				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcregrep.c', " 
-				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8/pcretest.c', " 
-				+ "'Kha/Backends/kxcpp/src/ExampleMain.cpp', " 
-				+ "'Kha/Backends/kxcpp/src/hx/Scriptable.cpp', " 
-				+ "'Kha/Backends/kxcpp/src/hx/cppia/**', " 
+				out += "project.addExcludes('Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/dftables.c', " 
+				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/pcredemo.c', " 
+				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/pcregrep.c', " 
+				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/pcretest.c', " 
+				+ "'Kha/Backends/Kore/khacpp/src/ExampleMain.cpp', " 
+				+ "'Kha/Backends/Kore/khacpp/src/hx/Scriptable.cpp', " 
+				+ "'Kha/Backends/Kore/khacpp/src/hx/cppia/**', " 
 				+ "'**/src/__main__.cpp', " 
-				+ "'Kha/Backends/kxcpp/src/hx/NekoAPI.cpp');\n";
-				out += "project.addIncludeDirs('Kha/Backends/kxcpp/include', '" + from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "/Sources/include', " 
-				+ "'Kha/Backends/kxcpp/project/thirdparty/pcre-7.8', 'Kha/Backends/kxcpp/project/libs/nekoapi');\n";
+				+ "'Kha/Backends/Kore/khacpp/src/hx/NekoAPI.cpp');\n";
+				out += "project.addIncludeDirs('Kha/Backends/Kore/khacpp/include', '" + from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "/Sources/include', " 
+				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8', 'Kha/Backends/Kore/khacpp/project/libs/nekoapi');\n";
 				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 				if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
 				if (platform == Platform.WindowsRT) out += "project.addDefine('HX_WINRT');\n";
@@ -278,8 +278,8 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 					out += "project.addDefine('HX_MACOS');\n";
 				}
 				if (platform == Platform.Linux) out += "project.addDefine('HX_LINUX');\n";
-				if (platform == Platform.iOS) out += "project.addDefine('IPHONE');\n";
-				if (platform == Platform.Android) out += "project.addDefine('ANDROID');\nproject.addDefine('_ANDROID');\n";
+				if (platform == Platform.iOS) out += "project.addDefine('IPHONE');\nproject.addDefine('HX_IPHONE');\n";
+				if (platform == Platform.Android) out += "project.addDefine('ANDROID');\nproject.addDefine('_ANDROID');\nproject.addDefine('HX_ANDROID');\n";
 				if (platform == Platform.OSX) out += "project.addDefine('KORE_DEBUGDIR=\"osx\"');\n";
 				if (platform == Platform.iOS) out += "project.addDefine('KORE_DEBUGDIR=\"ios\"');\n";
 				//out << "project:addDefine(\"HXCPP_SCRIPTABLE\")\n";
