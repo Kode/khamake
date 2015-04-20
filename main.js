@@ -586,7 +586,7 @@ exports.run = function (options, loglog, callback) {
 	}
 	
 	if (options.ogg === '') {
-		var path = Paths.get(options.kha, "Tools", "oggenc" + exec.sys());
+		var path = Paths.get(options.kha, "Tools", "oggenc", "oggenc" + exec.sys());
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out}';
 	}
 	
