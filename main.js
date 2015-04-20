@@ -2,6 +2,7 @@ var child_process = require('child_process');
 var fs = require('fs');
 var os = require('os');
 var pathlib = require('path');
+var exec = require('./exec.js');
 var korepath = require('./korepath.js');
 var log = require('./log.js');
 var Files = require(korepath + 'Files.js');
@@ -313,15 +314,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 			
 			//exportKoreProject(directory);
 			
-			if (os.platform() === "linux") {
-				var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake-linux"));
-			}
-			else if (os.platform() === "win32") {
-				var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake.exe"));
-			}
-			else {
-				var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake-osx"));
-			}
+			var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake" + exec.sys()));
 			
 			var gfx = "unknown";
 			switch (Options.graphicsApi) {
@@ -588,28 +581,12 @@ exports.run = function (options, loglog, callback) {
 	}
 	
 	if (options.kfx === '') {
-		if (os.platform() === "linux") {
-			var path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx-linux");
-		}
-		else if (os.platform() === "win32") {
-			var path = Paths.get(options.kha, 'Kore', 'Tools', 'kfx', 'kfx.exe');
-		}
-		else {
-			var path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx-osx");
-		}
+		var path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx" + exec.sys());
 		if (Files.exists(path)) options.kfx = path.toString();
 	}
 	
 	if (options.ogg === '') {
-		if (os.platform() === "linux") {
-			var path = Paths.get(options.kha, "Tools", "oggenc-linux");
-		}
-		else if (os.platform() === "win32") {
-			var path = Paths.get(options.kha, 'Tools', 'oggenc2.exe');
-		}
-		else {
-			var path = Paths.get(options.kha, "Tools", "oggenc-osx");
-		}
+		var path = Paths.get(options.kha, "Tools", "oggenc" + exec.sys());
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out}';
 	}
 	
