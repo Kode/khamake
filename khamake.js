@@ -59,6 +59,7 @@ var theoraEncoder = '';
 var webmEncoder = '';
 var wmvEncoder = '';
 var kfx = '';
+var krafix = '';
 var khafolders = true;
 var embedflashassets = false;
 var gfx = GraphicsApi.Direct3D9;
@@ -83,6 +84,7 @@ for (var i = 2; i < args.length; ++i) {
 	else if (arg.startsWith("wmv=")) wmvEncoder = arg.substr(4);
 	else if (arg.startsWith("theora=")) theoraEncoder = arg.substr(7);
 	else if (arg.startsWith("kfx=")) kfx = arg.substr(4);
+	else if (arg.startsWith('krafix=')) krafix = arg.substr(7);
 
 	else if (arg.startsWith("from=")) from = arg.substr(5);
 	else if (arg.startsWith("to=")) to = arg.substr(3);
@@ -121,6 +123,7 @@ require('./main.js').run(
 		wmv: wmvEncoder,
 		theora: theoraEncoder,
 		kfx: kfx,
+		krafix: krafix,
 		khafolders: khafolders,
 		embedflashassets: embedflashassets,
 		graphicsApi: gfx,
