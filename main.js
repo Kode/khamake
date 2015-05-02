@@ -57,9 +57,9 @@ String.prototype.replaceAll = function (find, replace) {
 	return this.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 };
 
-function compileShader(compiler, type, from, to, temp) {
+function compileShader(compiler, type, from, to, temp, system, kfx) {
 	if (compiler !== '') {
-		var compiler_process = child_process.spawn(compiler, [type, from.toString(), to.toString(), temp.toString()]);
+		var compiler_process = child_process.spawn(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
 
 		compiler_process.stdout.on('data', function (data) {
 			if (data.toString().trim() !== '') log.info('Shader compiler stdout: ' + data);
@@ -83,7 +83,7 @@ function addShader(project, name, extension) {
 	project.shaders.push({file: name + extension, name: name});
 }
 
-function addShaders(exporter, platform, project, to, temp, shaderPath, compiler) {
+function addShaders(exporter, platform, project, to, temp, shaderPath, compiler, kfx) {
 	if (!Files.isDirectory(shaderPath)) return;
 	var shaders = Files.newDirectoryStream(shaderPath);
 	for (var s in shaders) {
@@ -94,7 +94,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler)
 		switch (platform) {
 			case Platform.Flash: {
 				if (Files.exists(shaderPath.resolve(name + '.agal'))) Files.copy(shaderPath.resolve(name + '.agal'), to.resolve(name + '.agal'), true);
-				else compileShader(compiler, 'agal', shaderPath.resolve(name + '.glsl'), to.resolve(name + '.agal'), temp);
+				else compileShader(compiler, 'agal', shaderPath.resolve(name + '.glsl'), to.resolve(name + '.agal'), temp, platform, kfx);
 				addShader(project, name, '.agal');
 				exporter.addShader(name + '.agal');
 				break;
@@ -105,24 +105,24 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler)
 			case Platform.Tizen:
 			case Platform.iOS: {
 				if (Files.exists(shaderPath.resolve(name + ".essl"))) Files.copy(shaderPath.resolve(name + ".essl"), to.resolve(name + ".essl"), true);
-				else compileShader(compiler, "essl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".essl"), temp);
+				else compileShader(compiler, "essl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".essl"), temp, platform, kfx);
 				addShader(project, name, ".essl");
 				break;
 			}
 			case Platform.Windows: {
 				if (Options.graphicsApi == GraphicsApi.OpenGL || Options.graphicsApi == GraphicsApi.OpenGL2) {
 					if (compiler == "") Files.copy(shaderPath.resolve(name + ".glsl"), to.resolve(name + ".glsl"), true);
-					else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp);
+					else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp, platform, kfx);
 					addShader(project, name, ".glsl");
 				}
 				else if (Options.graphicsApi == GraphicsApi.Direct3D11) {
 					if (Files.exists(shaderPath.resolve(name + ".d3d11"))) Files.copy(shaderPath.resolve(name + ".d3d11"), to.resolve(name + ".d3d11"), true);
-					else compileShader(compiler, "d3d11", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d11"), temp);
+					else compileShader(compiler, "d3d11", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d11"), temp, platform, kfx);
 					addShader(project, name, ".d3d11");
 				}
 				else {
 					if (Files.exists(shaderPath.resolve(name + ".d3d9"))) Files.copy(shaderPath.resolve(name + ".d3d9"), to.resolve(name + ".d3d9"), true);
-					else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d9"), temp);
+					else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d9"), temp, platform, kfx);
 					addShader(project, name, ".d3d9");
 				}
 				break;
@@ -130,14 +130,14 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler)
 			case Platform.Xbox360:
 			case Platform.PlayStation3: {
 				if (Files.exists(shaderPath.resolve(name + ".d3d9"))) Files.copy(shaderPath.resolve(name + ".d3d9"), to.resolve(name + ".d3d9"), true);
-				else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d9"), temp);
+				else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d9"), temp, platform, kfx);
 				addShader(project, name, ".d3d9");
 				break;
 			}
 			case Platform.OSX:
 			case Platform.Linux: {
 				if (compiler == "") Files.copy(shaderPath.resolve(name + ".glsl"), to.resolve(name + ".glsl"), true);
-				else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp);
+				else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp, platform, kfx);
 				addShader(project, name, ".glsl");
 				break;
 			}
@@ -508,10 +508,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	};
 	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
 		project.shaders = [];
-		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx);
-		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), krafix);
+		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx, kfx);
+		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), krafix, kfx);
 		for (var i = 0; i < sources.length; ++i) {
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx);
+			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx, kfx);
 			exporter.addSourceDirectory(sources[i]);
 		}
 		
