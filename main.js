@@ -585,7 +585,7 @@ exports.run = function (options, loglog, callback) {
 		if (Files.exists(path)) options.kfx = path.toString();
 	}
 
-	if (options.krafix === '') {
+	if (options.krafix === '' || options.krafix === undefined) {
 		var path = Paths.get(options.kha, "Kore", "Tools", "krafix", "krafix" + exec.sys());
 		if (Files.exists(path)) options.krafix = path.toString();
 	}
