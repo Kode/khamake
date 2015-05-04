@@ -104,9 +104,24 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 			case Platform.Android:
 			case Platform.Tizen:
 			case Platform.iOS: {
-				if (Files.exists(shaderPath.resolve(name + ".essl"))) Files.copy(shaderPath.resolve(name + ".essl"), to.resolve(name + ".essl"), true);
-				else compileShader(compiler, "essl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".essl"), temp, platform, kfx);
-				addShader(project, name, ".essl");
+				if (Options.graphicsApi === GraphicsApi.Metal) {
+					if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
+						Files.createDirectories(to.resolve(Paths.get('..', 'ios-build', 'Sources')));
+					}
+					var funcname = name;
+					funcname = funcname.replaceAll('-', '_');
+					funcname = funcname.replaceAll('.', '_');
+					funcname += '_main';
+					fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
+					if (Files.exists(shaderPath.resolve(name + ".metal"))) Files.copy(shaderPath.resolve(name + ".metal"), to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), true);
+					else compileShader(compiler, "metal", shaderPath.resolve(name + '.glsl'), to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), temp, platform, kfx);
+					addShader(project, name, ".metal");
+				}
+				else {
+					if (Files.exists(shaderPath.resolve(name + ".essl"))) Files.copy(shaderPath.resolve(name + ".essl"), to.resolve(name + ".essl"), true);
+					else compileShader(compiler, "essl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".essl"), temp, platform, kfx);
+					addShader(project, name, ".essl");
+				}
 				break;
 			}
 			case Platform.Windows: {
@@ -254,6 +269,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				files.push("Kha/Backends/Kore/*.h");
 				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.h").replaceAll('\\', '/'));
 				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp").replaceAll('\\', '/'));
+				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.metal").replaceAll('\\', '/'));
 				out += "project.addFiles(";
 				out += "'" + files[0] + "'";
 				for (var i = 1; i < files.length; ++i) {
@@ -329,6 +345,9 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 					break;
 				case GraphicsApi.Direct3D11:
 					gfx = "direct3d11";
+					break;
+				case GraphicsApi.Metal:
+					gfx = "metal";
 					break;
 			}
 			
