@@ -437,7 +437,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			exporter = new DalvikExporter(khaDirectory, to);
 			break;
 		case Platform.Node:
-			exporter = new NodeExporter(to);
+			exporter = new NodeExporter(khaDirectory, to);
 			break;
 		default:
 			kore = true;
