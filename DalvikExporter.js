@@ -14,8 +14,8 @@ function findIcon(from) {
 	else return path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', 'ball.png');
 }
 
-function DalvikExporter(directory) {
-	JavaExporter.call(this);
+function DalvikExporter(khaDirectory, directory) {
+	JavaExporter.call(this, khaDirectory);
 	this.directory = directory;
 };
 
@@ -193,7 +193,7 @@ DalvikExporter.prototype.copySound = function (platform, from, to, encoders, cal
 };
 
 DalvikExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), "assets")).resolve(to), asset, undefined, false, callback());
+	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), "assets")).resolve(to), asset, undefined, false, callback);
 };
 
 DalvikExporter.prototype.copyBlob = function (platform, from, to, callback) {

@@ -6,15 +6,16 @@ var Haxe = require('./Haxe.js');
 var Options = require('./Options.js');
 var Paths = require(korepath + 'Paths.js');
 var exportImage = require('./ImageTool.js');
+var path = require('path');
 
-function FlashExporter(directory, embedflashassets) {
-	KhaExporter.call(this);
+function FlashExporter(khaDirectory, directory, embedflashassets) {
+	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
 	this.embed = embedflashassets;
 	this.images = [];
 	this.sounds = [];
 	this.blobs = [];
-	this.addSourceDirectory('Kha/Backends/Flash');
+	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Flash'));
 };
 
 FlashExporter.prototype = Object.create(KhaExporter.prototype);
@@ -31,7 +32,7 @@ FlashExporter.prototype.sysdir = function () {
 	return 'flash';
 };
 
-FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
+FlashExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	this.createDirectory(this.directory.resolve(this.sysdir()));
 
 	this.writeFile(this.directory.resolve('project-' + this.sysdir() + '.hxproj'));
@@ -54,7 +55,12 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	this.p("<!-- Other classes to be compiled into your SWF -->", 1);
 	this.p("<classpaths>", 1);
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		if (path.isAbsolute(this.sources[i])) {
+			this.p('<class path="' + this.sources[i] + '" />', 2);
+		}
+		else {
+			this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		}
 	}
 	this.p("</classpaths>", 1);
 	this.p("<!-- Build options -->", 1);
@@ -98,7 +104,12 @@ FlashExporter.prototype.exportSolution = function (name, platform, haxeDirectory
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		if (path.isAbsolute(this.sources[i])) {
+			this.p("-cp " + this.sources[i]);
+		}
+		else {
+			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		}
 	}
 	if (this.embed) this.p("-D KHA_EMBEDDED_ASSETS");
 	this.p("-D swf-script-timeout=60");

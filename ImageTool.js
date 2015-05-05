@@ -6,6 +6,7 @@ var korepath = require('./korepath.js')
 var Paths = require(korepath + 'Paths.js');
 var Files = require(korepath + 'Files.js');
 var log = require('./log.js');
+var exec = require('./exec.js');
 
 module.exports = function (from, to, asset, format, prealpha, callback) {
 	if (fs.existsSync(to.toString()) && fs.statSync(to.toString()).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
@@ -26,13 +27,7 @@ module.exports = function (from, to, asset, format, prealpha, callback) {
 		return;
 	}
 
-	var exe = "kraffiti-osx";
-	if (os.platform() === "linux") {
-		exe = "kraffiti-linux";
-	}
-	else if (os.platform() === "win32") {
-		exe = "kraffiti.exe";
-	}
+	var exe = 'kraffiti' + exec.sys();
 	
 	var params = ['from=' + from, 'to=' + to, 'format=' + format, 'filter=nearest'];
 	if (prealpha) params.push('prealpha');

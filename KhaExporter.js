@@ -1,14 +1,15 @@
 var korepath = require('./korepath.js');
 var Exporter = require(korepath + 'Exporter.js');
 var Files = require(korepath + 'Files.js');
+var path = require('path');
 
-var KhaExporter = function () {
+var KhaExporter = function (khaDirectory) {
 	Exporter.call(this);
 	this.width = 640;
 	this.height = 480;
 	this.sources = [];
 	this.addSourceDirectory('Sources');
-	this.addSourceDirectory('Kha/Sources');
+	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
 };
 
 KhaExporter.prototype = Object.create(Exporter.prototype);
