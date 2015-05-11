@@ -142,6 +142,12 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 				}
 				break;
 			}
+			case Platform.WindowsApp: {
+				if (Files.exists(shaderPath.resolve(name + ".d3d11"))) Files.copy(shaderPath.resolve(name + ".d3d11"), to.resolve(name + ".d3d11"), true);
+				else compileShader(compiler, "d3d11", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d11"), temp, platform, kfx);
+				addShader(project, name, ".d3d11");
+				break;
+			}
 			case Platform.Xbox360:
 			case Platform.PlayStation3: {
 				if (Files.exists(shaderPath.resolve(name + ".d3d9"))) Files.copy(shaderPath.resolve(name + ".d3d9"), to.resolve(name + ".d3d9"), true);
