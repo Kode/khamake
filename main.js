@@ -255,8 +255,8 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				//"Kha/Backends/Kore/khacpp/project/libs/nekoapi/**.cpp"
 				files.push("Kha/Backends/Kore/khacpp/project/libs/common/**.h");
 				files.push("Kha/Backends/Kore/khacpp/project/libs/common/**.cpp");
-				if (platform == Platform.Windows) files.push("Kha/Backends/Kore/khacpp/project/libs/msvccompat/**.cpp");
-				if (platform == Platform.Linux) files.push("Kha/Backends/Kore/khacpp/project/libs/linuxcompat/**.cpp");
+				if (platform === Platform.Windows || platform === Platform.WindowsApp) files.push("Kha/Backends/Kore/khacpp/project/libs/msvccompat/**.cpp");
+				if (platform === Platform.Linux) files.push("Kha/Backends/Kore/khacpp/project/libs/linuxcompat/**.cpp");
 				files.push("Kha/Backends/Kore/khacpp/project/libs/regexp/**.h");
 				files.push("Kha/Backends/Kore/khacpp/project/libs/regexp/**.cpp");
 				files.push("Kha/Backends/Kore/khacpp/project/libs/std/**.h");
@@ -289,7 +289,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8', 'Kha/Backends/Kore/khacpp/project/libs/nekoapi');\n";
 				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 				if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
-				if (platform == Platform.WindowsRT) out += "project.addDefine('HX_WINRT');\n";
+				if (platform == Platform.WindowsApp) out += "project.addDefine('HX_WINDOWS'); project.addDefine('HX_WINRT');\n";
 				if (platform == Platform.OSX) {
 					out += "project.addDefine('HXCPP_M64');\n";
 					out += "project.addDefine('HX_MACOS');\n";
@@ -307,8 +307,10 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				out += "project.addDefine('HXCPP_VISIT_ALLOCS');\n";
 				out += "project.addDefine('KORE');\n";
 				out += "project.addDefine('ROTATE90');\n";
-				if (platform === Platform.Windows) {
+				if (platform === Platform.Windows || platform === Platform.WindowsApp) {
 					out += "project.addDefine('_WINSOCK_DEPRECATED_NO_WARNINGS');\n";
+				}
+				if (platform === Platform.Windows) {
 					out += "project.addLib('ws2_32');\n";
 				}
 				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
