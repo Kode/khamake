@@ -306,7 +306,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				if (platform == Platform.OSX) out += "project.addDefine('KORE_DEBUGDIR=\"osx\"');\n";
 				if (platform == Platform.iOS) out += "project.addDefine('KORE_DEBUGDIR=\"ios\"');\n";
 				//out << "project:addDefine(\"HXCPP_SCRIPTABLE\")\n";
-				out += "project.addDefine('HXCPP_API_LEVEL=320');\n";
+				out += "project.addDefine('HXCPP_API_LEVEL=321');\n";
 				out += "project.addDefine('STATIC_LINK');\n";
 				out += "project.addDefine('PCRE_STATIC');\n";
 				out += "project.addDefine('HXCPP_SET_PROP');\n";
