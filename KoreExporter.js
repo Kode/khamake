@@ -6,13 +6,14 @@ var Haxe = require('./Haxe.js');
 var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
 var exportImage = require('./ImageTool.js');
+var path = require('path');
 
-function KoreExporter(platform, vr, directory) {
-	KhaExporter.call(this);
+function KoreExporter(platform, khaDirectory, vr, directory) {
+	KhaExporter.call(this, khaDirectory);
 	this.platform = platform;
 	this.directory = directory;
+	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Kore'));
 	this.vr = vr;
-	this.addSourceDirectory('Kha/Backends/Kore');
 }
 
 KoreExporter.prototype = Object.create(KhaExporter.prototype);
@@ -22,7 +23,7 @@ KoreExporter.prototype.sysdir = function () {
 	return this.platform;
 };
 
-KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
+KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxproj"));
 	this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 	this.p("<project version=\"2\">");
@@ -43,7 +44,12 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 	this.p("<!-- Other classes to be compiled into your SWF -->", 1);
 	this.p("<classpaths>", 1);
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		if (path.isAbsolute(this.sources[i])) {
+			this.p('<class path="' + this.sources[i] + '" />', 2);
+		}
+		else {
+			this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		}
 	}
 	this.p("</classpaths>", 1);
 	this.p("<!-- Build options -->", 1);
@@ -85,7 +91,12 @@ KoreExporter.prototype.exportSolution = function (name, platform, haxeDirectory,
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		if (path.isAbsolute(this.sources[i])) {
+			this.p("-cp " + this.sources[i]);
+		}
+		else {
+			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		}
 	}
 	this.p("-cpp " + Paths.get(this.sysdir() + "-build", "Sources").toString());
 	this.p("-D no-compilation");
@@ -138,7 +149,15 @@ KoreExporter.prototype.copyBlob = function (platform, from, to, callback) {
 
 KoreExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), encoders.theoraEncoder, callback);
+	if (platform === Platform.iOS) {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp4'), encoders.h264Encoder, callback);
+	}
+	else if (platform === Platform.Android) {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ts'), encoders.h264Encoder, callback);
+	}
+	else {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), encoders.theoraEncoder, callback);
+	}
 };
 
 module.exports = KoreExporter;

@@ -50,6 +50,7 @@ else {
 	var platform = Platform.OSX;
 }
 
+var khaDirectory = '';
 var haxeDirectory = '';
 var oggEncoder = '';
 var aacEncoder = '';
@@ -59,6 +60,7 @@ var theoraEncoder = '';
 var webmEncoder = '';
 var wmvEncoder = '';
 var kfx = '';
+var krafix = '';
 var khafolders = true;
 var embedflashassets = false;
 var gfx = GraphicsApi.Direct3D9;
@@ -75,6 +77,7 @@ for (var i = 2; i < args.length; ++i) {
 	else if (arg.startsWith('gfx=')) gfx = arg.substr(4);
 	else if (arg.startsWith('vr=')) vr = arg.substr(3);
 	else if (arg.startsWith("vs=")) vs = arg.substr(3);
+	else if (arg.startsWith("kha=")) khaDirectory = arg.substr(4);
 	else if (arg.startsWith("haxe=")) haxeDirectory = arg.substr(5);
 	else if (arg.startsWith("ogg=")) oggEncoder = arg.substr(4);
 	else if (arg.startsWith("aac=")) aacEncoder = arg.substr(4);
@@ -84,6 +87,7 @@ for (var i = 2; i < args.length; ++i) {
 	else if (arg.startsWith("wmv=")) wmvEncoder = arg.substr(4);
 	else if (arg.startsWith("theora=")) theoraEncoder = arg.substr(7);
 	else if (arg.startsWith("kfx=")) kfx = arg.substr(4);
+	else if (arg.startsWith('krafix=')) krafix = arg.substr(7);
 
 	else if (arg.startsWith("from=")) from = arg.substr(5);
 	else if (arg.startsWith("to=")) to = arg.substr(3);
@@ -112,6 +116,7 @@ require('./main.js').run(
 		from: from,
 		to: to,
 		platform: platform,
+		kha: khaDirectory,
 		haxe: haxeDirectory,
 		ogg: oggEncoder,
 		aac: aacEncoder,
@@ -121,6 +126,7 @@ require('./main.js').run(
 		wmv: wmvEncoder,
 		theora: theoraEncoder,
 		kfx: kfx,
+		krafix: krafix,
 		khafolders: khafolders,
 		embedflashassets: embedflashassets,
 		graphicsApi: gfx,

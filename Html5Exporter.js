@@ -9,10 +9,10 @@ var exportImage = require('./ImageTool.js');
 var fs = require('fs');
 var path = require('path');
 
-function Html5Exporter(directory) {
-	KhaExporter.call(this);
+function Html5Exporter(khaDirectory, directory) {
+	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
-	this.addSourceDirectory("Kha/Backends/HTML5");
+	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5'));
 };
 
 Html5Exporter.prototype = Object.create(KhaExporter.prototype);
@@ -22,7 +22,7 @@ Html5Exporter.prototype.sysdir = function () {
 	return 'html5';
 };
 
-Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
+Html5Exporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	this.createDirectory(this.directory.resolve(this.sysdir()));
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxproj"));
@@ -45,7 +45,12 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 	this.p("<!-- Other classes to be compiled into your SWF -->", 1);
 	this.p("<classpaths>", 1);
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		if (path.isAbsolute(this.sources[i])) {
+			this.p('<class path="' + this.sources[i] + '" />', 2);	
+		}
+		else {
+			this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		}
 	}
 	this.p("</classpaths>", 1);
 	this.p("<!-- Build options -->", 1);
@@ -94,7 +99,12 @@ Html5Exporter.prototype.exportSolution = function (name, platform, haxeDirectory
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		if (path.isAbsolute(this.sources[i])) {
+			this.p("-cp " + this.sources[i]);
+		}
+		else {
+			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		}
 	}
 	this.p("-js " + Paths.get(this.sysdir(), "kha.js").toString());
 	this.p("-main Main");
