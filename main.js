@@ -130,7 +130,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 					else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp, platform, kfx);
 					addShader(project, name, ".glsl");
 				}
-				else if (Options.graphicsApi == GraphicsApi.Direct3D11) {
+				else if (Options.graphicsApi === GraphicsApi.Direct3D11 || Options.graphicsApi === GraphicsApi.Direct3D12) {
 					if (Files.exists(shaderPath.resolve(name + ".d3d11"))) Files.copy(shaderPath.resolve(name + ".d3d11"), to.resolve(name + ".d3d11"), true);
 					else compileShader(compiler, "d3d11", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d11"), temp, platform, kfx);
 					addShader(project, name, ".d3d11");
