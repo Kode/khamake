@@ -11,6 +11,7 @@ var Options = require('./Options.js');
 var Path = require(korepath + 'Path.js');
 var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
+var ProjectFile = require('./ProjectFile.js');
 var VisualStudioVersion = require('./VisualStudioVersion.js');
 
 var DalvikExporter = require('./DalvikExporter.js');
@@ -469,7 +470,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	project.game.name = name;
 	
 	if (Files.exists(from.resolve('project.kha'))) {
-		project = JSON.parse(fs.readFileSync(from.resolve('project.kha').toString(), { encoding: 'utf8' }));
+		project = ProjectFile(from);
 		foundProjectFile = true;
 	}
 	var libraries = [];
