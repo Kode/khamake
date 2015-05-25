@@ -9,11 +9,22 @@ module.exports = function (from) {
 			assets[asset.id] = asset;
 			delete asset.id;
 		}
+		var rooms = {};
 		for (var r in project.rooms) {
 			var room = project.rooms[r];
+			rooms[room.id] = room;
 			delete room.id;
 			for (var a in room.assets) {
 				room.assets[a] = assets[room.assets[a]].name;
+			}
+		}
+		for (var r in project.rooms) {
+			var room = project.rooms[r];
+			if (room.parent !== null) {
+				room.parent = rooms[room.parent].name;
+			}
+			for (var n in room.neighbours) {
+				room.neighbours[n] = rooms[room.neighbours[n]].name;
 			}
 		}
 		project.format = 2;
