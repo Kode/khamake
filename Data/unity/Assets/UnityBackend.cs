@@ -18,7 +18,30 @@ public class UnityBackend : MonoBehaviour {
 	}
 
 	void Update() {
-
+		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
+			kha.Starter.leftDown();
+		}
+		if (Input.GetKeyDown (KeyCode.RightArrow)) {
+			kha.Starter.rightDown();
+		}
+		if (Input.GetKeyDown (KeyCode.UpArrow)) {
+			kha.Starter.upDown();
+		}
+		if (Input.GetKeyDown (KeyCode.DownArrow)) {
+			kha.Starter.downDown();
+		}
+		if (Input.GetKeyUp (KeyCode.LeftArrow)) {
+			kha.Starter.leftUp();
+		}
+		if (Input.GetKeyUp (KeyCode.RightArrow)) {
+			kha.Starter.rightUp();
+		}
+		if (Input.GetKeyUp (KeyCode.UpArrow)) {
+			kha.Starter.upUp();
+		}
+		if (Input.GetKeyUp (KeyCode.DownArrow)) {
+			kha.Starter.downUp();
+		}
 	}
 
 	void OnPostRender() {
@@ -38,7 +61,7 @@ public class UnityBackend : MonoBehaviour {
 		return filename.Substring(0, filename.LastIndexOf('.'));
 	}
 
-	public static Point getImageSize(Texture2D asset) {
+	/*public static Point getImageSize(Texture2D asset) {
 		if (asset != null) {
 			string assetPath = AssetDatabase.GetAssetPath(asset);
 			TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
@@ -50,5 +73,5 @@ public class UnityBackend : MonoBehaviour {
 			}
 		}
 		return new Point(0, 0);
-	}
+	}*/
 }

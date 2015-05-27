@@ -13,6 +13,7 @@
             #pragma fragment frag
             #include "UnityCG.cginc"
             
+            uniform float4 dx_ViewAdjust;
             uniform sampler2D _tex;
             uniform float4x4 _projectionMatrix;
             
@@ -37,8 +38,16 @@
 			    //output.position = float4(input.vertexPosition, 1.0);//mul(transpose(_projectionMatrix), float4(input.vertexPosition, 1.0));
 			    //output.position.x /= 200;
 			    //output.position.y /= 200;
-			    output.position.w = 1.0;
-			    output.position.z = 1.0;
+			    
+			    //output.position.w = 1.0;
+			    //output.position.x = output.position.x - dx_ViewAdjust.x * output.position.w;
+				//output.position.y = output.position.y + dx_ViewAdjust.y * output.position.w;
+				
+				//output.position.x = output.position.x - 1.0 / 512.0;// * output.position.w;
+				//output.position.y = output.position.y - 1.0 / 512.0 * output.position.w;
+				output.position.w = 1.0;
+				
+			    output.position.z = 0.5;
 				output.texCoord = input.texPosition;
 				output.color = input.vertexColor;
 			    return output;
