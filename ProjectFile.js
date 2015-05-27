@@ -31,7 +31,7 @@ module.exports = function (from) {
 			}
 		}
 		project.format = 2;
+		fs.writeFileSync(from.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 	}
-	fs.writeFileSync(from.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 	return project;
 };

@@ -1,4 +1,7 @@
-﻿var os = require('os');
+﻿var fs = require('fs');
+var os = require('os');
+var path = require('path');
+var exec = require('./exec.js');
 var korepath = require('./korepath.js');
 var Files = require(korepath + 'Files.js');
 var GraphicsApi = require('./GraphicsApi.js');
@@ -178,6 +181,23 @@ var options = [
 		full: 'server',
 		description: 'Run local http server for html5 target',
 		value: false
+	},
+	{
+		full: 'addfont',
+		description: 'Add a bitmap font to the project',
+		value: false
+	},
+	{
+		full: 'fontname',
+		description: 'Name of a truetype font',
+		value: true,
+		default: 'Arial'
+	},
+	{
+		full: 'fontsize',
+		description: 'Point size of the generated font',
+		value: true,
+		default: '12'
 	}
 ];
 
@@ -263,6 +283,24 @@ if (parsedOptions.server) {
 			fileServer.serve(request, response);
 		}).resume();
 	}).listen(8080);
+}
+else if (parsedOptions.addfont) {
+	var kha = parsedOptions.kha;
+	if (kha === '') {
+		kha = path.join(parsedOptions.from, 'Kha');
+	}
+	var child_process = require('child_process');
+	var filename = parsedOptions.fontname + parsedOptions.fontsize + '.kravur';
+	child_process.execFileSync(path.join(kha, 'Tools', 'kravur', 'kravur' + exec.sys()),
+		[
+			parsedOptions.fontname, parsedOptions.fontsize,
+			path.join(parsedOptions.from, 'Assets', filename)
+		]
+	);
+	var ProjectFile = require('./ProjectFile.js');
+	var project = ProjectFile(Paths.get(parsedOptions.from));
+	project.assets.push({ file: filename, name: filename, type: 'blob'});
+	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
 else {
 	require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
