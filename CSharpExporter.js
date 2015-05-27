@@ -10,8 +10,8 @@ var fs = require('fs');
 var path = require('path');
 var uuid = require('./uuid.js');
 
-function CSharpExporter(directory) {
-	KhaExporter.call(this);
+function CSharpExporter(khaDirectory, directory) {
+	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
 };
 
@@ -30,7 +30,7 @@ CSharpExporter.prototype.includeFiles = function (dir, baseDir) {
 	}
 };
 
-CSharpExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
+CSharpExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 	this.createDirectory(this.directory.resolve(this.sysdir()));
@@ -56,7 +56,12 @@ CSharpExporter.prototype.exportSolution = function (name, platform, haxeDirector
 	this.p("<!-- Other classes to be compiled into your SWF -->", 1);
 	this.p("<classpaths>", 1);
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		if (path.isAbsolute(this.sources[i])) {
+			this.p('<class path="' + this.sources[i] + '" />', 2);
+		}
+		else {
+			this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
+		}
 	}
 	this.p("</classpaths>", 1);
 	this.p("<!-- Build options -->", 1);
@@ -98,7 +103,12 @@ CSharpExporter.prototype.exportSolution = function (name, platform, haxeDirector
 
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
 	for (var i = 0; i < this.sources.length; ++i) {
-		this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		if (path.isAbsolute(this.sources[i])) {
+			this.p("-cp " + this.sources[i]);
+		}
+		else {
+			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		}
 	}
 	this.p("-cs " + Paths.get(this.sysdir() + "-build", "Sources").toString());
 	this.p("-main Main");

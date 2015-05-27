@@ -1,0 +1,25 @@
+{
+  "name": "khamake",
+  "version": "1.0.0",
+  "description": "Kha build tool",
+  "main": "khamake.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ktxsoftware/khamake.git"
+  },
+  "keywords": [
+    "kha"
+  ],
+  "author": "Robert Konrad",
+  "license": "zlib",
+  "bugs": {
+    "url": "https://github.com/ktxsoftware/khamake/issues"
+  },
+  "homepage": "https://github.com/ktxsoftware/khamake#readme",
+  "dependencies": {
+    "node-static": "^0.7.6"
+  }
+}

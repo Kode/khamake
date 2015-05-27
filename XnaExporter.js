@@ -10,8 +10,8 @@ var fs = require('fs');
 var path = require('path');
 var uuid = require('./uuid.js');
 
-function XnaExporter(directory) {
-	CSharpExporter.call(this);
+function XnaExporter(khaDirectory, directory) {
+	CSharpExporter.call(this, khaDirectory);
 	this.directory = directory;
 	this.images = [];
 };

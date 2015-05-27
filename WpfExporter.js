@@ -10,8 +10,8 @@ var fs = require('fs');
 var path = require('path');
 var uuid = require('./uuid.js');
 
-function WpfExporter(directory) {
-	CSharpExporter.call(this);
+function WpfExporter(khaDirectory, directory) {
+	CSharpExporter.call(this, khaDirectory);
 	this.directory = directory;
 };
 
