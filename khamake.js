@@ -178,6 +178,17 @@ var options = [
 		value: false
 	},
 	{
+		full: 'init',
+		description: 'Init a Kha project inside the current directory',
+		value: false
+	},
+	{
+		full: 'name',
+		description: 'Project name to use when initializing a project',
+		value: true,
+		default: 'Unknown'
+	},
+	{
 		full: 'server',
 		description: 'Run local http server for html5 target',
 		value: false
@@ -274,7 +285,57 @@ for (var i = 2; i < args.length; ++i) {
 	}
 }
 
-if (parsedOptions.server) {
+if (parsedOptions.init) {
+	console.log('Initializing Kha project.\n');
+	
+	if (!fs.existsSync(path.join(parsedOptions.from, 'project.kha'))) {
+		var project = {
+			format: 2,
+			game: {
+				name: parsedOptions.name,
+				width: 640,
+				height: 480
+			},
+			assets: [],
+			rooms: []
+		};
+		fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
+	}
+	
+	if (!fs.existsSync(path.join(parsedOptions.from, 'Assets'))) fs.mkdirSync(path.join(parsedOptions.from, 'Assets'));
+	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources'))) fs.mkdirSync(path.join(parsedOptions.from, 'Sources'));
+	
+	var friendlyName = parsedOptions.name;
+	friendlyName = friendlyName.replace(/ /g, '_');
+	friendlyName = friendlyName.replace(/-/g, '_');
+
+	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'))) {
+		var mainsource = 'package;\n\nimport kha.Starter;\n\n'
+			+ 'class Main {\n'
+			+ '\tpublic static function main() {\n'
+			+ '\t\tvar starter = new Starter();\n'
+			+ '\t\tstarter.start(new ' + friendlyName + '());\n'
+			+ '\t}\n'
+			+ '}\n';
+		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'), mainsource, { encoding: 'utf8' });
+	}
+	
+	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'))) {
+		var projectsource = 'package;\n\nimport kha.Game;\n\n'
+			+ 'class ' + friendlyName + ' {\n'
+			+ '\tpublic function new() {\n'
+			+ '\t\tsuper("' + parsedOptions.name + '");\n'
+			+ '\t}\n\n'
+			+ '\toverride function init(): Void {\n'
+			+ '\t\t\n'
+			+ '\t}\n'
+			+ '}\n';
+		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'), projectsource, { encoding: 'utf8' });
+	}
+	
+	console.log('If you want to use the git version of Kha, execute "git init" and "git add submodule https://github.com/ktxsoftware/Kha.git".');
+}
+else if (parsedOptions.server) {
 	console.log('Running server on 8080');
 	var static = require('node-static');
 	var fileServer = new static.Server('./build/html5');
@@ -285,6 +346,7 @@ if (parsedOptions.server) {
 	}).listen(8080);
 }
 else if (parsedOptions.addfont) {
+	console.log('Creating and adding font ' + parsedOptions.fontname + parsedOptions.fontsize);
 	var kha = parsedOptions.kha;
 	if (kha === '') {
 		kha = path.join(parsedOptions.from, 'Kha');
