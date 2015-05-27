@@ -436,7 +436,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			exporter = new DalvikExporter(khaDirectory, to);
 			break;
 		case Platform.Unity:
-			exporter = new UnityExporter(to);
+			exporter = new UnityExporter(khaDirectory, to);
 			break;
 		default:
 			kore = true;

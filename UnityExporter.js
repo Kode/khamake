@@ -10,8 +10,8 @@ var fs = require('fs');
 var path = require('path');
 var uuid = require('./uuid.js');
 
-function UnityExporter(directory) {
-	KhaExporter.call(this);
+function UnityExporter(khaDirectory, directory) {
+	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
 };
 
@@ -22,7 +22,7 @@ UnityExporter.prototype.sysdir = function () {
 	return 'unity';
 };
 
-UnityExporter.prototype.exportSolution = function (name, platform, haxeDirectory, from, callback) {
+UnityExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	this.addSourceDirectory("Kha/Backends/Unity");
 
 	this.createDirectory(this.directory.resolve(this.sysdir()));
