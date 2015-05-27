@@ -20,8 +20,11 @@ module.exports = function (from) {
 		}
 		for (var r in project.rooms) {
 			var room = project.rooms[r];
-			if (room.parent !== null) {
+			if (room.parent) {
 				room.parent = rooms[room.parent].name;
+			}
+			else {
+				room.parent = null;
 			}
 			for (var n in room.neighbours) {
 				room.neighbours[n] = rooms[room.neighbours[n]].name;

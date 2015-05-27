@@ -179,12 +179,10 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	if (asset.type === 'image') {
 		var file;
 		if (asset.libdir !== undefined) {
-			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Graphics', asset.file));
-			else file = from.resolve(Paths.get(asset.libdir, asset.file));
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
 		else {
-			if (khafolders) file = from.resolve(Paths.get('Assets', 'Graphics', asset.file));
-			else file = from.resolve(asset.file);
+			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copyImage(platform, file, Paths.get(asset.file), asset, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
@@ -193,12 +191,10 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	else if (asset.type === 'music') {
 		var file;
 		if (asset.libdir !== undefined) {
-			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Sound', asset.file + '.wav'));
-			else file = from.resolve(Paths.get(asset.libdir, asset.file + '.wav'));
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file + '.wav'));
 		}
 		else {
-			if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
-			else file = from.resolve(asset.file + '.wav');
+			file = from.resolve(Paths.get('Assets', asset.file + '.wav'));
 		}
 		exporter.copyMusic(platform, file, Paths.get(asset.file), encoders, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
@@ -207,12 +203,10 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	else if (asset.type === 'sound') {
 		var file;
 		if (asset.libdir !== undefined) {
-			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Sound', asset.file + '.wav'));
-			else file = from.resolve(Paths.get(asset.libdir, asset.file + '.wav'));
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file + '.wav'));
 		}
 		else {
-			if (khafolders) file = from.resolve(Paths.get('Assets', 'Sound', asset.file + '.wav'));
-			else file = from.resolve(asset.file + '.wav');
+			file = from.resolve(Paths.get('Assets', asset.file + '.wav'));
 		}
 		exporter.copySound(platform, file, Paths.get(asset.file), encoders, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
@@ -221,12 +215,10 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	else if (asset.type === 'blob') {
 		var file;
 		if (asset.libdir !== undefined) {
-			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
-			else file = from.resolve(Paths.get(asset.libdir, asset.file));
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
 		else {
-			if (khafolders) file = from.resolve(Paths.get('Assets', asset.file));
-			else file = from.resolve(asset.file);
+			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copyBlob(platform, file, Paths.get(asset.file), function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
@@ -235,12 +227,10 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	else if (asset.type === 'video') {
 		var file;
 		if (asset.libdir !== undefined) {
-			if (khafolders) file = from.resolve(Paths.get(asset.libdir, 'Assets', 'Video', asset.file));
-			else file = from.resolve(Paths.get(asset.libdir, asset.file));
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
 		else {
-			if (khafolders) file = from.resolve(Paths.get('Assets', 'Video', asset.file));
-			else file = from.resolve(asset.file);
+			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copyVideo(platform, file, Paths.get(asset.file), encoders, function () {
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
@@ -576,7 +566,7 @@ exports.run = function (options, loglog, callback) {
 	log.set(loglog);
 
 	var done = function (name) {
-		if (options.platform === Platform.Linux && options.run) {
+		if (options.target === Platform.Linux && options.run) {
 			log.info('Running...');
 			var run = child_process.spawn(
 				pathlib.join(process.cwd(), options.to, 'linux-build', name),
@@ -620,16 +610,16 @@ exports.run = function (options, loglog, callback) {
 	
 	if (options.ogg === '') {
 		var path = Paths.get(options.kha, "Tools", "oggenc", "oggenc" + exec.sys());
-		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out}';
+		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out} --quiet';
 	}
 	
 	if (options.graphicsApi !== undefined) {
-		Options.graphicsApi = options.graphicsApi;
+		Options.graphicsApi = options.graphics;
 	}
 	
 	if (options.visualStudioVersion !== undefined) {
-		Options.visualStudioVersion = options.visualStudioVersion;	
+		Options.visualStudioVersion = options.visualstudio;	
 	}
 
-	exportProject(Paths.get(options.from), Paths.get(options.to), options.platform, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.kfx, options.krafix, options.khafolders, options.embedflashassets, options, done);
+	exportProject(Paths.get(options.from), Paths.get(options.to), options.target, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.kfx, options.krafix, false, options.embedflashassets, options, done);
 };
