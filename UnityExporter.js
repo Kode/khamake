@@ -126,7 +126,7 @@ UnityExporter.prototype.copySound = function (platform, from, to, encoders, call
 };
 
 UnityExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Images', to)), asset, undefined, false, callback);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Images', to)), asset, undefined, false, callback, true);
 };
 
 UnityExporter.prototype.copyBlob = function (platform, from, to, callback) {
