@@ -164,6 +164,12 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 				addShader(project, name, ".glsl");
 				break;
 			}
+			case Platform.Unity: {
+				if (Files.exists(shaderPath.resolve(name + ".hlsl"))) Files.copy(shaderPath.resolve(name + ".hlsl"), to.resolve(name + ".hlsl"), true);
+				else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".hlsl"), temp, platform, kfx);
+				addShader(project, name, ".hlsl");
+				break;
+			}
 			default:
 				break;
 		}
@@ -530,11 +536,33 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	};
 	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
 		project.shaders = [];
-		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
-		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), krafix, kfx);
+		var shaderDir = to.resolve(exporter.sysdir());
+		if (platform === Platform.Unity) {
+			shaderDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Shaders'));
+			if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
+		}
+		addShaders(exporter, platform, project, shaderDir, temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
+		addShaders(exporter, platform, project, shaderDir, temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), krafix, kfx);
 		for (var i = 0; i < sources.length; ++i) {
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
+			addShaders(exporter, platform, project, shaderDir, temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
 			exporter.addSourceDirectory(sources[i]);
+		}
+		if (platform === Platform.Unity) {
+			var proto = fs.readFileSync(from.resolve(Paths.get('Kha', 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
+			for (var i1 = 0; i1 < project.shaders.length; ++i1) {
+				if (project.shaders[i1].name.endsWith('.vert')) {
+					for (var i2 = 0; i2 < project.shaders.length; ++i2) {
+						if (project.shaders[i2].name.endsWith('.frag')) {
+							var name = project.shaders[i1].name + '.' + project.shaders[i2].name;
+							var proto2 = proto.replaceAll('{name}', name);
+							var proto2 = proto2.replaceAll('{vert}', project.shaders[i1].name);
+							var proto2 = proto2.replaceAll('{frag}', project.shaders[i2].name);
+							fs.writeFileSync(shaderDir.resolve(name + '.shader').toString(), proto2, { encoding: 'utf8'});
+						}
+					}
+				}
+			}
+			project.shaders = [];
 		}
 		
 		if (foundProjectFile) {	
