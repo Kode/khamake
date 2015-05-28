@@ -46,7 +46,7 @@ function getWidthAndHeight(from, to, asset, format, prealpha, callback) {
 	});
 }
 
-module.exports = function (from, to, asset, format, prealpha, callback) {
+module.exports = function (from, to, asset, format, prealpha, callback, poweroftwo) {
 	if (fs.existsSync(to.toString()) && fs.statSync(to.toString()).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
 		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
 			asset.original_width = wh.w;
@@ -82,6 +82,10 @@ module.exports = function (from, to, asset, format, prealpha, callback) {
 	}
 	if (asset.background !== undefined) {
 		params.push('transparent=' + ((asset.background.red << 24) | (asset.background.green << 16) | (asset.background.blue << 8) | 0xff).toString(16));
+	}
+	if (poweroftwo)
+	{
+		params.push('poweroftwo');
 	}
 	var stdout = '';
 	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
