@@ -163,6 +163,11 @@ var options = [
 		default: ''
 	},
 	{
+		full: 'nokrafix',
+		description: 'Switch off the new shader compiler',
+		value: false
+	},
+	{
 		full: 'embedflashassets',
 		description: 'Embed assets in swf for flash target',
 		value: false
@@ -283,6 +288,10 @@ for (var i = 2; i < args.length; ++i) {
 	else {
 		parsedOptions.target = arg;
 	}
+}
+console.log('Graphics: ' + parsedOptions.graphics);
+if (parsedOptions.graphics === GraphicsApi.OpenGL) {
+	parsedOptions.graphics = GraphicsApi.OpenGL2;
 }
 
 if (parsedOptions.init) {

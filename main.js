@@ -76,7 +76,7 @@ function compileShader(compiler, type, from, to, temp, system, kfx) {
 		});
 
 		compiler_process.on('close', function (code) {
-			if (code !== 0) log.info('Shader compiler process exited with code ' + code);
+			if (code !== 0) log.info('Shader compiler process exited with code ' + code + ' while trying to compile ' + from.toString());
 		});
 	}
 }
@@ -530,10 +530,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	};
 	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
 		project.shaders = [];
-		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), kfx, kfx);
+		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
 		addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), krafix, kfx);
 		for (var i = 0; i < sources.length; ++i) {
-			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), kfx, kfx);
+			addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
 			exporter.addSourceDirectory(sources[i]);
 		}
 		
@@ -617,11 +617,11 @@ exports.run = function (options, loglog, callback) {
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out} --quiet';
 	}
 	
-	if (options.graphicsApi !== undefined) {
+	if (options.graphics !== undefined) {
 		Options.graphicsApi = options.graphics;
 	}
 	
-	if (options.visualStudioVersion !== undefined) {
+	if (options.visualstudio !== undefined) {
 		Options.visualStudioVersion = options.visualstudio;	
 	}
 
