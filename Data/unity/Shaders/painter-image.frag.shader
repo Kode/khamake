@@ -13,7 +13,10 @@
             #pragma fragment frag
             #include "UnityCG.cginc"
             
-            uniform float4 dx_ViewAdjust;
+            #include "painter-image.vert.hlsl"
+            #include "painter-image.frag.hlsl"
+            
+            /*uniform float4 dx_ViewAdjust;
             uniform sampler2D _tex;
             uniform float4x4 _projectionMatrix;
             
@@ -64,7 +67,7 @@
 			    texcolor.w = 1.0;
 				//texcolor.xyz *= input.color.w;
 				return texcolor;
-            }
+            }*/
             
             ENDCG
 
