@@ -562,7 +562,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 					}
 				}
 			}
-			project.shaders = [];
+			for (var i = 0; i < project.shaders.length; ++i) {
+				fs.writeFileSync(to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Resources', 'Blobs', project.shaders[i].file + '.bytes')).toString(), project.shaders[i].name, { encoding: 'utf8'});
+			}
 		}
 		
 		if (foundProjectFile) {	
