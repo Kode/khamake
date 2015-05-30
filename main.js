@@ -533,15 +533,32 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			exporter.addSourceDirectory(sources[i]);
 		}
 		
+		function secondPass() {
+			var hxslDir = pathlib.join('build', 'Shaders');
+			if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) { 
+				addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
+				if (foundProjectFile) {	
+					fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
+					exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
+						log.info('Assets done.');
+						exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
+					});
+				}
+				else {
+					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
+				}
+			}
+		}
+
 		if (foundProjectFile) {	
 			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
 				log.info('Assets done.');
-				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
+				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, secondPass);
 			});
 		}
 		else {
-			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
+			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, secondPass);
 		}
 	});
 }
