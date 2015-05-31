@@ -106,6 +106,7 @@ Html5Exporter.prototype.exportSolution = function (name, platform, khaDirectory,
 			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
+	if (this.sysdir() === 'node') this.p('-D node');
 	this.p("-js " + Paths.get(this.sysdir(), "kha.js").toString());
 	this.p("-main Main");
 	this.closeFile();
