@@ -16,5 +16,6 @@ module.exports = {
 	PlayStationMobile: 'psm',
 	Dalvik: 'dalvik',
 	Tizen: 'tizen',
+	Unity: 'unity',
 	Node: 'node'
 };

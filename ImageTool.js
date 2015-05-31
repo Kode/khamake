@@ -75,7 +75,10 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 
 	var exe = 'kraffiti' + exec.sys();
 	
-	var params = ['from=' + from, 'to=' + to, 'format=' + format, 'filter=nearest'];
+	var params = ['from=' + from, 'to=' + to, 'format=' + format];
+	if (!poweroftwo) {
+		params.push('filter=nearest');
+	}
 	if (prealpha) params.push('prealpha');
 	if (asset.scale !== undefined && asset.scale !== 1) {
 		params.push('scale=' + asset.scale);	
@@ -83,8 +86,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 	if (asset.background !== undefined) {
 		params.push('transparent=' + ((asset.background.red << 24) | (asset.background.green << 16) | (asset.background.blue << 8) | 0xff).toString(16));
 	}
-	if (poweroftwo)
-	{
+	if (poweroftwo) {
 		params.push('poweroftwo');
 	}
 	var stdout = '';
