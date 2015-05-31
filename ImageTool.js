@@ -8,9 +8,51 @@ var Files = require(korepath + 'Files.js');
 var log = require('./log.js');
 var exec = require('./exec.js');
 
-module.exports = function (from, to, asset, format, prealpha, callback) {
+function getWidthAndHeight(from, to, asset, format, prealpha, callback) {
+	var exe = 'kraffiti' + exec.sys();
+	
+	var params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
+	if (asset.scale !== undefined && asset.scale !== 1) {
+		params.push('scale=' + asset.scale);	
+	}
+	var stdout = '';
+	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+	
+	child.stdout.on('data', function (data) {
+		stdout += data.toString();
+	});
+	
+	child.stderr.on('data', function (data) {
+		log.error('kraffiti stderr: ' + data);
+	});
+	
+	child.on('error', function (err) {
+		log.error('kraffiti error: ' + err);
+		callback({w: 0, h: 0});
+	});
+	
+	child.on('close', function (code) {
+		if (code !== 0) log.error('kraffiti process exited with code ' + code + ' when trying to get size of ' + asset.name);
+		var lines = stdout.split('\n');
+		for (var l in lines) {
+			var line = lines[l];
+			if (line.startsWith('#')) {
+				var numbers = line.substring(1).split('x');
+				callback({w: parseInt(numbers[0]), h: parseInt(numbers[1])});
+				return;
+			}
+		}
+		callback({w: 0, h: 0});
+	});
+}
+
+module.exports = function (from, to, asset, format, prealpha, callback, poweroftwo) {
 	if (fs.existsSync(to.toString()) && fs.statSync(to.toString()).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
-		callback();
+		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
+			asset.original_width = wh.w;
+			asset.original_height = wh.h;
+			callback();
+		});
 		return;
 	}
 
@@ -23,13 +65,20 @@ module.exports = function (from, to, asset, format, prealpha, callback) {
 
 	if (format === 'jpg' && (asset.scale === undefined || asset.scale === 1) && asset.background === undefined) {
 		Files.copy(from, to, true);
-		callback();
+		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
+			asset.original_width = wh.w;
+			asset.original_height = wh.h;
+			callback();
+		});
 		return;
 	}
 
 	var exe = 'kraffiti' + exec.sys();
 	
-	var params = ['from=' + from, 'to=' + to, 'format=' + format, 'filter=nearest'];
+	var params = ['from=' + from, 'to=' + to, 'format=' + format];
+	if (!poweroftwo) {
+		params.push('filter=nearest');
+	}
 	if (prealpha) params.push('prealpha');
 	if (asset.scale !== undefined && asset.scale !== 1) {
 		params.push('scale=' + asset.scale);	
@@ -37,10 +86,14 @@ module.exports = function (from, to, asset, format, prealpha, callback) {
 	if (asset.background !== undefined) {
 		params.push('transparent=' + ((asset.background.red << 24) | (asset.background.green << 16) | (asset.background.blue << 8) | 0xff).toString(16));
 	}
+	if (poweroftwo) {
+		params.push('poweroftwo');
+	}
+	var stdout = '';
 	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
 	
 	child.stdout.on('data', function (data) {
-		log.info('kraffiti stdout: ' + data);
+		stdout += data.toString();
 	});
 	
 	child.stderr.on('data', function (data) {
@@ -54,6 +107,17 @@ module.exports = function (from, to, asset, format, prealpha, callback) {
 	
 	child.on('close', function (code) {
 		if (code !== 0) log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + asset.name);
+		var lines = stdout.split('\n');
+		for (var l in lines) {
+			var line = lines[l];
+			if (line.startsWith('#')) {
+				var numbers = line.substring(1).split('x');
+				asset.original_width = parseInt(numbers[0]);
+				asset.original_height = parseInt(numbers[1]);
+				callback();
+				return;
+			}
+		}
 		callback();
 	});
 };

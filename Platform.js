@@ -15,5 +15,7 @@ module.exports = {
 	Java: 'java',
 	PlayStationMobile: 'psm',
 	Dalvik: 'dalvik',
-	Tizen: 'tizen'
+	Tizen: 'tizen',
+	Unity: 'unity',
+	Node: 'node'
 };
