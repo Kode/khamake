@@ -41,6 +41,14 @@ public class UnityBackend : MonoBehaviour {
 		if (Input.GetKeyUp (KeyCode.DownArrow)) {
 			kha.Starter.downUp();
 		}
+		for (int i = 0; i < 3; ++i) {
+			if (Input.GetMouseButtonDown (i)) {
+				kha.Starter.mouseDown (i, (int)Input.mousePosition.x, Screen.height - (int)Input.mousePosition.y);
+			}
+			if (Input.GetMouseButtonUp (i)) {
+				kha.Starter.mouseUp (i, (int)Input.mousePosition.x, Screen.height - (int)Input.mousePosition.y);
+			}
+		}
 	}
 
 	void OnPostRender() {

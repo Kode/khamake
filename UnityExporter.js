@@ -95,6 +95,7 @@ UnityExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 	this.p("-main Main");
 	this.p("-D no-root");
 	this.p("-D no-compilation");
+	this.p('-D real-position');
 	this.p("-net-std " + from.resolve('build').relativize(haxeDirectory).resolve("netlib").toString());
 	this.closeFile();
 
