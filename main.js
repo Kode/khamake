@@ -20,6 +20,7 @@ var Html5Exporter = require('./Html5Exporter.js');
 var Html5WorkerExporter = require('./Html5WorkerExporter.js');
 var JavaExporter = require('./JavaExporter.js');
 var KoreExporter = require('./KoreExporter.js');
+var NodeExporter = require('./NodeExporter.js');
 var PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
 var WpfExporter = require('./WpfExporter.js');
 var XnaExporter = require('./XnaExporter.js');
@@ -433,6 +434,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			break;
 		case Platform.Dalvik:
 			exporter = new DalvikExporter(khaDirectory, to);
+			break;
+		case Platform.Node:
+			exporter = new NodeExporter(khaDirectory, to);
 			break;
 		default:
 			kore = true;
