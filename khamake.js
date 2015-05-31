@@ -73,7 +73,7 @@ var options = [
 		value: true,
 		description: 'Target VR device',
 		default: VrApi.None
-	}
+	},
 	{
 		full: 'pch',
 		description: 'Use precompiled headers for C++ targets',
