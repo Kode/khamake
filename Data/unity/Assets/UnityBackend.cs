@@ -55,6 +55,14 @@ public class UnityBackend : MonoBehaviour {
 		kha.Starter.update();
 	}
 
+	public static bool uvStartsAtTop() {
+#if UNITY_UV_STARTS_AT_TOP
+		return true;
+#else
+		return false;
+#endif
+	}
+
 	public static Texture2D loadImage(string filename) {
 		return Resources.Load("Images/" + cutEnding(filename)) as Texture2D;
 	}
