@@ -586,11 +586,11 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 				if (project.shaders[i1].name.endsWith('.vert')) {
 					for (var i2 = 0; i2 < project.shaders.length; ++i2) {
 						if (project.shaders[i2].name.endsWith('.frag')) {
-							var name = project.shaders[i1].name + '.' + project.shaders[i2].name;
-							var proto2 = proto.replaceAll('{name}', name);
+							var shadername = project.shaders[i1].name + '.' + project.shaders[i2].name;
+							var proto2 = proto.replaceAll('{name}', shadername);
 							var proto2 = proto2.replaceAll('{vert}', project.shaders[i1].name);
 							var proto2 = proto2.replaceAll('{frag}', project.shaders[i2].name);
-							fs.writeFileSync(shaderDir.resolve(name + '.shader').toString(), proto2, { encoding: 'utf8'});
+							fs.writeFileSync(shaderDir.resolve(shadername + '.shader').toString(), proto2, { encoding: 'utf8'});
 						}
 					}
 				}
