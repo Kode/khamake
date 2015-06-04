@@ -96,7 +96,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 907675296}
   - 20: {fileID: 907675295}
-  - 114: {fileID: 907675291}
   m_Layer: 0
   m_Name: Kha
   m_TagString: Untagged
