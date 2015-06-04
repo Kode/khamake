@@ -15,12 +15,20 @@ public class KhaInitializer : MonoBehaviour
 		}
 		kha.AddComponent<UnityBackend> ();
 
-		var shaders = Resources.FindObjectsOfTypeAll<Shader> ();
-		foreach (var shader in shaders) {
-			if (!shader.name.StartsWith("Custom/")) continue;
+		AssetDatabase.CreateFolder("Assets/Resources", "Materials");
+		var shaders = AssetDatabase.FindAssets ("t:Shader");
+		foreach (var shaderid in shaders) {
+			var path = AssetDatabase.GUIDToAssetPath(shaderid);
+
+			var name = path.Substring(path.LastIndexOf('/') + 1);
+			name = name.Substring(0, name.LastIndexOf('.'));
+
+			var shader = Shader.Find ("Custom/" + name);
+
 			var mat = new Material(shader);
 			var matname = shader.name.Substring(shader.name.LastIndexOf('/') + 1).Replace('.', '_').Replace('-', '_');
-			AssetDatabase.CreateAsset(Instantiate(mat), "Assets/Resources/" + matname + ".mat");
+
+			AssetDatabase.CreateAsset(Instantiate(mat), "Assets/Resources/Materials/" + matname + ".mat");
 		}
     }
 
