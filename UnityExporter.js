@@ -103,17 +103,18 @@ UnityExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 	options.push("project-" + this.sysdir() + ".hxml");
 	var self = this;
 	Haxe.executeHaxe(from, haxeDirectory, options, function () {
-		var copyDirectory = function (name) {
-			var files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', name));
-			self.createDirectory(self.directory.resolve(Paths.get(self.sysdir(), name)));
+		var copyDirectory = function (from, to) {
+			var files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
+			self.createDirectory(self.directory.resolve(Paths.get(self.sysdir(), to)));
 			for (var f in files) {
 				var file = files[f];
-				var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', name, file), { encoding: 'utf8' });
-				fs.writeFileSync(self.directory.resolve(Paths.get(self.sysdir(), name, file)).toString(), text);
+				var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', from, file), { encoding: 'utf8' });
+				fs.writeFileSync(self.directory.resolve(Paths.get(self.sysdir(), to, file)).toString(), text);
 			}
 		};
-		copyDirectory('Assets');
-		copyDirectory('ProjectSettings');
+		copyDirectory('Assets', 'Assets');
+		copyDirectory('Editor', 'Assets/Editor');
+		copyDirectory('ProjectSettings', 'ProjectSettings');
 		callback();
 	});
 };
