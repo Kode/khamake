@@ -1,4 +1,11 @@
-﻿var fs = require('fs');
+﻿var version = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+
+if (version < 0.12) {
+	console.log('Sorry, this requires at least node version 0.12.')
+	process.exit(1);
+}
+
+var fs = require('fs');
 var os = require('os');
 var path = require('path');
 var exec = require('./exec.js');
