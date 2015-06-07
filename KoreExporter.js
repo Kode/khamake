@@ -24,6 +24,17 @@ KoreExporter.prototype.sysdir = function () {
 };
 
 KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
+	var defines = ['no-compilation', 'sys_' + platform];
+	if (this.vr === 'gearvr') {
+		defines.push('vr_gearvr');
+	}
+	else if (this.vr === 'cardboard') {
+		defines.push('vr_cardboard');
+	}
+	else if (this.vr === 'rift') {
+		defines.push('vr_rift');
+	}
+
 	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxproj"));
 	this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 	this.p("<project version=\"2\">");
@@ -58,7 +69,11 @@ KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 	this.p("<option flashStrict=\"False\" />", 2);
 	this.p("<option mainClass=\"Main\" />", 2);
 	this.p("<option enabledebug=\"False\" />", 2);
-	this.p("<option additional=\"-D no-compilation\" />", 2);
+	var def = '';
+	for (var d in defines) {
+		def += '-D ' + defines[d] + '\n';
+	}
+	this.p('<option additional="' + def + '" />', 2);
 	this.p("</build>", 1);
 	this.p("<!-- haxelib libraries -->", 1);
 	this.p("<haxelib>", 1);
@@ -99,19 +114,10 @@ KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 		}
 	}
 	this.p("-cpp " + Paths.get(this.sysdir() + "-build", "Sources").toString());
-	this.p("-D no-compilation");
-	// Add a flag for the target platform to use in Haxe
-	this.p("-D " + platform.toUpperCase());
-	
-	// TODO: Add to arguments of the call to khamake
-	if (this.vr == 'gearvr') {
-    this.p("-D VR_GEAR_VR");
-  } else if (this.vr == "cardboard") {
-    this.p("-D VR_CARDBOARD");
-  } else if (this.vr == "rift") {
-    this.p("-D VR_RIFT");
-  }
-	
+	for (var d in defines) {
+		var define = defines[d];
+		this.p('-D ' + define);
+	}
 	this.p("-main Main");
 	this.closeFile();
 
