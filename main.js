@@ -107,6 +107,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 			case Platform.HTML5Worker:
 			case Platform.Android:
 			case Platform.Tizen:
+			case Platform.Linux:
 			case Platform.iOS: {
 				if (Options.graphicsApi === GraphicsApi.Metal) {
 					if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
@@ -159,8 +160,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 				addShader(project, name, ".d3d9");
 				break;
 			}
-			case Platform.OSX:
-			case Platform.Linux: {
+			case Platform.OSX: {
 				if (compiler == "") Files.copy(shaderPath.resolve(name + ".glsl"), to.resolve(name + ".glsl"), true);
 				else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp, platform, kfx);
 				addShader(project, name, ".glsl");
