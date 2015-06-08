@@ -165,15 +165,15 @@ FlashExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 };
 
 FlashExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
-	if (this.embed) this.sounds.push(to.toString() + '.mp3');
+	if (this.embed) this.sounds.push(to.toString() + '.ogg');
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), encoders.mp3Encoder, callback);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogg'), encoders.oggEncoder, callback);
 };
 
 FlashExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	if (this.embed) this.sounds.push(to.toString() + '.mp3');
+	if (this.embed) this.sounds.push(to.toString() + '.ogg');
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp3'), encoders.mp3Encoder, callback);
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogg'), encoders.oggEncoder, callback);
 };
 
 FlashExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
