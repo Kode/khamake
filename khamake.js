@@ -303,9 +303,13 @@ for (var i = 2; i < args.length; ++i) {
 		parsedOptions.target = arg;
 	}
 }
-console.log('Graphics: ' + parsedOptions.graphics);
+
 if (parsedOptions.graphics === GraphicsApi.OpenGL) {
 	parsedOptions.graphics = GraphicsApi.OpenGL2;
+}
+
+if (parsedOptions.run) {
+	parsedOptions.compile = true;
 }
 
 if (parsedOptions.init) {
