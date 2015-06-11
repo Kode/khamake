@@ -304,6 +304,9 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 				if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
 				if (platform == Platform.WindowsApp) out += "project.addDefine('HX_WINDOWS'); project.addDefine('HX_WINRT');\n";
+				if (platform !== Platform.Windows && platform != Platform.WindowsApp) {
+					out += "project.addDefine('KORE_MULTITHREADED_AUDIO');\n";
+				}
 				if (platform == Platform.OSX) {
 					out += "project.addDefine('HXCPP_M64');\n";
 					out += "project.addDefine('HX_MACOS');\n";
