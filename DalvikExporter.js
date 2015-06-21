@@ -43,7 +43,7 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 	this.p("<output>", 1);
 	this.p("<movie outputType=\"Application\" />", 2);
 	this.p("<movie input=\"\" />", 2);
-	this.p('<movie path="' + this.sysdir() + '\\' + safename + '\\app\\src\\main\\java" />', 2);
+	this.p('<movie path="' + this.sysdir() + '\\' + safename + '" />', 2);
 	this.p("<movie fps=\"0\" />", 2);
 	this.p("<movie width=\"0\" />", 2);
 	this.p("<movie height=\"0\" />", 2);
@@ -110,7 +110,7 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
-	this.p("-java " + path.join(this.sysdir(), safename, 'app', 'src', 'main', 'java'));
+	this.p("-java " + path.join(this.sysdir(), safename));
 	this.p("-main Main");
 	this.p("-D no-compilation");
 	this.p("-java-lib " + from.resolve('build').relativize(haxeDirectory).resolve(Paths.get("hxjava", "hxjava-std.jar")).toString());
