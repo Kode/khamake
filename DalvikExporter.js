@@ -41,7 +41,7 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 	this.p("<output>", 1);
 	this.p("<movie outputType=\"Application\" />", 2);
 	this.p("<movie input=\"\" />", 2);
-	this.p('<movie path="' + this.sysdir() + '\\app\\src" />', 2);
+	this.p('<movie path="' + this.sysdir() + '\\app\\src\\main\\java" />', 2);
 	this.p("<movie fps=\"0\" />", 2);
 	this.p("<movie width=\"0\" />", 2);
 	this.p("<movie height=\"0\" />", 2);
@@ -108,7 +108,7 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
-	this.p("-java " + path.join(this.sysdir(), 'app', 'src'));
+	this.p("-java " + path.join(this.sysdir(), 'app', 'src', 'main', 'java'));
 	this.p("-main Main");
 	this.p("-D no-compilation");
 	this.p("-java-lib " + from.resolve('build').relativize(haxeDirectory).resolve(Paths.get("hxjava", "hxjava-std.jar")).toString());
@@ -133,8 +133,22 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	fs.copySync(path.join(indir, 'app', 'app.iml'), path.join(outdir, 'app', 'app.iml'));
 	fs.copySync(path.join(indir, 'app', 'build.gradle'), path.join(outdir, 'app', 'build.gradle'));
 	fs.copySync(path.join(indir, 'app', 'proguard-rules.pro'), path.join(outdir, 'app', 'proguard-rules.pro'));
+
 	fs.ensureDirSync(path.join(outdir, 'app', 'src'));
-	fs.emptyDirSync(path.join(outdir, 'app', 'src'));
+	//fs.emptyDirSync(path.join(outdir, 'app', 'src'));
+
+	fs.copySync(path.join(indir, 'main', 'AndroidManifest.xml'), path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'));
+	fs.copySync(path.join(indir, 'main', 'res', 'values', 'strings.xml'), path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'strings.xml'));
+	fs.copySync(path.join(indir, 'main', 'res', 'values', 'styles.xml'), path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'styles.xml'));
+
+	fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-hdpi'));
+	exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher.png")), { width: 72, height: 72 });
+	fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-mdpi'));
+	exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'res', 'mipmap-mdpi', "ic_launcher.png")), { width: 48, height: 48 });
+	fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xhdpi'));
+	exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'res', 'mipmap-xhdpi', "ic_launcher.png")), { width: 96, height: 96 });
+	fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi'));
+	exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'res', 'mipmap-xxhdpi', "ic_launcher.png")), { width: 144, height: 144 });
 
 	fs.copySync(path.join(indir, 'gradle', 'wrapper', 'gradle-wrapper.jar'), path.join(outdir, 'gradle', 'wrapper', 'gradle-wrapper.jar'));
 	fs.copySync(path.join(indir, 'gradle', 'wrapper', 'gradle-wrapper.properties'), path.join(outdir, 'gradle', 'wrapper', 'gradle-wrapper.properties'));

@@ -51,7 +51,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
 			asset.original_width = wh.w;
 			asset.original_height = wh.h;
-			callback();
+			if (callback) callback();
 		});
 		return;
 	}
@@ -68,7 +68,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
 			asset.original_width = wh.w;
 			asset.original_height = wh.h;
-			callback();
+			if (callback) callback();
 		});
 		return;
 	}
@@ -102,7 +102,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 	
 	child.on('error', function (err) {
 		log.error('kraffiti error: ' + err);
-		callback();
+		if (callback) callback();
 	});
 	
 	child.on('close', function (code) {
@@ -114,10 +114,10 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 				var numbers = line.substring(1).split('x');
 				asset.original_width = parseInt(numbers[0]);
 				asset.original_height = parseInt(numbers[1]);
-				callback();
+				if (callback) callback();
 				return;
 			}
 		}
-		callback();
+		if (callback) callback();
 	});
 };
