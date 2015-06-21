@@ -120,6 +120,8 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 };
 
 DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
+	var safename = name.replaceAll(' ', '-');
+
 	var indir = path.join(__dirname, 'Data', 'android');
 	var outdir = path.join(this.directory.path, this.sysdir());
 
@@ -130,22 +132,25 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	fs.copySync(path.join(indir, 'settings.gradle'), path.join(outdir, 'settings.gradle'));
 
 	var nameiml = fs.readFileSync(path.join(indir, 'name.iml'), { encoding: 'utf8' });
-	nameiml = nameiml.replaceAll('{name}', name);
-	fs.writeFileSync(path.join(outdir, name + '.iml'), nameiml, { encoding: 'utf8' });
+	nameiml = nameiml.replaceAll('{name}', safename);
+	fs.writeFileSync(path.join(outdir, safename + '.iml'), nameiml, { encoding: 'utf8' });
 
 	fs.copySync(path.join(indir, 'app', 'build.gradle'), path.join(outdir, 'app', 'build.gradle'));
 	fs.copySync(path.join(indir, 'app', 'proguard-rules.pro'), path.join(outdir, 'app', 'proguard-rules.pro'));
 
 	var appiml = fs.readFileSync(path.join(indir, 'app', 'app.iml'), { encoding: 'utf8' });
-	appiml = appiml.replaceAll('{name}', name);
+	appiml = appiml.replaceAll('{name}', safename);
 	fs.writeFileSync(path.join(outdir, 'app', 'app.iml'), appiml, { encoding: 'utf8' });
 
 	fs.ensureDirSync(path.join(outdir, 'app', 'src'));
 	//fs.emptyDirSync(path.join(outdir, 'app', 'src'));
 
 	fs.copySync(path.join(indir, 'main', 'AndroidManifest.xml'), path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'));
-	fs.copySync(path.join(indir, 'main', 'res', 'values', 'strings.xml'), path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'strings.xml'));
 	fs.copySync(path.join(indir, 'main', 'res', 'values', 'styles.xml'), path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'styles.xml'));
+
+	var strings = fs.readFileSync(path.join(indir, 'main', 'res', 'values', 'strings.xml'), { encoding: 'utf8' });
+	strings = strings.replaceAll('{name}', name);
+	fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'strings.xml'), strings, { encoding: 'utf8' });
 
 	fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-hdpi'));
 	exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher.png")), { width: 72, height: 72 });
@@ -163,32 +168,35 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	fs.copySync(path.join(indir, 'idea', 'encodings.xml'), path.join(outdir, '.idea', 'encodings.xml'));
 	fs.copySync(path.join(indir, 'idea', 'gradle.xml'), path.join(outdir, '.idea', 'gradle.xml'));
 	fs.copySync(path.join(indir, 'idea', 'misc.xml'), path.join(outdir, '.idea', 'misc.xml'));
-	fs.copySync(path.join(indir, 'idea', 'name'), path.join(outdir, '.idea', '.name'));
 	fs.copySync(path.join(indir, 'idea', 'runConfigurations.xml'), path.join(outdir, '.idea', 'runConfigurations.xml'));
 	fs.copySync(path.join(indir, 'idea', 'vcs.xml'), path.join(outdir, '.idea', 'vcs.xml'));
 	fs.copySync(path.join(indir, 'idea', 'copyright', 'profiles_settings.xml'), path.join(outdir, '.idea', 'copyright', 'profiles_settings.xml'));
 
+	var namename = fs.readFileSync(path.join(indir, 'idea', 'name'), { encoding: 'utf8' });
+	namename = namename.replaceAll('{name}', name);
+	fs.writeFileSync(path.join(outdir, '.idea', '.name'), namename, { encoding: 'utf8' });
+
 	var modules = fs.readFileSync(path.join(indir, 'idea', 'modules.xml'), { encoding: 'utf8' });
-	modules = modules.replaceAll('{name}', name);
+	modules = modules.replaceAll('{name}', safename);
 	fs.writeFileSync(path.join(outdir, '.idea', 'modules.xml'), modules, { encoding: 'utf8' });
 };
 
 DalvikExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), "assets", to.toString() + ".ogg")), encoders.oggEncoder, callback);
+	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets', to.toString() + '.ogg')), encoders.oggEncoder, callback);
 };
 
 DalvikExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), "assets", to.toString() + ".wav")));
+	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets', to.toString() + '.wav')));
 	callback();
 };
 
 DalvikExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), "assets")).resolve(to), asset, undefined, false, callback);
+	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false, callback);
 };
 
 DalvikExporter.prototype.copyBlob = function (platform, from, to, callback) {
-	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), "assets")).resolve(to));
+	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets')).resolve(to));
 	callback();
 };
 
