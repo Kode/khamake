@@ -127,12 +127,18 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	fs.copySync(path.join(indir, 'gradle.properties'), path.join(outdir, 'gradle.properties'));
 	fs.copySync(path.join(indir, 'gradlew'), path.join(outdir, 'gradlew'));
 	fs.copySync(path.join(indir, 'gradlew.bat'), path.join(outdir, 'gradlew.bat'));
-	fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, name + '.iml'));
 	fs.copySync(path.join(indir, 'settings.gradle'), path.join(outdir, 'settings.gradle'));
 
-	fs.copySync(path.join(indir, 'app', 'app.iml'), path.join(outdir, 'app', 'app.iml'));
+	var nameiml = fs.readFileSync(path.join(indir, 'name.iml'), { encoding: 'utf8' });
+	nameiml = nameiml.replaceAll('{name}', name);
+	fs.writeFileSync(path.join(outdir, name + '.iml'), nameiml, { encoding: 'utf8' });
+
 	fs.copySync(path.join(indir, 'app', 'build.gradle'), path.join(outdir, 'app', 'build.gradle'));
 	fs.copySync(path.join(indir, 'app', 'proguard-rules.pro'), path.join(outdir, 'app', 'proguard-rules.pro'));
+
+	var appiml = fs.readFileSync(path.join(indir, 'app', 'app.iml'), { encoding: 'utf8' });
+	appiml = appiml.replaceAll('{name}', name);
+	fs.writeFileSync(path.join(outdir, 'app', 'app.iml'), appiml, { encoding: 'utf8' });
 
 	fs.ensureDirSync(path.join(outdir, 'app', 'src'));
 	//fs.emptyDirSync(path.join(outdir, 'app', 'src'));
@@ -157,11 +163,14 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	fs.copySync(path.join(indir, 'idea', 'encodings.xml'), path.join(outdir, '.idea', 'encodings.xml'));
 	fs.copySync(path.join(indir, 'idea', 'gradle.xml'), path.join(outdir, '.idea', 'gradle.xml'));
 	fs.copySync(path.join(indir, 'idea', 'misc.xml'), path.join(outdir, '.idea', 'misc.xml'));
-	fs.copySync(path.join(indir, 'idea', 'modules.xml'), path.join(outdir, '.idea', 'modules.xml'));
 	fs.copySync(path.join(indir, 'idea', 'name'), path.join(outdir, '.idea', '.name'));
 	fs.copySync(path.join(indir, 'idea', 'runConfigurations.xml'), path.join(outdir, '.idea', 'runConfigurations.xml'));
 	fs.copySync(path.join(indir, 'idea', 'vcs.xml'), path.join(outdir, '.idea', 'vcs.xml'));
 	fs.copySync(path.join(indir, 'idea', 'copyright', 'profiles_settings.xml'), path.join(outdir, '.idea', 'copyright', 'profiles_settings.xml'));
+
+	var modules = fs.readFileSync(path.join(indir, 'idea', 'modules.xml'), { encoding: 'utf8' });
+	modules = modules.replaceAll('{name}', name);
+	fs.writeFileSync(path.join(outdir, '.idea', 'modules.xml'), modules, { encoding: 'utf8' });
 };
 
 DalvikExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
