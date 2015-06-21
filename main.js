@@ -532,6 +532,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 
 	name = project.game.name;
 	exporter.setWidthAndHeight(project.game.width, project.game.height);
+	exporter.setName(name);
 
 	if (project.sources !== undefined) {
 		for (var i = 0; i < project.sources.length; ++i) {

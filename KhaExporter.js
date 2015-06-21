@@ -42,6 +42,11 @@ KhaExporter.prototype.setWidthAndHeight = function (width, height) {
 	this.height = height;
 };
 
+KhaExporter.prototype.setName = function (name) {
+    this.name = name;
+    this.safename = name.replaceAll(' ', '-');
+};
+
 KhaExporter.prototype.addShader = function (shader) {
 
 };

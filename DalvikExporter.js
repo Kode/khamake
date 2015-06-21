@@ -123,6 +123,7 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 
 DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	var safename = name.replaceAll(' ', '-');
+	this.safename = safename;
 
 	var indir = path.join(__dirname, 'Data', 'android');
 	var outdir = path.join(this.directory.path, this.sysdir(), safename);
@@ -185,20 +186,20 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 
 DalvikExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets', to.toString() + '.ogg')), encoders.oggEncoder, callback);
+	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to.toString() + '.ogg')), encoders.oggEncoder, callback);
 };
 
 DalvikExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets', to.toString() + '.wav')));
+	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to.toString() + '.wav')));
 	callback();
 };
 
 DalvikExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false, callback);
+	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false, callback);
 };
 
 DalvikExporter.prototype.copyBlob = function (platform, from, to, callback) {
-	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), 'app', 'src', 'main', 'assets')).resolve(to));
+	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to));
 	callback();
 };
 
