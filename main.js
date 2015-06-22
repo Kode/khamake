@@ -106,6 +106,7 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 			case Platform.HTML5:
 			case Platform.HTML5Worker:
 			case Platform.Android:
+			case Platform.Dalvik:
 			case Platform.Tizen:
 			case Platform.Linux:
 			case Platform.iOS: {
@@ -123,8 +124,12 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 					addShader(project, name, ".metal");
 				}
 				else {
-					if (Files.exists(shaderPath.resolve(name + ".essl"))) Files.copy(shaderPath.resolve(name + ".essl"), to.resolve(name + ".essl"), true);
-					else compileShader(compiler, "essl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".essl"), temp, platform, kfx);
+					var shaderpath = to.resolve(name + '.essl');
+					if (platform === Platform.Dalvik) {
+						shaderpath = to.resolve(Paths.get(exporter.safename, 'app', 'src', 'main', 'assets', name + '.essl'));
+					}
+					if (Files.exists(shaderPath.resolve(name + ".essl"))) Files.copy(shaderPath.resolve(name + ".essl"), shaderpath, true);
+					else compileShader(compiler, "essl", shaderPath.resolve(name + '.glsl'), shaderpath, temp, platform, kfx);
 					addShader(project, name, ".essl");
 				}
 				break;

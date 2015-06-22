@@ -138,8 +138,11 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	nameiml = nameiml.replaceAll('{name}', safename);
 	fs.writeFileSync(path.join(outdir, safename + '.iml'), nameiml, { encoding: 'utf8' });
 
-	fs.copySync(path.join(indir, 'app', 'build.gradle'), path.join(outdir, 'app', 'build.gradle'));
 	fs.copySync(path.join(indir, 'app', 'proguard-rules.pro'), path.join(outdir, 'app', 'proguard-rules.pro'));
+
+	var gradle = fs.readFileSync(path.join(indir, 'app', 'build.gradle'), { encoding: 'utf8' });
+	gradle = gradle.replaceAll('{name}', safename);
+	fs.writeFileSync(path.join(outdir, 'app', 'build.gradle'), gradle, { encoding: 'utf8' });
 
 	var appiml = fs.readFileSync(path.join(indir, 'app', 'app.iml'), { encoding: 'utf8' });
 	appiml = appiml.replaceAll('{name}', safename);
