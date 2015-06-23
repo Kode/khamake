@@ -7,6 +7,7 @@ var Paths = require(korepath + 'Paths.js');
 var Platform = require('./Platform.js');
 var exportImage = require('./ImageTool.js');
 var path = require('path');
+var HaxeProject = require('./HaxeProject.js');
 
 function KoreExporter(platform, khaDirectory, vr, directory) {
 	KhaExporter.call(this, khaDirectory);
@@ -35,95 +36,21 @@ KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 		defines.push('vr_rift');
 	}
 
-	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxproj"));
-	this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-	this.p("<project version=\"2\">");
-	this.p("<!-- Output SWF options -->", 1);
-	this.p("<output>", 1);
-	this.p("<movie outputType=\"Application\" />", 2);
-	this.p("<movie input=\"\" />", 2);
-	this.p("<movie path=\"" + this.sysdir() + "-build\\Sources\" />", 2);
-	this.p("<movie fps=\"0\" />", 2);
-	this.p("<movie width=\"0\" />", 2);
-	this.p("<movie height=\"0\" />", 2);
-	this.p("<movie version=\"1\" />", 2);
-	this.p("<movie minorVersion=\"0\" />", 2);
-	this.p("<movie platform=\"C++\" />", 2);
-	this.p("<movie background=\"#FFFFFF\" />", 2);
-	if (Files.isDirectory(haxeDirectory)) this.p('<movie preferredSDK="' + from.resolve('build').relativize(haxeDirectory).toString() + '" />', 2);
-	this.p("</output>", 1);
-	this.p("<!-- Other classes to be compiled into your SWF -->", 1);
-	this.p("<classpaths>", 1);
-	for (var i = 0; i < this.sources.length; ++i) {
-		if (path.isAbsolute(this.sources[i])) {
-			this.p('<class path="' + this.sources[i] + '" />', 2);
-		}
-		else {
-			this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
-		}
-	}
-	this.p("</classpaths>", 1);
-	this.p("<!-- Build options -->", 1);
-	this.p("<build>", 1);
-	this.p("<option directives=\"\" />", 2);
-	this.p("<option flashStrict=\"False\" />", 2);
-	this.p("<option mainClass=\"Main\" />", 2);
-	this.p("<option enabledebug=\"False\" />", 2);
-	var def = '';
-	for (var d in defines) {
-		def += '-D ' + defines[d] + '\n';
-	}
-	this.p('<option additional="' + def + '" />', 2);
-	this.p("</build>", 1);
-	this.p("<!-- haxelib libraries -->", 1);
-	this.p("<haxelib>", 1);
-	this.p("<!-- example: <library name=\"...\" /> -->", 2);
-	this.p("</haxelib>", 1);
-	this.p("<!-- Class files to compile (other referenced classes will automatically be included) -->", 1);
-	this.p("<compileTargets>", 1);
-	this.p("<compile path=\"..\\Sources\\Main.hx\" />", 2);
-	this.p("</compileTargets>", 1);
-	this.p("<!-- Paths to exclude from the Project Explorer tree -->", 1);
-	this.p("<hiddenPaths>", 1);
-	this.p("<!-- example: <hidden path=\"...\" /> -->", 2);
-	this.p("</hiddenPaths>", 1);
-	this.p("<!-- Executed before build -->", 1);
-	this.p("<preBuildCommand />", 1);
-	this.p("<!-- Executed after build -->", 1);
-	this.p("<postBuildCommand alwaysRun=\"False\" />", 1);
-	this.p("<!-- Other project options -->", 1);
-	this.p("<options>", 1);
-	this.p("<option showHiddenPaths=\"False\" />", 2);
-	this.p("<option testMovie=\"Custom\" />", 2);
-	this.p("<option testMovieCommand=\"run.bat\" />", 2);
-	this.p("</options>", 1);
-	this.p("<!-- Plugin storage -->", 1);
-	this.p("<storage />", 1);
-	this.p("</project>");
-	this.closeFile();
+	var options = {
+		from: from.toString(),
+		to: path.join(this.sysdir() + '-build', 'Sources'),
+		sources: this.sources,
+		defines: defines,
+		haxeDirectory: haxeDirectory.toString(),
+		system: this.sysdir(),
+		language: 'cpp'
+	};
+	HaxeProject.FlashDevelopment(this.directory.toString(), options);
+	HaxeProject.hxml(this.directory.toString(), options);
 
 	//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
-
-	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
-	for (var i = 0; i < this.sources.length; ++i) {
-		if (path.isAbsolute(this.sources[i])) {
-			this.p("-cp " + this.sources[i]);
-		}
-		else {
-			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
-		}
-	}
-	this.p("-cpp " + Paths.get(this.sysdir() + "-build", "Sources").toString());
-	for (var d in defines) {
-		var define = defines[d];
-		this.p('-D ' + define);
-	}
-	this.p("-main Main");
-	this.closeFile();
-
-	var options = [];
-	options.push("project-" + this.sysdir() + ".hxml");
-	Haxe.executeHaxe(from, haxeDirectory, options, callback);
+	
+	Haxe.executeHaxe(from, haxeDirectory, ["project-" + this.sysdir() + ".hxml"], callback);
 };
 
 KoreExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {

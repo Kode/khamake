@@ -2,7 +2,26 @@ var fs = require('fs-extra');
 var path = require('path');
 var XmlWriter = require('./XmlWriter.js');
 
-exports.FlashDevelopment = function (path) {
+exports.hxml = function (projectdir, options) {
+	var data = '';
+	for (var i = 0; i < options.sources.length; ++i) {
+		if (path.isAbsolute(options.sources[i])) {
+			data += '-cp ' + options.sources[i] + '\n';
+		}
+		else {
+			data += '-cp ' + path.relative(projectdir, path.join(options.from, options.sources[i])) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		}
+	}
+	data += '-cpp ' + path.normalize(options.to) + '\n';
+	for (var d in options.defines) {
+		var define = options.defines[d];
+		data += '-D ' + define + '\n';
+	}
+	data += '-main Main' + '\n';
+	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
+};
+
+exports.FlashDevelopment = function (projectdir, options) {
 	var output = {
 		n: 'output',
 		e: [
@@ -16,7 +35,7 @@ exports.FlashDevelopment = function (path) {
 			},
 			{
 				n: 'movie',
-				path: /*this.sysdir() +*/ '-build\\Sources'
+				path: path.normalize(options.to) // this.sysdir() + '-build\\Sources'
 			},
 			{
 				n: 'movie',
@@ -49,12 +68,12 @@ exports.FlashDevelopment = function (path) {
 		]
 	};
 
-	/*if (fs.existsSync(haxeDirectory) && fs.statSync(haxeDirectory).dir) {
+	if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
 		output.e.push({
 			n: 'movie',
-			preferredSDK: from.resolve('build').relativize(haxeDirectory).toString()
+			preferredSDK: path.relative(projectdir, options.haxeDirectory) // from.resolve('build').relativize(haxeDirectory).toString()
 		})
-	}*/
+	}
 
 	var classpaths = {
 		n: 'classpaths',
@@ -63,54 +82,35 @@ exports.FlashDevelopment = function (path) {
 		]
 	};
 
-	/*for (var i = 0; i < this.sources.length; ++i) {
-		if (path.isAbsolute(this.sources[i])) {
+	for (var i = 0; i < options.sources.length; ++i) {
+		if (path.isAbsolute(options.sources[i])) {
 			classpaths.e.push({
 				n: 'class',
-				path: this.sources[i]
+				path: options.sources[i]
 			});
 		}
 		else {
 			classpaths.e.push({
 				n: 'class',
-				path: from.resolve('build').relativize(from.resolve(this.sources[i])).toString()
+				path: path.relative(projectdir, path.join(options.from, options.sources[i])) // from.resolve('build').relativize(from.resolve(this.sources[i])).toString()
 			});
 		}
-	}*/
+	}
 
 	var def = '';
-	/*for (var d in defines) {
-		def += '-D ' + defines[d] + '\n';
-	}*/
-
-	var options = {
-		n: 'options',
-		e: [
-			{
-				n: 'option',
-				showHiddenPaths: 'False'
-			},
-			{
-				n: 'option',
-				testMovie: 'Custom'
-			},
-			{
-				n: 'option',
-				testMovieCommand: 'run.bat'
-			},
-			{
-				n: 'option',
-				additional: def
-			}
-		]
-	};
+	for (var d in options.defines) {
+		def += '-D ' + options.defines[d] + '\n';
+	}
 
 	var project = {
 		n: 'project',
 		version: '2',
 		e: [
+			'Output SWF options',
 			output,
+			'Other classes to be compiled into your SWF',
 			classpaths,
+			'Build options',
 			{
 				n: 'build',
 				e: [
@@ -129,12 +129,21 @@ exports.FlashDevelopment = function (path) {
 					{
 						n: 'option',
 						enableDebug: 'False'
+					},
+					{
+						n: 'option',
+						additional: def
 					}
 				]
 			},
+			'haxelib libraries',
 			{
-				n: 'haxelib'
+				n: 'haxelib',
+				e: [
+					'example: <library name="..." />'
+				]
 			},
+			'Class files to compile (other referenced classes will automatically be included)',
 			{
 				n: 'compileTargets',
 				e: [
@@ -144,22 +153,46 @@ exports.FlashDevelopment = function (path) {
 					}
 				]
 			},
+			'Paths to exclude from the Project Explorer tree',
 			{
-				n: 'hiddenPaths'
+				n: 'hiddenPaths',
+				e: [
+					'example: <hidden path="..." />'
+				]
 			},
+			'Executed before build',
 			{
 				n: 'preBuildCommand'
 			},
+			'Executed after build',
 			{
 				n: 'postBuildCommand',
 				alwaysRun: 'False'
 			},
-			options,
+			'Other project options',
+			{
+				n: 'options',
+				e: [
+					{
+						n: 'option',
+						showHiddenPaths: 'False'
+					},
+					{
+						n: 'option',
+						testMovie: 'Custom'
+					},
+					{
+						n: 'option',
+						testMovieCommand: 'run.bat'
+					}
+				]
+			},
+			'Plugin storage',
 			{
 				n: 'storage'
 			}
 		]
 	};
 
-	XmlWriter(project, path + '.hxproj');
+	XmlWriter(project, path.join(projectdir, 'project-' + options.system + '.hxproj'));
 };

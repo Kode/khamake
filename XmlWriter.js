@@ -2,6 +2,12 @@ var fs = require('fs-extra');
 
 function printElement(elem, data, indents) {
 	for (var i = 0; i < indents; ++i) data += '\t';
+
+	if (typeof elem === 'string') {
+		data += '<!-- ' + elem + ' -->\n';
+		return data;
+	}
+
 	data += '<' + elem.n;
 	for (var a in elem) {
 		if (a === 'n') continue;
@@ -10,7 +16,7 @@ function printElement(elem, data, indents) {
 	}
 
 	if (elem.e === undefined || elem.e.length === 0) {
-		data += '/>\n';
+		data += ' />\n';
 	}
 	else {
 		data += '>\n';
@@ -27,7 +33,13 @@ function printElement(elem, data, indents) {
 module.exports = function (xml, path) {
 	var data = '';
 	data += '<?xml version="1.0" encoding="utf-8"?>\n';
-	data += '<' + xml.n + '>\n';
+	data += '<' + xml.n;
+	for (var a in xml) {
+		if (a === 'n') continue;
+		if (a === 'e') continue;
+		data += ' ' + a + '="' + xml[a] + '"';
+	}
+	data += '>\n';
 	for (var e in xml.e) {
 		data = printElement(xml.e[e], data, 1);
 	}
