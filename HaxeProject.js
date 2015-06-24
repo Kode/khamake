@@ -152,7 +152,7 @@ exports.FlashDevelopment = function (projectdir, options) {
 		});
 		otheroptions.push({
 			n: 'option',
-			testMovieCommand: 'run.bat'
+			testMovieCommand: 'run_' + options.system + '.bat'
 		});
 	}
 	else if (options.language === 'cs' || options.language === 'java') {
