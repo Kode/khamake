@@ -27,7 +27,12 @@ JavaExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 
 	this.createDirectory(this.directory.resolve(this.sysdir()));
 
-	var defines = ['no-compilation'];
+	var defines = [
+		'no-compilation',
+		'sys_' + platform,
+		'sys_g1', 'sys_g2',
+		'sys_a1'
+	];
 
 	var options = {
 		from: from.toString(),

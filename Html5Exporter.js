@@ -26,8 +26,17 @@ Html5Exporter.prototype.sysdir = function () {
 Html5Exporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	this.createDirectory(this.directory.resolve(this.sysdir()));
 
-	var defines = [];
-	if (this.sysdir() === 'node') defines.push('node');
+	var defines = [
+		'sys_' + platform,
+		'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
+		'sys_a1', 'sys_a2'
+	];
+	if (this.sysdir() === 'node') {
+		defines = [
+			'sys_node',
+			'sys_server'
+		]
+	}
 
 	var options = {
 		from: from.toString(),

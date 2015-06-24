@@ -25,7 +25,12 @@ KoreExporter.prototype.sysdir = function () {
 };
 
 KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
-	var defines = ['no-compilation', 'sys_' + platform];
+	var defines = [
+		'no-compilation',
+		'sys_' + platform,
+		'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
+		'sys_a1', 'sys_a2'
+	];
 	if (this.vr === 'gearvr') {
 		defines.push('vr_gearvr');
 	}

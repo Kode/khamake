@@ -34,7 +34,12 @@ FlashExporter.prototype.sysdir = function () {
 };
 
 FlashExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
-	var defines = ['sys_flash', 'swf-script-timeout=60'];
+	var defines = [
+		'swf-script-timeout=60',
+		'sys_' + platform,
+		'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
+		'sys_a1', 'sys_a2'
+	];
 	if (this.embed) defines.push('KHA_EMBEDDED_ASSETS');
 
 	var options = {

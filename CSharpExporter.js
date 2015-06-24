@@ -36,7 +36,10 @@ CSharpExporter.prototype.exportSolution = function (name, platform, khaDirectory
 
 	var defines = [
 		'no-root',
-		'no-compilation'
+		'no-compilation',
+		'sys_' + platform,
+		'sys_g1', 'sys_g2',
+		'sys_a1'
 	];
 
 	var options = {
