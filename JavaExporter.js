@@ -51,7 +51,7 @@ JavaExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 	Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Sources")));
 
 	var self = this;
-	Haxe.executeHaxe(from, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], function () {
+	Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], function () {
 		self.exportEclipseProject();
 		callback();
 	});

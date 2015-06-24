@@ -57,7 +57,7 @@ KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 
 	//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-	Haxe.executeHaxe(from, haxeDirectory, ["project-" + this.sysdir() + ".hxml"], callback);
+	Haxe.executeHaxe(this.directory, haxeDirectory, ["project-" + this.sysdir() + ".hxml"], callback);
 };
 
 KoreExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {

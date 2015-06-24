@@ -93,7 +93,7 @@ FlashExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 	}
 
 	if (Options.compilation) {
-		Haxe.executeHaxe(from, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
+		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
 	}
 	else {
 		callback();

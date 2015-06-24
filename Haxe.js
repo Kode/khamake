@@ -1,14 +1,17 @@
 var child_process = require('child_process');
-var os = require('os');
+var fs = require('fs');
 var path = require('path');
 var log = require('./log.js');
 var exec = require('./exec.js');
 
 exports.executeHaxe = function (from, haxeDirectory, options, callback) {
-	var exe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath();
+	var exe = 'haxe';
 	var env = process.env;
-	env.HAXE_STD_PATH = haxeDirectory.toAbsolutePath().resolve('std').toString();
-	var haxe = child_process.spawn(exe.toString(), options, { env: env, cwd: path.resolve(from.toString(), 'build') });
+	if (fs.existsSync(haxeDirectory) && fs.statSync(haxeDirectory).isDirectory()) {
+		exe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath().toString();
+		env.HAXE_STD_PATH = haxeDirectory.toAbsolutePath().resolve('std').toString();
+	}
+	var haxe = child_process.spawn(exe, options, { env: env, cwd: path.normalize(from.toString()) });
 
 	haxe.stdout.on('data', function (data) {
 		log.info('Haxe stdout: ' + data);

@@ -58,7 +58,7 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 
 	this.exportAndroidStudioProject(name);
 
-	Haxe.executeHaxe(from, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
+	Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
 };
 
 DalvikExporter.prototype.exportAndroidStudioProject = function (name) {

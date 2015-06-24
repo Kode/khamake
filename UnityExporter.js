@@ -51,7 +51,7 @@ UnityExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 	Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Assets", "Sources")));
 
 	var self = this;
-	Haxe.executeHaxe(from, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], function () {
+	Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], function () {
 		var copyDirectory = function (from, to) {
 			var files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
 			self.createDirectory(self.directory.resolve(Paths.get(self.sysdir(), to)));
