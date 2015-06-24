@@ -477,6 +477,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			exporter = new PlayStationMobileExporter(khaDirectory, to);
 			break;
 		case Platform.Dalvik:
+		case Platform.Android:
 			exporter = new DalvikExporter(khaDirectory, to);
 			break;
 		case Platform.Node:
@@ -487,6 +488,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			break;
 		default:
 			kore = true;
+			if (platform === 'android-native') {
+				platform = 'android';
+			}
 			exporter = new KoreExporter(platform, khaDirectory, Options.vrApi, to);
 			break;
 	}
