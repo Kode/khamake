@@ -43,13 +43,15 @@ KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 		defines: defines,
 		haxeDirectory: haxeDirectory.toString(),
 		system: this.sysdir(),
-		language: 'cpp'
+		language: 'cpp',
+		width: this.width,
+		height: this.height
 	};
 	HaxeProject.FlashDevelopment(this.directory.toString(), options);
 	HaxeProject.hxml(this.directory.toString(), options);
 
 	//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
-	
+
 	Haxe.executeHaxe(from, haxeDirectory, ["project-" + this.sysdir() + ".hxml"], callback);
 };
 

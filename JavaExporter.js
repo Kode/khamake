@@ -8,6 +8,7 @@ var Paths = require(korepath + 'Paths.js');
 var exportImage = require('./ImageTool.js');
 var fs = require('fs');
 var path = require('path');
+var HaxeProject = require('./HaxeProject.js');
 
 function JavaExporter(khaDirectory, directory) {
 	KhaExporter.call(this, khaDirectory);
@@ -26,90 +27,26 @@ JavaExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 
 	this.createDirectory(this.directory.resolve(this.sysdir()));
 
-	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxproj"));
-	this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-	this.p("<project version=\"2\">");
-		this.p("<!-- Output SWF options -->", 1);
-		this.p("<output>", 1);
-		this.p("<movie outputType=\"Application\" />", 2);
-		this.p("<movie input=\"\" />", 2);
-		this.p("<movie path=\"" + this.sysdir() + "\\Sources\" />", 2);
-		this.p("<movie fps=\"0\" />", 2);
-		this.p("<movie width=\"0\" />", 2);
-		this.p("<movie height=\"0\" />", 2);
-		this.p("<movie version=\"1\" />", 2);
-		this.p("<movie minorVersion=\"0\" />", 2);
-		this.p("<movie platform=\"Java\" />", 2);
-		this.p("<movie background=\"#FFFFFF\" />", 2);
-		if (Files.isDirectory(haxeDirectory)) this.p('<movie preferredSDK="' + from.resolve('build').relativize(haxeDirectory).toString() + '" />', 2);
-		this.p("</output>", 1);
-		this.p("<!-- Other classes to be compiled into your SWF -->", 1);
-		this.p("<classpaths>", 1);
-		for (var i = 0; i < this.sources.length; ++i) {
-			if (path.isAbsolute(this.sources[i])) {
-				this.p('<class path="' + this.sources[i] + '" />', 2);
-			}
-			else {
-				this.p('<class path="' + from.resolve('build').relativize(from.resolve(this.sources[i])).toString() + '" />', 2);
-			}
-		}
-		this.p("</classpaths>", 1);
-		this.p("<!-- Build options -->", 1);
-		this.p("<build>", 1);
-		this.p("<option directives=\"\" />", 2);
-		this.p("<option flashStrict=\"False\" />", 2);
-		this.p("<option mainClass=\"Main\" />", 2);
-		this.p("<option enabledebug=\"False\" />", 2);
-		this.p("<option additional=\"-D no-compilation&#xA;-java-lib " + from.resolve('build').relativize(haxeDirectory).resolve(Paths.get("hxjava", "hxjava-std.jar")).toString() + "\" />", 2);
-		this.p("</build>", 1);
-		this.p("<!-- haxelib libraries -->", 1);
-		this.p("<haxelib>", 1);
-		this.p("<!-- example: <library name=\"...\" /> -->", 2);
-		this.p("</haxelib>", 1);
-		this.p("<!-- Class files to compile (other referenced classes will automatically be included) -->", 1);
-		this.p("<compileTargets>", 1);
-		this.p("<compile path=\"..\\Sources\\Main.hx\" />", 2);
-		this.p("</compileTargets>", 1);
-		this.p("<!-- Paths to exclude from the Project Explorer tree -->", 1);
-		this.p("<hiddenPaths>", 1);
-		this.p("<!-- example: <hidden path=\"...\" /> -->", 2);
-		this.p("</hiddenPaths>", 1);
-		this.p("<!-- Executed before build -->", 1);
-		this.p("<preBuildCommand />", 1);
-		this.p("<!-- Executed after build -->", 1);
-		this.p("<postBuildCommand alwaysRun=\"False\" />", 1);
-		this.p("<!-- Other project options -->", 1);
-		this.p("<options>", 1);
-		this.p("<option showHiddenPaths=\"False\" />", 2);
-		this.p("<option testMovie=\"OpenDocument\" />", 2);
-		this.p("<option testMovieCommand=\"\" />", 2);
-		this.p("</options>", 1);
-		this.p("<!-- Plugin storage -->", 1);
-		this.p("<storage />", 1);
-	this.p("</project>");
-	this.closeFile();
+	var defines = ['no-compilation'];
+
+	var options = {
+		from: from.toString(),
+		to: path.join(this.sysdir(), 'Sources'),
+		sources: this.sources,
+		defines: defines,
+		haxeDirectory: haxeDirectory.toString(),
+		system: this.sysdir(),
+		language: 'java',
+		width: this.width,
+		height: this.height
+	};
+	HaxeProject.FlashDevelopment(this.directory.toString(), options);
+	HaxeProject.hxml(this.directory.toString(), options);
 
 	Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Sources")));
-	
-	this.writeFile(this.directory.resolve("project-" + this.sysdir() + ".hxml"));
-	for (var i = 0; i < this.sources.length; ++i) {
-		if (path.isAbsolute(this.sources[i])) {
-			this.p("-cp " + this.sources[i]);
-		}
-		else {
-			this.p("-cp " + from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
-		}
-	}
-	this.p("-java " + Paths.get(this.sysdir(), "Sources").toString());
-	this.p("-main Main");
-	this.p("-D no-compilation");
-	this.p("-java-lib " + from.resolve('build').relativize(haxeDirectory).resolve(Paths.get("hxjava", "hxjava-std.jar")).toString());
-	this.closeFile();
 
-	var options = [];
-	options.push("project-" + this.sysdir() + ".hxml");
 	var self = this;
-	Haxe.executeHaxe(from, haxeDirectory, options, function () {
+	Haxe.executeHaxe(from, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], function () {
 		self.exportEclipseProject();
 		callback();
 	});

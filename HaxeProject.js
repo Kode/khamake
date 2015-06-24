@@ -12,16 +12,57 @@ exports.hxml = function (projectdir, options) {
 			data += '-cp ' + path.relative(projectdir, path.join(options.from, options.sources[i])) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
-	data += '-cpp ' + path.normalize(options.to) + '\n';
 	for (var d in options.defines) {
 		var define = options.defines[d];
 		data += '-D ' + define + '\n';
+	}
+	if (options.language === 'cpp') {
+		data += '-cpp ' + path.normalize(options.to) + '\n';
+	}
+	else if (options.language === 'cs') {
+		data += '-cs ' + path.normalize(options.to) + '\n';
+		if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+			data += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '\n';
+		}
+	}
+	else if (options.language === 'java') {
+		data += '-java ' + path.normalize(options.to) + '\n';
+		if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+			data += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '\n';
+		}
+	}
+	else if (options.language === 'js') {
+		data += '-js ' + path.normalize(options.to) + '\n';
+	}
+	else if (options.language === 'as') {
+		data += '-swf ' + path.normalize(options.to) + '\n';
+		data += '-swf-version 11.6\n';
 	}
 	data += '-main Main' + '\n';
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 };
 
 exports.FlashDevelopment = function (projectdir, options) {
+	var platform;
+
+	switch (options.language) {
+		case 'cpp':
+			platform = 'C++';
+			break;
+		case 'as':
+			platform = 'Flash Player';
+			break;
+		case 'cs':
+			platform = 'C#';
+			break;
+		case 'java':
+			platform = 'Java';
+			break;
+		case 'js':
+			platform = 'JavaScript';
+			break;
+	}
+
 	var output = {
 		n: 'output',
 		e: [
@@ -35,31 +76,31 @@ exports.FlashDevelopment = function (projectdir, options) {
 			},
 			{
 				n: 'movie',
-				path: path.normalize(options.to) // this.sysdir() + '-build\\Sources'
+				path: path.normalize(options.to)
 			},
 			{
 				n: 'movie',
-				fps: 0
+				fps: 60
 			},
 			{
 				n: 'movie',
-				width: 0
+				width: options.width
 			},
 			{
 				n: 'movie',
-				height: 0
+				height: options.height
 			},
 			{
 				n: 'movie',
-				version: 1
+				version: 11
 			},
 			{
 				n: 'movie',
-				minorVersion: 0
+				minorVersion: 6
 			},
 			{
 				n: 'movie',
-				platform: 'C++'
+				platform: platform
 			},
 			{
 				n: 'movie',
@@ -71,8 +112,8 @@ exports.FlashDevelopment = function (projectdir, options) {
 	if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
 		output.e.push({
 			n: 'movie',
-			preferredSDK: path.relative(projectdir, options.haxeDirectory) // from.resolve('build').relativize(haxeDirectory).toString()
-		})
+			preferredSDK: path.relative(projectdir, options.haxeDirectory)
+		});
 	}
 
 	var classpaths = {
@@ -92,14 +133,64 @@ exports.FlashDevelopment = function (projectdir, options) {
 		else {
 			classpaths.e.push({
 				n: 'class',
-				path: path.relative(projectdir, path.join(options.from, options.sources[i])) // from.resolve('build').relativize(from.resolve(this.sources[i])).toString()
+				path: path.relative(projectdir, path.join(options.from, options.sources[i]))
 			});
 		}
+	}
+
+	var otheroptions = [
+		{
+			n: 'option',
+			showHiddenPaths: 'False'
+		}
+	];
+
+	if (options.language === 'cpp') {
+		otheroptions.push({
+			n: 'option',
+			testMovie: 'Custom'
+		});
+		otheroptions.push({
+			n: 'option',
+			testMovieCommand: 'run.bat'
+		});
+	}
+	else if (options.language === 'cs' || options.language === 'java') {
+		otheroptions.push({
+			n: 'option',
+			testMovie: 'OpenDocument'
+		});
+		otheroptions.push({
+			n: 'option',
+			testMovieCommand: ''
+		});
+	}
+	else if (options.language === 'js') {
+		otheroptions.push({
+			n: 'option',
+			testMovie: 'Webserver'
+		});
+		otheroptions.push({
+			n: 'option',
+			testMovieCommand: path.join(path.parse(options.to).dir, 'index.html')
+		});
+	}
+	else {
+		otheroptions.push({
+			n: 'option',
+			testMovie: 'Default'
+		});
 	}
 
 	var def = '';
 	for (var d in options.defines) {
 		def += '-D ' + options.defines[d] + '\n';
+	}
+	if (options.language === 'java' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+		def += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '\n';
+	}
+	if (options.language === 'cs' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+		def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '\n';
 	}
 
 	var project = {
@@ -172,20 +263,7 @@ exports.FlashDevelopment = function (projectdir, options) {
 			'Other project options',
 			{
 				n: 'options',
-				e: [
-					{
-						n: 'option',
-						showHiddenPaths: 'False'
-					},
-					{
-						n: 'option',
-						testMovie: 'Custom'
-					},
-					{
-						n: 'option',
-						testMovieCommand: 'run.bat'
-					}
-				]
+				e: otheroptions
 			},
 			'Plugin storage',
 			{
