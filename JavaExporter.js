@@ -43,10 +43,10 @@ JavaExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 		system: this.sysdir(),
 		language: 'java',
 		width: this.width,
-		height: this.height
+		height: this.height,
+		name: name
 	};
-	HaxeProject.FlashDevelopment(this.directory.toString(), options);
-	HaxeProject.hxml(this.directory.toString(), options);
+	HaxeProject(this.directory.toString(), options);
 
 	Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Sources")));
 

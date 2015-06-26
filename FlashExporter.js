@@ -51,10 +51,10 @@ FlashExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 		system: this.sysdir(),
 		language: 'as',
 		width: this.width,
-		height: this.height
+		height: this.height,
+		name: name
 	};
-	HaxeProject.FlashDevelopment(this.directory.toString(), options);
-	HaxeProject.hxml(this.directory.toString(), options);
+	HaxeProject(this.directory.toString(), options);
 
 	if (this.embed) {
 		this.writeFile(this.directory.resolve(Paths.get("..", "Sources", "Assets.hx")));

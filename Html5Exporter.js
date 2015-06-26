@@ -47,10 +47,10 @@ Html5Exporter.prototype.exportSolution = function (name, platform, khaDirectory,
 		system: this.sysdir(),
 		language: 'js',
 		width: this.width,
-		height: this.height
+		height: this.height,
+		name: name
 	};
-	HaxeProject.FlashDevelopment(this.directory.toString(), options);
-	HaxeProject.hxml(this.directory.toString(), options);
+	HaxeProject(this.directory.toString(), options);
 
 	var index = this.directory.resolve(Paths.get(this.sysdir(), "index.html"));
 	if (!Files.exists(index)) {

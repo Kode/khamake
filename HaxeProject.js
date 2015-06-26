@@ -2,9 +2,30 @@ var fs = require('fs-extra');
 var path = require('path');
 var XmlWriter = require('./XmlWriter.js');
 
-exports.hxml = function (projectdir, options) {
-	options.defines.push('kha');
-	
+function copyAndReplace(from, to, names, values) {
+	var data = fs.readFileSync(from, { encoding: 'utf8' });
+	for (var i = 0; i < names.length; ++i) {
+		data = data.replaceAll(names[i], values[i]);
+	}
+	fs.writeFileSync(to, data, { encoding: 'utf8' });
+}
+
+function IntelliJ(projectdir, options) {
+    var indir = path.join(__dirname, 'Data', 'intellij');
+    var outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
+
+    fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'));
+	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}'], [options.name]);
+
+	fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'));
+	fs.copySync(path.join(indir, 'idea', 'misc.xml'), path.join(outdir, '.idea', 'misc.xml'));
+	copyAndReplace(path.join(indir, 'idea', 'modules.xml'), path.join(outdir, '.idea', 'modules.xml'), ['{name}'], [options.name]);
+	fs.copySync(path.join(indir, 'idea', 'vcs.xml'), path.join(outdir, '.idea', 'vcs.xml'));
+	copyAndReplace(path.join(indir, 'idea', 'name'), path.join(outdir, '.idea', '.name'), ['{name}'], [options.name]);
+	fs.copySync(path.join(indir, 'idea', 'copyright', 'profiles_settings.xml'), path.join(outdir, '.idea', 'copyright', 'profiles_settings.xml'));
+}
+
+function hxml(projectdir, options) {
 	var data = '';
 	for (var i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
@@ -42,11 +63,9 @@ exports.hxml = function (projectdir, options) {
 	}
 	data += '-main Main' + '\n';
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
-};
+}
 
-exports.FlashDevelopment = function (projectdir, options) {
-	options.defines.push('kha');
-
+function FlashDevelopment(projectdir, options) {
 	var platform;
 
 	switch (options.language) {
@@ -277,4 +296,11 @@ exports.FlashDevelopment = function (projectdir, options) {
 	};
 
 	XmlWriter(project, path.join(projectdir, 'project-' + options.system + '.hxproj'));
+}
+
+module.exports = function (projectdir, options) {
+	options.defines.push('kha');
+	FlashDevelopment(projectdir, options);
+	IntelliJ(projectdir, options);
+	hxml(projectdir, options);
 };
