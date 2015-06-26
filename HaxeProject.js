@@ -3,6 +3,8 @@ var path = require('path');
 var XmlWriter = require('./XmlWriter.js');
 
 exports.hxml = function (projectdir, options) {
+	options.defines.push('kha');
+	
 	var data = '';
 	for (var i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
@@ -43,6 +45,8 @@ exports.hxml = function (projectdir, options) {
 };
 
 exports.FlashDevelopment = function (projectdir, options) {
+	options.defines.push('kha');
+
 	var platform;
 
 	switch (options.language) {
