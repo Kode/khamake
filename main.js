@@ -5,12 +5,12 @@ var pathlib = require('path');
 var exec = require('./exec.js');
 var korepath = require('./korepath.js');
 var log = require('./log.js');
-var Files = require(korepath + 'Files.js');
+var Files = require(pathlib.join(korepath.get(), 'Files.js'));
 var GraphicsApi = require('./GraphicsApi.js');
 var VrApi = require('./VrApi.js');
 var Options = require('./Options.js');
-var Path = require(korepath + 'Path.js');
-var Paths = require(korepath + 'Paths.js');
+var Path = require(pathlib.join(korepath.get(), 'Path.js'));
+var Paths = require(pathlib.join(korepath.get(), 'Paths.js'));
 var Platform = require('./Platform.js');
 var ProjectFile = require('./ProjectFile.js');
 var VisualStudioVersion = require('./VisualStudioVersion.js');
@@ -408,7 +408,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				opts.push("vs=" + vs);
 				if (from.toString() != ".") opts.push("from=" + from.toString());
 				opts.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
-				require(korepath + 'main.js').run(
+				require(pathlib.join(korepath.get(), 'main.js')).run(
 				{
 					from: from,
 					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),

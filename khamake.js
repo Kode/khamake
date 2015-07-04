@@ -10,12 +10,12 @@ var os = require('os');
 var path = require('path');
 var exec = require('./exec.js');
 var korepath = require('./korepath.js');
-var Files = require(korepath + 'Files.js');
+var Files = require(path.join(korepath.get(), 'Files.js'));
 var GraphicsApi = require('./GraphicsApi.js');
 var VrApi = require('./VrApi.js');
 var Options = require('./Options.js');
-var Path = require(korepath + 'Path.js');
-var Paths = require(korepath + 'Paths.js');
+var Path = require(path.join(korepath.get(), 'Path.js'));
+var Paths = require(path.join(korepath.get(), 'Paths.js'));
 var Platform = require('./Platform.js');
 var VisualStudioVersion = require('./VisualStudioVersion.js');
 

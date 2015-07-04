@@ -1,7 +1,7 @@
 var korepath = require('./korepath.js');
-var Exporter = require(korepath + 'Exporter.js');
-var Files = require(korepath + 'Files.js');
 var path = require('path');
+var Exporter = require(path.join(korepath.get(), 'Exporter.js'));
+var Files = require(path.join(korepath.get(), 'Files.js'));
 
 var KhaExporter = function (khaDirectory) {
 	Exporter.call(this);

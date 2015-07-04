@@ -1,20 +1,20 @@
+var fs = require('fs');
+var path = require('path');
 var KhaExporter = require('./KhaExporter.js');
 var korepath = require('./korepath.js');
 var Converter = require('./Converter.js');
-var Files = require(korepath + 'Files.js');
+var Files = require(path.join(korepath.get(), 'Files.js'));
 var Haxe = require('./Haxe.js');
 var Options = require('./Options.js');
-var Paths = require(korepath + 'Paths.js');
+var Paths = require(path.join(korepath.get(), 'Paths.js'));
 var exportImage = require('./ImageTool.js');
-var fs = require('fs');
-var path = require('path');
 var uuid = require('./uuid.js');
 var HaxeProject = require('./HaxeProject.js');
 
 function CSharpExporter(khaDirectory, directory) {
 	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
-};
+}
 
 CSharpExporter.prototype = Object.create(KhaExporter.prototype);
 CSharpExporter.constructor = CSharpExporter;

@@ -3,8 +3,8 @@ var fs = require('fs');
 var os = require('os');
 var path = require('path');
 var korepath = require('./korepath.js')
-var Paths = require(korepath + 'Paths.js');
-var Files = require(korepath + 'Files.js');
+var Paths = require(path.join(korepath.get(), 'Paths.js'));
+var Files = require(path.join(korepath.get(), 'Files.js'));
 var log = require('./log.js');
 var exec = require('./exec.js');
 
