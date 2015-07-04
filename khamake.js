@@ -1,7 +1,7 @@
 ﻿var version = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
 if (version < 0.12) {
-	console.log('Sorry, this requires at least node version 0.12.')
+	console.log('Sorry, this requires at least node version 0.12.');
 	process.exit(1);
 }
 
@@ -45,14 +45,15 @@ if (!String.prototype.endsWith) {
 	});
 }
 
+var defaultTarget;
 if (os.platform() === "linux") {
-	var defaultTarget = Platform.Linux;
+	defaultTarget = Platform.Linux;
 }
 else if (os.platform() === "win32") {
-	var defaultTarget = Platform.Windows;
+	defaultTarget = Platform.Windows;
 }
 else {
-	var defaultTarget = Platform.OSX;
+	defaultTarget = Platform.OSX;
 }
 
 var options = [

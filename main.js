@@ -300,11 +300,9 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8', 'Kha/Backends/Kore/khacpp/project/libs/nekoapi');\n";
 				
 				if (options.vrApi == "rift") {
-          out += "project.addIncludeDirs('C:/khaviar/LibOVRKernel/Src/');\n";
-          out += "project.addIncludeDirs('C:/khaviar/LibOVR/Include/');\n";
+					out += "project.addIncludeDirs('C:/khaviar/LibOVRKernel/Src/');\n";
+					out += "project.addIncludeDirs('C:/khaviar/LibOVR/Include/');\n";
 				}
-				
-				
 				
 				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 				if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
@@ -331,16 +329,18 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				out += "project.addDefine('ROTATE90');\n";
 				console.log("VrApi (main.js): " + Options.VrApi);
 				if (Options.vrApi === "gearvr") {
-          out += "project.addDefine('VR_GEAR_VR');\n";
-				} else if (Options.vrApi === "cardboard") {
-          out += "project.addDefine('VR_CARDBOARD');\n";
-				} else if (Options.vrApi === "rift") {
-          out += "project.addDefine('VR_RIFT');\n";
+					out += "project.addDefine('VR_GEAR_VR');\n";
+				}
+				else if (Options.vrApi === "cardboard") {
+					out += "project.addDefine('VR_CARDBOARD');\n";
+				}
+				else if (Options.vrApi === "rift") {
+					out += "project.addDefine('VR_RIFT');\n";
 				}
 				
 				if (options.vrApi == "rift") {
-          out += "project.addLib('C:/khaviar/LibOVRKernel/Lib/Windows/Win32/Release/VS2013/LibOVRKernel');\n";
-          out += "project.addLib('C:/khaviar/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR');\n";
+					out += "project.addLib('C:/khaviar/LibOVRKernel/Lib/Windows/Win32/Release/VS2013/LibOVRKernel');\n";
+                    out += "project.addLib('C:/khaviar/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR');\n";
 				}
 				
 				if (platform === Platform.Windows || platform === Platform.WindowsApp) {
@@ -349,13 +349,9 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				if (platform === Platform.Windows) {
 					out += "project.addLib('ws2_32');\n";
 				}
-				
-				
+
 				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
 				out += "solution.addProject(project);\n";
-				
-				
-				
 
 				out += "if (fs.existsSync('Libraries')) {\n"
 				out += "\tvar libraries = fs.readdirSync('Libraries');\n";
@@ -370,11 +366,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				out += 'return solution;\n';
 				fs.writeFileSync(from.resolve("korefile.js").toString(), out);
 			}
-			
-			//exportKoreProject(directory);
-			
-			var kake = from.resolve(Paths.get("Kha", "Kore", "Tools", "kake", "kake" + exec.sys()));
-			
+
 			var gfx = "unknown";
 			switch (Options.graphicsApi) {
 				case GraphicsApi.OpenGL:
@@ -408,7 +400,6 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 			}
 			
 			{
-				var exe = kake.toString();
 				var opts = [];
 				opts.push(platform);
 				//+ " pch=" + Options::getPrecompiledHeaders()
@@ -588,21 +579,21 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
 		}
 		addShaders(exporter, platform, project, shaderDir, temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
-		addShaders(exporter, platform, project, shaderDir, temp, from.resolve(Paths.get('Kha', 'Sources', 'Shaders')), krafix, kfx);
+		addShaders(exporter, platform, project, shaderDir, temp, from.resolve(Paths.get(options.kha, 'Sources', 'Shaders')), krafix, kfx);
 		for (var i = 0; i < sources.length; ++i) {
 			addShaders(exporter, platform, project, shaderDir, temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
 			exporter.addSourceDirectory(sources[i]);
 		}
 		if (platform === Platform.Unity) {
-			var proto = fs.readFileSync(from.resolve(Paths.get('Kha', 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
+			var proto = fs.readFileSync(from.resolve(Paths.get(options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
 			for (var i1 = 0; i1 < project.shaders.length; ++i1) {
 				if (project.shaders[i1].name.endsWith('.vert')) {
 					for (var i2 = 0; i2 < project.shaders.length; ++i2) {
 						if (project.shaders[i2].name.endsWith('.frag')) {
 							var shadername = project.shaders[i1].name + '.' + project.shaders[i2].name;
 							var proto2 = proto.replaceAll('{name}', shadername);
-							var proto2 = proto2.replaceAll('{vert}', project.shaders[i1].name);
-							var proto2 = proto2.replaceAll('{frag}', project.shaders[i2].name);
+							proto2 = proto2.replaceAll('{vert}', project.shaders[i1].name);
+							proto2 = proto2.replaceAll('{frag}', project.shaders[i2].name);
 							fs.writeFileSync(shaderDir.resolve(shadername + '.shader').toString(), proto2, { encoding: 'utf8'});
 						}
 					}
@@ -686,8 +677,10 @@ exports.run = function (options, loglog, callback) {
 	};
 
 	if (options.kha === undefined || options.kha === '') {
-		var path = Paths.get(options.from).resolve(Paths.get('Kha'));
-		if (Files.isDirectory(path)) options.kha = path.toString();
+		var p = pathlib.join(__dirname, '..', '..');
+		if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
+			options.kha = p;
+		}
 	}
 
 	if (options.haxe === '') {
@@ -717,9 +710,10 @@ exports.run = function (options, loglog, callback) {
 	if (options.visualstudio !== undefined) {
 		Options.visualStudioVersion = options.visualstudio;	
 	}
+
 	if (options.vr != undefined) {
-    Options.vrApi = options.vr;
-    log.info("Vr API is: " + Options.vrApi);
+		Options.vrApi = options.vr;
+		//log.info("Vr API is: " + Options.vrApi);
 	}
 	
 	if (options.visualStudioVersion !== undefined) {
