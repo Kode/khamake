@@ -228,6 +228,12 @@ var options = [
 		description: 'Point size of the generated font',
 		value: true,
 		default: '12'
+	},
+	{
+		full: 'port',
+		description: 'Running port for the server',
+		value: true,
+		default: 8080
 	}
 ];
 
@@ -363,14 +369,14 @@ if (parsedOptions.init) {
 	console.log('If you want to use the git version of Kha, execute "git init" and "git add submodule https://github.com/ktxsoftware/Kha.git".');
 }
 else if (parsedOptions.server) {
-	console.log('Running server on 8080');
+	console.log('Running server on ' + parsedOptions.port);
 	var static = require('node-static');
 	var fileServer = new static.Server('./build/html5');
 	require('http').createServer(function (request, response) {
 		request.addListener('end', function () {
 			fileServer.serve(request, response);
 		}).resume();
-	}).listen(8080);
+	}).listen(parsedOptions.port);
 }
 else if (parsedOptions.addfont) {
 	console.log('Creating and adding font ' + parsedOptions.fontname + parsedOptions.fontsize);
