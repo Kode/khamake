@@ -259,25 +259,8 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				var out = '';
 				out += "var solution = new Solution('" + name + "');\n";
 				out += "var project = new Project('" + name + "');\n";
+
 				var files = [];
-				files.push("Kha/Backends/Kore/khacpp/src/**.h");
-				files.push("Kha/Backends/Kore/khacpp/src/**.cpp");
-				files.push("Kha/Backends/Kore/khacpp/include/**.h");
-				//"Kha/Backends/Kore/khacpp/project/libs/nekoapi/**.cpp"
-				files.push("Kha/Backends/Kore/khacpp/project/libs/common/**.h");
-				files.push("Kha/Backends/Kore/khacpp/project/libs/common/**.cpp");
-				if (platform === Platform.Windows || platform === Platform.WindowsApp) files.push("Kha/Backends/Kore/khacpp/project/libs/msvccompat/**.cpp");
-				if (platform === Platform.Linux) files.push("Kha/Backends/Kore/khacpp/project/libs/linuxcompat/**.cpp");
-				files.push("Kha/Backends/Kore/khacpp/project/libs/regexp/**.h");
-				files.push("Kha/Backends/Kore/khacpp/project/libs/regexp/**.cpp");
-				files.push("Kha/Backends/Kore/khacpp/project/libs/std/**.h");
-				files.push("Kha/Backends/Kore/khacpp/project/libs/std/**.cpp");
-				//"Kha/Backends/Kore/khacpp/project/libs/zlib/**.cpp"
-				files.push("Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/**.h");
-				files.push("Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/**.c");
-				//"Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/**.cc"
-				files.push("Kha/Backends/Kore/*.cpp");
-				files.push("Kha/Backends/Kore/*.h");
 				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.h").replaceAll('\\', '/'));
 				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp").replaceAll('\\', '/'));
 				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.metal").replaceAll('\\', '/'));
@@ -287,73 +270,25 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 					out += ", '" + files[i] + "'";
 				}
 				out += ");\n";
-				out += "project.addExcludes('Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/dftables.c', " 
-				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/pcredemo.c', " 
-				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/pcregrep.c', " 
-				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8/pcretest.c', " 
-				+ "'Kha/Backends/Kore/khacpp/src/ExampleMain.cpp', " 
-				+ "'Kha/Backends/Kore/khacpp/src/hx/Scriptable.cpp', " 
-				+ "'Kha/Backends/Kore/khacpp/src/hx/cppia/**', " 
-				+ "'**/src/__main__.cpp', " 
-				+ "'Kha/Backends/Kore/khacpp/src/hx/NekoAPI.cpp');\n";
-				out += "project.addIncludeDirs('Kha/Backends/Kore/khacpp/include', '" + from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "/Sources/include', " 
-				+ "'Kha/Backends/Kore/khacpp/project/thirdparty/pcre-7.8', 'Kha/Backends/Kore/khacpp/project/libs/nekoapi');\n";
-				
-				if (options.vrApi == "rift") {
-					out += "project.addIncludeDirs('C:/khaviar/LibOVRKernel/Src/');\n";
-					out += "project.addIncludeDirs('C:/khaviar/LibOVR/Include/');\n";
-				}
-				
-				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
-				if (platform == Platform.Windows) out += "project.addDefine('HX_WINDOWS');\n";
-				if (platform == Platform.WindowsApp) out += "project.addDefine('HX_WINDOWS'); project.addDefine('HX_WINRT');\n";
-				if (platform !== Platform.Windows && platform != Platform.WindowsApp) {
-					out += "project.addDefine('KORE_MULTITHREADED_AUDIO');\n";
-				}
-				if (platform == Platform.OSX) {
-					out += "project.addDefine('HXCPP_M64');\n";
-					out += "project.addDefine('HX_MACOS');\n";
-				}
-				if (platform == Platform.Linux) out += "project.addDefine('HX_LINUX');\n";
-				if (platform == Platform.iOS) out += "project.addDefine('IPHONE');\nproject.addDefine('HX_IPHONE');\n";
-				if (platform == Platform.Android) out += "project.addDefine('ANDROID');\nproject.addDefine('_ANDROID');\nproject.addDefine('HX_ANDROID');\n";
-				if (platform == Platform.OSX) out += "project.addDefine('KORE_DEBUGDIR=\"osx\"');\n";
-				if (platform == Platform.iOS) out += "project.addDefine('KORE_DEBUGDIR=\"ios\"');\n";
-				//out << "project:addDefine(\"HXCPP_SCRIPTABLE\")\n";
-				out += "project.addDefine('HXCPP_API_LEVEL=321');\n";
-				out += "project.addDefine('STATIC_LINK');\n";
-				out += "project.addDefine('PCRE_STATIC');\n";
-				out += "project.addDefine('HXCPP_SET_PROP');\n";
-				out += "project.addDefine('HXCPP_VISIT_ALLOCS');\n";
-				out += "project.addDefine('KORE');\n";
-				out += "project.addDefine('ROTATE90');\n";
-				console.log("VrApi (main.js): " + Options.VrApi);
-				if (Options.vrApi === "gearvr") {
-					out += "project.addDefine('VR_GEAR_VR');\n";
-				}
-				else if (Options.vrApi === "cardboard") {
-					out += "project.addDefine('VR_CARDBOARD');\n";
-				}
-				else if (Options.vrApi === "rift") {
-					out += "project.addDefine('VR_RIFT');\n";
-				}
-				
-				if (options.vrApi == "rift") {
-					out += "project.addLib('C:/khaviar/LibOVRKernel/Lib/Windows/Win32/Release/VS2013/LibOVRKernel');\n";
-                    out += "project.addLib('C:/khaviar/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR');\n";
-				}
-				
-				if (platform === Platform.Windows || platform === Platform.WindowsApp) {
-					out += "project.addDefine('_WINSOCK_DEPRECATED_NO_WARNINGS');\n";
-				}
-				if (platform === Platform.Windows) {
-					out += "project.addLib('ws2_32');\n";
-				}
 
-				out += "project.addSubProject(Solution.createProject('Kha/Kore'));\n";
+				out += "project.addExcludes('" + (from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/src/__main__.cpp").replaceAll('\\', '/') + "');\n";
+
+				var includes = [];
+				includes.push(from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + '/Sources/include');
+				out += "project.addIncludeDirs(";
+				out += "'" + includes[0] + "'";
+				for (var i = 1; i < includes.length; ++i) {
+					out += ", '" + includes[i] + "'";
+				}
+				out += ");\n";
+
+				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
+
+				out += "project.addSubProject(Solution.createProject('" + pathlib.normalize(options.kha).replaceAll('\\', '/') + "'));\n";
+				out += "project.addSubProject(Solution.createProject('" + pathlib.join(options.kha, 'Kore').replaceAll('\\', '/') + "'));\n";
 				out += "solution.addProject(project);\n";
 
-				out += "if (fs.existsSync('Libraries')) {\n"
+				out += "if (fs.existsSync('Libraries')) {\n";
 				out += "\tvar libraries = fs.readdirSync('Libraries');\n";
 				out += "\tfor (var l in libraries) {\n";
 				out += "\t\tvar lib = libraries[l];\n";
