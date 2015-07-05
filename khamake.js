@@ -235,6 +235,12 @@ var options = [
 		description: 'Running port for the server',
 		value: true,
 		default: 8080
+	},
+	{
+		full: 'addasset',
+		description: 'Add an asset to project.kha.',
+		value: true,
+		default: ''
 	}
 ];
 
@@ -380,10 +386,33 @@ else if (parsedOptions.server) {
 	}).listen(parsedOptions.port);
 }
 else if (parsedOptions.addfont) {
-	console.log('Adding font ' + parsedOptions.fontname + parsedOptions.fontsize + ', please put ' + parsedOptions.fontname + '.ttf in your Assets folder.');
+	console.log('Adding font ' + parsedOptions.fontname + parsedOptions.fontsize + ', please put ' + parsedOptions.fontname + '.ttf in your Assets directory.');
 	var ProjectFile = require('./ProjectFile.js');
 	var project = ProjectFile(Paths.get(parsedOptions.from));
 	project.assets.push({ file: parsedOptions.fontname + '.ttf', name: parsedOptions.fontname, type: 'font', size: parsedOptions.fontsize});
+	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
+}
+else if (parsedOptions.addasset !== '') {
+	var ProjectFile = require('./ProjectFile.js');
+	var project = ProjectFile(Paths.get(parsedOptions.from));
+	var filename = parsedOptions.addasset;
+	var name = filename.substr(0, filename.lastIndexOf('.'));
+	if (filename.endsWith('.png') || filename.endsWith('.jpg')) {
+		project.assets.push({ file: filename, name: name, type: 'image'});
+		console.log('Added image ' + name + '. Please make sure ' + filename + ' is in your Assets directory.');
+	}
+	else if (filename.endsWith('.wav')) {
+		project.assets.push({ file: name, name: name, type: 'sound'});
+		console.log('Added sound ' + name + '. Please make sure ' + filename + ' is in your Assets directory. You can optionally change the type of ' + name + ' to music in your project.kha.');
+	}
+	else if (filename.endsWith('.ttf')) {
+		console.log('Please use --addfont to add fonts.');
+		process.exit(1);
+	}
+	else {
+		project.assets.push({ file: name, name: name, type: 'blob'});
+		console.log('Added blob ' + filename + '. Please make sure ' + filename + ' is in your Assets directory.');
+	}
 	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
 else {
