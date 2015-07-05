@@ -274,7 +274,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 	}
 }
 
-function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback) {
+function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, callback) {
 if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, function () {
 		if (haxeDirectory.path !== '' && kore) {
 			{
@@ -310,7 +310,7 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				out += "project.addSubProject(Solution.createProject('" + pathlib.join(options.kha, 'Kore').replaceAll('\\', '/') + "'));\n";
 				out += "solution.addProject(project);\n";
 
-				out += "if (fs.existsSync('Libraries')) {\n";
+				/*out += "if (fs.existsSync('Libraries')) {\n";
 				out += "\tvar libraries = fs.readdirSync('Libraries');\n";
 				out += "\tfor (var l in libraries) {\n";
 				out += "\t\tvar lib = libraries[l];\n";
@@ -318,7 +318,14 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 				out += "\t\t\tproject.addSubProject(Solution.createProject('Libraries/' + lib));\n";
 				out += "\t\t}\n";
 				out += "\t}\n";
-				out += "}\n";
+				out += "}\n";*/
+
+				for (var l in libraries) {
+					var lib = libraries[l];
+					out += "if (fs.existsSync(path.join('" + lib.directory.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
+					out += "\tproject.addSubProject(Solution.createProject('" + lib.directory.replaceAll('\\', '/') + "'));\n";
+					out += "}\n";
+				}
 
 				out += 'return solution;\n';
 				fs.writeFileSync(from.resolve("korefile.js").toString(), out);
@@ -466,23 +473,51 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		project = ProjectFile(from);
 		foundProjectFile = true;
 	}
+
 	var libraries = [];
-	if (Files.isDirectory(from.resolve('Libraries'))) {
-		var dirs = Files.newDirectoryStream(from.resolve('Libraries'));
-		for (var d in dirs) {
-			var dir = dirs[d];
-			if (Files.isDirectory(from.resolve(Paths.get('Libraries', dir)))) {
+	if (project.libraries !== undefined) {
+		for (var ll in project.libraries) {
+			var libname = project.libraries[ll];
+			var found = false;
+			if (Files.isDirectory(from.resolve(Paths.get('Libraries', libname)))) {
 				var lib = {
-					directory: 'Libraries/' + dir,
+					directory: 'Libraries/' + libname,
 					project: {
 						assets: [],
 						rooms: []
 					}
 				};
-				if (Files.exists(from.resolve(Paths.get('Libraries', dir, 'project.kha')))) {
-					lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', dir, 'project.kha').toString(), { encoding: 'utf8' }));
+				if (Files.exists(from.resolve(Paths.get('Libraries', libname, 'project.kha')))) {
+					lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', libname, 'project.kha').toString(), { encoding: 'utf8' }));
 				}
 				libraries.push(lib);
+				found = true;
+			}
+			else {
+				if (process.env.HAXEPATH) {
+					var libpath = pathlib.join(process.env.HAXEPATH, 'lib', libname.toLowerCase());
+					if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
+						var current = fs.readFileSync(pathlib.join(libpath, '.current'), { encoding: 'utf8'});
+						var libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
+						if (fs.existsSync(libdeeppath) && fs.statSync(libdeeppath).isDirectory()) {
+							var lib = {
+								directory: libdeeppath,
+								project: {
+									assets: [],
+									rooms: []
+								}
+							};
+							if (Files.exists(from.resolve(Paths.get(libdeeppath, 'project.kha')))) {
+								lib.project = JSON.parse(fs.readFileSync(from.resolve(libdeeppath, 'project.kha').toString(), { encoding: 'utf8' }));
+							}
+							libraries.push(lib);
+							found = true;
+						}
+					}
+				}
+			}
+			if (!found) {
+				console.log('Warning, could not find library ' + libname + '.');
 			}
 		}
 	}
@@ -570,11 +605,11 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 					fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 					exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
 						log.info('Assets done.');
-						exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
+						exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, callback);
 					});
 				}
 				else {
-					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback);
+					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries,callback);
 				}
 			}
 		}
@@ -583,11 +618,11 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
 				log.info('Assets done.');
-				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, secondPass);
+				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, secondPass);
 			});
 		}
 		else {
-			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, secondPass);
+			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, secondPass);
 		}
 	});
 }
