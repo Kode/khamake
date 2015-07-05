@@ -5,6 +5,40 @@ if (version < 0.12) {
 	process.exit(1);
 }
 
+if (!String.prototype.startsWith) {
+	Object.defineProperty(String.prototype, 'startsWith', {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value: function (searchString, position) {
+			position = position || 0;
+			return this.indexOf(searchString, position) === position;
+		}
+	});
+}
+
+if (!String.prototype.endsWith) {
+	Object.defineProperty(String.prototype, 'endsWith', {
+		enumerable: false,
+		configurable: false,
+		writable: false,
+		value: function (searchString, position) {
+			position = position || this.length;
+			position = position - searchString.length;
+			var lastIndex = this.lastIndexOf(searchString);
+			return lastIndex !== -1 && lastIndex === position;
+		}
+	});
+}
+
+function escapeRegExp(string) {
+	return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+String.prototype.replaceAll = function (find, replace) {
+	return this.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+};
+
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
@@ -241,6 +275,11 @@ var options = [
 		description: 'Add an asset to project.kha.',
 		value: true,
 		default: ''
+	},
+	{
+		full: 'addallassets',
+		description: 'Searches the Assets directory and adds all unknown files to project.kha.',
+		value: false
 	}
 ];
 
@@ -396,7 +435,8 @@ else if (parsedOptions.addasset !== '') {
 	var ProjectFile = require('./ProjectFile.js');
 	var project = ProjectFile(Paths.get(parsedOptions.from));
 	var filename = parsedOptions.addasset;
-	var name = filename.substr(0, filename.lastIndexOf('.'));
+	var name = filename;
+	if (filename.indexOf('.') >= 0) name = filename.substr(0, filename.lastIndexOf('.'));
 	if (filename.endsWith('.png') || filename.endsWith('.jpg')) {
 		project.assets.push({ file: filename, name: name, type: 'image'});
 		console.log('Added image ' + name + '. Please make sure ' + filename + ' is in your Assets directory.');
@@ -413,6 +453,45 @@ else if (parsedOptions.addasset !== '') {
 		project.assets.push({ file: name, name: name, type: 'blob'});
 		console.log('Added blob ' + filename + '. Please make sure ' + filename + ' is in your Assets directory.');
 	}
+	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
+}
+else if (parsedOptions.addallassets) {
+	var hasAsset = function (project, name) {
+		for (var a in project.assets) {
+			if (project.assets[a].name === name) return true;
+		}
+		return false;
+	};
+
+	var readDirectory = function (dir) {
+		var filenames = fs.readdirSync(path.join(parsedOptions.from, 'Assets', dir));
+		for (var f in filenames) {
+			var filename = filenames[f];
+			if (fs.statSync(path.join(parsedOptions.from, 'Assets', dir, filename)).isDirectory()) {
+				readDirectory(path.join(dir, filename));
+				continue;
+			}
+			filename = path.join(dir, filename).replaceAll('\\', '/');
+			var name = filename;
+			if (filename.indexOf('.') >= 0) name = filename.substr(0, filename.lastIndexOf('.'));
+			if (filename.endsWith('.png') || filename.endsWith('.jpg')) {
+				if (!hasAsset(project, name)) project.assets.push({ file: filename, name: name, type: 'image'});
+			}
+			else if (filename.endsWith('.wav')) {
+				if (!hasAsset(project, name)) project.assets.push({ file: name, name: name, type: 'sound'});
+			}
+			else if (filename.endsWith('.ttf')) {
+
+			}
+			else {
+				if (!hasAsset(project, filename)) project.assets.push({ file: filename, name: filename, type: 'blob'});
+			}
+		}
+	};
+
+	var ProjectFile = require('./ProjectFile.js');
+	var project = ProjectFile(Paths.get(parsedOptions.from));
+	readDirectory('');
 	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
 else {
