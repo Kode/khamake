@@ -2,6 +2,7 @@ var korepath = require('./korepath.js');
 var path = require('path');
 var Exporter = require(path.join(korepath.get(), 'Exporter.js'));
 var Files = require(path.join(korepath.get(), 'Files.js'));
+var Converter = require('./Converter.js');
 
 var KhaExporter = function (khaDirectory) {
 	Exporter.call(this);
@@ -69,5 +70,9 @@ KhaExporter.prototype.copyMusic = function (platform, from, to, encoders, callba
 KhaExporter.prototype.copySound = function (platform, from, to, encoders, callback) { callback(); };
 KhaExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) { callback(); };
 KhaExporter.prototype.copyBlob = function (platform, from, to, callback) { callback(); };
+KhaExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString()), encoders.kravur, callback, { size: asset.size });
+};
 
 module.exports = KhaExporter;

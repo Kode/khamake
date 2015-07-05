@@ -250,6 +250,28 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
+	else if (asset.type === 'font') {
+		var file;
+		if (asset.libdir !== undefined) {
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
+		}
+		else {
+			file = from.resolve(Paths.get('Assets', asset.file));
+		}
+		asset.file = asset.name + asset.size;
+		if (asset.bold) {
+			asset.file += "#Bold";
+		}
+		if (asset.italic) {
+			asset.file += "#Italic";
+		}
+		asset.file += '.kravur';
+		asset.name = asset.file;
+		asset.type = 'blob';
+		exporter.copyFont(platform, file, Paths.get(asset.file), asset, encoders, function () {
+			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
+		});
+	}
 }
 
 function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, callback) {
@@ -504,7 +526,8 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		h264Encoder: h264Encoder,
 		webmEncoder: webmEncoder,
 		wmvEncoder: wmvEncoder,
-		theoraEncoder: theoraEncoder
+		theoraEncoder: theoraEncoder,
+		kravur: options.kravur
 	};
 	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
 		project.shaders = [];
@@ -636,6 +659,11 @@ exports.run = function (options, loglog, callback) {
 	if (options.ogg === '') {
 		var path = Paths.get(options.kha, "Tools", "oggenc", "oggenc" + exec.sys());
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out} --quiet';
+	}
+
+	if (options.kravur === '' || options.kravur === undefined) {
+		var path = Paths.get(options.kha, 'Tools', 'kravur', 'kravur' + exec.sys());
+		if (Files.exists(path)) options.kravur = path.toString() + ' {in} {size} {out}';
 	}
 	
 	if (options.graphics !== undefined) {
