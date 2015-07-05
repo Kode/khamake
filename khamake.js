@@ -380,22 +380,10 @@ else if (parsedOptions.server) {
 	}).listen(parsedOptions.port);
 }
 else if (parsedOptions.addfont) {
-	console.log('Creating and adding font ' + parsedOptions.fontname + parsedOptions.fontsize);
-	var kha = parsedOptions.kha;
-	if (kha === '') {
-		kha = path.join(parsedOptions.from, 'Kha');
-	}
-	var child_process = require('child_process');
-	var filename = parsedOptions.fontname + parsedOptions.fontsize + '.kravur';
-	child_process.execFileSync(path.join(kha, 'Tools', 'kravur', 'kravur' + exec.sys()),
-		[
-			parsedOptions.fontname, parsedOptions.fontsize,
-			path.join(parsedOptions.from, 'Assets', filename)
-		]
-	);
+	console.log('Adding font ' + parsedOptions.fontname + parsedOptions.fontsize + ', please put ' + parsedOptions.fontname + '.ttf in your Assets folder.');
 	var ProjectFile = require('./ProjectFile.js');
 	var project = ProjectFile(Paths.get(parsedOptions.from));
-	project.assets.push({ file: filename, name: filename, type: 'blob'});
+	project.assets.push({ file: parsedOptions.fontname + '.ttf', name: parsedOptions.fontname, type: 'font', size: parsedOptions.fontsize});
 	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
 else {
