@@ -406,6 +406,26 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	Files.createDirectories(to);
 	var temp = to.resolve('temp');
 	Files.createDirectories(temp);
+
+	var project = {
+			format: 1,
+			game: {
+				name: "Unknown",
+				width: 640,
+				height: 480
+			},
+			assets: [],
+			rooms: []
+		};
+
+	var foundProjectFile = false;
+	if (name === '') name = from.toAbsolutePath().getFileName();
+	project.game.name = name;
+
+	if (Files.exists(from.resolve('project.kha'))) {
+		project = ProjectFile(from);
+		foundProjectFile = true;
+	}
 	
 	var exporter = null;
 	var kore = false;
@@ -414,7 +434,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			exporter = new FlashExporter(khaDirectory, to, embedflashassets);
 			break;
 		case Platform.HTML5:
-			exporter = new Html5Exporter(khaDirectory, to);
+			exporter = new Html5Exporter(khaDirectory, to, project);
 			break;
 		case Platform.HTML5Worker:
 			exporter = new Html5WorkerExporter(khaDirectory, to);
@@ -454,25 +474,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	
 	var name = '';
 	var sources = [];
-	var project = {
-		format: 1,
-		game: {
-			name: "Unknown",
-			width: 640,
-			height: 480
-		},
-		assets: [],
-		rooms: []
-	};
 
-	var foundProjectFile = false;
-	if (name === '') name = from.toAbsolutePath().getFileName();
-	project.game.name = name;
-	
-	if (Files.exists(from.resolve('project.kha'))) {
-		project = ProjectFile(from);
-		foundProjectFile = true;
-	}
 
 	var libraries = [];
 	if (project.libraries !== undefined) {

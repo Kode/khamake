@@ -10,9 +10,10 @@ var exportImage = require('./ImageTool.js');
 var fs = require('fs');
 var HaxeProject = require('./HaxeProject.js');
 
-function Html5Exporter(khaDirectory, directory) {
+function Html5Exporter(khaDirectory, directory, project) {
 	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
+	this.project = project;
 	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5'));
 };
 
@@ -53,13 +54,33 @@ Html5Exporter.prototype.exportSolution = function (name, platform, khaDirectory,
 	HaxeProject(this.directory.toString(), options);
 
 	var index = this.directory.resolve(Paths.get(this.sysdir(), "index.html"));
-	if (!Files.exists(index)) {
-		var protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'html5', 'index.html'), { encoding: 'utf8' });
-		protoindex = protoindex.replaceAll("{Name}", name);
-		protoindex = protoindex.replaceAll("{Width}", this.width);
-		protoindex = protoindex.replaceAll("{Height}", this.height);
-		fs.writeFileSync(index.toString(), protoindex);
+
+	var defaultTemplatePath = path.join(__dirname, 'Data', 'html5', 'fixedSize.html');  //fullWindow is probably a better default
+	var pathToTemplate = defaultTemplatePath;
+	if(this.project.html){
+		pathToTemplate = this.project.html;
 	}
+	var protoindex = "";
+	try{
+		protoindex = fs.readFileSync(from.resolve(pathToTemplate).toString(), { encoding: 'utf8' });
+	}catch(e){
+		try{
+			if(pathToTemplate.lastIndexOf(".html") == -1){
+				pathToTemplate += ".html";
+			}
+			protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'html5', pathToTemplate), { encoding: 'utf8' });
+		}catch(e){
+		    if(this.project.html && this.project.html != ""){
+		        console.log("template not found : " + this.project.html, " falling back on default template : " + defaultTemplatePath);
+		    }
+			protoindex = fs.readFileSync(defaultTemplatePath, { encoding: 'utf8' });
+		}
+	}
+	protoindex = protoindex.replaceAll("{Name}", name);
+	protoindex = protoindex.replaceAll("{Width}", this.width);
+	protoindex = protoindex.replaceAll("{Height}", this.height);
+	fs.writeFileSync(index.toString(), protoindex);
+
 
 	if (Options.compilation) {
 		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
