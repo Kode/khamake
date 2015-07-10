@@ -66,11 +66,11 @@ function compileShader(compiler, type, from, to, temp, system, kfx) {
 		var compiler_process = child_process.spawn(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
 
 		compiler_process.stdout.on('data', function (data) {
-			if (data.toString().trim() !== '') log.info('Shader compiler stdout: ' + data);
+			if (data.toString().trim() !== '' && type !== 'agal') log.info('Shader compiler stdout: ' + data);
 		});
 
 		compiler_process.stderr.on('data', function (data) {
-			if (data.toString().trim() !== '') log.info('Shader compiler stderr: ' + data);
+			if (data.toString().trim() !== '' && type !== 'agal') log.info('Shader compiler stderr: ' + data);
 		});
 		
 		compiler_process.on('error', function (err) {
