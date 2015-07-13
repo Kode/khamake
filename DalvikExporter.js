@@ -92,8 +92,8 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	//fs.emptyDirSync(path.join(outdir, 'app', 'src'));
 
 	fs.copySync(path.join(indir, 'main', 'AndroidManifest.xml'), path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'));
-	fs.copySync(path.join(indir, 'main', 'res', 'values', 'styles.xml'), path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'styles.xml'));
 
+	fs.ensureDirSync(path.join(outdir, 'app', 'main', 'res', 'values'));
 	var strings = fs.readFileSync(path.join(indir, 'main', 'res', 'values', 'strings.xml'), { encoding: 'utf8' });
 	strings = strings.replaceAll('{name}', name);
 	fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'strings.xml'), strings, { encoding: 'utf8' });
