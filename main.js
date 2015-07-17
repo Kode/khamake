@@ -87,7 +87,7 @@ function addShader(project, name, extension) {
 	project.shaders.push({file: name + extension, name: name});
 }
 
-function addShaders(exporter, platform, project, to, temp, shaderPath, compiler, kfx) {
+function addShaders(exporter, platform, project, from, to, temp, shaderPath, compiler, kfx) {
 	if (!Files.isDirectory(shaderPath)) return;
 	var shaders = Files.newDirectoryStream(shaderPath);
 	for (var s in shaders) {
@@ -177,8 +177,31 @@ function addShaders(exporter, platform, project, to, temp, shaderPath, compiler,
 				addShader(project, name, ".hlsl");
 				break;
 			}
-			default:
+			case Platform.WPF:
+			case Platform.XNA:
+			case Platform.Java:
+			case Platform.PlayStationMobile:
+			case Platform.Node: {
 				break;
+			}
+			default: {
+				var customCompiler = compiler;
+				if (fs.existsSync(pathlib.join(from.toString(), 'Backends'))) {
+					var libdirs = fs.readdirSync(pathlib.join(from.toString(), 'Backends'));
+					for (var ld in libdirs) {
+						var libdir = pathlib.join(from.toString(), 'Backends', libdirs[ld]);
+						if (fs.statSync(libdir).isDirectory()) {
+							var exe = pathlib.join(libdir, 'krafix', 'krafix-' + platform + '.exe');
+							if (fs.existsSync(exe)) {
+								customCompiler = exe;
+							}
+						}
+					}
+				}
+				compileShader(customCompiler, platform, shaderPath.resolve(name + '.glsl'), to.resolve(name + '.' + platform), temp, platform, kfx);
+				addShader(project, name, '.' + platform);
+				break;
+			}
 		}
 	}
 }
@@ -571,10 +594,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			shaderDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Shaders'));
 			if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
 		}
-		addShaders(exporter, platform, project, shaderDir, temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
-		addShaders(exporter, platform, project, shaderDir, temp, from.resolve(Paths.get(options.kha, 'Sources', 'Shaders')), krafix, kfx);
+		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
+		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get(options.kha, 'Sources', 'Shaders')), krafix, kfx);
 		for (var i = 0; i < sources.length; ++i) {
-			addShaders(exporter, platform, project, shaderDir, temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
+			addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
 			exporter.addSourceDirectory(sources[i]);
 		}
 		if (platform === Platform.Unity) {
@@ -600,7 +623,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		function secondPass() {
 			var hxslDir = pathlib.join('build', 'Shaders');
 			if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) { 
-				addShaders(exporter, platform, project, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
+				addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
 				if (foundProjectFile) {	
 					fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 					exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
