@@ -34,7 +34,8 @@ Html5Exporter.prototype.exportSolution = function (name, platform, khaDirectory,
 	if (this.sysdir() === 'node') {
 		defines = [
 			'sys_node',
-			'sys_server'
+			'sys_server',
+			'nodejs'
 		]
 	}
 
