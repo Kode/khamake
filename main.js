@@ -698,6 +698,9 @@ exports.run = function (options, loglog, callback) {
 			options.kha = p;
 		}
 	}
+	else {
+		options.kha = pathlib.resolve(options.kha);
+	}
 
 	if (options.haxe === '') {
 		var path = Paths.get(options.kha, 'Tools', 'haxe');
