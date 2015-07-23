@@ -1,5 +1,5 @@
 var child_process = require('child_process');
-var fs = require('fs');
+var fs = require('fs-extra');
 var os = require('os');
 var pathlib = require('path');
 var exec = require('./exec.js');
@@ -301,34 +301,15 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, function () {
 		if (haxeDirectory.path !== '' && kore) {
 			{
+				fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
+
 				var out = '';
 				out += "var solution = new Solution('" + name + "');\n";
 				out += "var project = new Project('" + name + "');\n";
 
-				var files = [];
-				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.h").replaceAll('\\', '/'));
-				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.cpp").replaceAll('\\', '/'));
-				files.push((from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/**.metal").replaceAll('\\', '/'));
-				out += "project.addFiles(";
-				out += "'" + files[0] + "'";
-				for (var i = 1; i < files.length; ++i) {
-					out += ", '" + files[i] + "'";
-				}
-				out += ");\n";
-
-				out += "project.addExcludes('" + (from.relativize(to.resolve(exporter.sysdir() + "-build")).toString() + "/Sources/src/__main__.cpp").replaceAll('\\', '/') + "');\n";
-
-				var includes = [];
-				includes.push(from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + '/Sources/include');
-				out += "project.addIncludeDirs(";
-				out += "'" + includes[0] + "'";
-				for (var i = 1; i < includes.length; ++i) {
-					out += ", '" + includes[i] + "'";
-				}
-				out += ");\n";
-
 				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 
+				out += "project.addSubProject(Solution.createProject('" + from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/') + "'));\n";
 				out += "project.addSubProject(Solution.createProject('" + pathlib.normalize(options.kha).replaceAll('\\', '/') + "'));\n";
 				out += "project.addSubProject(Solution.createProject('" + pathlib.join(options.kha, 'Kore').replaceAll('\\', '/') + "'));\n";
 				out += "solution.addProject(project);\n";
