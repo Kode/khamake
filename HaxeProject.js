@@ -20,20 +20,41 @@ function IntelliJ(projectdir, options) {
 			sources += '      <sourceFolder url="file://' + options.sources[i] + '" isTestSource="false" />\n';
 		}
 		else {
-			sources += '      <sourceFolder url="file://' + path.relative(projectdir, path.join(options.from, options.sources[i])) + '" isTestSource="false" />\n';
+			sources += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(path.join(projectdir, 'project-' + options.system + '-intellij'), path.join(options.from, options.sources[i])).replaceAll('\\', '/') + '" isTestSource="false" />\n';
 		}
 	}
 
+	var args = '';
+
     var defines = '';
-    for (var d in options.defines) {
-		var define = options.defines[d];
-		defines += define + ',';
+    for (var i = 0; i < options.defines.length; ++i) {
+		var define = options.defines[i];
+		defines += define;
+		if (i < options.defines.length - 1) defines += ',';
 	}
 
-	var target = 'C++';
+	var target;
+	switch (options.language) {
+		case 'cpp':
+			target = 'C++';
+			break;
+		case 'as':
+			target = 'Flash';
+			args = '-swf-version 11.6';
+			break;
+		case 'cs':
+			platform = 'C#';
+			break;
+		case 'java':
+			platform = 'Java';
+			break;
+		case 'js':
+			platform = 'JavaScript';
+			break;
+	}
 
     fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'));
-	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{target}'], [options.name, sources, target]);
+	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{target}', '{args}'], [options.name, sources, target, args]);
 
 	fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'));
 	copyAndReplace(path.join(indir, 'idea', 'haxe.xml'), path.join(outdir, '.idea', 'haxe.xml'), ['{defines}'], [defines]);
