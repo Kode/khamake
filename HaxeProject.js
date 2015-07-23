@@ -14,10 +14,29 @@ function IntelliJ(projectdir, options) {
     var indir = path.join(__dirname, 'Data', 'intellij');
     var outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
 
+    var sources = '';
+    for (var i = 0; i < options.sources.length; ++i) {
+		if (path.isAbsolute(options.sources[i])) {
+			sources += '      <sourceFolder url="file://' + options.sources[i] + '" isTestSource="false" />\n';
+		}
+		else {
+			sources += '      <sourceFolder url="file://' + path.relative(projectdir, path.join(options.from, options.sources[i])) + '" isTestSource="false" />\n';
+		}
+	}
+
+    var defines = '';
+    for (var d in options.defines) {
+		var define = options.defines[d];
+		defines += define + ',';
+	}
+
+	var target = 'C++';
+
     fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'));
-	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}'], [options.name]);
+	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{target}'], [options.name, sources, target]);
 
 	fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'));
+	copyAndReplace(path.join(indir, 'idea', 'haxe.xml'), path.join(outdir, '.idea', 'haxe.xml'), ['{defines}'], [defines]);
 	fs.copySync(path.join(indir, 'idea', 'misc.xml'), path.join(outdir, '.idea', 'misc.xml'));
 	copyAndReplace(path.join(indir, 'idea', 'modules.xml'), path.join(outdir, '.idea', 'modules.xml'), ['{name}'], [options.name]);
 	fs.copySync(path.join(indir, 'idea', 'vcs.xml'), path.join(outdir, '.idea', 'vcs.xml'));
