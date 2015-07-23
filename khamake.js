@@ -416,8 +416,8 @@ if (parsedOptions.init) {
 }
 else if (parsedOptions.server) {
 	console.log('Running server on ' + parsedOptions.port);
-	var static = require('node-static');
-	var fileServer = new static.Server(path.join(parsedOptions.from,'build', 'html5'));
+	var nstatic = require('node-static');
+	var fileServer = new nstatic.Server(path.join(parsedOptions.from,'build', 'html5'), { cache: 0 });
 	require('http').createServer(function (request, response) {
 		request.addListener('end', function () {
 			fileServer.serve(request, response);
