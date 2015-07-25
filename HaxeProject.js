@@ -20,7 +20,7 @@ function IntelliJ(projectdir, options) {
 			sources += '      <sourceFolder url="file://' + options.sources[i] + '" isTestSource="false" />\n';
 		}
 		else {
-			sources += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(path.join(projectdir, 'project-' + options.system + '-intellij'), path.join(options.from, options.sources[i])).replaceAll('\\', '/') + '" isTestSource="false" />\n';
+			sources += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(outdir, path.join(options.from, options.sources[i])).replaceAll('\\', '/') + '" isTestSource="false" />\n';
 		}
 	}
 
@@ -44,9 +44,11 @@ function IntelliJ(projectdir, options) {
 			break;
 		case 'cs':
 			platform = 'C#';
+			args = '-net-std ' + path.relative(outdir, path.join(options.haxeDirectory, 'netlib'));
 			break;
 		case 'java':
 			platform = 'Java';
+			args = '-java-lib ' + path.relative(outdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'));
 			break;
 		case 'js':
 			platform = 'JavaScript';
