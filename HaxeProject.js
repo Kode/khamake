@@ -107,7 +107,7 @@ function hxml(projectdir, options) {
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 }
 
-function FlashDevelopment(projectdir, options) {
+function FlashDevelop(projectdir, options) {
 	var platform;
 
 	switch (options.language) {
@@ -249,13 +249,13 @@ function FlashDevelopment(projectdir, options) {
 
 	var def = '';
 	for (var d in options.defines) {
-		def += '-D ' + options.defines[d] + '\n';
+		def += '-D ' + options.defines[d] + '&#xA;';
 	}
 	if (options.language === 'java' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
-		def += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '\n';
+		def += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '&#xA;';
 	}
 	if (options.language === 'cs' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
-		def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '\n';
+		def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '&#xA;';
 	}
 
 	var project = {
@@ -280,11 +280,15 @@ function FlashDevelopment(projectdir, options) {
 					},
 					{
 						n: 'option',
+						noInlineOnDebug: 'False'
+					},
+					{
+						n: 'option',
 						mainClass: 'Main'
 					},
 					{
 						n: 'option',
-						enableDebug: 'False'
+						enabledebug: options.language === 'as' ? 'True' : 'False'
 					},
 					{
 						n: 'option',
@@ -342,7 +346,7 @@ function FlashDevelopment(projectdir, options) {
 
 module.exports = function (projectdir, options) {
 	options.defines.push('kha');
-	FlashDevelopment(projectdir, options);
+	FlashDevelop(projectdir, options);
 	IntelliJ(projectdir, options);
 	hxml(projectdir, options);
 };
