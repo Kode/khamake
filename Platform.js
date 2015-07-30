@@ -14,7 +14,6 @@ module.exports = {
 	XNA: 'xna',
 	Java: 'java',
 	PlayStationMobile: 'psm',
-	Dalvik: 'dalvik',
 	Tizen: 'tizen',
 	Unity: 'unity',
 	Node: 'node'

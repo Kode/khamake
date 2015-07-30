@@ -15,24 +15,24 @@ function findIcon(from) {
 	else return path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', 'ball.png');
 }
 
-function DalvikExporter(khaDirectory, directory) {
+function AndroidExporter(khaDirectory, directory) {
 	KhaExporter.call(this, khaDirectory);
 	this.directory = directory;
 	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Android'));
 }
 
-DalvikExporter.prototype = Object.create(KhaExporter.prototype);
-DalvikExporter.constructor = DalvikExporter;
+AndroidExporter.prototype = Object.create(KhaExporter.prototype);
+AndroidExporter.constructor = AndroidExporter;
 
-DalvikExporter.prototype.sysdir = function () {
-	return 'dalvik';
+AndroidExporter.prototype.sysdir = function () {
+	return 'android';
 };
 
-DalvikExporter.prototype.backend = function () {
+AndroidExporter.prototype.backend = function () {
 	return "Android";
 };
 
-DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
+AndroidExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
 	var safename = name.replaceAll(' ', '-');
 
 	var defines = [
@@ -61,7 +61,7 @@ DalvikExporter.prototype.exportSolution = function (name, platform, khaDirectory
 	Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
 };
 
-DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
+AndroidExporter.prototype.exportAndroidStudioProject = function (name) {
 	var safename = name.replaceAll(' ', '-');
 	this.safename = safename;
 
@@ -127,27 +127,27 @@ DalvikExporter.prototype.exportAndroidStudioProject = function (name) {
 	fs.writeFileSync(path.join(outdir, '.idea', 'modules.xml'), modules, { encoding: 'utf8' });
 };
 
-DalvikExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
+AndroidExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
 	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to.toString() + '.ogg')), encoders.oggEncoder, callback);
 };
 
-DalvikExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
+AndroidExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
 	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to.toString() + '.wav')));
 	callback();
 };
 
-DalvikExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
+AndroidExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false, callback);
 };
 
-DalvikExporter.prototype.copyBlob = function (platform, from, to, callback) {
+AndroidExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to));
 	callback();
 };
 
-DalvikExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
+AndroidExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
 	callback();
 };
 
-module.exports = DalvikExporter;
+module.exports = AndroidExporter;

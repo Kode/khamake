@@ -15,7 +15,7 @@ var Platform = require('./Platform.js');
 var ProjectFile = require('./ProjectFile.js');
 var VisualStudioVersion = require('./VisualStudioVersion.js');
 
-var DalvikExporter = require('./DalvikExporter.js');
+var AndroidExporter = require('./AndroidExporter.js');
 var FlashExporter = require('./FlashExporter.js');
 var Html5Exporter = require('./Html5Exporter.js');
 var Html5WorkerExporter = require('./Html5WorkerExporter.js');
@@ -104,9 +104,10 @@ function addShaders(exporter, platform, project, from, to, temp, shaderPath, com
 				break;
 			}
 			case Platform.HTML5:
+			case Platform.HTML5 + '-native':
 			case Platform.HTML5Worker:
 			case Platform.Android:
-			case Platform.Dalvik:
+			case Platform.Android + '-native':
 			case Platform.Tizen:
 			case Platform.Linux:
 			case Platform.iOS: {
@@ -125,7 +126,7 @@ function addShaders(exporter, platform, project, from, to, temp, shaderPath, com
 				}
 				else {
 					var shaderpath = to.resolve(name + '.essl');
-					if (platform === Platform.Dalvik) {
+					if (platform === Platform.Android) {
 						shaderpath = to.resolve(Paths.get(exporter.safename, 'app', 'src', 'main', 'assets', name + '.essl'));
 					}
 					if (Files.exists(shaderPath.resolve(name + ".essl"))) Files.copy(shaderPath.resolve(name + ".essl"), shaderpath, true);
@@ -370,19 +371,11 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 			}
 			
 			{
-				var opts = [];
-				opts.push(platform);
-				//+ " pch=" + Options::getPrecompiledHeaders()
-				if (Options.intermediateDrive !== "") opts.push("intermediate=" + Options.intermediateDrive);
-				opts.push("gfx=" + gfx);
-				opts.push("vs=" + vs);
-				if (from.toString() != ".") opts.push("from=" + from.toString());
-				opts.push("to=" + to.resolve(Paths.get(exporter.sysdir() + "-build")).toString());
 				require(pathlib.join(korepath.get(), 'main.js')).run(
 				{
 					from: from,
 					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
-					platform: platform,
+					platform: koreplatform(platform),
 					graphicsApi: Options.graphicsApi,
 					vrApi: Options.vrApi,
 					visualStudioVersion: Options.visualStudioVersion,
@@ -406,8 +399,18 @@ if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirect
 	});
 }
 
+function koreplatform(platform) {
+	if (platform === 'android-native') {
+		return 'android';
+	}
+	if (platform === 'html5-native') {
+		return 'html5';
+	}
+	return platform;
+}
+
 function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback) {
-	log.info('Generating Kha project.');
+	log.info('Creating Kha project.');
 	
 	Files.createDirectories(to);
 	var temp = to.resolve('temp');
@@ -437,9 +440,8 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		case Platform.PlayStationMobile:
 			exporter = new PlayStationMobileExporter(khaDirectory, to);
 			break;
-		case Platform.Dalvik:
 		case Platform.Android:
-			exporter = new DalvikExporter(khaDirectory, to);
+			exporter = new AndroidExporter(khaDirectory, to);
 			break;
 		case Platform.Node:
 			exporter = new NodeExporter(khaDirectory, to);
@@ -449,9 +451,6 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			break;
 		default:
 			kore = true;
-			if (platform === 'android-native') {
-				platform = 'android';
-			}
 			exporter = new KoreExporter(platform, khaDirectory, Options.vrApi, to);
 			break;
 	}
