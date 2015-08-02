@@ -47,28 +47,38 @@ function getWidthAndHeight(from, to, asset, format, prealpha, callback) {
 }
 
 module.exports = function (from, to, asset, format, prealpha, callback, poweroftwo) {
-	if (fs.existsSync(to.toString()) && fs.statSync(to.toString()).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
+	if (format === undefined) {
+		if (to.endsWith('.png')) format = 'png';
+		else format = 'jpg';
+	}
+
+	if (format === 'jpg' && (asset.scale === undefined || asset.scale === 1) && asset.background === undefined) {
+		to = to + '.jpg';
+	}
+	else if (format === 'pvrtc') {
+		to = to + '.pvr';
+	}
+	else {
+		to = to + '.png';
+	}
+
+	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
 		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
 			asset.original_width = wh.w;
 			asset.original_height = wh.h;
-			if (callback) callback();
+			if (callback) callback(to);
 		});
 		return;
 	}
 
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
-	if (format === undefined) {
-		if (to.toString().endsWith('.png')) format = 'png';
-		else format = 'jpg';
-	}
-
 	if (format === 'jpg' && (asset.scale === undefined || asset.scale === 1) && asset.background === undefined) {
 		Files.copy(from, to, true);
 		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
 			asset.original_width = wh.w;
 			asset.original_height = wh.h;
-			if (callback) callback();
+			if (callback) callback(to);
 		});
 		return;
 	}
@@ -102,7 +112,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 	
 	child.on('error', function (err) {
 		log.error('kraffiti error: ' + err);
-		if (callback) callback();
+		if (callback) callback(to);
 	});
 	
 	child.on('close', function (code) {
@@ -114,10 +124,10 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 				var numbers = line.substring(1).split('x');
 				asset.original_width = parseInt(numbers[0]);
 				asset.original_height = parseInt(numbers[1]);
-				if (callback) callback();
+				if (callback) callback(to);
 				return;
 			}
 		}
-		if (callback) callback();
+		if (callback) callback(to);
 	});
 };

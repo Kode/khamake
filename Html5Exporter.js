@@ -72,34 +72,51 @@ Html5Exporter.prototype.exportSolution = function (name, platform, khaDirectory,
 
 Html5Exporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	var self = this;
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".ogg"), encoders.oggEncoder, function () {
-		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to.toString() + ".mp4"), encoders.aacEncoder, callback);
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, function (ogg) {
+		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, function (mp4) {
+			var files = [];
+			if (ogg) files.push(to + '.ogg');
+			if (mp4) files.push(to + '.mp4');
+			callback(files);
+		});
 	});
 };
 
 Html5Exporter.prototype.copySound = function (platform, from, to, encoders, callback) {
 	var self = this;
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".ogg"), encoders.oggEncoder, function () {
-		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to.toString() + ".mp4"), encoders.aacEncoder, callback);
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, function (ogg) {
+		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, function (mp4) {
+			var files = [];
+			if (ogg) files.push(to + '.ogg');
+			if (mp4) files.push(to + '.mp4');
+			callback(files);
+		});
 	});
 };
 
 Html5Exporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, callback);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, function (file) {
+		callback([file]);
+	});
 };
 
 Html5Exporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
-	callback();
+	callback([to]);
 };
 
 Html5Exporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
 	var self = this;
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".mp4"), encoders.h264Encoder, function () {
-		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to.toString() + ".webm"), encoders.webmEncoder, callback);
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".mp4"), encoders.h264Encoder, function (mp4) {
+		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + ".webm"), encoders.webmEncoder, function (webm) {
+			var files = [];
+			if (mp4) files.push(to + '.mp4');
+			if (webm) files.push(to + '.webm');
+			callback(files);
+		});
 	});
 };
 

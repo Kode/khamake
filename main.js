@@ -222,31 +222,34 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		else {
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
-		exporter.copyImage(platform, file, Paths.get(asset.file), asset, function () {
+		exporter.copyImage(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), asset, function (files) {
+			asset.to = files;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
 	else if (asset.type === 'music') {
 		var file;
 		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file + '.wav'));
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
 		else {
-			file = from.resolve(Paths.get('Assets', asset.file + '.wav'));
+			file = from.resolve(Paths.get('Assets', asset.file));
 		}
-		exporter.copyMusic(platform, file, Paths.get(asset.file), encoders, function () {
+		exporter.copyMusic(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
+			asset.to = files;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
 	else if (asset.type === 'sound') {
 		var file;
 		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file + '.wav'));
+			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
 		else {
-			file = from.resolve(Paths.get('Assets', asset.file + '.wav'));
+			file = from.resolve(Paths.get('Assets', asset.file));
 		}
-		exporter.copySound(platform, file, Paths.get(asset.file), encoders, function () {
+		exporter.copySound(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
+			asset.to = files;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -258,7 +261,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		else {
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
-		exporter.copyBlob(platform, file, Paths.get(asset.file), function () {
+		exporter.copyBlob(platform, file, asset.file, function (files) {
+			asset.to = files;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -270,7 +274,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		else {
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
-		exporter.copyVideo(platform, file, Paths.get(asset.file), encoders, function () {
+		exporter.copyVideo(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
+			asset.to = files;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -292,7 +297,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		asset.file += '.kravur';
 		asset.name = asset.file;
 		asset.type = 'blob';
-		exporter.copyFont(platform, file, Paths.get(asset.file), asset, encoders, function () {
+		exporter.copyFont(platform, file, asset.file, asset, encoders, function (files) {
+			asset.to = files;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}

@@ -61,21 +61,22 @@ KoreExporter.prototype.exportSolution = function (name, platform, khaDirectory, 
 };
 
 KoreExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogg'), encoders.oggEncoder, callback);
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, function (success) {
+		callback([to + '.ogg']);
+	});
 };
 
 KoreExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.wav'));
-	callback();
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to + '.wav'));
+	callback([to + '.wav']);
 };
 
 KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	if (platform === Platform.iOS && asset.compressed) {
-		var index = to.toString().lastIndexOf('.');
-		to = to.toString().substr(0, index) + '.pvr';
-		asset.file = to.toString().replaceAll('\\', '/');
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true, callback);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true, function (file) {
+			callback([file]);
+		});
 	}
 	/*else if (platform === Platform.Android && asset.compressed) {
 		var index = to.toString().lastIndexOf('.');
@@ -84,25 +85,33 @@ KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback
 		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 	}*/
 	else {
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, true, callback);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, true, function (file) {
+			callback([file]);
+		});
 	}
 };
 
 KoreExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
-	callback();
+	callback([to]);
 };
 
 KoreExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 	if (platform === Platform.iOS) {
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.mp4'), encoders.h264Encoder, callback);
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.h264Encoder, function (success) {
+			callback([to + '.mp4']);
+		});
 	}
 	else if (platform === Platform.Android) {
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ts'), encoders.h264Encoder, callback);
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ts'), encoders.h264Encoder, function (success) {
+			callback([to + '.ts']);
+		});
 	}
 	else {
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + '.ogv'), encoders.theoraEncoder, callback);
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogv'), encoders.theoraEncoder, function (success) {
+			callback([to + '.ogv']);
+		});
 	}
 };
 

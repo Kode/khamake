@@ -4,12 +4,12 @@ var log = require('./log.js');
 
 exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 	if (fs.existsSync(outFilename.toString()) && fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) {
-		callback();
+		callback(true);
 		return;
 	}
 	
 	if (encoder === undefined || encoder === '') {
-		callback();
+		callback(false);
 		return;
 	}
 	var parts = encoder.split(' ');
@@ -43,11 +43,11 @@ exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 	
 	child.on('error', function (err) {
 		log.error(encoder + ' error: ' + err);
-		callback();
+		callback(false);
 	});
 	
 	child.on('close', function (code) {
 		if (code !== 0) log.error(encoder + ' process exited with code ' + code);
-		callback();
+		callback(code === 0);
 	});
 };
