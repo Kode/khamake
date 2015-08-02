@@ -97,8 +97,8 @@ Html5Exporter.prototype.copySound = function (platform, from, to, encoders, call
 };
 
 Html5Exporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, function (file) {
-		callback([file]);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, function (format) {
+		callback([to + '.' + format]);
 	});
 };
 

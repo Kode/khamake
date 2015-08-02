@@ -74,8 +74,8 @@ KoreExporter.prototype.copySound = function (platform, from, to, encoders, callb
 
 KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	if (platform === Platform.iOS && asset.compressed) {
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvrtc', true, function (file) {
-			callback([file]);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'pvr', true, function (format) {
+			callback([to + '.' + format]);
 		});
 	}
 	/*else if (platform === Platform.Android && asset.compressed) {
@@ -85,8 +85,8 @@ KoreExporter.prototype.copyImage = function (platform, from, to, asset, callback
 		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 	}*/
 	else {
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, true, function (file) {
-			callback([file]);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, true, function (format) {
+			callback([to + '.' + format]);
 		});
 	}
 };

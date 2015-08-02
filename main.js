@@ -84,7 +84,7 @@ function compileShader(compiler, type, from, to, temp, system, kfx) {
 }
 
 function addShader(project, name, extension) {
-	project.shaders.push({file: name + extension, name: name});
+	project.shaders.push({files: [name + extension], name: name});
 }
 
 function addShaders(exporter, platform, project, from, to, temp, shaderPath, compiler, kfx) {
@@ -223,7 +223,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copyImage(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), asset, function (files) {
-			asset.to = files;
+			asset.files = files;
+			delete asset.file;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -236,7 +237,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copyMusic(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
-			asset.to = files;
+			asset.files = files;
+			delete asset.file;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -249,7 +251,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copySound(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
-			asset.to = files;
+			asset.files = files;
+			delete asset.file;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -262,7 +265,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copyBlob(platform, file, asset.file, function (files) {
-			asset.to = files;
+			asset.files = files;
+			delete asset.file;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -275,7 +279,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 			file = from.resolve(Paths.get('Assets', asset.file));
 		}
 		exporter.copyVideo(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
-			asset.to = files;
+			asset.files = files;
+			delete asset.file;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}
@@ -298,7 +303,8 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		asset.name = asset.file;
 		asset.type = 'blob';
 		exporter.copyFont(platform, file, asset.file, asset, encoders, function (files) {
-			asset.to = files;
+			asset.files = files;
+			delete asset.file;
 			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
 		});
 	}

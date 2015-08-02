@@ -103,8 +103,9 @@ FlashExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 FlashExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	if (this.embed) this.sounds.push(to + '.ogg');
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, function (ogg) {
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder, function (mp3) {
+	var self = this;
+	Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, function (ogg) {
+		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder, function (mp3) {
 			var files = [];
 			if (ogg) files.push(to + '.ogg');
 			if (mp3) files.push(to + '.mp3');
@@ -123,8 +124,8 @@ FlashExporter.prototype.copySound = function (platform, from, to, encoders, call
 
 FlashExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
 	if (this.embed) this.images.push(to);
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, function (file) {
-		callback([file]);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, function (format) {
+		callback([to + '.' + format]);
 	});
 };
 
