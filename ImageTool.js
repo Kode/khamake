@@ -75,7 +75,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
 	if (format === 'jpg') {
-		Files.copy(from, to, true);
+		Files.copy(from, Paths.get(to), true);
 		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
 			asset.original_width = wh.w;
 			asset.original_height = wh.h;
