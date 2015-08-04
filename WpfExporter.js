@@ -278,18 +278,22 @@ WpfExporter.prototype.exportCsProj = function (projectUuid) {
 };
 
 WpfExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".mp4"), encoders.aacEncoder, callback);
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, function () {
+		callback(to + '.mp4');
+	});
 };
 
 WpfExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wav"));
-	callback();
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to + '.wav'));
+	callback([to + '.wav']);
 };
 
 WpfExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wmv"), encoders.wmvEncoder, callback);
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.wmv'), encoders.wmvEncoder, function () {
+		callback([to + '.wmv']);
+	});
 };
 
 module.exports = WpfExporter;
