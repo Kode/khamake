@@ -280,7 +280,7 @@ WpfExporter.prototype.exportCsProj = function (projectUuid) {
 WpfExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, function () {
-		callback(to + '.mp4');
+		callback([to + '.mp4']);
 	});
 };
 
