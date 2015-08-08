@@ -401,7 +401,7 @@ if (parsedOptions.init) {
 	
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'))) {
 		var projectsource = 'package;\n\nimport kha.Game;\n\n'
-			+ 'class ' + friendlyName + ' {\n'
+			+ 'class ' + friendlyName + ' extends Game {\n'
 			+ '\tpublic function new() {\n'
 			+ '\t\tsuper("' + parsedOptions.name + '");\n'
 			+ '\t}\n\n'
