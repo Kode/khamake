@@ -40,7 +40,7 @@ function IntelliJ(projectdir, options) {
 			break;
 		case 'as':
 			target = 'Flash';
-			args = '-swf-version 11.6';
+			args = '-swf-version 16.0';
 			break;
 		case 'cs':
 			platform = 'C#';
@@ -101,7 +101,7 @@ function hxml(projectdir, options) {
 	}
 	else if (options.language === 'as') {
 		data += '-swf ' + path.normalize(options.to) + '\n';
-		data += '-swf-version 11.6\n';
+		data += '-swf-version 16.0\n';
 	}
 	data += '-main Main' + '\n';
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
@@ -157,11 +157,11 @@ function FlashDevelop(projectdir, options) {
 			},
 			{
 				n: 'movie',
-				version: 11
+				version: 16
 			},
 			{
 				n: 'movie',
-				minorVersion: 6
+				minorVersion: 0
 			},
 			{
 				n: 'movie',
