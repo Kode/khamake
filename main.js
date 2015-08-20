@@ -94,6 +94,7 @@ function addShaders(exporter, platform, project, from, to, temp, shaderPath, com
 		var shader = shaders[s];
 		var name = shader;
 		if (!name.endsWith('.glsl')) continue;
+		if (name.endsWith('.inc.glsl')) continue;
 		name = name.substr(0, name.lastIndexOf('.'));
 		switch (platform) {
 			case Platform.Flash: {
@@ -311,7 +312,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 }
 
 function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, callback) {
-if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, function () {
+	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, function () {
 		if (haxeDirectory.path !== '' && kore) {
 			{
 				fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
