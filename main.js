@@ -498,20 +498,23 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			var libname = project.libraries[ll];
 			var found = false;
 			if (Files.isDirectory(from.resolve(Paths.get('Libraries', libname)))) {
-				var lib = {
-					directory: 'Libraries/' + libname,
-					project: {
-						assets: [],
-						rooms: []
+				if (Files.newDirectoryStream(from.resolve(Paths.get('Libraries', libname))).length > 0) {
+					var lib = {
+						directory: 'Libraries/' + libname,
+						project: {
+							assets: [],
+							rooms: []
+						}
+					};
+					if (Files.exists(from.resolve(Paths.get('Libraries', libname, 'project.kha')))) {
+						lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', libname, 'project.kha').toString(), {encoding: 'utf8'}));
 					}
-				};
-				if (Files.exists(from.resolve(Paths.get('Libraries', libname, 'project.kha')))) {
-					lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', libname, 'project.kha').toString(), { encoding: 'utf8' }));
+					libraries.push(lib);
+					found = true;
 				}
-				libraries.push(lib);
-				found = true;
 			}
-			else {
+
+			if (!found) {
 				if (process.env.HAXEPATH) {
 					var libpath = pathlib.join(process.env.HAXEPATH, 'lib', libname.toLowerCase());
 					if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
@@ -534,6 +537,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 					}
 				}
 			}
+
 			if (!found) {
 				console.log('Warning, could not find library ' + libname + '.');
 			}
