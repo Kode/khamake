@@ -12,9 +12,15 @@ exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 		callback(false);
 		return;
 	}
-	var parts = encoder.split(' ');
+	
+	var dirend = Math.max(encoder.lastIndexOf('/'), encoder.lastIndexOf('\\'));
+	var firstspace = encoder.indexOf(' ', dirend);
+	var exe = encoder.substr(0, firstspace);
+	var arguments = encoder.substr(firstspace + 1);
+
+	var parts = arguments.split(' ');
 	var options = [];
-	for (var i = 1; i < parts.length; ++i) {
+	for (var i = 0; i < parts.length; ++i) {
 		var foundarg = false;
 		if (args !== undefined) {
 			for (var arg in args) {
@@ -31,7 +37,7 @@ exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 		else if (parts[i] === '{out}') options.push(outFilename.toString());
 		else options.push(parts[i]);
 	}
-	var child = child_process.spawn(parts[0], options);
+	var child = child_process.spawn(exe, options);
 
 	child.stdout.on('data', function (data) {
 		//log.info(encoder + ' stdout: ' + data);
