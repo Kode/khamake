@@ -154,7 +154,7 @@ AndroidExporter.prototype.copyVideo = function (platform, from, to, encoders, ca
 	callback([to]);
 };
 
-KhaExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
+AndroidExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to).parent());
 	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), encoders.kravur, function (success) {
 		callback([to]);

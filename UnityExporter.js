@@ -91,7 +91,7 @@ UnityExporter.prototype.copyVideo = function (platform, from, to, encoders, call
 	callback([to]);
 };
 
-KhaExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
+UnityExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
 	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to)).parent());
 	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to + '.bytes')), encoders.kravur, function (success) {
 		callback([to]);
