@@ -69,24 +69,33 @@ UnityExporter.prototype.exportSolution = function (name, platform, khaDirectory,
 };
 
 UnityExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
-	callback();
+	callback([to]);
 };
 
 UnityExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	callback();
+	callback([to]);
 };
 
 UnityExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Images', to)), asset, undefined, false, callback, true);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Images', to)), asset, undefined, false, function (format) {
+		callback([to + '.' + format]);
+	}, true);
 };
 
 UnityExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to + '.bytes')));
-	callback();
+	callback([to]);
 };
 
 UnityExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
-	callback();
+	callback([to]);
+};
+
+KhaExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to)).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to + '.bytes')), encoders.kravur, function (success) {
+		callback([to]);
+	}, { size: asset.size });
 };
 
 module.exports = UnityExporter;
