@@ -43,20 +43,20 @@ function IntelliJ(projectdir, options) {
 			args = '-swf-version 16.0';
 			break;
 		case 'cs':
-			platform = 'C#';
+			target = 'C#';
 			args = '-net-std ' + path.relative(outdir, path.join(options.haxeDirectory, 'netlib'));
 			break;
 		case 'java':
-			platform = 'Java';
+			target = 'Java';
 			args = '-java-lib ' + path.relative(outdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'));
 			break;
 		case 'js':
-			platform = 'JavaScript';
+			target = 'JavaScript';
 			break;
 	}
 
     fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'));
-	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{target}', '{args}'], [options.name, sources, target, args]);
+	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{target}', '{system}', '{args}'], [options.name, sources, target, options.system, args]);
 
 	fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'));
 	copyAndReplace(path.join(indir, 'idea', 'haxe.xml'), path.join(outdir, '.idea', 'haxe.xml'), ['{defines}'], [defines]);
