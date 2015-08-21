@@ -8,7 +8,8 @@ exports.executeHaxe = function (from, haxeDirectory, options, callback) {
 	var exe = 'haxe';
 	var env = process.env;
 	if (fs.existsSync(haxeDirectory.toString()) && fs.statSync(haxeDirectory.toString()).isDirectory()) {
-		exe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath().toString();
+		var localexe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath().toString();
+		if (fs.existsSync(localexe)) exe = localexe;
 		env.HAXE_STD_PATH = haxeDirectory.toAbsolutePath().resolve('std').toString();
 	}
 	var haxe = child_process.spawn(exe, options, { env: env, cwd: path.normalize(from.toString()) });
