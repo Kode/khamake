@@ -128,26 +128,37 @@ AndroidExporter.prototype.exportAndroidStudioProject = function (name) {
 };
 
 AndroidExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to.toString() + '.ogg')), encoders.oggEncoder, callback);
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.ogg')), encoders.oggEncoder, function (success) {
+		callback([to + '.ogg']);
+	});
 };
 
 AndroidExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to.toString() + '.wav')));
-	callback();
+	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav')));
+	callback([to + '.wav']);
 };
 
 AndroidExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false, callback);
+	exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false, function (format) {
+		callback([to + '.' + format]);
+	});
 };
 
 AndroidExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to));
-	callback();
+	callback([to]);
 };
 
 AndroidExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
-	callback();
+	callback([to]);
+};
+
+KhaExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
+	Files.createDirectories(this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), encoders.kravur, function (success) {
+		callback([to]);
+	}, { size: asset.size });
 };
 
 module.exports = AndroidExporter;

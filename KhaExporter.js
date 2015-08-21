@@ -71,8 +71,8 @@ KhaExporter.prototype.copySound = function (platform, from, to, encoders, callba
 KhaExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) { callback(); };
 KhaExporter.prototype.copyBlob = function (platform, from, to, callback) { callback(); };
 KhaExporter.prototype.copyFont = function (platform, from, to, asset, encoders, callback) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to.toString()).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to.toString()), encoders.kravur, function (success) {
+	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to), encoders.kravur, function (success) {
 		callback([to]);
 	}, { size: asset.size });
 };

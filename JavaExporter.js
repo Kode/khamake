@@ -93,26 +93,28 @@ JavaExporter.prototype.exportEclipseProject = function () {
 };
 
 JavaExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
-	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wav"));
-	callback();
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to + ".wav"));
+	callback(to + '.wav');
 };
 
 JavaExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to.toString() + ".wav"));
-	callback();
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to + ".wav"));
+	callback(to + '.wav');
 };
 
 JavaExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, callback);
+	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, function (format) {
+		callback([to + '.' + format]);
+	});
 };
 
 JavaExporter.prototype.copyBlob = function (platform, from, to, callback) {
 	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
-	callback();
+	callback([to]);
 };
 
 JavaExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
-	callback();
+	callback([to]);
 };
 
 module.exports = JavaExporter;
