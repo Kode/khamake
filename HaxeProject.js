@@ -44,11 +44,15 @@ function IntelliJ(projectdir, options) {
 			break;
 		case 'cs':
 			target = 'C#';
-			args = '-net-std ' + path.relative(outdir, path.join(options.haxeDirectory, 'netlib'));
+			if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'netlib'))) {
+				args = '-net-std ' + path.relative(outdir, path.join(options.haxeDirectory, 'netlib'));
+			}
 			break;
 		case 'java':
 			target = 'Java';
-			args = '-java-lib ' + path.relative(outdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'));
+			if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'))) {
+				args = '-java-lib ' + path.relative(outdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'));
+			}
 			break;
 		case 'js':
 			target = 'JavaScript';
@@ -86,13 +90,13 @@ function hxml(projectdir, options) {
 	}
 	else if (options.language === 'cs') {
 		data += '-cs ' + path.normalize(options.to) + '\n';
-		if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+		if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'netlib'))) {
 			data += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '\n';
 		}
 	}
 	else if (options.language === 'java') {
 		data += '-java ' + path.normalize(options.to) + '\n';
-		if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+		if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'))) {
 			data += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '\n';
 		}
 	}
@@ -251,10 +255,10 @@ function FlashDevelop(projectdir, options) {
 	for (var d in options.defines) {
 		def += '-D ' + options.defines[d] + '&#xA;';
 	}
-	if (options.language === 'java' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+	if (options.language === 'java' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'))) {
 		def += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '&#xA;';
 	}
-	if (options.language === 'cs' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory()) {
+	if (options.language === 'cs' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'netlib'))) {
 		def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '&#xA;';
 	}
 
