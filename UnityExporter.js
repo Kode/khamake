@@ -83,7 +83,7 @@ UnityExporter.prototype.copyImage = function (platform, from, to, asset, callbac
 };
 
 UnityExporter.prototype.copyBlob = function (platform, from, to, callback) {
-	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to + '.bytes')));
+	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to.toString() + '.bytes')));
 	callback([to]);
 };
 
