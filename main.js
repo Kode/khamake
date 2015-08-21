@@ -518,8 +518,14 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 				if (process.env.HAXEPATH) {
 					var libpath = pathlib.join(process.env.HAXEPATH, 'lib', libname.toLowerCase());
 					if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-						var current = fs.readFileSync(pathlib.join(libpath, '.current'), { encoding: 'utf8'});
-						var libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
+						if (fs.existsSync(pathlib.join(libpath, '.current'))) {
+							var current = fs.readFileSync(pathlib.join(libpath, '.current'), {encoding: 'utf8'});
+							var libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
+						}
+						else if (fs.existsSync(pathlib.join(libpath, '.dev'))) {
+							var current = fs.readFileSync(pathlib.join(libpath, '.dev'), {encoding: 'utf8'});
+							var libdeeppath = current;
+						}
 						if (fs.existsSync(libdeeppath) && fs.statSync(libdeeppath).isDirectory()) {
 							var lib = {
 								directory: libdeeppath,
