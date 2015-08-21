@@ -9,6 +9,7 @@ exports.executeHaxe = function (from, haxeDirectory, options, callback) {
 	var env = process.env;
 	if (fs.existsSync(haxeDirectory.toString()) && fs.statSync(haxeDirectory.toString()).isDirectory()) {
 		var localexe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath().toString();
+		if (!fs.existsSync(localexe)) localexe = haxeDirectory.resolve('haxe').toAbsolutePath().toString();
 		if (fs.existsSync(localexe)) exe = localexe;
 		env.HAXE_STD_PATH = haxeDirectory.toAbsolutePath().resolve('std').toString();
 	}
