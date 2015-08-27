@@ -388,7 +388,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 				{
 					from: from,
 					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
-					platform: koreplatform(platform),
+					target: koreplatform(platform),
 					graphicsApi: Options.graphicsApi,
 					vrApi: Options.vrApi,
 					visualStudioVersion: Options.visualStudioVersion,
