@@ -1,26 +1,14 @@
-var path = require('path');
-var KhaExporter = require('./KhaExporter.js');
-var korepath = require('./korepath.js');
-var Converter = require('./Converter.js');
-var Files = require(path.join(korepath.get(), 'Files.js'));
-var Haxe = require('./Haxe.js');
-var Options = require('./Options.js');
-var Paths = require(path.join(korepath.get(), 'Paths.js'));
-var exportImage = require('./ImageTool.js');
-var HaxeProject = require('./HaxeProject.js');
+"use strict";
 
-function FlashExporter(khaDirectory, directory, embedflashassets) {
-	KhaExporter.call(this, khaDirectory);
-	this.directory = directory;
-	this.embed = embedflashassets;
-	this.images = [];
-	this.sounds = [];
-	this.blobs = [];
-	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Flash'));
-}
-
-FlashExporter.prototype = Object.create(KhaExporter.prototype);
-FlashExporter.constructor = FlashExporter;
+const path = require('path');
+const KhaExporter = require('./KhaExporter.js');
+const Converter = require('./Converter.js');
+const Files = require('./Files.js');
+const Haxe = require('./Haxe.js');
+const Options = require('./Options.js');
+const Paths = require('./Paths.js');
+const exportImage = require('./ImageTool.js');
+const HaxeProject = require('./HaxeProject.js');
 
 function adjustFilename(filename) {
 	filename = filename.replaceAll('.', '_');
@@ -29,121 +17,132 @@ function adjustFilename(filename) {
 	return filename;
 }
 
-FlashExporter.prototype.sysdir = function () {
-	return 'flash';
-};
-
-FlashExporter.prototype.exportSolution = function (name, platform, khaDirectory, haxeDirectory, from, callback) {
-	var defines = [
-		'swf-script-timeout=60',
-		'sys_' + platform,
-		'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
-		'sys_a1', 'sys_a2'
-	];
-	if (this.embed) defines.push('KHA_EMBEDDED_ASSETS');
-
-	var options = {
-		from: from.toString(),
-		to: path.join(this.sysdir(), 'kha.swf'),
-		sources: this.sources,
-		defines: defines,
-		haxeDirectory: haxeDirectory.toString(),
-		system: this.sysdir(),
-		language: 'as',
-		width: this.width,
-		height: this.height,
-		name: name
-	};
-	HaxeProject(this.directory.toString(), options);
-
-	if (this.embed) {
-		this.writeFile(this.directory.resolve(Paths.get("..", "Sources", "Assets.hx")));
-
-		this.p("package;");
-		this.p();
-		this.p("import flash.display.BitmapData;");
-		this.p("import flash.media.Sound;");
-		this.p("import flash.utils.ByteArray;");
-		this.p();
-
-		for (var image in this.images) {
-			this.p("@:bitmap(\"flash/" + this.images[image] + "\") class Assets_" + adjustFilename(this.images[image]) + " extends BitmapData { }");
-		}
-
-		this.p();
-
-		for (var sound in this.sounds) {
-			this.p("@:sound(\"flash/" + this.sounds[sound] + "\") class Assets_" + adjustFilename(this.sounds[sound]) + " extends Sound { }");
-		}
-
-		this.p();
-
-		for (var blob in this.blobs) {
-			this.p("@:file(\"flash/" + this.blobs[blob] + "\") class Assets_" + adjustFilename(this.blobs[blob]) + " extends ByteArray { }");
-		}
-
-		this.p();
-		this.p("class Assets {");
-		this.p("public static function visit(): Void {", 1);
-		this.p("", 2);
-		this.p("}", 1);
-		this.p("}");
-
-		this.closeFile();
+class FlashExporter extends KhaExporter {
+	constructor(khaDirectory, directory, embedflashassets) {
+		super(khaDirectory);
+		this.directory = directory;
+		this.embed = embedflashassets;
+		this.images = [];
+		this.sounds = [];
+		this.blobs = [];
+		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Flash'));
 	}
 
-	if (Options.compilation) {
-		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
+	sysdir() {
+		return 'flash';
 	}
-	else {
-		callback();
-	}
-};
 
-FlashExporter.prototype.copyMusic = function (platform, from, to, encoders, callback) {
-	if (this.embed) this.sounds.push(to + '.ogg');
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-	var self = this;
-	Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, function (ogg) {
-		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder, function (mp3) {
-			var files = [];
-			if (ogg) files.push(to + '.ogg');
-			if (mp3) files.push(to + '.mp3');
-			callback(files);
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+		let defines = [
+			'swf-script-timeout=60',
+			'sys_' + platform,
+			'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
+			'sys_a1', 'sys_a2'
+		];
+		if (this.embed) defines.push('KHA_EMBEDDED_ASSETS');
+
+		const options = {
+			from: from.toString(),
+			to: path.join(this.sysdir(), 'kha.swf'),
+			sources: this.sources,
+			defines: defines,
+			haxeDirectory: haxeDirectory.toString(),
+			system: this.sysdir(),
+			language: 'as',
+			width: this.width,
+			height: this.height,
+			name: name
+		};
+		HaxeProject(this.directory.toString(), options);
+
+		if (this.embed) {
+			this.writeFile(this.directory.resolve(Paths.get("..", "Sources", "Assets.hx")));
+
+			this.p("package;");
+			this.p();
+			this.p("import flash.display.BitmapData;");
+			this.p("import flash.media.Sound;");
+			this.p("import flash.utils.ByteArray;");
+			this.p();
+
+			for (let image of this.images) {
+				this.p("@:bitmap(\"flash/" + image + "\") class Assets_" + adjustFilename(image) + " extends BitmapData { }");
+			}
+
+			this.p();
+
+			for (let sound of this.sounds) {
+				this.p("@:sound(\"flash/" + sound + "\") class Assets_" + adjustFilename(sound) + " extends Sound { }");
+			}
+
+			this.p();
+
+			for (let blob of this.blobs) {
+				this.p("@:file(\"flash/" + blob + "\") class Assets_" + adjustFilename(blob) + " extends ByteArray { }");
+			}
+
+			this.p();
+			this.p("class Assets {");
+			this.p("public static function visit(): Void {", 1);
+			this.p("", 2);
+			this.p("}", 1);
+			this.p("}");
+
+			this.closeFile();
+		}
+
+		if (Options.compilation) {
+			Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
+		}
+		else {
+			callback();
+		}
+	}
+
+	copyMusic(platform, from, to, encoders, callback) {
+		if (this.embed) this.sounds.push(to + '.ogg');
+		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
+			Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder, (mp3) => {
+				var files = [];
+				if (ogg) files.push(to + '.ogg');
+				if (mp3) files.push(to + '.mp3');
+				callback(files);
+			});
 		});
-	});
-};
+	}
 
-FlashExporter.prototype.copySound = function (platform, from, to, encoders, callback) {
-	if (this.embed) this.sounds.push(to + '.ogg');
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, function (ogg) {
-		callback([to + '.ogg']);
-	});
-};
+	copySound(platform, from, to, encoders, callback) {
+		if (this.embed) this.sounds.push(to + '.ogg');
+		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
+			callback([to + '.ogg']);
+		});
+	}
 
-FlashExporter.prototype.copyImage = function (platform, from, to, asset, callback) {
-	if (this.embed) this.images.push(to);
-	exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, function (format) {
-		callback([to + '.' + format]);
-	});
-};
+	copyImage(platform, from, to, asset, callback) {
+		if (this.embed) this.images.push(to);
+		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, (format) => {
+			callback([to + '.' + format]);
+		});
+	}
 
-FlashExporter.prototype.copyBlob = function (platform, from, to, callback) {
-	this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
-	if (this.embed) this.blobs.push(to);
-	callback([to]);
-};
+	copyBlob(platform, from, to, callback) {
+		this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
+		if (this.embed) this.blobs.push(to);
+		callback([to]);
+	}
 
-FlashExporter.prototype.copyVideo = function (platform, from, to, encoders, callback) {
-	Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-	Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.h264Encoder, function (mp4) {
-		callback([to + '.mp4']);
-	});
-};
+	copyVideo(platform, from, to, encoders, callback) {
+		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.h264Encoder, (mp4) => {
+			callback([to + '.mp4']);
+		});
+	}
 
-FlashExporter.prototype.addShader = function (shader) {
-	if (this.embed) this.blobs.push(shader);
-};
+	addShader = function (shader) {
+		if (this.embed) this.blobs.push(shader);
+	}
+}
 
 module.exports = FlashExporter;

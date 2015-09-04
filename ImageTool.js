@@ -1,37 +1,38 @@
-var cp = require('child_process');
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
-var korepath = require('./korepath.js')
-var Paths = require(path.join(korepath.get(), 'Paths.js'));
-var Files = require(path.join(korepath.get(), 'Files.js'));
-var log = require('./log.js');
-var exec = require('./exec.js');
+"use strict";
+
+const cp = require('child_process');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const Paths = require('./Paths.js');
+const Files = require('./Files.js');
+const log = require('./log.js');
+const exec = require('./exec.js');
 
 function getWidthAndHeight(from, to, asset, format, prealpha, callback) {
-	var exe = 'kraffiti' + exec.sys();
+	const exe = 'kraffiti' + exec.sys();
 	
-	var params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
+	let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
 	if (asset.scale !== undefined && asset.scale !== 1) {
 		params.push('scale=' + asset.scale);	
 	}
-	var stdout = '';
-	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+	let stdout = '';
+	let child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
 	
-	child.stdout.on('data', function (data) {
+	child.stdout.on('data', (data) => {
 		stdout += data.toString();
 	});
 	
-	child.stderr.on('data', function (data) {
+	child.stderr.on('data', (data) => {
 		log.error('kraffiti stderr: ' + data);
 	});
 	
-	child.on('error', function (err) {
+	child.on('error', (err) => {
 		log.error('kraffiti error: ' + err);
 		callback({w: 0, h: 0});
 	});
 	
-	child.on('close', function (code) {
+	child.on('close', (code) => {
 		if (code !== 0) log.error('kraffiti process exited with code ' + code + ' when trying to get size of ' + asset.name);
 		var lines = stdout.split('\n');
 		for (var l in lines) {
@@ -64,7 +65,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 	}
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
-		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
+		getWidthAndHeight(from, to, asset, format, prealpha, (wh) => {
 			asset.original_width = wh.w;
 			asset.original_height = wh.h;
 			if (callback) callback(format);
@@ -76,7 +77,7 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 
 	if (format === 'jpg') {
 		Files.copy(from, Paths.get(to), true);
-		getWidthAndHeight(from, to, asset, format, prealpha, function (wh) {
+		getWidthAndHeight(from, to, asset, format, prealpha, (wh) => {
 			asset.original_width = wh.w;
 			asset.original_height = wh.h;
 			if (callback) callback(format);
@@ -84,9 +85,9 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 		return;
 	}
 
-	var exe = 'kraffiti' + exec.sys();
+	const exe = 'kraffiti' + exec.sys();
 	
-	var params = ['from=' + from, 'to=' + to, 'format=' + format];
+	let params = ['from=' + from, 'to=' + to, 'format=' + format];
 	if (!poweroftwo) {
 		params.push('filter=nearest');
 	}
@@ -100,27 +101,26 @@ module.exports = function (from, to, asset, format, prealpha, callback, poweroft
 	if (poweroftwo) {
 		params.push('poweroftwo');
 	}
-	var stdout = '';
-	var child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+	let stdout = '';
+	let child = cp.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
 	
-	child.stdout.on('data', function (data) {
+	child.stdout.on('data', (data) => {
 		stdout += data.toString();
 	});
 	
-	child.stderr.on('data', function (data) {
+	child.stderr.on('data', (data) => {
 		log.error('kraffiti stderr: ' + data);
 	});
 	
-	child.on('error', function (err) {
+	child.on('error', (err) => {
 		log.error('kraffiti error: ' + err);
 		if (callback) callback(format);
 	});
 	
-	child.on('close', function (code) {
+	child.on('close', (code) => {
 		if (code !== 0) log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + asset.name);
-		var lines = stdout.split('\n');
-		for (var l in lines) {
-			var line = lines[l];
+		const lines = stdout.split('\n');
+		for (let line of lines) {
 			if (line.startsWith('#')) {
 				var numbers = line.substring(1).split('x');
 				asset.original_width = parseInt(numbers[0]);

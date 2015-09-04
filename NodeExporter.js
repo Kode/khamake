@@ -1,25 +1,25 @@
-var path = require('path');
-var Html5Exporter = require('./Html5Exporter.js');
-var korepath = require('./korepath.js');
-var Converter = require('./Converter.js');
-var Files = require(path.join(korepath.get(), 'Files.js'));
-var Haxe = require('./Haxe.js');
-var Options = require('./Options.js');
-var Paths = require(path.join(korepath.get(), 'Paths.js'));
-var exportImage = require('./ImageTool.js');
-var fs = require('fs');
+"use strict";
 
-function NodeExporter(khaDirectory, directory) {
-	Html5Exporter.call(this, khaDirectory, directory);
-	this.removeSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5'));
-	this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Node'));
-};
+const path = require('path');
+const Html5Exporter = require('./Html5Exporter.js');
+const Converter = require('./Converter.js');
+const Files = require('./Files.js');
+const Haxe = require('./Haxe.js');
+const Options = require('./Options.js');
+const Paths = require('./Paths.js');
+const exportImage = require('./ImageTool.js');
+const fs = require('fs');
 
-NodeExporter.prototype = Object.create(Html5Exporter.prototype);
-NodeExporter.constructor = NodeExporter;
+class NodeExporter extends Html5Exporter {
+	constructor(khaDirectory, directory) {
+		super(khaDirectory, directory);
+		this.removeSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5'));
+		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Node'));
+	}
 
-NodeExporter.prototype.sysdir = function () {
-	return 'node';
-};
+	sysdir() {
+		return 'node';
+	}
+}
 
 module.exports = NodeExporter;

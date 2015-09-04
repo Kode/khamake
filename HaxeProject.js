@@ -1,21 +1,23 @@
-var fs = require('fs-extra');
-var path = require('path');
-var XmlWriter = require('./XmlWriter.js');
+"use strict";
+
+const fs = require('fs-extra');
+const path = require('path');
+const XmlWriter = require('./XmlWriter.js');
 
 function copyAndReplace(from, to, names, values) {
-	var data = fs.readFileSync(from, { encoding: 'utf8' });
-	for (var i = 0; i < names.length; ++i) {
+	let data = fs.readFileSync(from, { encoding: 'utf8' });
+	for (let i = 0; i < names.length; ++i) {
 		data = data.replaceAll(names[i], values[i]);
 	}
 	fs.writeFileSync(to, data, { encoding: 'utf8' });
 }
 
 function IntelliJ(projectdir, options) {
-    var indir = path.join(__dirname, 'Data', 'intellij');
-    var outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
+    let indir = path.join(__dirname, 'Data', 'intellij');
+    let outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
 
-    var sources = '';
-    for (var i = 0; i < options.sources.length; ++i) {
+    let sources = '';
+    for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
 			sources += '      <sourceFolder url="file://' + options.sources[i] + '" isTestSource="false" />\n';
 		}
@@ -24,16 +26,15 @@ function IntelliJ(projectdir, options) {
 		}
 	}
 
-	var args = '';
+	let args = '';
 
-    var defines = '';
-    for (var i = 0; i < options.defines.length; ++i) {
-		var define = options.defines[i];
-		defines += define;
+    let defines = '';
+    for (let i = 0; i < options.defines.length; ++i) {
+		defines += options.defines[i];
 		if (i < options.defines.length - 1) defines += ',';
 	}
 
-	var target;
+	let target;
 	switch (options.language) {
 		case 'cpp':
 			target = 'C++';
@@ -72,8 +73,8 @@ function IntelliJ(projectdir, options) {
 }
 
 function hxml(projectdir, options) {
-	var data = '';
-	for (var i = 0; i < options.sources.length; ++i) {
+	let data = '';
+	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
 			data += '-cp ' + options.sources[i] + '\n';
 		}
@@ -81,8 +82,8 @@ function hxml(projectdir, options) {
 			data += '-cp ' + path.relative(projectdir, path.join(options.from, options.sources[i])) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
-	for (var d in options.defines) {
-		var define = options.defines[d];
+	for (let d in options.defines) {
+		let define = options.defines[d];
 		data += '-D ' + define + '\n';
 	}
 	if (options.language === 'cpp') {
@@ -112,7 +113,7 @@ function hxml(projectdir, options) {
 }
 
 function FlashDevelop(projectdir, options) {
-	var platform;
+	let platform;
 
 	switch (options.language) {
 		case 'cpp':
@@ -132,7 +133,7 @@ function FlashDevelop(projectdir, options) {
 			break;
 	}
 
-	var output = {
+	let output = {
 		n: 'output',
 		e: [
 			{
@@ -192,7 +193,7 @@ function FlashDevelop(projectdir, options) {
 		]
 	};
 
-	for (var i = 0; i < options.sources.length; ++i) {
+	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
 			classpaths.e.push({
 				n: 'class',
@@ -207,7 +208,7 @@ function FlashDevelop(projectdir, options) {
 		}
 	}
 
-	var otheroptions = [
+	let otheroptions = [
 		{
 			n: 'option',
 			showHiddenPaths: 'False'
@@ -251,9 +252,9 @@ function FlashDevelop(projectdir, options) {
 		});
 	}
 
-	var def = '';
-	for (var d in options.defines) {
-		def += '-D ' + options.defines[d] + '&#xA;';
+	let def = '';
+	for (let d of options.defines) {
+		def += '-D ' + d + '&#xA;';
 	}
 	if (options.language === 'java' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'))) {
 		def += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '&#xA;';
@@ -262,7 +263,7 @@ function FlashDevelop(projectdir, options) {
 		def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '&#xA;';
 	}
 
-	var project = {
+	let project = {
 		n: 'project',
 		version: '2',
 		e: [

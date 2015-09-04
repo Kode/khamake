@@ -1,57 +1,33 @@
-var child_process = require('child_process');
-var fs = require('fs-extra');
-var os = require('os');
-var pathlib = require('path');
-var exec = require('./exec.js');
-var korepath = require('./korepath.js');
-var log = require('./log.js');
-var Files = require(pathlib.join(korepath.get(), 'Files.js'));
-var GraphicsApi = require('./GraphicsApi.js');
-var VrApi = require('./VrApi.js');
-var Options = require('./Options.js');
-var Path = require(pathlib.join(korepath.get(), 'Path.js'));
-var Paths = require(pathlib.join(korepath.get(), 'Paths.js'));
-var Platform = require('./Platform.js');
-var ProjectFile = require('./ProjectFile.js');
-var VisualStudioVersion = require('./VisualStudioVersion.js');
+"use strict";
 
-var AndroidExporter = require('./AndroidExporter.js');
-var FlashExporter = require('./FlashExporter.js');
-var Html5Exporter = require('./Html5Exporter.js');
-var Html5WorkerExporter = require('./Html5WorkerExporter.js');
-var JavaExporter = require('./JavaExporter.js');
-var KoreExporter = require('./KoreExporter.js');
-var NodeExporter = require('./NodeExporter.js');
-var PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
-var WpfExporter = require('./WpfExporter.js');
-var XnaExporter = require('./XnaExporter.js');
-var UnityExporter = require('./UnityExporter.js');
+const child_process = require('child_process');
+const fs = require('fs-extra');
+const os = require('os');
+const pathlib = require('path');
+const exec = require('./exec.js');
+const korepath = require('./korepath.js');
+const log = require('./log.js');
+const Files = require('./Files.js');
+const GraphicsApi = require('./GraphicsApi.js');
+const VrApi = require('./VrApi.js');
+const Options = require('./Options.js');
+const Path = require('./Path.js');
+const Paths = require('./Paths.js');
+const Platform = require('./Platform.js');
+const ProjectFile = require('./ProjectFile.js');
+const VisualStudioVersion = require('./VisualStudioVersion.js');
 
-if (!String.prototype.startsWith) {
-	Object.defineProperty(String.prototype, 'startsWith', {
-		enumerable: false,
-		configurable: false,
-		writable: false,
-		value: function (searchString, position) {
-			position = position || 0;
-			return this.indexOf(searchString, position) === position;
-		}
-	});
-}
-
-if (!String.prototype.endsWith) {
-	Object.defineProperty(String.prototype, 'endsWith', {
-		enumerable: false,
-		configurable: false,
-		writable: false,
-		value: function (searchString, position) {
-			position = position || this.length;
-			position = position - searchString.length;
-			var lastIndex = this.lastIndexOf(searchString);
-			return lastIndex !== -1 && lastIndex === position;
-		}
-	});
-}
+const AndroidExporter = require('./AndroidExporter.js');
+const FlashExporter = require('./FlashExporter.js');
+const Html5Exporter = require('./Html5Exporter.js');
+const Html5WorkerExporter = require('./Html5WorkerExporter.js');
+const JavaExporter = require('./JavaExporter.js');
+const KoreExporter = require('./KoreExporter.js');
+const NodeExporter = require('./NodeExporter.js');
+const PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
+const WpfExporter = require('./WpfExporter.js');
+const XnaExporter = require('./XnaExporter.js');
+const UnityExporter = require('./UnityExporter.js');
 
 function escapeRegExp(string) {
 	return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -63,21 +39,21 @@ String.prototype.replaceAll = function (find, replace) {
 
 function compileShader(compiler, type, from, to, temp, system, kfx) {
 	if (compiler !== '') {
-		var compiler_process = child_process.spawn(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
+		let compiler_process = child_process.spawn(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
 
-		compiler_process.stdout.on('data', function (data) {
+		compiler_process.stdout.on('data', (data) => {
 			if (data.toString().trim() !== '' && type !== 'agal') log.info('Shader compiler stdout: ' + data);
 		});
 
-		compiler_process.stderr.on('data', function (data) {
+		compiler_process.stderr.on('data', (data) => {
 			if (data.toString().trim() !== '' && type !== 'agal') log.info('Shader compiler stderr: ' + data);
 		});
 		
-		compiler_process.on('error', function (err) {
+		compiler_process.on('error', (err) => {
 			log.error('Shader compiler error: ' + err);
 		});
 
-		compiler_process.on('close', function (code) {
+		compiler_process.on('close', (code) => {
 			if (code !== 0) log.info('Shader compiler process exited with code ' + code + ' while trying to compile ' + from.toString());
 		});
 	}
@@ -89,10 +65,9 @@ function addShader(project, name, extension) {
 
 function addShaders(exporter, platform, project, from, to, temp, shaderPath, compiler, kfx) {
 	if (!Files.isDirectory(shaderPath)) return;
-	var shaders = Files.newDirectoryStream(shaderPath);
-	for (var s in shaders) {
-		var shader = shaders[s];
-		var name = shader;
+	let shaders = Files.newDirectoryStream(shaderPath);
+	for (let shader of shaders) {
+		let name = shader;
 		if (!name.endsWith('.glsl')) continue;
 		if (name.endsWith('.inc.glsl')) continue;
 		name = name.substr(0, name.lastIndexOf('.'));
@@ -213,10 +188,10 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		callback();
 		return;
 	}
-	var asset = assets[index];
+	let asset = assets[index];
 	log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + asset.file + ').');
 	if (asset.type === 'image') {
-		var file;
+		let file;
 		if (asset.libdir !== undefined) {
 			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
@@ -230,7 +205,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		});
 	}
 	else if (asset.type === 'music') {
-		var file;
+		let file;
 		if (asset.libdir !== undefined) {
 			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
@@ -244,7 +219,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		});
 	}
 	else if (asset.type === 'sound') {
-		var file;
+		let file;
 		if (asset.libdir !== undefined) {
 			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
@@ -258,7 +233,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		});
 	}
 	else if (asset.type === 'blob') {
-		var file;
+		let file;
 		if (asset.libdir !== undefined) {
 			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
@@ -272,7 +247,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		});
 	}
 	else if (asset.type === 'video') {
-		var file;
+		let file;
 		if (asset.libdir !== undefined) {
 			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
@@ -286,7 +261,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		});
 	}
 	else if (asset.type === 'font') {
-		var file;
+		let file;
 		if (asset.libdir !== undefined) {
 			file = from.resolve(Paths.get(asset.libdir, 'Assets', asset.file));
 		}
@@ -317,13 +292,13 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 			{
 				fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
 
-				var out = '';
+				let out = '';
 				out += "var solution = new Solution('" + name + "');\n";
 				out += "var project = new Project('" + name + "');\n";
 
 				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 
-				var buildpath = from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/');
+				let buildpath = from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/');
 				if (buildpath.startsWith('..')) buildpath = pathlib.resolve(pathlib.join(from.toString(), buildpath));
 				out += "project.addSubProject(Solution.createProject('" + buildpath.replaceAll('\\', '/') + "'));\n";
 				out += "project.addSubProject(Solution.createProject('" + pathlib.normalize(options.kha).replaceAll('\\', '/') + "'));\n";
@@ -340,8 +315,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 				out += "\t}\n";
 				out += "}\n";*/
 
-				for (var l in libraries) {
-					var lib = libraries[l];
+				for (let lib of libraries) {
 					out += "if (fs.existsSync(path.join('" + lib.directory.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
 					out += "\tproject.addSubProject(Solution.createProject('" + lib.directory.replaceAll('\\', '/') + "'));\n";
 					out += "}\n";
@@ -351,7 +325,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 				fs.writeFileSync(from.resolve("korefile.js").toString(), out);
 			}
 
-			var gfx = "unknown";
+			let gfx = "unknown";
 			switch (Options.graphicsApi) {
 				case GraphicsApi.OpenGL:
 					gfx = "opengl";
@@ -370,7 +344,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 					break;
 			}
 			
-			var vs = "unknown";
+			let vs = "unknown";
 			switch (Options.visualStudioVersion) {
 				case VisualStudioVersion.VS2010:
 					vs = "vs2010";
@@ -426,11 +400,11 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	log.info('Creating Kha project.');
 	
 	Files.createDirectories(to);
-	var temp = to.resolve('temp');
+	let temp = to.resolve('temp');
 	Files.createDirectories(temp);
 	
-	var exporter = null;
-	var kore = false;
+	let exporter = null;
+	let kore = false;
 	switch (platform) {
 		case Platform.Flash:
 			exporter = new FlashExporter(khaDirectory, to, embedflashassets);
@@ -470,9 +444,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 
 	Files.createDirectories(to.resolve(exporter.sysdir()));
 	
-	var name = '';
-	var sources = [];
-	var project = {
+	let name = '';
+	let sources = [];
+	let project = {
 		format: 1,
 		game: {
 			name: "Unknown",
@@ -483,7 +457,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		rooms: []
 	};
 
-	var foundProjectFile = false;
+	let foundProjectFile = false;
 	if (name === '') name = from.toAbsolutePath().getFileName();
 	project.game.name = name;
 	
@@ -492,14 +466,13 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		foundProjectFile = true;
 	}
 
-	var libraries = [];
+	let libraries = [];
 	if (project.libraries !== undefined) {
-		for (var ll in project.libraries) {
-			var libname = project.libraries[ll];
+		for (let libname of project.libraries) {
 			var found = false;
 			if (Files.isDirectory(from.resolve(Paths.get('Libraries', libname)))) {
 				if (Files.newDirectoryStream(from.resolve(Paths.get('Libraries', libname))).length > 0) {
-					var lib = {
+					let lib = {
 						directory: 'Libraries/' + libname,
 						project: {
 							assets: [],
@@ -518,16 +491,18 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 				if (process.env.HAXEPATH) {
 					var libpath = pathlib.join(process.env.HAXEPATH, 'lib', libname.toLowerCase());
 					if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
+						let current;
+						let libdeeppath;
 						if (fs.existsSync(pathlib.join(libpath, '.current'))) {
-							var current = fs.readFileSync(pathlib.join(libpath, '.current'), {encoding: 'utf8'});
-							var libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
+							current = fs.readFileSync(pathlib.join(libpath, '.current'), {encoding: 'utf8'});
+							libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
 						}
 						else if (fs.existsSync(pathlib.join(libpath, '.dev'))) {
-							var current = fs.readFileSync(pathlib.join(libpath, '.dev'), {encoding: 'utf8'});
-							var libdeeppath = current;
+							current = fs.readFileSync(pathlib.join(libpath, '.dev'), {encoding: 'utf8'});
+							libdeeppath = current;
 						}
 						if (fs.existsSync(libdeeppath) && fs.statSync(libdeeppath).isDirectory()) {
-							var lib = {
+							let lib = {
 								directory: libdeeppath,
 								project: {
 									assets: [],
@@ -555,20 +530,16 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	exporter.setName(name);
 
 	if (project.sources !== undefined) {
-		for (var i = 0; i < project.sources.length; ++i) {
+		for (let i = 0; i < project.sources.length; ++i) {
 			sources.push(project.sources[i]);
 		}
 	}
-	for (var l in libraries) {
-		var lib = libraries[l];
-
-		for (var a in lib.project.assets) {
-			var asset = lib.project.assets[a];
+	for (let lib of libraries) {
+		for (let asset of lib.project.assets) {
 			asset.libdir = lib.directory;
 			project.assets.push(asset);
 		}
-		for (var r in lib.project.rooms) {
-			var room = lib.project.rooms[r];
+		for (let room of lib.project.rooms) {
 			project.rooms.push(room);
 		}
 
@@ -576,13 +547,13 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			sources.push(lib.directory + '/Sources');
 		}
 		if (lib.project.sources !== undefined) {
-			for (var i = 0; i < project.sources.length; ++i) {
+			for (let i = 0; i < project.sources.length; ++i) {
 				sources.push(lib.directory + '/' + project.sources[i]);
 			}
 		}
 	}
 
-	var encoders = {
+	let encoders = {
 		oggEncoder: oggEncoder,
 		aacEncoder: aacEncoder,
 		mp3Encoder: mp3Encoder,
@@ -594,25 +565,25 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	};
 	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
 		project.shaders = [];
-		var shaderDir = to.resolve(exporter.sysdir());
+		let shaderDir = to.resolve(exporter.sysdir());
 		if (platform === Platform.Unity) {
 			shaderDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Shaders'));
 			if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
 		}
 		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
 		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get(options.kha, 'Sources', 'Shaders')), krafix, kfx);
-		for (var i = 0; i < sources.length; ++i) {
+		for (let i = 0; i < sources.length; ++i) {
 			addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
 			exporter.addSourceDirectory(sources[i]);
 		}
 		if (platform === Platform.Unity) {
-			var proto = fs.readFileSync(from.resolve(Paths.get(options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
-			for (var i1 = 0; i1 < project.shaders.length; ++i1) {
+			let proto = fs.readFileSync(from.resolve(Paths.get(options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
+			for (let i1 = 0; i1 < project.shaders.length; ++i1) {
 				if (project.shaders[i1].name.endsWith('.vert')) {
-					for (var i2 = 0; i2 < project.shaders.length; ++i2) {
+					for (let i2 = 0; i2 < project.shaders.length; ++i2) {
 						if (project.shaders[i2].name.endsWith('.frag')) {
-							var shadername = project.shaders[i1].name + '.' + project.shaders[i2].name;
-							var proto2 = proto.replaceAll('{name}', shadername);
+							let shadername = project.shaders[i1].name + '.' + project.shaders[i2].name;
+							let proto2 = proto.replaceAll('{name}', shadername);
 							proto2 = proto2.replaceAll('{vert}', project.shaders[i1].name);
 							proto2 = proto2.replaceAll('{frag}', project.shaders[i2].name);
 							fs.writeFileSync(shaderDir.resolve(shadername + '.shader').toString(), proto2, { encoding: 'utf8'});
@@ -620,13 +591,13 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 					}
 				}
 			}
-			for (var i = 0; i < project.shaders.length; ++i) {
+			for (let i = 0; i < project.shaders.length; ++i) {
 				fs.writeFileSync(to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Resources', 'Blobs', project.shaders[i].files[0] + '.bytes')).toString(), project.shaders[i].name, { encoding: 'utf8'});
 			}
 		}
 		
 		function secondPass() {
-			var hxslDir = pathlib.join('build', 'Shaders');
+			let hxslDir = pathlib.join('build', 'Shaders');
 			if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) { 
 				addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
 				if (foundProjectFile) {	
@@ -674,7 +645,7 @@ exports.api = 1;
 exports.run = function (options, loglog, callback) {
 	log.set(loglog);
 
-	var done = function (name) {
+	let done = (name) => {
 		if (options.target === Platform.Linux && options.run) {
 			log.info('Running...');
 			var run = child_process.spawn(
@@ -698,7 +669,7 @@ exports.run = function (options, loglog, callback) {
 	};
 
 	if (options.kha === undefined || options.kha === '') {
-		var p = pathlib.join(__dirname, '..', '..');
+		let p = pathlib.join(__dirname, '..', '..');
 		if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
 			options.kha = p;
 		}
@@ -708,27 +679,27 @@ exports.run = function (options, loglog, callback) {
 	}
 
 	if (options.haxe === '') {
-		var path = Paths.get(options.kha, 'Tools', 'haxe');
+		let path = Paths.get(options.kha, 'Tools', 'haxe');
 		if (Files.isDirectory(path)) options.haxe = path.toString();
 	}
 	
 	if (options.kfx === '') {
-		var path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx" + exec.sys());
+		let path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx" + exec.sys());
 		if (Files.exists(path)) options.kfx = path.toString();
 	}
 
 	if (options.krafix === '' || options.krafix === undefined) {
-		var path = Paths.get(options.kha, "Kore", "Tools", "krafix", "krafix" + exec.sys());
+		let path = Paths.get(options.kha, "Kore", "Tools", "krafix", "krafix" + exec.sys());
 		if (Files.exists(path)) options.krafix = path.toString();
 	}
 	
 	if (options.ogg === '') {
-		var path = Paths.get(options.kha, "Tools", "oggenc", "oggenc" + exec.sys());
+		let path = Paths.get(options.kha, "Tools", "oggenc", "oggenc" + exec.sys());
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out} --quiet';
 	}
 
 	if (options.kravur === '' || options.kravur === undefined) {
-		var path = Paths.get(options.kha, 'Tools', 'kravur', 'kravur' + exec.sys());
+		let path = Paths.get(options.kha, 'Tools', 'kravur', 'kravur' + exec.sys());
 		if (Files.exists(path)) options.kravur = path.toString() + ' {in} {size} {out}';
 	}
 	

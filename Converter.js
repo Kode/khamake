@@ -1,6 +1,8 @@
-var child_process = require('child_process');
-var fs = require('fs');
-var log = require('./log.js');
+"use strict";
+
+const child_process = require('child_process');
+const fs = require('fs');
+const log = require('./log.js');
 
 exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 	if (fs.existsSync(outFilename.toString()) && fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) {
@@ -13,17 +15,15 @@ exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 		return;
 	}
 	
-	var dirend = Math.max(encoder.lastIndexOf('/'), encoder.lastIndexOf('\\'));
-	var firstspace = encoder.indexOf(' ', dirend);
-	var exe = encoder.substr(0, firstspace);
-	var arguments = encoder.substr(firstspace + 1);
-
-	var parts = arguments.split(' ');
-	var options = [];
-	for (var i = 0; i < parts.length; ++i) {
-		var foundarg = false;
+	let dirend = Math.max(encoder.lastIndexOf('/'), encoder.lastIndexOf('\\'));
+	let firstspace = encoder.indexOf(' ', dirend);
+	let exe = encoder.substr(0, firstspace);
+	let parts = encoder.substr(firstspace + 1).split(' ');
+	let options = [];
+	for (let i = 0; i < parts.length; ++i) {
+		let foundarg = false;
 		if (args !== undefined) {
-			for (var arg in args) {
+			for (let arg in args) {
 				if (parts[i] === '{' + arg + '}') {
 					options.push(args[arg]);
 					foundarg = true;
@@ -37,7 +37,7 @@ exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 		else if (parts[i] === '{out}') options.push(outFilename.toString());
 		else options.push(parts[i]);
 	}
-	var child = child_process.spawn(exe, options);
+	let child = child_process.spawn(exe, options);
 
 	child.stdout.on('data', function (data) {
 		//log.info(encoder + ' stdout: ' + data);

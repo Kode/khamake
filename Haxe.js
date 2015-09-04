@@ -1,33 +1,35 @@
-var child_process = require('child_process');
-var fs = require('fs');
-var path = require('path');
-var log = require('./log.js');
-var exec = require('./exec.js');
+"use strict";
+
+const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const log = require('./log.js');
+const exec = require('./exec.js');
 
 exports.executeHaxe = function (from, haxeDirectory, options, callback) {
-	var exe = 'haxe';
-	var env = process.env;
+	let exe = 'haxe';
+	let env = process.env;
 	if (fs.existsSync(haxeDirectory.toString()) && fs.statSync(haxeDirectory.toString()).isDirectory()) {
-		var localexe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath().toString();
+		let localexe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath().toString();
 		if (!fs.existsSync(localexe)) localexe = haxeDirectory.resolve('haxe').toAbsolutePath().toString();
 		if (fs.existsSync(localexe)) exe = localexe;
 		env.HAXE_STD_PATH = haxeDirectory.toAbsolutePath().resolve('std').toString();
 	}
-	var haxe = child_process.spawn(exe, options, { env: env, cwd: path.normalize(from.toString()) });
+	let haxe = child_process.spawn(exe, options, { env: env, cwd: path.normalize(from.toString()) });
 
-	haxe.stdout.on('data', function (data) {
+	haxe.stdout.on('data', (data) => {
 		log.info('Haxe stdout: ' + data);
 	});
 
-	haxe.stderr.on('data', function (data) {
+	haxe.stderr.on('data', (data) => {
 		log.error('Haxe stderr: ' + data);
 	});
 	
-	haxe.on('error', function (err) {
+	haxe.on('error', (err) => {
 		log.error('Haxe error: ' + err);
 	});
 
-	haxe.on('close', function (code) {
+	haxe.on('close', (code) => {
 		if (code !== 0) log.error('Haxe process exited with code ' + code);
 		callback();
 	});

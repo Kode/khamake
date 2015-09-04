@@ -1,7 +1,9 @@
-var fs = require('fs-extra');
+"use strict";
+
+const fs = require('fs-extra');
 
 function printElement(elem, data, indents) {
-	for (var i = 0; i < indents; ++i) data += '\t';
+	for (let i = 0; i < indents; ++i) data += '\t';
 
 	if (typeof elem === 'string') {
 		data += '<!-- ' + elem + ' -->\n';
@@ -9,7 +11,7 @@ function printElement(elem, data, indents) {
 	}
 
 	data += '<' + elem.n;
-	for (var a in elem) {
+	for (let a in elem) {
 		if (a === 'n') continue;
 		if (a === 'e') continue;
 		data += ' ' + a + '="' + elem[a] + '"';
@@ -20,10 +22,10 @@ function printElement(elem, data, indents) {
 	}
 	else {
 		data += '>\n';
-		for (var e in elem.e) {
-			data = printElement(elem.e[e], data, indents + 1);
+		for (let e of elem.e) {
+			data = printElement(e, data, indents + 1);
 		}
-		for (var i = 0; i < indents; ++i) data += '\t';
+		for (let i = 0; i < indents; ++i) data += '\t';
 		data += '</' + elem.n + '>\n';
 	}
 
@@ -31,17 +33,17 @@ function printElement(elem, data, indents) {
 }
 
 module.exports = function (xml, path) {
-	var data = '';
+	let data = '';
 	data += '<?xml version="1.0" encoding="utf-8"?>\n';
 	data += '<' + xml.n;
-	for (var a in xml) {
+	for (let a in xml) {
 		if (a === 'n') continue;
 		if (a === 'e') continue;
 		data += ' ' + a + '="' + xml[a] + '"';
 	}
 	data += '>\n';
-	for (var e in xml.e) {
-		data = printElement(xml.e[e], data, 1);
+	for (let e of xml.e) {
+		data = printElement(e, data, 1);
 	}
 	data += '</' + xml.n + '>\n';
 	fs.outputFileSync(path, data);
