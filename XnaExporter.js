@@ -4,10 +4,10 @@ const path = require('path');
 const CSharpExporter = require('./CSharpExporter.js');
 const korepath = require('./korepath.js');
 const Converter = require('./Converter.js');
-const Files = require('Files.js');
+const Files = require('./Files.js');
 const Haxe = require('./Haxe.js');
 const Options = require('./Options.js');
-const Paths = require('Paths.js');
+const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
 const fs = require('fs');
 const uuid = require('./uuid.js');
@@ -56,6 +56,7 @@ class XnaExporter extends CSharpExporter {
 	}
 
 	exportSLN(projectUuid) {
+		this.createDirectory(this.directory.resolve(Paths.get(this.sysdir() + '-build')));
 		this.writeFile(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Project.sln")));
 		var solutionUuid = uuid.v4();
 		var contentUuid = uuid.v4();

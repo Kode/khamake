@@ -102,8 +102,8 @@ class FlashExporter extends KhaExporter {
 	copyMusic(platform, from, to, encoders, callback) {
 		if (this.embed) this.sounds.push(to + '.ogg');
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
-			Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder, (mp3) => {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
+			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder, (mp3) => {
 				var files = [];
 				if (ogg) files.push(to + '.ogg');
 				if (mp3) files.push(to + '.mp3');
@@ -140,7 +140,7 @@ class FlashExporter extends KhaExporter {
 		});
 	}
 
-	addShader = function (shader) {
+	addShader(shader) {
 		if (this.embed) this.blobs.push(shader);
 	}
 }

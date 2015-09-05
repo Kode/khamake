@@ -72,7 +72,7 @@ class Html5Exporter extends KhaExporter {
 	copyMusic(platform, from, to, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
-			Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, (mp4) => {
+			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, (mp4) => {
 				var files = [];
 				if (ogg) files.push(to + '.ogg');
 				if (mp4) files.push(to + '.mp4');
@@ -84,7 +84,7 @@ class Html5Exporter extends KhaExporter {
 	copySound(platform, from, to, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
-			Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, (mp4) => {
+			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, (mp4) => {
 				var files = [];
 				if (ogg) files.push(to + '.ogg');
 				if (mp4) files.push(to + '.mp4');
@@ -107,7 +107,7 @@ class Html5Exporter extends KhaExporter {
 	copyVideo(platform, from, to, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".mp4"), encoders.h264Encoder, (mp4) => {
-			Converter.convert(from, self.directory.resolve(self.sysdir()).resolve(to + ".webm"), encoders.webmEncoder, (webm) => {
+			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".webm"), encoders.webmEncoder, (webm) => {
 				let files = [];
 				if (mp4) files.push(to + '.mp4');
 				if (webm) files.push(to + '.webm');

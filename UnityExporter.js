@@ -3,10 +3,10 @@
 const path = require('path');
 const KhaExporter = require('./KhaExporter.js');
 const Converter = require('./Converter.js');
-const Files = require('Files.js');
+const Files = require('./Files.js');
 const Haxe = require('./Haxe.js');
 const Options = require('./Options.js');
-const Paths = require('Paths.js');
+const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
 const fs = require('fs');
 const uuid = require('./uuid.js');
@@ -50,12 +50,12 @@ class UnityExporter extends KhaExporter {
 		Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Assets", "Sources")));
 
 		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], () => {
-			var copyDirectory = function (from, to) {
+			var copyDirectory = (from, to) => {
 				let files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
-				self.createDirectory(self.directory.resolve(Paths.get(self.sysdir(), to)));
+				this.createDirectory(this.directory.resolve(Paths.get(this.sysdir(), to)));
 				for (let file of files) {
 					var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', from, file), {encoding: 'utf8'});
-					fs.writeFileSync(self.directory.resolve(Paths.get(self.sysdir(), to, file)).toString(), text);
+					fs.writeFileSync(this.directory.resolve(Paths.get(this.sysdir(), to, file)).toString(), text);
 				}
 			};
 			copyDirectory('Assets', 'Assets');
@@ -88,7 +88,7 @@ class UnityExporter extends KhaExporter {
 		callback([to]);
 	}
 
-	copyFont = function (platform, from, to, asset, encoders, callback) {
+	copyFont(platform, from, to, asset, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to)).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to + '.bytes')), encoders.kravur, function (success) {
 			callback([to]);

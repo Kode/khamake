@@ -27,6 +27,7 @@ class PlayStationMobileExporter extends CSharpExporter {
 	}
 
 	exportSLN(projectUuid) {
+		this.createDirectory(this.directory.resolve(Paths.get(this.sysdir() + '-build')));
 		this.writeFile(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Project.sln")));
 		const solutionUuid = uuid.v4();
 
