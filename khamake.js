@@ -15,21 +15,21 @@ String.prototype.replaceAll = function (find, replace) {
 	return this.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 };
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const exec = require('./exec.js');
-const korepath = require('./korepath.js');
-const Files = require('./Files.js');
-const GraphicsApi = require('./GraphicsApi.js');
-const VrApi = require('./VrApi.js');
-const Options = require('./Options.js');
-const Path = require('./Path.js');
-const Paths = require('./Paths.js');
-const Platform = require('./Platform.js');
-const VisualStudioVersion = require('./VisualStudioVersion.js');
+var fs = require('fs');
+var os = require('os');
+var path = require('path');
+var exec = require('./exec.js');
+var korepath = require('./korepath.js');
+var Files = require('./Files.js');
+var GraphicsApi = require('./GraphicsApi.js');
+var VrApi = require('./VrApi.js');
+var Options = require('./Options.js');
+var Path = require('./Path.js');
+var Paths = require('./Paths.js');
+var Platform = require('./Platform.js');
+var VisualStudioVersion = require('./VisualStudioVersion.js');
 
-let defaultTarget;
+var defaultTarget;
 if (os.platform() === "linux") {
 	defaultTarget = Platform.Linux;
 }
@@ -40,7 +40,7 @@ else {
 	defaultTarget = Platform.OSX;
 }
 
-let options = [
+var options = [
 	{
 		full: 'from',
 		value: true,
@@ -233,13 +233,14 @@ let options = [
 	}
 ];
 
-let parsedOptions = {
+var parsedOptions = {
 
 };
 
 function printHelp() {
 	console.log('khamake options:\n');
-	for (let option of options) {
+	for (var o in options) {
+		var option = options[o];
 		if (option.hidden) continue;
 		if (option.short) console.log('-' + option.short + ' ' + '--' + option.full);
 		else console.log('--' + option.full);
@@ -248,7 +249,8 @@ function printHelp() {
 	}
 }
 
-for (let option of options) {
+for (var o in options) {
+	var option = options[o];
 	if (option.value) {
 		parsedOptions[option.full] = option.default;
 	}
@@ -258,8 +260,8 @@ for (let option of options) {
 }
 
 var args = process.argv;
-for (let i = 2; i < args.length; ++i) {
-	let arg = args[i];
+for (var i = 2; i < args.length; ++i) {
+	var arg = args[i];
 
 	if (arg[0] == '-') {
 		if (arg[1] == '-') {
@@ -267,7 +269,8 @@ for (let i = 2; i < args.length; ++i) {
 				printHelp();
 				process.exit(0);
 			}
-			for (let option of options) {
+			for (var o in options) {
+				var option = options[o];
 				if (arg.substr(2) === option.full) {
 					if (option.value) {
 						++i;
@@ -284,7 +287,8 @@ for (let i = 2; i < args.length; ++i) {
 				printHelp();
 				process.exit(0);
 			}
-			for (let option of options) {
+			for (var o in options) {
+				var option = options[o];
 				if (option.short && arg[1] === option.short) {
 					if (option.value) {
 						++i;
@@ -314,8 +318,8 @@ if (parsedOptions.init) {
 	console.log('Initializing Kha project.\n');
 	
 	if (!fs.existsSync(path.join(parsedOptions.from, 'project.kha'))) {
-		let project = {
-			format: 2,
+		var project = {
+			format: 3,
 			game: {
 				name: parsedOptions.name,
 				width: 640,
@@ -330,12 +334,12 @@ if (parsedOptions.init) {
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Assets'))) fs.mkdirSync(path.join(parsedOptions.from, 'Assets'));
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources'))) fs.mkdirSync(path.join(parsedOptions.from, 'Sources'));
 	
-	let friendlyName = parsedOptions.name;
+	var friendlyName = parsedOptions.name;
 	friendlyName = friendlyName.replace(/ /g, '_');
 	friendlyName = friendlyName.replace(/-/g, '_');
 
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'))) {
-		let mainsource = 'package;\n\nimport kha.Starter;\n\n'
+		var mainsource = 'package;\n\nimport kha.Starter;\n\n'
 			+ 'class Main {\n'
 			+ '\tpublic static function main() {\n'
 			+ '\t\tvar starter = new Starter();\n'
@@ -346,7 +350,7 @@ if (parsedOptions.init) {
 	}
 	
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'))) {
-		let projectsource = 'package;\n\nimport kha.Game;\n\n'
+		var projectsource = 'package;\n\nimport kha.Game;\n\n'
 			+ 'class ' + friendlyName + ' extends Game {\n'
 			+ '\tpublic function new() {\n'
 			+ '\t\tsuper("' + parsedOptions.name + '");\n'
@@ -362,8 +366,8 @@ if (parsedOptions.init) {
 }
 else if (parsedOptions.server) {
 	console.log('Running server on ' + parsedOptions.port);
-	const nstatic = require('node-static');
-	let fileServer = new nstatic.Server(path.join(parsedOptions.from,'build', 'html5'), { cache: 0 });
+	var nstatic = require('node-static');
+	var fileServer = new nstatic.Server(path.join(parsedOptions.from,'build', 'html5'), { cache: 0 });
 	require('http').createServer(function (request, response) {
 		request.addListener('end', function () {
 			fileServer.serve(request, response);
@@ -372,16 +376,16 @@ else if (parsedOptions.server) {
 }
 else if (parsedOptions.addfont) {
 	console.log('Adding font ' + parsedOptions.fontname + parsedOptions.fontsize + ', please put ' + parsedOptions.fontname + '.ttf in your Assets directory.');
-	let ProjectFile = require('./ProjectFile.js');
-	let project = ProjectFile(Paths.get(parsedOptions.from));
+	var ProjectFile = require('./ProjectFile.js');
+	var project = ProjectFile(Paths.get(parsedOptions.from));
 	project.assets.push({ file: parsedOptions.fontname + '.ttf', name: parsedOptions.fontname, type: 'font', size: parsedOptions.fontsize});
 	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
 else if (parsedOptions.addasset !== '') {
-	let ProjectFile = require('./ProjectFile.js');
-	let project = ProjectFile(Paths.get(parsedOptions.from));
-	let filename = parsedOptions.addasset;
-	let name = filename;
+	var ProjectFile = require('./ProjectFile.js');
+	var project = ProjectFile(Paths.get(parsedOptions.from));
+	var filename = parsedOptions.addasset;
+	var name = filename;
 	if (filename.indexOf('.') >= 0) name = filename.substr(0, filename.lastIndexOf('.'));
 	if (filename.endsWith('.png') || filename.endsWith('.jpg')) {
 		project.assets.push({ file: filename, name: name, type: 'image'});
@@ -402,16 +406,18 @@ else if (parsedOptions.addasset !== '') {
 	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
 else if (parsedOptions.addallassets) {
-	let hasAsset = function (project, name) {
-		for (let asset of project.assets) {
+	var hasAsset = function (project, name) {
+		for (var a in project.assets) {
+			var asset = project.assets[a];
 			if (asset.name === name) return true;
 		}
 		return false;
 	};
 
 	var readDirectory = function (dir) {
-		let filenames = fs.readdirSync(path.join(parsedOptions.from, 'Assets', dir));
-		for (let filename of filenames) {
+		var filenames = fs.readdirSync(path.join(parsedOptions.from, 'Assets', dir));
+		for (var f in filenames) {
+			var filename = filenames[f];
 			if (fs.statSync(path.join(parsedOptions.from, 'Assets', dir, filename)).isDirectory()) {
 				readDirectory(path.join(dir, filename));
 				continue;
@@ -434,8 +440,8 @@ else if (parsedOptions.addallassets) {
 		}
 	};
 
-	let ProjectFile = require('./ProjectFile.js');
-	let project = ProjectFile(Paths.get(parsedOptions.from));
+	var ProjectFile = require('./ProjectFile.js');
+	var project = ProjectFile(Paths.get(parsedOptions.from));
 	readDirectory('');
 	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
