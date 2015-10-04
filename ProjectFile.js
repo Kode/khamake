@@ -52,5 +52,15 @@ module.exports = function (from) {
 		fs.writeFileSync(from.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 	}
 
+	for (let asset1 of project.assets) {
+		for (let asset2 of project.assets) {
+			if (asset1 !== asset2) {
+				if (asset1.name === asset2.name && asset1.type === asset2.type) {
+					console.log('Warning: More than one asset of type ' + asset1.type + ' is called ' + asset1.name + '.');
+				}
+			}
+		}
+	}
+
 	return project;
 };
