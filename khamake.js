@@ -400,6 +400,10 @@ else if (parsedOptions.addasset !== '') {
 		project.assets.push({ file: name, name: name, type: 'sound'});
 		console.log('Added sound ' + name + '. Please make sure ' + filename + ' is in your Assets directory. You can optionally change the type of ' + name + ' to music in your project.kha.');
 	}
+	else if (filename.endsWith('.mp4') || filename.endsWith('.wmv') || filename.endsWith('.avi')) {
+		project.assets.push({ file: name, name: name, type: 'video'});
+		console.log('Added image ' + name + '. Please make sure ' + filename + ' is in your Assets directory.');
+	}
 	else if (filename.endsWith('.ttf')) {
 		console.log('Please use --addfont to add fonts.');
 		process.exit(1);
@@ -435,6 +439,9 @@ else if (parsedOptions.addallassets) {
 			}
 			else if (filename.endsWith('.wav')) {
 				if (!hasAsset(project, name)) project.assets.push({ file: name, name: name, type: 'sound'});
+			}
+			else if (filename.endsWith('.mp4') || filename.endsWith('.wmv') || filename.endsWith('.avi')) {
+				if (!hasAsset(project, name)) project.assets.push({ file: name, name: name, type: 'video'});
 			}
 			else if (filename.endsWith('.ttf')) {
 
