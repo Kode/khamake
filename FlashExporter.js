@@ -72,7 +72,7 @@ class FlashExporter extends KhaExporter {
 			this.p();
 
 			for (let sound of this.sounds) {
-				this.p("@:sound(\"flash/" + sound + "\") class Assets_" + adjustFilename(sound) + " extends Sound { }");
+				this.p("@:file(\"flash/" + sound + "\") class Assets_" + adjustFilename(sound) + " extends ByteArray { }");
 			}
 
 			this.p();
@@ -100,29 +100,34 @@ class FlashExporter extends KhaExporter {
 	}
 
 	copyMusic(platform, from, to, encoders, callback) {
-		if (this.embed) this.sounds.push(to + '.ogg');
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
 			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder, (mp3) => {
 				var files = [];
-				if (ogg) files.push(to + '.ogg');
-				if (mp3) files.push(to + '.mp3');
+				if (ogg) {
+					files.push(to + '.ogg');
+					if (this.embed) this.sounds.push(to + '.ogg');
+				}
+				if (mp3) {
+					files.push(to + '.mp3');
+					if (this.embed) this.sounds.push(to + '.mp3');
+				}
 				callback(files);
 			});
 		});
 	}
 
 	copySound(platform, from, to, encoders, callback) {
-		if (this.embed) this.sounds.push(to + '.ogg');
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
+			if (this.embed) this.sounds.push(to + '.ogg');
 			callback([to + '.ogg']);
 		});
 	}
 
 	copyImage(platform, from, to, asset, callback) {
-		if (this.embed) this.images.push(to);
 		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, (format) => {
+			if (this.embed) this.images.push(to + '.' + format);
 			callback([to + '.' + format]);
 		});
 	}
@@ -131,6 +136,14 @@ class FlashExporter extends KhaExporter {
 		this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
 		if (this.embed) this.blobs.push(to);
 		callback([to]);
+	}
+
+	copyFont(platform, from, to, asset, encoders, callback) {
+		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to), encoders.kravur, (success) => {
+			if (this.embed) this.blobs.push(to);
+			callback([to]);
+		}, {size: asset.size});
 	}
 
 	copyVideo(platform, from, to, encoders, callback) {

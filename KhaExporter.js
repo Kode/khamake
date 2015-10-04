@@ -86,7 +86,7 @@ class KhaExporter extends Exporter {
 
 	copyFont(platform, from, to, asset, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to), encoders.kravur, function (success) {
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to), encoders.kravur, (success) => {
 			callback([to]);
 		}, {size: asset.size});
 	}

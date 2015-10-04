@@ -582,7 +582,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 				addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir()), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
 				if (foundProjectFile) {	
 					fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
-					exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
+					exporter.copyBlob(platform, temp.resolve('project.kha'), 'project.kha', function () {
 						log.info('Assets done.');
 						exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, callback);
 					});
@@ -595,7 +595,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 
 		if (foundProjectFile) {	
 			fs.writeFileSync(temp.resolve('project.kha').toString(), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
-			exporter.copyBlob(platform, temp.resolve('project.kha'), Paths.get('project.kha'), function () {
+			exporter.copyBlob(platform, temp.resolve('project.kha'), 'project.kha', function () {
 				log.info('Assets done.');
 				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, secondPass);
 			});
