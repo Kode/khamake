@@ -249,6 +249,11 @@ function printHelp() {
 	}
 }
 
+function isTarget(target) {
+	if (target.trim().length < 1) return false;
+	return true;
+}
+
 for (var o in options) {
 	var option = options[o];
 	if (option.value) {
@@ -302,7 +307,7 @@ for (var i = 2; i < args.length; ++i) {
 		}
 	}
 	else {
-		parsedOptions.target = arg;
+		if (isTarget(arg)) parsedOptions.target = arg;
 	}
 }
 
