@@ -3,6 +3,7 @@
   <component name="HaxeModuleSettingsStorage">
     <option name="arguments" value="{args}" />
     <option name="buildConfig" value="1" />
+    <option name="excludeFromCompilation" value="true" />
     <option name="flexSdkName" value="flex_sdk_4.6" />
     <option name="haxeTarget" value="{target}" />
     <option name="hxmlPath" value="$MODULE_DIR$/../project-{system}.hxml" />
