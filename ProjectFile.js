@@ -4,6 +4,14 @@ const fs = require('fs');
 
 module.exports = function (from) {
 	let project = JSON.parse(fs.readFileSync(from.resolve('project.kha').toString(), { encoding: 'utf8' }));
+
+	if (project.assets === undefined) {
+		project.assets = [];
+	}
+
+	if (project.rooms === undefined) {
+		project.rooms = [];
+	}
 	
 	if (project.format < 2) {
 		let assets = {};
