@@ -82,14 +82,14 @@ var options = [
 	{
 		full: 'graphics',
 		short: 'g',
-		description: 'Graphics api to use',
+		description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal and opengl.',
 		value: true,
 		default: GraphicsApi.Direct3D9
 	},
 	{
 		full: 'visualstudio',
 		short: 'v',
-		description: 'Version of Visual Studio to use',
+		description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013 and vs2015.',
 		value: true,
 		default: VisualStudioVersion.VS2015
 	},

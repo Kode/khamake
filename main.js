@@ -337,38 +337,6 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 				fs.writeFileSync(from.resolve("korefile.js").toString(), out);
 			}
 
-			let gfx = "unknown";
-			switch (Options.graphicsApi) {
-				case GraphicsApi.OpenGL:
-					gfx = "opengl";
-					break;
-				case GraphicsApi.OpenGL2:
-					gfx = "opengl2";
-					break;
-				case GraphicsApi.Direct3D9:
-					gfx = "direct3d9";
-					break;
-				case GraphicsApi.Direct3D11:
-					gfx = "direct3d11";
-					break;
-				case GraphicsApi.Metal:
-					gfx = "metal";
-					break;
-			}
-			
-			let vs = "unknown";
-			switch (Options.visualStudioVersion) {
-				case VisualStudioVersion.VS2010:
-					vs = "vs2010";
-					break;
-				case VisualStudioVersion.VS2012:
-					vs = "vs2012";
-					break;
-				case VisualStudioVersion.VS2013:
-					vs = "vs2013";
-					break;
-			}
-			
 			{
 				require(pathlib.join(korepath.get(), 'main.js')).run(
 				{
