@@ -13,7 +13,10 @@ exports.executeHaxe = function (from, haxeDirectory, options, callback) {
 		let localexe = haxeDirectory.resolve('haxe' + exec.sys()).toAbsolutePath().toString();
 		if (!fs.existsSync(localexe)) localexe = haxeDirectory.resolve('haxe').toAbsolutePath().toString();
 		if (fs.existsSync(localexe)) exe = localexe;
-		env.HAXE_STD_PATH = haxeDirectory.toAbsolutePath().resolve('std').toString();
+		const stddir = haxeDirectory.toAbsolutePath().resolve('std').toString();
+		if (fs.existsSync(stddir) && fs.statSync(stddir).isDirectory()) {
+			env.HAXE_STD_PATH = stddir;
+		}
 	}
 	let haxe = child_process.spawn(exe, options, { env: env, cwd: path.normalize(from.toString()) });
 
