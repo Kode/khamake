@@ -12,7 +12,7 @@ const HaxeProject = require('./HaxeProject.js');
 
 class KoreExporter extends KhaExporter {
 	constructor(platform, khaDirectory, vr, directory) {
-		super(khaDirectory);
+		super(khaDirectory, directory);
 		this.platform = platform;
 		this.directory = directory;
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Kore'));

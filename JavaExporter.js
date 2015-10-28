@@ -13,7 +13,7 @@ const HaxeProject = require('./HaxeProject.js');
 
 class JavaExporter extends KhaExporter {
 	constructor(khaDirectory, directory) {
-		super(khaDirectory);
+		super(khaDirectory, directory);
 		this.directory = directory;
 	}
 

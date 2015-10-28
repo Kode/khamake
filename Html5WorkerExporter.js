@@ -12,7 +12,7 @@ const fs = require('fs');
 
 class Html5WorkerExporter extends Html5Exporter {
 	constructor(khaDirectory, directory) {
-		super(khaDirectory);
+		super(khaDirectory, directory);
 		this.directory = directory;
 		this.sources.pop();
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5-Worker'));

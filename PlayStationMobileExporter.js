@@ -13,7 +13,7 @@ const uuid = require('./uuid.js');
 
 class PlayStationMobileExporter extends CSharpExporter {
 	constructor(khaDirectory, directory) {
-		super(khaDirectory);
+		super(khaDirectory, directory);
 		this.directory = directory;
 		this.files = [];
 	}

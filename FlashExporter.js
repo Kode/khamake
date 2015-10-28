@@ -19,7 +19,7 @@ function adjustFilename(filename) {
 
 class FlashExporter extends KhaExporter {
 	constructor(khaDirectory, directory, embedflashassets) {
-		super(khaDirectory);
+		super(khaDirectory, directory);
 		this.directory = directory;
 		this.embed = embedflashassets;
 		this.images = [];

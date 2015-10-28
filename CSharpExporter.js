@@ -14,7 +14,7 @@ const HaxeProject = require('./HaxeProject.js');
 
 class CSharpExporter extends KhaExporter {
 	constructor(khaDirectory, directory) {
-		super(khaDirectory);
+		super(khaDirectory, directory);
 		this.directory = directory;
 	}
 

@@ -3,16 +3,18 @@
 const path = require('path');
 const Exporter = require('./Exporter.js');
 const Files = require('./Files.js');
+const Paths = require('./Paths.js');
 const Converter = require('./Converter.js');
 
 class KhaExporter extends Exporter {
-	constructor(khaDirectory) {
+	constructor(khaDirectory, directory) {
 		super();
 		this.width = 640;
 		this.height = 480;
 		this.sources = [];
 		this.addSourceDirectory('Sources');
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
+		this.addSourceDirectory(path.join(directory.toString(), this.sysdir() + '-resources'));
 	}
 
 	getCurrentDirectoryName(directory) {

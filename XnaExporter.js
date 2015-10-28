@@ -19,7 +19,7 @@ function findIcon(from) {
 
 class XnaExporter extends CSharpExporter {
 	constructor(khaDirectory, directory) {
-		super(khaDirectory);
+		super(khaDirectory, directory);
 		this.directory = directory;
 		this.images = [];
 	}

@@ -509,11 +509,11 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	exporter.setWidthAndHeight(800, 600); // project.game.width, project.game.height);
 	exporter.setName(name);
 
-	if (project.sources !== undefined) {
+	/*if (project.sources !== undefined) {
 		for (let i = 0; i < project.sources.length; ++i) {
 			sources.push(project.sources[i]);
 		}
-	}
+	}*/
 	/*for (let lib of libraries) {
 		for (let asset of lib.project.assets) {
 			asset.libdir = lib.directory;
