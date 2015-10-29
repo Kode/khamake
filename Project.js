@@ -72,8 +72,11 @@ class Project {
 					if (filename.endsWith('.png') || filename.endsWith('.jpg') || filename.endsWith('.jpeg')) {
 						type = 'image';
 					}
-					if (filename.endsWith('.wav')) {
-						type = 'music';
+					else if (filename.endsWith('.wav')) {
+						type = 'sound';
+					}
+					else if (filename.endsWith('.mp4')) {
+						type = 'video';
 					}
 
 					this.assets.push({
