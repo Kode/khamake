@@ -72,6 +72,12 @@ function addShaders(exporter, platform, project, from, to, temp, shaderPath, com
 		if (name.endsWith('.inc.glsl')) continue;
 		name = name.substr(0, name.lastIndexOf('.'));
 		switch (platform) {
+			case Platform.Node: {
+				Files.copy(shaderPath.resolve(name + '.glsl'), to.resolve(name + '.glsl'), true);
+				addShader(project, name, '.glsl');
+				exporter.addShader(name + '.glsl');
+				break;
+			}
 			case Platform.Flash: {
 				if (Files.exists(shaderPath.resolve(name + '.agal'))) Files.copy(shaderPath.resolve(name + '.agal'), to.resolve(name + '.agal'), true);
 				else compileShader(compiler, 'agal', shaderPath.resolve(name + '.glsl'), to.resolve(name + '.agal'), temp, platform, kfx);
@@ -158,9 +164,7 @@ function addShaders(exporter, platform, project, from, to, temp, shaderPath, com
 			case Platform.XNA:
 			case Platform.Java:
 			case Platform.PlayStationMobile:
-			case Platform.Node: {
 				break;
-			}
 			default: {
 				var customCompiler = compiler;
 				if (fs.existsSync(pathlib.join(from.toString(), 'Backends'))) {
