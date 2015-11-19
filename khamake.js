@@ -230,6 +230,11 @@ var options = [
 		full: 'addallassets',
 		description: 'Searches the Assets directory and adds all unknown files to project.kha.',
 		value: false
+	},
+	{
+		full: 'debug',
+		description: 'Compile in debug mode for native targets.',
+		value: false
 	}
 ];
 

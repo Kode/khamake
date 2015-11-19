@@ -347,7 +347,8 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 					vrApi: Options.vrApi,
 					visualstudio: Options.visualStudioVersion,
 					compile: options.compile,
-					run: options.run
+					run: options.run,
+					debug: options.debug
 				},
 				{
 					info: log.info,
