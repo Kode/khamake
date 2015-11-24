@@ -15,8 +15,6 @@ class KoreExporter extends KhaExporter {
 		super(khaDirectory, directory);
 		this.platform = platform;
 		this.directory = directory;
-		this.removeSourceDirectory(path.join(directory.toString(), 'undefined-resources'));
-		this.addSourceDirectory(path.join(directory.toString(), this.sysdir() + '-resources'));
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Kore'));
 		this.vr = vr;
 	}

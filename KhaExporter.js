@@ -14,7 +14,6 @@ class KhaExporter extends Exporter {
 		this.sources = [];
 		this.addSourceDirectory('Sources');
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
-		this.addSourceDirectory(path.join(directory.toString(), this.sysdir() + '-resources'));
 	}
 
 	getCurrentDirectoryName(directory) {
