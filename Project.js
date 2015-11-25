@@ -35,7 +35,7 @@ class Project {
 	}
 
 	addShaders(shaders) {
-		
+
 	}
 
 	addDefine(define) {
@@ -78,6 +78,9 @@ class Project {
 					}
 					else if (filename.endsWith('.wav')) {
 						type = 'sound';
+					}
+					else if (filename.endsWith('.ttf')) {
+						type = 'font';
 					}
 					else if (filename.endsWith('.mp4')) {
 						type = 'video';
