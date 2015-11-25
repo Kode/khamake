@@ -39,23 +39,19 @@ String.prototype.replaceAll = function (find, replace) {
 
 function compileShader(compiler, type, from, to, temp, system, kfx) {
 	if (compiler !== '') {
-		let compiler_process = child_process.spawn(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
+		let result = child_process.spawnSync(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
 
-		compiler_process.stdout.on('data', (data) => {
-			if (data.toString().trim() !== '' && type !== 'agal') log.info('Shader compiler stdout: ' + data);
-		});
+		if (result.stdout.toString() !== '') {
+			log.info(result.stdout.toString());
+		}
 
-		compiler_process.stderr.on('data', (data) => {
-			if (data.toString().trim() !== '' && type !== 'agal') log.info('Shader compiler stderr: ' + data);
-		});
-		
-		compiler_process.on('error', (err) => {
-			log.error('Shader compiler error: ' + err);
-		});
+		if (result.stderr.toString() !== '') {
+			log.info(result.stderr.toString());
+		}
 
-		compiler_process.on('close', (code) => {
-			if (code !== 0) log.info('Shader compiler process exited with code ' + code + ' while trying to compile ' + from.toString());
-		});
+		if (result.error) {
+			log.error('Compilation of shader ' + from + ' failed: ' + result.error);
+		}
 	}
 }
 
@@ -553,8 +549,8 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		let shaderDir = to.resolve(exporter.sysdir() + '-resources');
 		if (platform === Platform.Unity) {
 			shaderDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Shaders'));
-			if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
 		}
+		if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
 		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
 		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get(options.kha, 'Sources', 'Shaders')), krafix, kfx);
 		for (let i = 0; i < sources.length; ++i) {
