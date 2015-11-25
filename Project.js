@@ -34,6 +34,10 @@ class Project {
 		this.sources.push(source);
 	}
 
+	addShaders(shaders) {
+		
+	}
+
 	addDefine(define) {
 		this.defines.push(define);
 	}
