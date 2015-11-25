@@ -194,18 +194,10 @@ function FlashDevelop(projectdir, options) {
 	};
 
 	for (let i = 0; i < options.sources.length; ++i) {
-		if (path.isAbsolute(options.sources[i])) {
-			classpaths.e.push({
-				n: 'class',
-				path: options.sources[i]
-			});
-		}
-		else {
-			classpaths.e.push({
-				n: 'class',
-				path: path.relative(projectdir, path.join(options.from, options.sources[i]))
-			});
-		}
+		classpaths.e.push({
+			n: 'class',
+			path: path.relative(projectdir, path.join(options.from, options.sources[i]))
+		});
 	}
 
 	let otheroptions = [

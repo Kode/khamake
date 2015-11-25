@@ -351,7 +351,8 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 					vrApi: Options.vrApi,
 					visualstudio: Options.visualStudioVersion,
 					compile: options.compile,
-					run: options.run
+					run: options.run,
+					debug: options.debug
 				},
 				{
 					info: log.info,
@@ -575,8 +576,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 					}
 				}
 			}
+			let blobDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Resources', 'Blobs'));
+			if (!Files.exists(blobDir)) Files.createDirectories(blobDir);
 			for (let i = 0; i < project.shaders.length; ++i) {
-				fs.writeFileSync(to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Resources', 'Blobs', project.shaders[i].files[0] + '.bytes')).toString(), project.shaders[i].name, { encoding: 'utf8'});
+				fs.writeFileSync(blobDir.resolve(project.shaders[i].files[0] + '.bytes').toString(), project.shaders[i].name, { encoding: 'utf8'});
 			}
 		}
 
