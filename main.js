@@ -37,7 +37,7 @@ String.prototype.replaceAll = function (find, replace) {
 	return this.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 };
 
-function compileShader(compiler, type, from, to, temp, system, kfx) {
+function compileShader2(compiler, type, from, to, temp, system, kfx) {
 	if (compiler !== '') {
 		let result = child_process.spawnSync(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
 
@@ -56,129 +56,113 @@ function compileShader(compiler, type, from, to, temp, system, kfx) {
 }
 
 function addShader(project, name, extension) {
-	project.shaders.push({files: [name + extension], name: name});
+	project.exportedShaders.push({files: [name + extension], name: name});
 }
 
-function addShaders(exporter, platform, project, from, to, temp, shaderPath, compiler, kfx) {
-	if (!Files.isDirectory(shaderPath)) return;
-	let shaders = Files.newDirectoryStream(shaderPath);
-	for (let shader of shaders) {
-		let name = shader;
-		if (!name.endsWith('.glsl')) continue;
-		if (name.endsWith('.inc.glsl')) continue;
-		name = name.substr(0, name.lastIndexOf('.'));
-		switch (platform) {
-			case Platform.Node: {
-				Files.copy(shaderPath.resolve(name + '.glsl'), to.resolve(name + '.glsl'), true);
-				addShader(project, name, '.glsl');
-				exporter.addShader(name + '.glsl');
-				break;
-			}
-			case Platform.Flash: {
-				if (Files.exists(shaderPath.resolve(name + '.agal'))) Files.copy(shaderPath.resolve(name + '.agal'), to.resolve(name + '.agal'), true);
-				else compileShader(compiler, 'agal', shaderPath.resolve(name + '.glsl'), to.resolve(name + '.agal'), temp, platform, kfx);
-				addShader(project, name, '.agal');
-				exporter.addShader(name + '.agal');
-				break;
-			}
-			case Platform.HTML5:
-			case Platform.HTML5 + '-native':
-			case Platform.HTML5Worker:
-			case Platform.Android:
-			case Platform.Android + '-native':
-			case Platform.Tizen:
-			case Platform.Linux:
-			case Platform.iOS: {
-				if (Options.graphicsApi === GraphicsApi.Metal) {
-					if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
-						Files.createDirectories(to.resolve(Paths.get('..', 'ios-build', 'Sources')));
-					}
-					var funcname = name;
-					funcname = funcname.replaceAll('-', '_');
-					funcname = funcname.replaceAll('.', '_');
-					funcname += '_main';
-					fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
-					if (Files.exists(shaderPath.resolve(name + ".metal"))) Files.copy(shaderPath.resolve(name + ".metal"), to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), true);
-					else compileShader(compiler, "metal", shaderPath.resolve(name + '.glsl'), to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), temp, platform, kfx);
-					addShader(project, name, ".metal");
+function compileShader(exporter, platform, project, shader, to, temp, compiler, kfx) {
+	let name = shader.name;
+	if (name.endsWith('.inc')) return;
+	switch (platform) {
+		case Platform.Node: {
+			Files.copy(shader.files[0], to.resolve(name + '.glsl'), true);
+			addShader(project, name, '.glsl');
+			exporter.addShader(name + '.glsl');
+			break;
+		}
+		case Platform.Flash: {
+			compileShader2(compiler, 'agal', shader.files[0], to.resolve(name + '.agal'), temp, platform, kfx);
+			addShader(project, name, '.agal');
+			exporter.addShader(name + '.agal');
+			break;
+		}
+		case Platform.HTML5:
+		case Platform.HTML5 + '-native':
+		case Platform.HTML5Worker:
+		case Platform.Android:
+		case Platform.Android + '-native':
+		case Platform.Tizen:
+		case Platform.Linux:
+		case Platform.iOS: {
+			if (Options.graphicsApi === GraphicsApi.Metal) {
+				if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
+					Files.createDirectories(to.resolve(Paths.get('..', 'ios-build', 'Sources')));
 				}
-				else {
-					var shaderpath = to.resolve(name + '.essl');
-					if (platform === Platform.Android) {
-						shaderpath = to.resolve(Paths.get(exporter.safename, 'app', 'src', 'main', 'assets', name + '.essl'));
-					}
-					if (Files.exists(shaderPath.resolve(name + ".essl"))) Files.copy(shaderPath.resolve(name + ".essl"), shaderpath, true);
-					else compileShader(compiler, "essl", shaderPath.resolve(name + '.glsl'), shaderpath, temp, platform, kfx);
-					addShader(project, name, ".essl");
-				}
-				break;
+				var funcname = name;
+				funcname = funcname.replaceAll('-', '_');
+				funcname = funcname.replaceAll('.', '_');
+				funcname += '_main';
+				fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
+				compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), temp, platform, kfx);
+				addShader(project, name, ".metal");
 			}
-			case Platform.Windows: {
-				if (Options.graphicsApi == GraphicsApi.OpenGL || Options.graphicsApi == GraphicsApi.OpenGL2) {
-					if (compiler == "") Files.copy(shaderPath.resolve(name + ".glsl"), to.resolve(name + ".glsl"), true);
-					else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp, platform, kfx);
-					addShader(project, name, ".glsl");
+			else {
+				var shaderpath = to.resolve(name + '.essl');
+				if (platform === Platform.Android) {
+					shaderpath = to.resolve(Paths.get(exporter.safename, 'app', 'src', 'main', 'assets', name + '.essl'));
 				}
-				else if (Options.graphicsApi === GraphicsApi.Direct3D11 || Options.graphicsApi === GraphicsApi.Direct3D12) {
-					if (Files.exists(shaderPath.resolve(name + ".d3d11"))) Files.copy(shaderPath.resolve(name + ".d3d11"), to.resolve(name + ".d3d11"), true);
-					else compileShader(compiler, "d3d11", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d11"), temp, platform, kfx);
-					addShader(project, name, ".d3d11");
-				}
-				else {
-					if (Files.exists(shaderPath.resolve(name + ".d3d9"))) Files.copy(shaderPath.resolve(name + ".d3d9"), to.resolve(name + ".d3d9"), true);
-					else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d9"), temp, platform, kfx);
-					addShader(project, name, ".d3d9");
-				}
-				break;
+				compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform, kfx);
+				addShader(project, name, ".essl");
 			}
-			case Platform.WindowsApp: {
-				if (Files.exists(shaderPath.resolve(name + ".d3d11"))) Files.copy(shaderPath.resolve(name + ".d3d11"), to.resolve(name + ".d3d11"), true);
-				else compileShader(compiler, "d3d11", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d11"), temp, platform, kfx);
-				addShader(project, name, ".d3d11");
-				break;
-			}
-			case Platform.Xbox360:
-			case Platform.PlayStation3: {
-				if (Files.exists(shaderPath.resolve(name + ".d3d9"))) Files.copy(shaderPath.resolve(name + ".d3d9"), to.resolve(name + ".d3d9"), true);
-				else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".d3d9"), temp, platform, kfx);
-				addShader(project, name, ".d3d9");
-				break;
-			}
-			case Platform.OSX: {
-				if (compiler == "") Files.copy(shaderPath.resolve(name + ".glsl"), to.resolve(name + ".glsl"), true);
-				else compileShader(compiler, "glsl", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".glsl"), temp, platform, kfx);
+			break;
+		}
+		case Platform.Windows: {
+			if (Options.graphicsApi == GraphicsApi.OpenGL || Options.graphicsApi == GraphicsApi.OpenGL2) {
+				compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
 				addShader(project, name, ".glsl");
-				break;
 			}
-			case Platform.Unity: {
-				if (Files.exists(shaderPath.resolve(name + ".hlsl"))) Files.copy(shaderPath.resolve(name + ".hlsl"), to.resolve(name + ".hlsl"), true);
-				else compileShader(compiler, "d3d9", shaderPath.resolve(name + '.glsl'), to.resolve(name + ".hlsl"), temp, platform, kfx);
-				addShader(project, name, ".hlsl");
-				break;
+			else if (Options.graphicsApi === GraphicsApi.Direct3D11 || Options.graphicsApi === GraphicsApi.Direct3D12) {
+				compileShader2(compiler, "d3d11", shader.files[0], to.resolve(name + ".d3d11"), temp, platform, kfx);
+				addShader(project, name, ".d3d11");
 			}
-			case Platform.WPF:
-			case Platform.XNA:
-			case Platform.Java:
-			case Platform.PlayStationMobile:
-				break;
-			default: {
-				var customCompiler = compiler;
-				if (fs.existsSync(pathlib.join(from.toString(), 'Backends'))) {
-					var libdirs = fs.readdirSync(pathlib.join(from.toString(), 'Backends'));
-					for (var ld in libdirs) {
-						var libdir = pathlib.join(from.toString(), 'Backends', libdirs[ld]);
-						if (fs.statSync(libdir).isDirectory()) {
-							var exe = pathlib.join(libdir, 'krafix', 'krafix-' + platform + '.exe');
-							if (fs.existsSync(exe)) {
-								customCompiler = exe;
-							}
+			else {
+				compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".d3d9"), temp, platform, kfx);
+				addShader(project, name, ".d3d9");
+			}
+			break;
+		}
+		case Platform.WindowsApp: {
+			compileShader2(compiler, "d3d11", shader.files[0], to.resolve(name + ".d3d11"), temp, platform, kfx);
+			addShader(project, name, ".d3d11");
+			break;
+		}
+		case Platform.Xbox360:
+		case Platform.PlayStation3: {
+			compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".d3d9"), temp, platform, kfx);
+			addShader(project, name, ".d3d9");
+			break;
+		}
+		case Platform.OSX: {
+			compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
+			addShader(project, name, ".glsl");
+			break;
+		}
+		case Platform.Unity: {
+			compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".hlsl"), temp, platform, kfx);
+			addShader(project, name, ".hlsl");
+			break;
+		}
+		case Platform.WPF:
+		case Platform.XNA:
+		case Platform.Java:
+		case Platform.PlayStationMobile:
+			break;
+		default: {
+			var customCompiler = compiler;
+			if (fs.existsSync(pathlib.join(from.toString(), 'Backends'))) {
+				var libdirs = fs.readdirSync(pathlib.join(from.toString(), 'Backends'));
+				for (var ld in libdirs) {
+					var libdir = pathlib.join(from.toString(), 'Backends', libdirs[ld]);
+					if (fs.statSync(libdir).isDirectory()) {
+						var exe = pathlib.join(libdir, 'krafix', 'krafix-' + platform + '.exe');
+						if (fs.existsSync(exe)) {
+							customCompiler = exe;
 						}
 					}
 				}
-				compileShader(customCompiler, platform, shaderPath.resolve(name + '.glsl'), to.resolve(name + '.' + platform), temp, platform, kfx);
-				addShader(project, name, '.' + platform);
-				break;
 			}
+			compileShader2(customCompiler, platform, shader.files[0], to.resolve(name + '.' + platform), temp, platform, kfx);
+			addShader(project, name, '.' + platform);
+			break;
 		}
 	}
 }
@@ -417,21 +401,11 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	
 	let name = '';
 	let sources = [];
-	let project = {
-		format: 1,
-		game: {
-			name: "Unknown",
-			width: 640,
-			height: 480
-		},
-		assets: [],
-		rooms: []
-	};
+	let project = null;
 
 	let foundProjectFile = false;
 	if (name === '') name = from.toAbsolutePath().getFileName();
-	project.game.name = name;
-	
+
 	if (Files.exists(from.resolve('khafile.js'))) {
 		project = ProjectFile(from);
 		foundProjectFile = true;
@@ -442,43 +416,14 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		return;
 	}
 
-	let libraries = [];
-	if (project.libraries !== undefined) {
-		for (let libname of project.libraries) {
-			var found = false;
-			if (Files.isDirectory(from.resolve(Paths.get('Libraries', libname)))) {
-				if (Files.newDirectoryStream(from.resolve(Paths.get('Libraries', libname))).length > 0) {
-					let lib = {
-						directory: 'Libraries/' + libname,
-						project: {
-							assets: [],
-							rooms: []
-						}
-					};
-					if (Files.exists(from.resolve(Paths.get('Libraries', libname, 'project.kha')))) {
-						lib.project = JSON.parse(fs.readFileSync(from.resolve('Libraries', libname, 'project.kha').toString(), {encoding: 'utf8'}));
-					}
-					libraries.push(lib);
-					found = true;
-				}
-			}
-
-			if (!found) {
-				
-			}
-
-			if (!found) {
-				console.log('Warning, could not find library ' + libname + '.');
-			}
-		}
-	}
-
 	name = project.name;
 	exporter.setWidthAndHeight(800, 600); // project.game.width, project.game.height);
 	exporter.setName(name);
 	for (let source of project.sources) {
 		exporter.addSourceDirectory(source);
 	}
+	project.addShaders(options.kha + '/Sources/Shaders/**');
+	project.searchShaders(Paths.get(from));
 
 	let encoders = {
 		oggEncoder: oggEncoder,
@@ -491,28 +436,24 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		kravur: options.kravur
 	};
 	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
-		project.shaders = [];
 		let shaderDir = to.resolve(exporter.sysdir() + '-resources');
 		if (platform === Platform.Unity) {
 			shaderDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Shaders'));
 		}
 		if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
-		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get('Sources', 'Shaders')), options.nokrafix ? kfx : krafix, kfx);
-		addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(Paths.get(options.kha, 'Sources', 'Shaders')), krafix, kfx);
-		for (let i = 0; i < sources.length; ++i) {
-			addShaders(exporter, platform, project, from, shaderDir, temp, from.resolve(sources[i]).resolve('Shaders'), options.nokrafix ? kfx : krafix, kfx);
-			exporter.addSourceDirectory(sources[i]);
+		for (let shader of project.shaders) {
+			compileShader(exporter, platform, project, shader, shaderDir, temp, options.nokrafix ? kfx : krafix, kfx);
 		}
 		if (platform === Platform.Unity) {
 			let proto = fs.readFileSync(from.resolve(Paths.get(options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
-			for (let i1 = 0; i1 < project.shaders.length; ++i1) {
-				if (project.shaders[i1].name.endsWith('.vert')) {
-					for (let i2 = 0; i2 < project.shaders.length; ++i2) {
-						if (project.shaders[i2].name.endsWith('.frag')) {
-							let shadername = project.shaders[i1].name + '.' + project.shaders[i2].name;
+			for (let i1 = 0; i1 < project.exportedShaders.length; ++i1) {
+				if (project.exportedShaders[i1].name.endsWith('.vert')) {
+					for (let i2 = 0; i2 < project.exportedShaders.length; ++i2) {
+						if (project.exportedShaders[i2].name.endsWith('.frag')) {
+							let shadername = project.exportedShaders[i1].name + '.' + project.exportedShaders[i2].name;
 							let proto2 = proto.replaceAll('{name}', shadername);
-							proto2 = proto2.replaceAll('{vert}', project.shaders[i1].name);
-							proto2 = proto2.replaceAll('{frag}', project.shaders[i2].name);
+							proto2 = proto2.replaceAll('{vert}', project.exportedShaders[i1].name);
+							proto2 = proto2.replaceAll('{frag}', project.exportedShaders[i2].name);
 							fs.writeFileSync(shaderDir.resolve(shadername + '.shader').toString(), proto2, { encoding: 'utf8'});
 						}
 					}
@@ -520,8 +461,8 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			}
 			let blobDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Resources', 'Blobs'));
 			if (!Files.exists(blobDir)) Files.createDirectories(blobDir);
-			for (let i = 0; i < project.shaders.length; ++i) {
-				fs.writeFileSync(blobDir.resolve(project.shaders[i].files[0] + '.bytes').toString(), project.shaders[i].name, { encoding: 'utf8'});
+			for (let i = 0; i < project.exportedShaders.length; ++i) {
+				fs.writeFileSync(blobDir.resolve(project.exportedShaders[i].files[0] + '.bytes').toString(), project.exportedShaders[i].name, { encoding: 'utf8'});
 			}
 		}
 
@@ -529,7 +470,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		for (let asset of project.assets) {
 			files.push(asset);
 		}
-		for (let shader of project.shaders) {
+		for (let shader of project.exportedShaders) {
 			files.push({
 				name: shader.name,
 				files: shader.files,
@@ -544,10 +485,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 				if (foundProjectFile) {
 					fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
 					log.info('Assets done.');
-					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, callback);
+					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, callback);
 				}
 				else {
-					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries,callback);
+					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries,callback);
 				}
 			}
 		}
@@ -555,10 +496,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		if (foundProjectFile) {
 			fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
 			log.info('Assets done.');
-			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, secondPass);
+			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
 		}
 		else {
-			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, secondPass);
+			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
 		}
 	});
 }

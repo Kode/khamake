@@ -23,6 +23,9 @@ class Project {
 		this.assets = [];
 		this.assetIncludes = [];
 		this.sources = [];
+		this.shaderIncludes = [];
+		this.shaders = [];
+		this.exportedShaders = [];
 		this.defines = [];
 		this.scriptdir = Project.scriptdir;
 	}
@@ -36,7 +39,7 @@ class Project {
 	}
 
 	addShaders(shaders) {
-
+		this.shaderIncludes.push(shaders.replaceAll('\\', '/'));
 	}
 
 	addDefine(define) {
@@ -45,6 +48,7 @@ class Project {
 
 	addLibrary(library) {
 		this.sources.push('Libraries/' + library + '/Sources');
+		this.shaderIncludes.push('Libraries/' + library + '/Sources/Shaders/**');
 
 		/*
 				if (process.env.HAXEPATH) {
@@ -156,6 +160,54 @@ class Project {
 			//	}
 			//}
 			this.searchAssets(dir);
+		}
+	}
+
+	searchShaders(current) {
+		let files = Files.newDirectoryStream(current);
+		nextfile: for (let f in files) {
+			let file = Paths.get(current, files[f]);
+			if (Files.isDirectory(file)) continue;
+			//if (!current.isAbsolute())
+			file = this.basedir.relativize(file);
+			//for (let exclude of this.excludes) {
+			//	if (this.matches(this.stringify(file), exclude)) continue nextfile;
+			//}
+			for (let include of this.shaderIncludes) {
+				if (isAbsolute(include)) {
+					let inc = Paths.get(include);
+					inc = this.basedir.relativize(inc);
+					include = inc.path.replaceAll('\\', '/');
+				}
+				let filename = stringify(file);
+				if (matches(filename, include)) {
+					let slashindex = filename.lastIndexOf('/') + 1;
+					if (slashindex < 0) slashindex = 0;
+
+					let pointindex = filename.lastIndexOf('.');
+					if (pointindex < 0) pointindex = filename.length - 1;
+
+					let name = filename.substring(slashindex, pointindex);
+
+					if (filename.endsWith('.glsl')) {
+						this.shaders.push({
+							name: name,
+							files: [stringify(file)]
+						})
+					}
+				}
+			}
+		}
+		let dirs = Files.newDirectoryStream(current);
+		nextdir: for (let d in dirs) {
+			var dir = Paths.get(current, dirs[d]);
+			if (!Files.isDirectory(dir)) continue;
+			//for (let exclude of this.excludes) {
+			//	if (this.matchesAllSubdirs(this.basedir.relativize(dir), exclude)) {
+			//		continue nextdir;
+			//	}
+			//}
+			this.searchShaders(dir);
 		}
 	}
 }
