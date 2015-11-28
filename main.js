@@ -279,17 +279,7 @@ function exportAssets(assets, index, exporter, from, khafolders, platform, encod
 		else {
 			file = from.resolve(Paths.get(asset.file));
 		}
-		asset.file = asset.name + asset.size;
-		if (asset.bold) {
-			asset.file += "#Bold";
-		}
-		if (asset.italic) {
-			asset.file += "#Italic";
-		}
-		asset.file += '.kravur';
-		asset.name = asset.file;
-		asset.type = 'blob';
-		exporter.copyFont(platform, file, asset.file, asset, encoders, function (files) {
+		exporter.copyBlob(platform, file, asset.file, function (files) {
 			fixPaths(files);
 			asset.files = files;
 			delete asset.file;
@@ -446,9 +436,14 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		project = ProjectFile(from);
 		foundProjectFile = true;
 	}
+	else {
+		log.error('No khafile found.');
+		callback('Unknown');
+		return;
+	}
 
 	let libraries = [];
-	/*if (project.libraries !== undefined) {
+	if (project.libraries !== undefined) {
 		for (let libname of project.libraries) {
 			var found = false;
 			if (Files.isDirectory(from.resolve(Paths.get('Libraries', libname)))) {
@@ -469,70 +464,21 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			}
 
 			if (!found) {
-				if (process.env.HAXEPATH) {
-					var libpath = pathlib.join(process.env.HAXEPATH, 'lib', libname.toLowerCase());
-					if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-						let current;
-						let libdeeppath;
-						if (fs.existsSync(pathlib.join(libpath, '.current'))) {
-							current = fs.readFileSync(pathlib.join(libpath, '.current'), {encoding: 'utf8'});
-							libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
-						}
-						else if (fs.existsSync(pathlib.join(libpath, '.dev'))) {
-							current = fs.readFileSync(pathlib.join(libpath, '.dev'), {encoding: 'utf8'});
-							libdeeppath = current;
-						}
-						if (fs.existsSync(libdeeppath) && fs.statSync(libdeeppath).isDirectory()) {
-							let lib = {
-								directory: libdeeppath,
-								project: {
-									assets: [],
-									rooms: []
-								}
-							};
-							if (Files.exists(from.resolve(Paths.get(libdeeppath, 'project.kha')))) {
-								lib.project = JSON.parse(fs.readFileSync(from.resolve(libdeeppath, 'project.kha').toString(), { encoding: 'utf8' }));
-							}
-							libraries.push(lib);
-							found = true;
-						}
-					}
-				}
+				
 			}
 
 			if (!found) {
 				console.log('Warning, could not find library ' + libname + '.');
 			}
 		}
-	}*/
+	}
 
 	name = project.name;
 	exporter.setWidthAndHeight(800, 600); // project.game.width, project.game.height);
 	exporter.setName(name);
-
-	/*if (project.sources !== undefined) {
-		for (let i = 0; i < project.sources.length; ++i) {
-			sources.push(project.sources[i]);
-		}
-	}*/
-	/*for (let lib of libraries) {
-		for (let asset of lib.project.assets) {
-			asset.libdir = lib.directory;
-			project.assets.push(asset);
-		}
-		for (let room of lib.project.rooms) {
-			project.rooms.push(room);
-		}
-
-		if (Files.isDirectory(from.resolve(Paths.get(lib.directory, 'Sources')))) {
-			sources.push(lib.directory + '/Sources');
-		}
-		if (lib.project.sources !== undefined) {
-			for (let i = 0; i < project.sources.length; ++i) {
-				sources.push(lib.directory + '/' + project.sources[i]);
-			}
-		}
-	}*/
+	for (let source of project.sources) {
+		exporter.addSourceDirectory(source);
+	}
 
 	let encoders = {
 		oggEncoder: oggEncoder,
@@ -618,7 +564,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 }
 
 function isKhaProject(directory) {
-	return Files.exists(directory.resolve('Kha')) || Files.exists(directory.resolve('project.kha')) || Files.exists(directory.resolve('khafile.js'));
+	return Files.exists(directory.resolve('Kha')) || Files.exists(directory.resolve('khafile.js'));
 }
 
 function exportProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback) {
@@ -626,7 +572,7 @@ function exportProject(from, to, platform, khaDirectory, haxeDirectory, oggEncod
 		exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback);
 	}
 	else {
-		log.error('Neither Kha directory nor project.kha found.');
+		log.error('Neither Kha directory nor khafile.js found.');
 		callback('Unknown');
 	}
 }

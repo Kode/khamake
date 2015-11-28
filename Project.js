@@ -24,6 +24,7 @@ class Project {
 		this.assetIncludes = [];
 		this.sources = [];
 		this.defines = [];
+		this.scriptdir = Project.scriptdir;
 	}
 
 	addAssets(asset) {
@@ -43,7 +44,58 @@ class Project {
 	}
 
 	addLibrary(library) {
+		this.sources.push('Libraries/' + library + '/Sources');
 
+		/*
+				if (process.env.HAXEPATH) {
+					var libpath = pathlib.join(process.env.HAXEPATH, 'lib', libname.toLowerCase());
+					if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
+						let current;
+						let libdeeppath;
+						if (fs.existsSync(pathlib.join(libpath, '.current'))) {
+							current = fs.readFileSync(pathlib.join(libpath, '.current'), {encoding: 'utf8'});
+							libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
+						}
+						else if (fs.existsSync(pathlib.join(libpath, '.dev'))) {
+							current = fs.readFileSync(pathlib.join(libpath, '.dev'), {encoding: 'utf8'});
+							libdeeppath = current;
+						}
+						if (fs.existsSync(libdeeppath) && fs.statSync(libdeeppath).isDirectory()) {
+							let lib = {
+								directory: libdeeppath,
+								project: {
+									assets: [],
+									rooms: []
+								}
+							};
+							if (Files.exists(from.resolve(Paths.get(libdeeppath, 'project.kha')))) {
+								lib.project = JSON.parse(fs.readFileSync(from.resolve(libdeeppath, 'project.kha').toString(), { encoding: 'utf8' }));
+							}
+							libraries.push(lib);
+							found = true;
+						}
+					}
+				}
+
+				for (let lib of libraries) {
+					for (let asset of lib.project.assets) {
+						asset.libdir = lib.directory;
+						project.assets.push(asset);
+					}
+					for (let room of lib.project.rooms) {
+						project.rooms.push(room);
+					}
+
+					if (Files.isDirectory(from.resolve(Paths.get(lib.directory, 'Sources')))) {
+						sources.push(lib.directory + '/Sources');
+					}
+					if (lib.project.sources !== undefined) {
+						for (let i = 0; i < project.sources.length; ++i) {
+							sources.push(lib.directory + '/' + project.sources[i]);
+						}
+					}
+				}
+		*/
 	}
 
 	searchAssets(current) {

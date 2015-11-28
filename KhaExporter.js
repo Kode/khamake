@@ -12,7 +12,6 @@ class KhaExporter extends Exporter {
 		this.width = 640;
 		this.height = 480;
 		this.sources = [];
-		this.addSourceDirectory('Sources');
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
 	}
 
