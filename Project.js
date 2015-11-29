@@ -28,6 +28,7 @@ class Project {
 		this.exportedShaders = [];
 		this.defines = [];
 		this.scriptdir = Project.scriptdir;
+		this.libraries = [];
 	}
 
 	addAssets(asset) {
@@ -47,6 +48,7 @@ class Project {
 	}
 
 	addLibrary(library) {
+		this.libraries.push('Libraries/' + library);
 		this.sources.push('Libraries/' + library + '/Sources');
 		this.shaderIncludes.push('Libraries/' + library + '/Sources/Shaders/**');
 

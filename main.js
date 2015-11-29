@@ -302,8 +302,8 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 				out += "}\n";*/
 
 				for (let lib of libraries) {
-					out += "if (fs.existsSync(path.join('" + lib.directory.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
-					out += "\tproject.addSubProject(Solution.createProject('" + lib.directory.replaceAll('\\', '/') + "'));\n";
+					out += "if (fs.existsSync(path.join('" + lib.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
+					out += "\tproject.addSubProject(Solution.createProject('" + lib.replaceAll('\\', '/') + "'));\n";
 					out += "}\n";
 				}
 
