@@ -144,11 +144,13 @@ class Project {
 						type = 'video';
 					}
 
-					this.assets.push({
-						name: name,
-						file: stringify(file),
-						type: type
-					});
+					if (!name.startsWith('.')) {
+						this.assets.push({
+							name: name,
+							file: stringify(file),
+							type: type
+						});
+					}
 				}
 			}
 		}
@@ -191,7 +193,7 @@ class Project {
 
 					let name = filename.substring(slashindex, pointindex);
 
-					if (filename.endsWith('.glsl')) {
+					if (!name.startsWith('.') && filename.endsWith('.glsl')) {
 						this.shaders.push({
 							name: name,
 							files: [stringify(file)]

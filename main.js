@@ -424,6 +424,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 	project.addShaders(options.kha + '/Sources/Shaders/**');
 	project.searchShaders(Paths.get(from));
+	//project.searchShaders(Paths.get(options.kha));
 
 	let encoders = {
 		oggEncoder: oggEncoder,
