@@ -144,7 +144,7 @@ class Project {
 						type = 'video';
 					}
 
-					if (!name.startsWith('.')) {
+					if (!name.startsWith('.') && name.length > 0) {
 						this.assets.push({
 							name: name,
 							file: stringify(file),
