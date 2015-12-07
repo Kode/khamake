@@ -198,38 +198,10 @@ var options = [
 		value: false
 	},
 	{
-		full: 'addfont',
-		description: 'Add a bitmap font to the project',
-		value: false
-	},
-	{
-		full: 'fontname',
-		description: 'Name of a truetype font',
-		value: true,
-		default: 'Arial'
-	},
-	{
-		full: 'fontsize',
-		description: 'Point size of the generated font',
-		value: true,
-		default: '12'
-	},
-	{
 		full: 'port',
 		description: 'Running port for the server',
 		value: true,
 		default: 8080
-	},
-	{
-		full: 'addasset',
-		description: 'Add an asset to project.kha.',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'addallassets',
-		description: 'Searches the Assets directory and adds all unknown files to project.kha.',
-		value: false
 	},
 	{
 		full: 'debug',
@@ -383,84 +355,6 @@ else if (parsedOptions.server) {
 			fileServer.serve(request, response);
 		}).resume();
 	}).listen(parsedOptions.port);
-}
-else if (parsedOptions.addfont) {
-	console.log('Adding font ' + parsedOptions.fontname + parsedOptions.fontsize + ', please put ' + parsedOptions.fontname + '.ttf in your Assets directory.');
-	var ProjectFile = require('./ProjectFile.js');
-	var project = ProjectFile(Paths.get(parsedOptions.from));
-	project.assets.push({ file: parsedOptions.fontname + '.ttf', name: parsedOptions.fontname, type: 'font', size: parsedOptions.fontsize});
-	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
-}
-else if (parsedOptions.addasset !== '') {
-	var ProjectFile = require('./ProjectFile.js');
-	var project = ProjectFile(Paths.get(parsedOptions.from));
-	var filename = parsedOptions.addasset;
-	var name = filename;
-	if (filename.indexOf('.') >= 0) name = filename.substr(0, filename.lastIndexOf('.'));
-	if (filename.endsWith('.png') || filename.endsWith('.jpg')) {
-		project.assets.push({ file: filename, name: name, type: 'image'});
-		console.log('Added image ' + name + '. Please make sure ' + filename + ' is in your Assets directory.');
-	}
-	else if (filename.endsWith('.wav')) {
-		project.assets.push({ file: name, name: name, type: 'sound'});
-		console.log('Added sound ' + name + '. Please make sure ' + filename + ' is in your Assets directory. You can optionally change the type of ' + name + ' to music in your project.kha.');
-	}
-	else if (filename.endsWith('.mp4') || filename.endsWith('.wmv') || filename.endsWith('.avi')) {
-		project.assets.push({ file: name, name: name, type: 'video'});
-		console.log('Added image ' + name + '. Please make sure ' + filename + ' is in your Assets directory.');
-	}
-	else if (filename.endsWith('.ttf')) {
-		console.log('Please use --addfont to add fonts.');
-		process.exit(1);
-	}
-	else {
-		project.assets.push({ file: name, name: name, type: 'blob'});
-		console.log('Added blob ' + filename + '. Please make sure ' + filename + ' is in your Assets directory.');
-	}
-	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
-}
-else if (parsedOptions.addallassets) {
-	var hasAsset = function (project, name) {
-		for (var a in project.assets) {
-			var asset = project.assets[a];
-			if (asset.name === name) return true;
-		}
-		return false;
-	};
-
-	var readDirectory = function (dir) {
-		var filenames = fs.readdirSync(path.join(parsedOptions.from, 'Assets', dir));
-		for (var f in filenames) {
-			var filename = filenames[f];
-			if (fs.statSync(path.join(parsedOptions.from, 'Assets', dir, filename)).isDirectory()) {
-				readDirectory(path.join(dir, filename));
-				continue;
-			}
-			filename = path.join(dir, filename).replaceAll('\\', '/');
-			var name = filename;
-			if (filename.indexOf('.') >= 0) name = filename.substr(0, filename.lastIndexOf('.'));
-			if (filename.endsWith('.png') || filename.endsWith('.jpg')) {
-				if (!hasAsset(project, name)) project.assets.push({ file: filename, name: name, type: 'image'});
-			}
-			else if (filename.endsWith('.wav')) {
-				if (!hasAsset(project, name)) project.assets.push({ file: name, name: name, type: 'sound'});
-			}
-			else if (filename.endsWith('.mp4') || filename.endsWith('.wmv') || filename.endsWith('.avi')) {
-				if (!hasAsset(project, name)) project.assets.push({ file: name, name: name, type: 'video'});
-			}
-			else if (filename.endsWith('.ttf')) {
-
-			}
-			else {
-				if (!hasAsset(project, filename)) project.assets.push({ file: filename, name: filename, type: 'blob'});
-			}
-		}
-	};
-
-	var ProjectFile = require('./ProjectFile.js');
-	var project = ProjectFile(Paths.get(parsedOptions.from));
-	readDirectory('');
-	fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
 }
 else {
 	require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
