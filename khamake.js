@@ -350,11 +350,19 @@ else if (parsedOptions.server) {
 	console.log('Running server on ' + parsedOptions.port);
 	var nstatic = require('node-static');
 	var fileServer = new nstatic.Server(path.join(parsedOptions.from,'build', 'html5'), { cache: 0 });
-	require('http').createServer(function (request, response) {
+	var server = require('http').createServer(function (request, response) {
 		request.addListener('end', function () {
 			fileServer.serve(request, response);
 		}).resume();
-	}).listen(parsedOptions.port);
+	});
+	server.on('error', function (e) {
+		if (e.code == 'EADDRINUSE') {
+			console.log('Error: Port ' + parsedOptions.port + ' is already in use.');
+			console.log('Please close the competing program (maybe another instance of khamake?)');
+			console.log('or switch to a different port using the --port argument.');
+		}
+	});
+	server.listen(parsedOptions.port);
 }
 else {
 	require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
