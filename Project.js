@@ -1,29 +1,61 @@
 "use strict";
 
+const fs = require('fs');
+const path = require('path');
 const Files = require('./Files.js');
 const Paths = require('./Paths.js');
 
-function isAbsolute(path) {
-	return (path.length > 0 && path[0] == '/') || (path.length > 1 && path[1] == ':');
+function findFiles(dir, match) {
+	if (path.isAbsolute(match)) {
+		match = path.relative(dir, match);
+	}
+	match = match.replace(/\\/g, '/');
+	
+	/*if (match.indexOf('*') < 0) {
+		this.shaders.push(path.relative(match, 'whatever'));
+	}
+	let beforeStar = match.substring(0, match.indexOf('*'));
+	let startDir = beforeStar.substring(0, beforeStar.lastIndexOf('/'));
+	this.searchShaders(path.relative(startDir, 'whatever'), match);*/
+		
+	let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
+	
+	let collected = [];
+	findFiles2(dir, '.', regex, collected);
+	return collected;
 }
 
-function matches(text, pattern) {
-	const regexstring = pattern.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*');
-	const regex = new RegExp('^' + regexstring + '$', 'g');
-	return regex.test(text);
-}
-
-function stringify(path) {
-	return path.toString().replace(/\\/g, '/');
+function findFiles2(basedir, dir, regex, collected) {
+	let dirpath = path.resolve(basedir, dir);
+	let files = fs.readdirSync(dirpath);
+	nextfile: for (let f of files) {
+		let file = path.resolve(dirpath, f);
+		if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) continue;
+		//for (let exclude of this.excludes) {
+		//	if (this.matches(this.stringify(file), exclude)) continue nextfile;
+		//}
+		let filename = path.resolve(dir, f).replace(/\\/g, '/');
+		if (regex.test(filename)) {
+			collected.push(file);
+		}
+	}
+	nextdir: for (let f of files) {
+		let file = path.resolve(dirpath, f);
+		if (!fs.existsSync(file) || !fs.statSync(file).isDirectory()) continue;
+		//for (let exclude of this.excludes) {
+		//	if (this.matchesAllSubdirs(this.basedir.relativize(dir), exclude)) {
+		//		continue nextdir;
+		//	}
+		//}
+		findFiles2(basedir, file, regex, collected);
+	}
 }
 
 class Project {
 	constructor(name) {
 		this.name = name;
 		this.assets = [];
-		this.assetIncludes = [];
 		this.sources = [];
-		this.shaderIncludes = [];
 		this.shaders = [];
 		this.exportedShaders = [];
 		this.defines = [];
@@ -31,16 +63,72 @@ class Project {
 		this.libraries = [];
 	}
 
-	addAssets(asset) {
-		this.assetIncludes.push(asset);
+	/**
+	 * Add all assets matching the match regex relative to the directory containing the current khafile.
+	 * Asset types are infered from the file suffix.
+	 * The regex syntax is very simple: * for anything, ** for anything across directories.
+	 */
+	addAssets(match) {
+		let files = findFiles(this.scriptdir, match);
+		for (let file of files) {
+			let slashindex = file.lastIndexOf('/') + 1;
+			if (slashindex <= 0) slashindex = 0;
+
+			let pointindex = file.lastIndexOf('.');
+			if (pointindex < 0) pointindex = file.length - 1;
+
+			let name = file.substring(slashindex, pointindex);
+
+			let type = 'blob';
+			if (file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg')) {
+				type = 'image';
+			}
+			else if (file.endsWith('.wav')) {
+				type = 'sound';
+			}
+			else if (file.endsWith('.ttf')) {
+				type = 'font';
+			}
+			else if (file.endsWith('.mp4')) {
+				type = 'video';
+			}
+
+			if (!name.startsWith('.') && name.length > 0) {
+				this.assets.push({
+					name: name,
+					file: file,
+					type: type
+				});
+			}
+		}
 	}
 
 	addSources(source) {
 		this.sources.push(source);
 	}
 
-	addShaders(shaders) {
-		this.shaderIncludes.push(shaders.replaceAll('\\', '/'));
+	/**
+	 * Add all shaders matching the match regex relative to the directory containing the current khafile.
+	 * The regex syntax is very simple: * for anything, ** for anything across directories.
+	 */
+	addShaders(match) {
+		let shaders = findFiles(this.scriptdir, match);
+		for (let shader of shaders) {
+			let slashindex = shader.lastIndexOf('/') + 1;
+			if (slashindex <= 0) slashindex = 0;
+
+			let pointindex = shader.lastIndexOf('.');
+			if (pointindex < 0) pointindex = shader.length - 1;
+
+			let name = shader.substring(slashindex, pointindex);
+
+			if (!name.startsWith('.') && shader.endsWith('.glsl')) {
+				this.shaders.push({
+					name: name,
+					files: [shader]
+				})
+			}
+		}
 	}
 
 	addDefine(define) {
@@ -102,117 +190,6 @@ class Project {
 					}
 				}
 		*/
-	}
-
-	searchAssets(current) {
-		let files = Files.newDirectoryStream(current);
-		nextfile: for (let f in files) {
-			let file = Paths.get(current, files[f]);
-			if (Files.isDirectory(file)) continue;
-			//if (!current.isAbsolute())
-			file = this.basedir.relativize(file);
-			//for (let exclude of this.excludes) {
-			//	if (this.matches(this.stringify(file), exclude)) continue nextfile;
-			//}
-			for (let include of this.assetIncludes) {
-				if (isAbsolute(include)) {
-					let inc = Paths.get(include);
-					inc = this.basedir.relativize(inc);
-					include = inc.path;
-				}
-				let filename = stringify(file);
-				if (matches(filename, include)) {
-					let slashindex = filename.lastIndexOf('/') + 1;
-					if (slashindex < 0) slashindex = 0;
-
-					let pointindex = filename.lastIndexOf('.');
-					if (pointindex < 0) pointindex = filename.length - 1;
-
-					let name = filename.substring(slashindex, pointindex);
-
-					let type = 'blob';
-					if (filename.endsWith('.png') || filename.endsWith('.jpg') || filename.endsWith('.jpeg')) {
-						type = 'image';
-					}
-					else if (filename.endsWith('.wav')) {
-						type = 'sound';
-					}
-					else if (filename.endsWith('.ttf')) {
-						type = 'font';
-					}
-					else if (filename.endsWith('.mp4')) {
-						type = 'video';
-					}
-
-					if (!name.startsWith('.') && name.length > 0) {
-						this.assets.push({
-							name: name,
-							file: stringify(file),
-							type: type
-						});
-					}
-				}
-			}
-		}
-		let dirs = Files.newDirectoryStream(current);
-		nextdir: for (let d in dirs) {
-			var dir = Paths.get(current, dirs[d]);
-			if (!Files.isDirectory(dir)) continue;
-			//for (let exclude of this.excludes) {
-			//	if (this.matchesAllSubdirs(this.basedir.relativize(dir), exclude)) {
-			//		continue nextdir;
-			//	}
-			//}
-			this.searchAssets(dir);
-		}
-	}
-
-	searchShaders(current) {
-		let files = Files.newDirectoryStream(current);
-		nextfile: for (let f in files) {
-			let file = Paths.get(current, files[f]);
-			if (Files.isDirectory(file)) continue;
-			//if (!current.isAbsolute())
-			file = this.basedir.relativize(file);
-			//for (let exclude of this.excludes) {
-			//	if (this.matches(this.stringify(file), exclude)) continue nextfile;
-			//}
-			for (let include of this.shaderIncludes) {
-				if (isAbsolute(include)) {
-					let inc = Paths.get(include);
-					inc = this.basedir.relativize(inc);
-					include = inc.path.replaceAll('\\', '/');
-				}
-				let filename = stringify(file);
-				if (matches(filename, include)) {
-					let slashindex = filename.lastIndexOf('/') + 1;
-					if (slashindex < 0) slashindex = 0;
-
-					let pointindex = filename.lastIndexOf('.');
-					if (pointindex < 0) pointindex = filename.length - 1;
-
-					let name = filename.substring(slashindex, pointindex);
-
-					if (!name.startsWith('.') && filename.endsWith('.glsl')) {
-						this.shaders.push({
-							name: name,
-							files: [stringify(file)]
-						})
-					}
-				}
-			}
-		}
-		let dirs = Files.newDirectoryStream(current);
-		nextdir: for (let d in dirs) {
-			var dir = Paths.get(current, dirs[d]);
-			if (!Files.isDirectory(dir)) continue;
-			//for (let exclude of this.excludes) {
-			//	if (this.matchesAllSubdirs(this.basedir.relativize(dir), exclude)) {
-			//		continue nextdir;
-			//	}
-			//}
-			this.searchShaders(dir);
-		}
 	}
 }
 

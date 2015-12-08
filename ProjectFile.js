@@ -9,6 +9,5 @@ module.exports = function (from) {
 	Project.scriptdir = from.toString();
 	let project = new Function(['Project'], file)(Project);
 	project.basedir = Paths.get(from);
-	project.searchAssets(Paths.get(from));
 	return project;
 };
