@@ -4,15 +4,13 @@ const child_process = require('child_process');
 const fs = require('fs');
 const log = require('./log.js');
 
-exports.convert = function (inFilename, outFilename, encoder, callback, args) {
+exports.convert = function (inFilename, outFilename, encoder, args) {
 	if (fs.existsSync(outFilename.toString()) && fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) {
-		callback(true);
-		return;
+		return true;
 	}
 	
 	if (encoder === undefined || encoder === '') {
-		callback(false);
-		return;
+		return false;
 	}
 	
 	let dirend = Math.max(encoder.lastIndexOf('/'), encoder.lastIndexOf('\\'));
@@ -37,23 +35,6 @@ exports.convert = function (inFilename, outFilename, encoder, callback, args) {
 		else if (parts[i] === '{out}') options.push(outFilename.toString());
 		else options.push(parts[i]);
 	}
-	let child = child_process.spawn(exe, options);
 
-	child.stdout.on('data', function (data) {
-		//log.info(encoder + ' stdout: ' + data);
-	});
-	
-	child.stderr.on('data', function (data) {
-		log.info(encoder + ' stderr: ' + data);
-	});
-	
-	child.on('error', function (err) {
-		log.error(encoder + ' error: ' + err);
-		callback(false);
-	});
-	
-	child.on('close', function (code) {
-		if (code !== 0) log.error(encoder + ' process exited with code ' + code);
-		callback(code === 0);
-	});
+	return child_process.spawnSync(exe, options).status === 0;
 };

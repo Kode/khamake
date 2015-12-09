@@ -11,22 +11,22 @@ function findFiles(dir, match) {
 	}
 	match = match.replace(/\\/g, '/');
 	
-	/*if (match.indexOf('*') < 0) {
-		this.shaders.push(path.relative(match, 'whatever'));
+	let subdir = '.'
+	if (match.indexOf('*') >= 0) {
+		let beforeStar = match.substring(0, match.indexOf('*'));
+		subdir = beforeStar.substring(0, beforeStar.lastIndexOf('/'));
 	}
-	let beforeStar = match.substring(0, match.indexOf('*'));
-	let startDir = beforeStar.substring(0, beforeStar.lastIndexOf('/'));
-	this.searchShaders(path.relative(startDir, 'whatever'), match);*/
 		
 	let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
 	
 	let collected = [];
-	findFiles2(dir, '.', regex, collected);
+	findFiles2(dir, subdir, regex, collected);
 	return collected;
 }
 
 function findFiles2(basedir, dir, regex, collected) {
 	let dirpath = path.resolve(basedir, dir);
+	if (!fs.existsSync(dirpath) || !fs.statSync(dirpath).isDirectory()) return;
 	let files = fs.readdirSync(dirpath);
 	nextfile: for (let f of files) {
 		let file = path.resolve(dirpath, f);
@@ -35,9 +35,7 @@ function findFiles2(basedir, dir, regex, collected) {
 		//	if (this.matches(this.stringify(file), exclude)) continue nextfile;
 		//}
 		let filename = path.relative(basedir, file).replace(/\\/g, '/');
-		//if (filename.startsWith('Sources/Shaders')) console.log('Testing ' + filename);
 		if (regex.test(filename)) {
-			//console.log('found ' + filename);
 			collected.push(file.replace(/\\/g, '/'));
 		}
 		regex.lastIndex = 0;
@@ -73,33 +71,30 @@ class Project {
 	 */
 	addAssets(match) {
 		let files = findFiles(this.scriptdir, match);
-		for (let file of files) {
-			let slashindex = file.lastIndexOf('/') + 1;
-			if (slashindex <= 0) slashindex = 0;
-
-			let pointindex = file.lastIndexOf('.');
-			if (pointindex < 0) pointindex = file.length - 1;
-
-			let name = file.substring(slashindex, pointindex);
-
+		for (let f of files) {
+			let file = path.parse(f);
+			let name = file.name;
 			let type = 'blob';
-			if (file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg')) {
+			if (file.ext === '.png' || file.ext === '.jpg' || file.ext === '.jpeg') {
 				type = 'image';
 			}
-			else if (file.endsWith('.wav')) {
+			else if (file.ext === '.wav') {
 				type = 'sound';
 			}
-			else if (file.endsWith('.ttf')) {
+			else if (file.ext === '.ttf') {
 				type = 'font';
 			}
-			else if (file.endsWith('.mp4')) {
+			else if (file.ext === '.mp4' || file.ext === '.webm' || file.ext === '.wmv' || file.ext === '.avi') {
 				type = 'video';
 			}
+			else {
+				name = file.base;
+			}
 
-			if (!name.startsWith('.') && name.length > 0) {
+			if (!file.name.startsWith('.') && file.name.length > 0) {
 				this.assets.push({
 					name: name,
-					file: file,
+					file: f,
 					type: type
 				});
 			}
@@ -117,20 +112,12 @@ class Project {
 	addShaders(match) {
 		let shaders = findFiles(this.scriptdir, match);
 		for (let shader of shaders) {
-			let slashindex = shader.lastIndexOf('/') + 1;
-			if (slashindex <= 0) slashindex = 0;
-
-			let pointindex = shader.lastIndexOf('.');
-			if (pointindex < 0) pointindex = shader.length - 1;
-
-			let name = shader.substring(slashindex, pointindex);
-			//console.log('Shader name 1: ' + shader);
-			if (!name.startsWith('.') && shader.endsWith('.glsl')) {
-				//console.log('Shader name 2: ' + shader);
+			let file = path.parse(shader);
+			if (!file.name.startsWith('.') && file.ext === '.glsl') {
 				this.shaders.push({
-					name: name,
+					name: file.name,
 					files: [shader]
-				})
+				});
 			}
 		}
 	}

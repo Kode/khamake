@@ -167,108 +167,46 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 	}
 }
 
-function fixPaths(paths) {
-	for (let p in paths) {
-		paths[p] = paths[p].replaceAll('\\', '/');
+function fixName(name) {
+	name = name.replace(/\./g, '_').replace(/-/g, '_');
+	if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
+		|| name[0] === '5' || name[0] === '6' || name[0] === '7' || name[0] === '8' || name[0] === '9') {
+		name = '_' + name;	
 	}
+	return name;
 }
 
-function exportAssets(assets, index, exporter, from, khafolders, platform, encoders, callback) {
-	if (index >= assets.length) {
-		callback();
-		return;
-	}
-	let asset = assets[index];
-	log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + asset.file + ').');
-	if (asset.type === 'image') {
-		let file;
-		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, asset.file));
+function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
+	let index = 0;
+	for (let asset of assets) {
+		let fileinfo = pathlib.parse(asset.file);
+		log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + fileinfo.base + ').');
+		
+		let files = [];
+		
+		switch (asset.type) {
+			case 'image':
+				files = exporter.copyImage(platform, asset.file, fileinfo.name, asset);
+				break;
+			case 'sound':
+				files = exporter.copySound(platform, asset.file, fileinfo.name, encoders);
+				break;
+			case 'font':
+				files = exporter.copyFont(platform, asset.file, fileinfo.name);
+				break;
+			case 'video':
+				files = exporter.copyVideo(platform, asset.file, fileinfo.name, encoders);
+				break;
+			case 'blob':
+				files = exporter.copyBlob(platform, asset.file, fileinfo.base);
+				break;
 		}
-		else {
-			file = from.resolve(Paths.get(asset.file));
-		}
-		exporter.copyImage(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), asset, function (files) {
-			fixPaths(files);
-			asset.files = files;
-			delete asset.file;
-			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
-		});
-	}
-	else if (asset.type === 'music') {
-		let file;
-		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, asset.file));
-		}
-		else {
-			file = from.resolve(Paths.get(asset.file));
-		}
-		exporter.copyMusic(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
-			fixPaths(files);
-			asset.files = files;
-			delete asset.file;
-			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
-		});
-	}
-	else if (asset.type === 'sound') {
-		let file;
-		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, asset.file));
-		}
-		else {
-			file = from.resolve(Paths.get(asset.file));
-		}
-		exporter.copySound(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
-			fixPaths(files);
-			asset.files = files;
-			delete asset.file;
-			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
-		});
-	}
-	else if (asset.type === 'blob') {
-		let file;
-		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, asset.file));
-		}
-		else {
-			file = from.resolve(Paths.get(asset.file));
-		}
-		exporter.copyBlob(platform, file, asset.file, function (files) {
-			fixPaths(files);
-			asset.files = files;
-			delete asset.file;
-			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
-		});
-	}
-	else if (asset.type === 'video') {
-		let file;
-		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, asset.file));
-		}
-		else {
-			file = from.resolve(Paths.get(asset.file));
-		}
-		exporter.copyVideo(platform, file, asset.file.substr(0, asset.file.lastIndexOf('.')), encoders, function (files) {
-			fixPaths(files);
-			asset.files = files;
-			delete asset.file;
-			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
-		});
-	}
-	else if (asset.type === 'font') {
-		let file;
-		if (asset.libdir !== undefined) {
-			file = from.resolve(Paths.get(asset.libdir, asset.file));
-		}
-		else {
-			file = from.resolve(Paths.get(asset.file));
-		}
-		exporter.copyBlob(platform, file, asset.file, function (files) {
-			fixPaths(files);
-			asset.files = files;
-			delete asset.file;
-			exportAssets(assets, index + 1, exporter, from, khafolders, platform, encoders, callback);
-		});
+
+		asset.name = fixName(asset.name);
+		asset.files = files;
+		delete asset.file;
+		
+		++index;
 	}
 }
 
@@ -400,7 +338,6 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	Files.createDirectories(to.resolve(exporter.sysdir()));
 	
 	let name = '';
-	let sources = [];
 	let project = null;
 
 	let foundProjectFile = false;
@@ -435,73 +372,72 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		theoraEncoder: theoraEncoder,
 		kravur: options.kravur
 	};
-	exportAssets(project.assets, 0, exporter, from, khafolders, platform, encoders, function () {
-		let shaderDir = to.resolve(exporter.sysdir() + '-resources');
-		if (platform === Platform.Unity) {
-			shaderDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Shaders'));
-		}
-		if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
-		for (let shader of project.shaders) {
-			compileShader(exporter, platform, project, shader, shaderDir, temp, options.nokrafix ? kfx : krafix, kfx);
-		}
-		if (platform === Platform.Unity) {
-			let proto = fs.readFileSync(from.resolve(Paths.get(options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
-			for (let i1 = 0; i1 < project.exportedShaders.length; ++i1) {
-				if (project.exportedShaders[i1].name.endsWith('.vert')) {
-					for (let i2 = 0; i2 < project.exportedShaders.length; ++i2) {
-						if (project.exportedShaders[i2].name.endsWith('.frag')) {
-							let shadername = project.exportedShaders[i1].name + '.' + project.exportedShaders[i2].name;
-							let proto2 = proto.replaceAll('{name}', shadername);
-							proto2 = proto2.replaceAll('{vert}', project.exportedShaders[i1].name);
-							proto2 = proto2.replaceAll('{frag}', project.exportedShaders[i2].name);
-							fs.writeFileSync(shaderDir.resolve(shadername + '.shader').toString(), proto2, { encoding: 'utf8'});
-						}
+	exportAssets(project.assets, exporter, from, khafolders, platform, encoders);
+	let shaderDir = to.resolve(exporter.sysdir() + '-resources');
+	if (platform === Platform.Unity) {
+		shaderDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Shaders'));
+	}
+	if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
+	for (let shader of project.shaders) {
+		compileShader(exporter, platform, project, shader, shaderDir, temp, options.nokrafix ? kfx : krafix, kfx);
+	}
+	if (platform === Platform.Unity) {
+		let proto = fs.readFileSync(from.resolve(Paths.get(options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
+		for (let i1 = 0; i1 < project.exportedShaders.length; ++i1) {
+			if (project.exportedShaders[i1].name.endsWith('.vert')) {
+				for (let i2 = 0; i2 < project.exportedShaders.length; ++i2) {
+					if (project.exportedShaders[i2].name.endsWith('.frag')) {
+						let shadername = project.exportedShaders[i1].name + '.' + project.exportedShaders[i2].name;
+						let proto2 = proto.replaceAll('{name}', shadername);
+						proto2 = proto2.replaceAll('{vert}', project.exportedShaders[i1].name);
+						proto2 = proto2.replaceAll('{frag}', project.exportedShaders[i2].name);
+						fs.writeFileSync(shaderDir.resolve(shadername + '.shader').toString(), proto2, { encoding: 'utf8'});
 					}
 				}
 			}
-			let blobDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Resources', 'Blobs'));
-			if (!Files.exists(blobDir)) Files.createDirectories(blobDir);
-			for (let i = 0; i < project.exportedShaders.length; ++i) {
-				fs.writeFileSync(blobDir.resolve(project.exportedShaders[i].files[0] + '.bytes').toString(), project.exportedShaders[i].name, { encoding: 'utf8'});
+		}
+		let blobDir = to.resolve(Paths.get(exporter.sysdir(), 'Assets', 'Resources', 'Blobs'));
+		if (!Files.exists(blobDir)) Files.createDirectories(blobDir);
+		for (let i = 0; i < project.exportedShaders.length; ++i) {
+			fs.writeFileSync(blobDir.resolve(project.exportedShaders[i].files[0] + '.bytes').toString(), project.exportedShaders[i].name, { encoding: 'utf8'});
+		}
+	}
+
+	let files = [];
+	for (let asset of project.assets) {
+		files.push(asset);
+	}
+	for (let shader of project.exportedShaders) {
+		files.push({
+			name: fixName(shader.name),
+			files: shader.files,
+			type: 'shader'
+		});
+	}
+
+	function secondPass() {
+		let hxslDir = pathlib.join('build', 'Shaders');
+		if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) { 
+			addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir() + '-resources'), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
+			if (foundProjectFile) {
+				fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
+				log.info('Assets done.');
+				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, callback);
+			}
+			else {
+				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries,callback);
 			}
 		}
+	}
 
-		let files = [];
-		for (let asset of project.assets) {
-			files.push(asset);
-		}
-		for (let shader of project.exportedShaders) {
-			files.push({
-				name: shader.name,
-				files: shader.files,
-				type: 'shader'
-			});
-		}
-
-		function secondPass() {
-			let hxslDir = pathlib.join('build', 'Shaders');
-			if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) { 
-				addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir() + '-resources'), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
-				if (foundProjectFile) {
-					fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
-					log.info('Assets done.');
-					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, callback);
-				}
-				else {
-					exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries,callback);
-				}
-			}
-		}
-
-		if (foundProjectFile) {
-			fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
-			log.info('Assets done.');
-			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
-		}
-		else {
-			exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
-		}
-	});
+	if (foundProjectFile) {
+		fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
+		log.info('Assets done.');
+		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
+	}
+	else {
+		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
+	}
 }
 
 function isKhaProject(directory) {
