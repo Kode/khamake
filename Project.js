@@ -34,10 +34,13 @@ function findFiles2(basedir, dir, regex, collected) {
 		//for (let exclude of this.excludes) {
 		//	if (this.matches(this.stringify(file), exclude)) continue nextfile;
 		//}
-		let filename = path.resolve(dir, f).replace(/\\/g, '/');
+		let filename = path.relative(basedir, file).replace(/\\/g, '/');
+		//if (filename.startsWith('Sources/Shaders')) console.log('Testing ' + filename);
 		if (regex.test(filename)) {
-			collected.push(file);
+			//console.log('found ' + filename);
+			collected.push(file.replace(/\\/g, '/'));
 		}
+		regex.lastIndex = 0;
 	}
 	nextdir: for (let f of files) {
 		let file = path.resolve(dirpath, f);
@@ -121,8 +124,9 @@ class Project {
 			if (pointindex < 0) pointindex = shader.length - 1;
 
 			let name = shader.substring(slashindex, pointindex);
-
+			//console.log('Shader name 1: ' + shader);
 			if (!name.startsWith('.') && shader.endsWith('.glsl')) {
+				//console.log('Shader name 2: ' + shader);
 				this.shaders.push({
 					name: name,
 					files: [shader]
@@ -138,7 +142,7 @@ class Project {
 	addLibrary(library) {
 		this.libraries.push('Libraries/' + library);
 		this.sources.push('Libraries/' + library + '/Sources');
-		this.shaderIncludes.push('Libraries/' + library + '/Sources/Shaders/**');
+		this.addShaders('Libraries/' + library + '/Sources/Shaders/**');
 
 		/*
 				if (process.env.HAXEPATH) {
