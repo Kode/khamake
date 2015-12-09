@@ -8,7 +8,7 @@ const Haxe = require('./Haxe.js');
 const Options = require('./Options.js');
 const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const uuid = require('./uuid.js');
 
 class PlayStationMobileExporter extends CSharpExporter {
@@ -146,27 +146,28 @@ class PlayStationMobileExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	copyMusic(platform, from, to, encoders, callback) {
+	/*copyMusic(platform, from, to, encoders, callback) {
 		callback();
+	}*/
+
+	copySound(platform, from, to, encoders) {
+		return [];
 	}
 
-	copySound(platform, from, to, encoders, callback) {
-		callback();
-	}
-
-	copyImage(platform, from, to, asset, callback) {
+	copyImage(platform, from, to, asset) {
 		this.files.push(Paths.get(asset["file"]));
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, callback);
+		let format = exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false);
+		return [to + '.' + format];
 	}
 
-	copyBlob(platform, from, to, callback) {
-		this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
+	copyBlob(platform, from, to) {
+		fs.copySync(from.toString(), this.directory.resolve(this.sysdir()).resolve(to).toString(), { clobber: true });
 		this.files.push(to);
-		callback();
+		return [to];
 	}
 
-	copyVideo(platform, from, to, encoders, callback) {
-		callback();
+	copyVideo(platform, from, to, encoders) {
+		return [];
 	}
 }
 

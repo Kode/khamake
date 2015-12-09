@@ -138,38 +138,30 @@ class AndroidExporter extends KhaExporter {
 		fs.writeFileSync(path.join(outdir, '.idea', 'modules.xml'), modules, {encoding: 'utf8'});
 	}
 
-	copyMusic(platform, from, to, encoders, callback) {
+	/*copyMusic(platform, from, to, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.ogg')), encoders.oggEncoder, function (success) {
 			callback([to + '.ogg']);
 		});
+	}*/
+
+	copySound(platform, from, to, encoders) {
+		fs.copySync(from.toString(), this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav')).toString(), { clobber: true });
+		return [to + '.wav'];
 	}
 
-	copySound(platform, from, to, encoders, callback) {
-		this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav')));
-		callback([to + '.wav']);
+	copyImage(platform, from, to, asset) {
+		let format = exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false);
+		return [to + '.' + format];
 	}
 
-	copyImage(platform, from, to, asset, callback) {
-		exportImage(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), asset, undefined, false, function (format) {
-			callback([to + '.' + format]);
-		});
+	copyBlob(platform, from, to) {
+		fs.copySync(from.toString(), this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to).toString(), { clobber: true });
+		return [to];
 	}
 
-	copyBlob(platform, from, to, callback) {
-		this.copyFile(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to));
-		callback([to]);
-	}
-
-	copyVideo(platform, from, to, encoders, callback) {
-		callback([to]);
-	}
-
-	copyFont(platform, from, to, asset, encoders, callback) {
-		Files.createDirectories(this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to).parent());
-		Converter.convert(from, this.directory.resolve(Paths.get(this.sysdir(), this.safename, 'app', 'src', 'main', 'assets')).resolve(to), encoders.kravur, function (success) {
-			callback([to]);
-		}, {size: asset.size});
+	copyVideo(platform, from, to, encoders) {
+		return [to];
 	}
 }
 

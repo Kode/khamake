@@ -8,7 +8,7 @@ const Haxe = require('./Haxe.js');
 const Options = require('./Options.js');
 const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const HaxeProject = require('./HaxeProject.js');
 
 class Html5Exporter extends KhaExporter {
@@ -69,7 +69,7 @@ class Html5Exporter extends KhaExporter {
 		}
 	}
 
-	copyMusic(platform, from, to, encoders, callback) {
+	/*copyMusic(platform, from, to, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
 			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, (mp4) => {
@@ -79,41 +79,36 @@ class Html5Exporter extends KhaExporter {
 				callback(files);
 			});
 		});
-	}
+	}*/
 
-	copySound(platform, from, to, encoders, callback) {
+	copySound(platform, from, to, encoders) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (ogg) => {
-			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, (mp4) => {
-				var files = [];
-				if (ogg) files.push(to + '.ogg');
-				if (mp4) files.push(to + '.mp4');
-				callback(files);
-			});
-		});
+		let ogg = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder);
+		let mp4 = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder);
+		var files = [];
+		if (ogg) files.push(to + '.ogg');
+		if (mp4) files.push(to + '.mp4');
+		return files;
 	}
 
-	copyImage(platform, from, to, asset, callback) {
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false, (format) => {
-			callback([to + '.' + format]);
-		});
+	copyImage(platform, from, to, asset) {
+		let format = exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, undefined, false);
+		return [to + '.' + format];
 	}
 
-	copyBlob(platform, from, to, callback) {
-		this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to));
-		callback([to]);
+	copyBlob(platform, from, to) {
+		fs.copySync(from.toString(), this.directory.resolve(this.sysdir()).resolve(to).toString(), { clobber: true });
+		return [to];
 	}
 
-	copyVideo(platform, from, to, encoders, callback) {
+	copyVideo(platform, from, to, encoders) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".mp4"), encoders.h264Encoder, (mp4) => {
-			Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".webm"), encoders.webmEncoder, (webm) => {
-				let files = [];
-				if (mp4) files.push(to + '.mp4');
-				if (webm) files.push(to + '.webm');
-				callback(files);
-			});
-		});
+		let mp4 = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".mp4"), encoders.h264Encoder);
+		let webm = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".webm"), encoders.webmEncoder);
+		let files = [];
+		if (mp4) files.push(to + '.mp4');
+		if (webm) files.push(to + '.webm');
+		return files;
 	}
 }
 

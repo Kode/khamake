@@ -8,7 +8,7 @@ const Haxe = require('./Haxe.js');
 const Options = require('./Options.js');
 const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const uuid = require('./uuid.js');
 const HaxeProject = require('./HaxeProject.js');
 
@@ -65,34 +65,26 @@ class UnityExporter extends KhaExporter {
 		});
 	}
 
-	copyMusic(platform, from, to, encoders, callback) {
+	/*copyMusic(platform, from, to, encoders, callback) {
 		callback([to]);
+	}*/
+
+	copySound(platform, from, to, encoders) {
+		return [to];
 	}
 
-	copySound(platform, from, to, encoders, callback) {
-		callback([to]);
+	copyImage(platform, from, to, asset) {
+		let format = exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Images', to)), asset, undefined, false, true);
+		return [to + '.' + format];
 	}
 
-	copyImage(platform, from, to, asset, callback) {
-		exportImage(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Images', to)), asset, undefined, false, function (format) {
-			callback([to + '.' + format]);
-		}, true);
+	copyBlob(platform, from, to) {
+		fs.copySync(from.toString(), this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to.toString() + '.bytes')).toString(), { clobber: true });
+		return [to];
 	}
 
-	copyBlob(platform, from, to, callback) {
-		this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to.toString() + '.bytes')));
-		callback([to]);
-	}
-
-	copyVideo(platform, from, to, encoders, callback) {
-		callback([to]);
-	}
-
-	copyFont(platform, from, to, asset, encoders, callback) {
-		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to)).parent());
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(Paths.get('Assets', 'Resources', 'Blobs', to + '.bytes')), encoders.kravur, function (success) {
-			callback([to]);
-		}, {size: asset.size});
+	copyVideo(platform, from, to, encoders) {
+		return [to];
 	}
 }
 

@@ -9,7 +9,7 @@ const Haxe = require('./Haxe.js');
 const Options = require('./Options.js');
 const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const uuid = require('./uuid.js');
 
 function findIcon(from) {
@@ -263,10 +263,11 @@ class XnaExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	copyImage(platform, from, to, asset, callback) {
+	copyImage(platform, from, to, asset) {
 		this.images.push(asset["file"]);
-		exportImage(from, this.directory.resolve("xna").resolve(to), asset, undefined, false, callback);
-	};
+		let format = exportImage(from, this.directory.resolve("xna").resolve(to), asset, undefined, false);
+		return [to + '.' + format];
+	}
 }
 
 module.exports = XnaExporter;

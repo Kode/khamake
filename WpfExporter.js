@@ -8,7 +8,7 @@ const Haxe = require('./Haxe.js');
 const Options = require('./Options.js');
 const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const uuid = require('./uuid.js');
 
 class WpfExporter extends CSharpExporter {
@@ -277,24 +277,23 @@ class WpfExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	copyMusic(platform, from, to, encoders, callback) {
+	/*copyMusic(platform, from, to, encoders, callback) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder, () => {
 			callback([to + '.mp4']);
 		});
+	}*/
+
+	copySound(platform, from, to, encoders) {
+		fs.copySync(from.toString(), this.directory.resolve(this.sysdir()).resolve(to + '.wav').toString(), { clobber: true });
+		return [to + '.wav'];
 	}
 
-	copySound(platform, from, to, encoders, callback) {
-		this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to + '.wav'));
-		callback([to + '.wav']);
-	}
-
-	copyVideo(platform, from, to, encoders, callback) {
+	copyVideo(platform, from, to, encoders) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.wmv'), encoders.wmvEncoder, () => {
-			callback([to + '.wmv']);
-		});
-	};
+		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.wmv'), encoders.wmvEncoder);
+		return [to + '.wmv'];
+	}
 }
 
 module.exports = WpfExporter;
