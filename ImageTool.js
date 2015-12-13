@@ -60,7 +60,7 @@ module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
 	if (format === 'jpg') {
-		Files.copy(from, Paths.get(to), true);
+		Files.copy(Paths.get(from), Paths.get(to), true);
 		let wh = getWidthAndHeight(from, to, asset, format, prealpha);
 		asset.original_width = wh.w;
 		asset.original_height = wh.h;
