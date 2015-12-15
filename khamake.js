@@ -299,18 +299,13 @@ if (parsedOptions.run) {
 if (parsedOptions.init) {
 	console.log('Initializing Kha project.\n');
 	
-	if (!fs.existsSync(path.join(parsedOptions.from, 'project.kha'))) {
-		var project = {
-			format: 3,
-			game: {
-				name: parsedOptions.name,
-				width: 640,
-				height: 480
-			},
-			assets: [],
-			rooms: []
-		};
-		fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'), JSON.stringify(project, null, '\t'), { encoding: 'utf8' });
+	if (!fs.existsSync(path.join(parsedOptions.from, 'khafile.js'))) {
+		fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'),
+			  "var project = new Project('Blocks');\n"
+			+ "project.addAssets('Assets/**');\n"
+			+ "project.addSources('Sources');\n"
+			+ "return project;\n",
+		{ encoding: 'utf8' });
 	}
 	
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Assets'))) fs.mkdirSync(path.join(parsedOptions.from, 'Assets'));
@@ -321,23 +316,30 @@ if (parsedOptions.init) {
 	friendlyName = friendlyName.replace(/-/g, '_');
 
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'))) {
-		var mainsource = 'package;\n\nimport kha.Starter;\n\n'
+		var mainsource = 'package;\n\nimport kha.System;\n\n'
 			+ 'class Main {\n'
 			+ '\tpublic static function main() {\n'
-			+ '\t\tvar starter = new Starter();\n'
-			+ '\t\tstarter.start(new ' + friendlyName + '());\n'
+			+ '\t\tSystem.init("' + parsedOptions.name + '", 1024, 768, function () {\n'
+			+ '\t\t\tnew ' + friendlyName + '();\n'
+			+ '\t\t});'
 			+ '\t}\n'
 			+ '}\n';
 		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'), mainsource, { encoding: 'utf8' });
 	}
 	
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'))) {
-		var projectsource = 'package;\n\nimport kha.Game;\n\n'
-			+ 'class ' + friendlyName + ' extends Game {\n'
+		var projectsource = 'package;\n\nimport kha.Framebuffer;\nimport kha.Scheduler;\nimport kha.System;\n\n'
+			+ 'class ' + friendlyName + ' {\n'
 			+ '\tpublic function new() {\n'
-			+ '\t\tsuper("' + parsedOptions.name + '");\n'
-			+ '\t}\n\n'
-			+ '\toverride function init(): Void {\n'
+			+ '\t\tSystem.notifyOnRender(render);\n'
+			+ '\t\tScheduler.addTimeTask(update, 0, 1 / 60);\n'
+			+ '\t}\n'
+			+ '\n'
+			+ '\tfunction update(): Void {\n'
+			+ '\t\t\n'
+			+ '\t}\n'
+			+ '\n'
+			+ '\tfunction render(framebuffer: Framebuffer): Void {'
 			+ '\t\t\n'
 			+ '\t}\n'
 			+ '}\n';
