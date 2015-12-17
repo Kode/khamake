@@ -22,7 +22,7 @@ function IntelliJ(projectdir, options) {
 			sources += '      <sourceFolder url="file://' + options.sources[i] + '" isTestSource="false" />\n';
 		}
 		else {
-			sources += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(outdir, path.join(options.from, options.sources[i])).replaceAll('\\', '/') + '" isTestSource="false" />\n';
+			sources += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(outdir, path.resolve(options.from, options.sources[i])).replaceAll('\\', '/') + '" isTestSource="false" />\n';
 		}
 	}
 
@@ -79,7 +79,7 @@ function hxml(projectdir, options) {
 			data += '-cp ' + options.sources[i] + '\n';
 		}
 		else {
-			data += '-cp ' + path.relative(projectdir, path.join(options.from, options.sources[i])) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+			data += '-cp ' + path.relative(projectdir, path.resolve(options.from, options.sources[i])) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
 	for (let d in options.defines) {
@@ -194,10 +194,18 @@ function FlashDevelop(projectdir, options) {
 	};
 
 	for (let i = 0; i < options.sources.length; ++i) {
-		classpaths.e.push({
-			n: 'class',
-			path: path.relative(projectdir, path.join(options.from, options.sources[i]))
-		});
+		if (path.isAbsolute(options.sources[i])) {
+			classpaths.e.push({
+				n: 'class',
+				path: options.sources[i]
+			});
+		}
+		else {
+			classpaths.e.push({
+				n: 'class',
+				path: path.relative(projectdir, path.resolve(options.from, options.sources[i]))
+			});
+		}
 	}
 
 	let otheroptions = [
