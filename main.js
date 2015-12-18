@@ -171,7 +171,7 @@ function fixName(name) {
 	name = name.replace(/\./g, '_').replace(/-/g, '_');
 	if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
 		|| name[0] === '5' || name[0] === '6' || name[0] === '7' || name[0] === '8' || name[0] === '9') {
-		name = '_' + name;	
+		name = '_' + name;
 	}
 	return name;
 }
@@ -181,9 +181,9 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 	for (let asset of assets) {
 		let fileinfo = pathlib.parse(asset.file);
 		log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + fileinfo.base + ').');
-		
+
 		let files = [];
-		
+
 		switch (asset.type) {
 			case 'image':
 				files = exporter.copyImage(platform, asset.file, fileinfo.name, asset);
@@ -205,7 +205,7 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 		asset.name = fixName(asset.name);
 		asset.files = files;
 		delete asset.file;
-		
+
 		++index;
 	}
 }
@@ -291,11 +291,11 @@ function koreplatform(platform) {
 
 function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback) {
 	log.info('Creating Kha project.');
-	
+
 	Files.createDirectories(to);
 	let temp = to.resolve('temp');
 	Files.createDirectories(temp);
-	
+
 	let exporter = null;
 	let kore = false;
 	switch (platform) {
@@ -336,15 +336,15 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 
 	Files.createDirectories(to.resolve(exporter.sysdir()));
-	
+
 	let name = '';
 	let project = null;
 
 	let foundProjectFile = false;
 	if (name === '') name = from.toAbsolutePath().getFileName();
 
-	if (Files.exists(from.resolve('khafile.js'))) {
-		project = ProjectFile(from);
+	if (Files.exists(from.resolve(options.projectfile))) {
+		project = ProjectFile(from, options.projectfile);
 		foundProjectFile = true;
 	}
 	else {
@@ -361,7 +361,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 	project.scriptdir = options.kha;
 	project.addShaders('Sources/Shaders/**');
-	
+
 	let encoders = {
 		oggEncoder: oggEncoder,
 		aacEncoder: aacEncoder,
@@ -417,7 +417,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 
 	function secondPass() {
 		let hxslDir = pathlib.join('build', 'Shaders');
-		if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) { 
+		if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) {
 			addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir() + '-resources'), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
 			if (foundProjectFile) {
 				fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
@@ -440,16 +440,16 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 }
 
-function isKhaProject(directory) {
-	return Files.exists(directory.resolve('Kha')) || Files.exists(directory.resolve('khafile.js'));
+function isKhaProject(directory, projectfile) {
+	return Files.exists(directory.resolve('Kha')) || Files.exists(directory.resolve(projectfile));
 }
 
 function exportProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback) {
-	if (isKhaProject(from)) {
+	if (isKhaProject(from, options.projectfile)) {
 		exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback);
 	}
 	else {
-		log.error('Neither Kha directory nor khafile.js found.');
+		log.error('Neither Kha directory nor project file (' + options.projectfile + ') found.');
 		callback('Unknown');
 	}
 }
@@ -496,7 +496,7 @@ exports.run = function (options, loglog, callback) {
 		let path = Paths.get(options.kha, 'Tools', 'haxe');
 		if (Files.isDirectory(path)) options.haxe = path.toString();
 	}
-	
+
 	if (options.kfx === '') {
 		let path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx" + exec.sys());
 		if (Files.exists(path)) options.kfx = path.toString();
@@ -506,7 +506,7 @@ exports.run = function (options, loglog, callback) {
 		let path = Paths.get(options.kha, "Kore", "Tools", "krafix", "krafix" + exec.sys());
 		if (Files.exists(path)) options.krafix = path.toString();
 	}
-	
+
 	if (options.ogg === '') {
 		let path = Paths.get(options.kha, "Tools", "oggenc", "oggenc" + exec.sys());
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out} --quiet';
@@ -516,22 +516,22 @@ exports.run = function (options, loglog, callback) {
 		let path = Paths.get(options.kha, 'Tools', 'kravur', 'kravur' + exec.sys());
 		if (Files.exists(path)) options.kravur = path.toString() + ' {in} {size} {out}';
 	}
-	
+
 	if (options.graphics !== undefined) {
 		Options.graphicsApi = options.graphics;
 	}
-	
+
 	if (options.visualstudio !== undefined) {
-		Options.visualStudioVersion = options.visualstudio;	
+		Options.visualStudioVersion = options.visualstudio;
 	}
 
 	if (options.vr != undefined) {
 		Options.vrApi = options.vr;
 		//log.info("Vr API is: " + Options.vrApi);
 	}
-	
+
 	if (options.visualStudioVersion !== undefined) {
-		Options.visualStudioVersion = options.visualStudioVersion;	
+		Options.visualStudioVersion = options.visualStudioVersion;
 	}
 
 	exportProject(Paths.get(options.from), Paths.get(options.to), options.target, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.kfx, options.krafix, false, options.embedflashassets, options, done);
