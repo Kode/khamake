@@ -54,6 +54,12 @@ var options = [
 		default: 'build'
 	},
 	{
+		full: 'projectfile',
+		value: true,
+		description: 'Name of your project file, defaults to "khafile.js"',
+		default: 'khafile.js'
+	},
+	{
 		full: 'target',
 		short: 't',
 		value: true,
@@ -298,19 +304,19 @@ if (parsedOptions.run) {
 
 if (parsedOptions.init) {
 	console.log('Initializing Kha project.\n');
-	
-	if (!fs.existsSync(path.join(parsedOptions.from, 'khafile.js'))) {
-		fs.writeFileSync(path.join(parsedOptions.from, 'project.kha'),
+
+	if (!fs.existsSync(path.join(parsedOptions.from, parsedOptions.projectfile))) {
+		fs.writeFileSync(path.join(parsedOptions.from, parsedOptions.projectfile),
 			  "var project = new Project('Blocks');\n"
 			+ "project.addAssets('Assets/**');\n"
 			+ "project.addSources('Sources');\n"
 			+ "return project;\n",
 		{ encoding: 'utf8' });
 	}
-	
+
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Assets'))) fs.mkdirSync(path.join(parsedOptions.from, 'Assets'));
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources'))) fs.mkdirSync(path.join(parsedOptions.from, 'Sources'));
-	
+
 	var friendlyName = parsedOptions.name;
 	friendlyName = friendlyName.replace(/ /g, '_');
 	friendlyName = friendlyName.replace(/-/g, '_');
@@ -326,7 +332,7 @@ if (parsedOptions.init) {
 			+ '}\n';
 		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'), mainsource, { encoding: 'utf8' });
 	}
-	
+
 	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'))) {
 		var projectsource = 'package;\n\nimport kha.Framebuffer;\nimport kha.Scheduler;\nimport kha.System;\n\n'
 			+ 'class ' + friendlyName + ' {\n'
@@ -345,7 +351,7 @@ if (parsedOptions.init) {
 			+ '}\n';
 		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'), projectsource, { encoding: 'utf8' });
 	}
-	
+
 	console.log('If you want to use the git version of Kha, execute "git init" and "git add submodule https://github.com/ktxsoftware/Kha.git".');
 }
 else if (parsedOptions.server) {
