@@ -327,7 +327,7 @@ if (parsedOptions.init) {
 			+ '\tpublic static function main() {\n'
 			+ '\t\tSystem.init("' + parsedOptions.name + '", 1024, 768, function () {\n'
 			+ '\t\t\tnew ' + friendlyName + '();\n'
-			+ '\t\t});'
+			+ '\t\t});\n'
 			+ '\t}\n'
 			+ '}\n';
 		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'), mainsource, { encoding: 'utf8' });
