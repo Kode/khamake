@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Files = require('./Files.js');
 const Paths = require('./Paths.js');
+const log = require('./log.js');
 
 function findFiles(dir, match) {
 	if (path.isAbsolute(match)) {
@@ -127,60 +128,35 @@ class Project {
 	}
 
 	addLibrary(library) {
-		this.libraries.push('Libraries/' + library);
-		this.sources.push('Libraries/' + library + '/Sources');
-		this.addShaders('Libraries/' + library + '/Sources/Shaders/**');
-
-		/*
-				if (process.env.HAXEPATH) {
-					var libpath = pathlib.join(process.env.HAXEPATH, 'lib', libname.toLowerCase());
-					if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-						let current;
-						let libdeeppath;
-						if (fs.existsSync(pathlib.join(libpath, '.current'))) {
-							current = fs.readFileSync(pathlib.join(libpath, '.current'), {encoding: 'utf8'});
-							libdeeppath = pathlib.join(libpath, current.replaceAll('.', ','));
-						}
-						else if (fs.existsSync(pathlib.join(libpath, '.dev'))) {
-							current = fs.readFileSync(pathlib.join(libpath, '.dev'), {encoding: 'utf8'});
-							libdeeppath = current;
-						}
-						if (fs.existsSync(libdeeppath) && fs.statSync(libdeeppath).isDirectory()) {
-							let lib = {
-								directory: libdeeppath,
-								project: {
-									assets: [],
-									rooms: []
-								}
-							};
-							if (Files.exists(from.resolve(Paths.get(libdeeppath, 'project.kha')))) {
-								lib.project = JSON.parse(fs.readFileSync(from.resolve(libdeeppath, 'project.kha').toString(), { encoding: 'utf8' }));
-							}
-							libraries.push(lib);
-							found = true;
-						}
+		let self = this;
+		function findLibraryDirectory(name) {
+			let localpath = path.join(self.scriptdir, 'Libraries', name);
+			if (fs.existsSync(localpath) && fs.statSync(localpath).isDirectory()) {
+				return localpath;
+			}
+			if (process.env.HAXEPATH) {
+				var libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+				if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
+					if (fs.existsSync(path.join(libpath, '.current'))) {
+						let current = fs.readFileSync(path.join(libpath, '.current'), {encoding: 'utf8'});
+						return path.join(libpath, current.replaceAll('.', ','));
+					}
+					else if (fs.existsSync(path.join(libpath, '.dev'))) {
+						return fs.readFileSync(path.join(libpath, '.dev'), {encoding: 'utf8'});
 					}
 				}
-
-				for (let lib of libraries) {
-					for (let asset of lib.project.assets) {
-						asset.libdir = lib.directory;
-						project.assets.push(asset);
-					}
-					for (let room of lib.project.rooms) {
-						project.rooms.push(room);
-					}
-
-					if (Files.isDirectory(from.resolve(Paths.get(lib.directory, 'Sources')))) {
-						sources.push(lib.directory + '/Sources');
-					}
-					if (lib.project.sources !== undefined) {
-						for (let i = 0; i < project.sources.length; ++i) {
-							sources.push(lib.directory + '/' + project.sources[i]);
-						}
-					}
-				}
-		*/
+			}
+			log.error('Error: Library ' + name + ' not found.');
+			return '';
+		}
+		
+		let dir = findLibraryDirectory(library);
+		
+		if (dir !== '') {
+			this.libraries.push(dir);
+			this.sources.push(path.join(dir, 'Sources'));
+			this.addShaders(dir + '/Sources/Shaders/**');
+		}
 	}
 }
 
