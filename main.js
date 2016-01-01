@@ -97,9 +97,6 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 			}
 			else {
 				var shaderpath = to.resolve(name + '.essl');
-				if (platform === Platform.Android) {
-					shaderpath = to.resolve(Paths.get(exporter.safename, 'app', 'src', 'main', 'assets', name + '.essl'));
-				}
 				compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform, kfx);
 				addShader(project, name, ".essl");
 			}
