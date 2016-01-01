@@ -18,41 +18,41 @@ public class UnityBackend : MonoBehaviour {
 
 	void Update() {
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			kha.Starter.leftDown();
+			kha.SystemImpl.leftDown();
 		}
 		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			kha.Starter.rightDown();
+			kha.SystemImpl.rightDown();
 		}
 		if (Input.GetKeyDown (KeyCode.UpArrow)) {
-			kha.Starter.upDown();
+			kha.SystemImpl.upDown();
 		}
 		if (Input.GetKeyDown (KeyCode.DownArrow)) {
-			kha.Starter.downDown();
+			kha.SystemImpl.downDown();
 		}
 		if (Input.GetKeyUp (KeyCode.LeftArrow)) {
-			kha.Starter.leftUp();
+			kha.SystemImpl.leftUp();
 		}
 		if (Input.GetKeyUp (KeyCode.RightArrow)) {
-			kha.Starter.rightUp();
+			kha.SystemImpl.rightUp();
 		}
 		if (Input.GetKeyUp (KeyCode.UpArrow)) {
-			kha.Starter.upUp();
+			kha.SystemImpl.upUp();
 		}
 		if (Input.GetKeyUp (KeyCode.DownArrow)) {
-			kha.Starter.downUp();
+			kha.SystemImpl.downUp();
 		}
 		for (int i = 0; i < 3; ++i) {
 			if (Input.GetMouseButtonDown (i)) {
-				kha.Starter.mouseDown (i, (int)Input.mousePosition.x, Screen.height - (int)Input.mousePosition.y);
+				kha.SystemImpl.mouseDown (i, (int)Input.mousePosition.x, Screen.height - (int)Input.mousePosition.y);
 			}
 			if (Input.GetMouseButtonUp (i)) {
-				kha.Starter.mouseUp (i, (int)Input.mousePosition.x, Screen.height - (int)Input.mousePosition.y);
+				kha.SystemImpl.mouseUp (i, (int)Input.mousePosition.x, Screen.height - (int)Input.mousePosition.y);
 			}
 		}
 	}
 
 	void OnPostRender() {
-		kha.Starter.update();
+		kha.SystemImpl.update();
 	}
 
 	public static bool uvStartsAtTop() {
