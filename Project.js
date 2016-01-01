@@ -169,10 +169,17 @@ class Project {
 			
 			if (fs.existsSync(path.join(dir, 'haxelib.json'))) {
 				let options = JSON.parse(fs.readFileSync(path.join(dir, 'haxelib.json'), 'utf8'));
-				this.sources.push(path.join(dir, options.classPath));
+				if (options.classPath) {
+					this.sources.push(path.join(dir, options.classPath));
+				}
+				else {
+					this.sources.push(path.join(dir, 'Sources'));
+				}
 				if (options.dependencies) {
 					for (let dependency in options.dependencies) {
-						this.addLibrary(dependency);
+						if (dependency.toLowerCase() !== 'kha') {
+							this.addLibrary(dependency);
+						}
 					}
 				}
 			}
