@@ -46,6 +46,7 @@ class KoreExporter extends KhaExporter {
 			to: path.join(this.sysdir() + '-build', 'Sources'),
 			sources: this.sources,
 			defines: defines,
+			parameters: this.parameters,
 			haxeDirectory: haxeDirectory.toString(),
 			system: this.sysdir(),
 			language: 'cpp',

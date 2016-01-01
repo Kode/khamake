@@ -359,6 +359,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	for (let source of project.sources) {
 		exporter.addSourceDirectory(source);
 	}
+	exporter.parameters = project.parameters;
 	project.scriptdir = options.kha;
 	project.addShaders('Sources/Shaders/**');
 

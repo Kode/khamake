@@ -1,5 +1,6 @@
 "use strict";
 
+const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const Files = require('./Files.js');
@@ -61,6 +62,7 @@ class Project {
 		this.shaders = [];
 		this.exportedShaders = [];
 		this.defines = [];
+		this.parameters = [];
 		this.scriptdir = Project.scriptdir;
 		this.libraries = [];
 	}
@@ -126,6 +128,10 @@ class Project {
 	addDefine(define) {
 		this.defines.push(define);
 	}
+	
+	addParameter(parameter) {
+		this.parameters.push(parameter);
+	}
 
 	addLibrary(library) {
 		let self = this;
@@ -135,14 +141,20 @@ class Project {
 				return localpath;
 			}
 			if (process.env.HAXEPATH) {
-				var libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+				let libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+				try {
+					libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.toLowerCase());
+				}
+				catch (error) {
+					
+				}
 				if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-					if (fs.existsSync(path.join(libpath, '.current'))) {
-						let current = fs.readFileSync(path.join(libpath, '.current'), {encoding: 'utf8'});
-						return path.join(libpath, current.replaceAll('.', ','));
+					if (fs.existsSync(path.join(libpath, '.dev'))) {
+						return fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
 					}
-					else if (fs.existsSync(path.join(libpath, '.dev'))) {
-						return fs.readFileSync(path.join(libpath, '.dev'), {encoding: 'utf8'});
+					else if (fs.existsSync(path.join(libpath, '.current'))) {
+						let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
+						return path.join(libpath, current.replaceAll('.', ','));
 					}
 				}
 			}
@@ -154,7 +166,30 @@ class Project {
 		
 		if (dir !== '') {
 			this.libraries.push(dir);
-			this.sources.push(path.join(dir, 'Sources'));
+			
+			if (fs.existsSync(path.join(dir, 'haxelib.json'))) {
+				let options = JSON.parse(fs.readFileSync(path.join(dir, 'haxelib.json'), 'utf8'));
+				this.sources.push(path.join(dir, options.classPath));
+				if (options.dependencies) {
+					for (let dependency in options.dependencies) {
+						this.addLibrary(dependency);
+					}
+				}
+			}
+			else {
+				this.sources.push(path.join(dir, 'Sources'));
+			}
+			
+			if (fs.existsSync(path.join(dir, 'extraParams.hxml'))) {
+				let params = fs.readFileSync(path.join(dir, 'extraParams.hxml'), 'utf8');
+				for (let parameter of params.split('\n')) {
+					let param = parameter.trim();
+					if (param !== '') {
+						this.addParameter(param);
+					}
+				}
+			}
+			
 			this.addShaders(dir + '/Sources/Shaders/**');
 		}
 	}
