@@ -81,7 +81,6 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 		case Platform.Android:
 		case Platform.Android + '-native':
 		case Platform.Tizen:
-		case Platform.Linux:
 		case Platform.iOS: {
 			if (Options.graphicsApi === GraphicsApi.Metal) {
 				if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
@@ -128,6 +127,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 			addShader(project, name, ".d3d9");
 			break;
 		}
+		case Platform.Linux:
 		case Platform.OSX: {
 			compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
 			addShader(project, name, ".glsl");
@@ -378,8 +378,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
 	for (let shader of project.shaders) {
 		compileShader(exporter, platform, project, shader, shaderDir, temp, options.nokrafix ? kfx : krafix, kfx);
-		if (!Files.exists(to.resolve(exporter.sysdir() + '-resources'))) Files.createDirectories(to.resolve(exporter.sysdir() + '-resources'));
-		fs.writeFileSync(pathlib.join(to.resolve(exporter.sysdir() + '-resources').toString(), shader.name + '.hlsl'), shader.name);
+		if (platform === Platform.Unity) {
+			if (!Files.exists(to.resolve(exporter.sysdir() + '-resources'))) Files.createDirectories(to.resolve(exporter.sysdir() + '-resources'));
+			fs.writeFileSync(pathlib.join(to.resolve(exporter.sysdir() + '-resources').toString(), shader.name + '.hlsl'), shader.name);
+		}
 	}
 	if (platform === Platform.Unity) {
 		let proto = fs.readFileSync(from.resolve(Paths.get(options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader')).toString(), { encoding: 'utf8' });
