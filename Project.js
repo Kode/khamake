@@ -136,27 +136,24 @@ class Project {
 	addLibrary(library) {
 		let self = this;
 		function findLibraryDirectory(name) {
-			let localpath = path.join(self.scriptdir, 'Libraries', name);
-			if (fs.existsSync(localpath) && fs.statSync(localpath).isDirectory()) {
-				return localpath;
+			let libpath = path.join(self.scriptdir, 'Libraries', name);
+			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
+				return libpath;
 			}
-			if (process.env.HAXEPATH) {
-				let libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
-				try {
-					libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.toLowerCase());
-				}
-				catch (error) {
-					
-				}
-				if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-					if (fs.existsSync(path.join(libpath, '.dev'))) {
-						return fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
-					}
-					else if (fs.existsSync(path.join(libpath, '.current'))) {
-						let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
-						return path.join(libpath, current.replaceAll('.', ','));
-					}
-				}
+            try {
+                libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.toLowerCase());
+            }
+            catch (error) {
+                libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+            }
+            if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
+                if (fs.existsSync(path.join(libpath, '.dev'))) {
+                    return fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
+                }
+                else if (fs.existsSync(path.join(libpath, '.current'))) {
+                    let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
+                    return path.join(libpath, current.replaceAll('.', ','));
+                }
 			}
 			log.error('Error: Library ' + name + ' not found.');
 			return '';
