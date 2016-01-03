@@ -170,7 +170,7 @@ class Project {
 					this.sources.push(path.join(dir, options.classPath));
 				}
 				else {
-					this.sources.push(path.join(dir, 'Sources'));
+					this.sources.push(dir);
 				}
 				if (options.dependencies) {
 					for (let dependency in options.dependencies) {
