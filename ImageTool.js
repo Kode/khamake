@@ -47,14 +47,20 @@ module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 	}
 	else {
 		format = 'png';
-		to = to + '.png';
+        if (prealpha) to = to + '.kng';
+		else to = to + '.png';
 	}
+    
+    let outputformat = format;
+    if (format === 'png' && prealpha) {
+        outputformat = 'kng';
+    }
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
 		let wh = getWidthAndHeight(from, to, asset, format, prealpha);
 		asset.original_width = wh.w;
 		asset.original_height = wh.h;
-		return format;
+		return outputformat;
 	}
 
 	Files.createDirectories(Paths.get(path.dirname(to)));
@@ -64,7 +70,7 @@ module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 		let wh = getWidthAndHeight(from, to, asset, format, prealpha);
 		asset.original_width = wh.w;
 		asset.original_height = wh.h;
-		return format;
+		return outputformat;
 	}
 
 	const exe = 'kraffiti' + exec.sys();
@@ -88,7 +94,7 @@ module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 		
 	if (status.status !== 0) {
 		log.error('kraffiti process exited with code ' + status.status + ' when trying to convert ' + asset.name);
-		return format;
+		return outputformat;
 	}
 	
 	const lines = status.stdout.toString().split('\n');
@@ -97,8 +103,8 @@ module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 			var numbers = line.substring(1).split('x');
 			asset.original_width = parseInt(numbers[0]);
 			asset.original_height = parseInt(numbers[1]);
-			return format;
+			return outputformat;
 		}
 	}
-	return format;
+	return outputformat;
 };

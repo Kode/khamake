@@ -43,6 +43,7 @@ class Html5Exporter extends KhaExporter {
 			to: path.join(this.sysdir(), 'kha.js'),
 			sources: this.sources,
 			defines: defines,
+			parameters: this.parameters,
 			haxeDirectory: haxeDirectory.toString(),
 			system: this.sysdir(),
 			language: 'js',

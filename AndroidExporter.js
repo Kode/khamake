@@ -46,6 +46,7 @@ class AndroidExporter extends KhaExporter {
 			to: path.join(this.sysdir(), safename),
 			sources: this.sources,
 			defines: defines,
+			parameters: this.parameters,
 			haxeDirectory: haxeDirectory.toString(),
 			system: this.sysdir(),
 			language: 'java',

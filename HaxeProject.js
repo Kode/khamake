@@ -33,6 +33,9 @@ function IntelliJ(projectdir, options) {
 		defines += options.defines[i];
 		if (i < options.defines.length - 1) defines += ',';
 	}
+	for (let param of options.parameters) {
+		defines += param + ',';
+	}
 
 	let target;
 	switch (options.language) {
@@ -107,6 +110,9 @@ function hxml(projectdir, options) {
 	else if (options.language === 'as') {
 		data += '-swf ' + path.normalize(options.to) + '\n';
 		data += '-swf-version 16.0\n';
+	}
+	for (let param of options.parameters) {
+		data += param + '\n';
 	}
 	data += '-main Main' + '\n';
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
@@ -262,7 +268,10 @@ function FlashDevelop(projectdir, options) {
 	if (options.language === 'cs' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'netlib'))) {
 		def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '&#xA;';
 	}
-	def += '-D kha_output=&quot;' + path.resolve(path.join('build', options.to)) + '&quot;';
+	def += '-D kha_output=\\&quot;' + path.resolve(path.join('build', options.to)) + '\\&quot;';
+	for (let param of options.parameters) {
+		def += param + '&#xA;';
+	}
 
 	let project = {
 		n: 'project',
