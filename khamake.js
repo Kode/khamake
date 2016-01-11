@@ -196,7 +196,7 @@ var options = [
 		full: 'name',
 		description: 'Project name to use when initializing a project',
 		value: true,
-		default: 'Unknown'
+		default: 'Project'
 	},
 	{
 		full: 'server',
