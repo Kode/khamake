@@ -22,7 +22,7 @@ class Html5Exporter extends KhaExporter {
 		return 'html5';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
 		this.createDirectory(this.directory.resolve(this.sysdir()));
 
 		let defines = [

@@ -31,7 +31,7 @@ class AndroidExporter extends KhaExporter {
 		return "Android";
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
 		const safename = name.replaceAll(' ', '-');
 
 		const defines = [

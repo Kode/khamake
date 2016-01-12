@@ -65,6 +65,11 @@ class Project {
 		this.parameters = [];
 		this.scriptdir = Project.scriptdir;
 		this.libraries = [];
+		
+		this.windowOptions = {}		
+		this.targetOptions = {
+			flash : {}
+		}
 	}
 
 	/**

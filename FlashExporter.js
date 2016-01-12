@@ -33,7 +33,7 @@ class FlashExporter extends KhaExporter {
 		return 'flash';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, callback) {
 		let defines = [
 			'swf-script-timeout=60',
 			'sys_' + platform,
@@ -42,6 +42,14 @@ class FlashExporter extends KhaExporter {
 		];
 		if (this.embed) defines.push('KHA_EMBEDDED_ASSETS');
 
+		let defaultFlashOptions = {
+			framerate : 60,
+			stageBackground : 'ffffff',
+			swfVersion : '16.0'
+		}
+		
+		let flashOptions = targetOptions ? targetOptions.flash ? targetOptions.flash : defaultFlashOptions : defaultFlashOptions;
+		
 		const options = {
 			from: from.toString(),
 			to: path.join(this.sysdir(), 'kha.swf'),
@@ -53,7 +61,10 @@ class FlashExporter extends KhaExporter {
 			language: 'as',
 			width: this.width,
 			height: this.height,
-			name: name
+			name: name,
+			framerate: 'framerate' in flashOptions ? flashOptions.framerate : defaultFlashOptions.framerate,
+			stageBackground: 'stageBackground' in flashOptions ? flashOptions.stageBackground : defaultFlashOptions.stageBackground,
+			swfVersion : 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion
 		};
 		HaxeProject(this.directory.toString(), options);
 
