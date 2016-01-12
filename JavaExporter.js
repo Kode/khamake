@@ -21,7 +21,7 @@ class JavaExporter extends KhaExporter {
 		return 'java';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
 		this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 		this.createDirectory(this.directory.resolve(this.sysdir()));

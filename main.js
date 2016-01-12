@@ -207,8 +207,8 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 	}
 }
 
-function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, callback) {
-	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, function () {
+function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, targetOptions, callback) {
+	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, function () {
 		if (haxeDirectory.path !== '' && kore) {
 			{
 				fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
@@ -351,8 +351,20 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 
 	name = project.name;
-	exporter.setWidthAndHeight(800, 600); // project.game.width, project.game.height);
+	
+	let defaultWindowOptions = {
+		width : 800,
+		height : 600
+	}
+	
+	let windowOptions = project.windowOptions ? project.windowOptions : defaultWindowOptions;
+	
 	exporter.setName(name);
+	exporter.setWidthAndHeight(
+		'width' in windowOptions ? windowOptions.width : defaultWindowOptions.width,
+		'height' in windowOptions ? windowOptions.height : defaultWindowOptions.height
+	);
+	
 	for (let source of project.sources) {
 		exporter.addSourceDirectory(source);
 	}
@@ -424,10 +436,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			if (foundProjectFile) {
 				fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
 				log.info('Assets done.');
-				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, callback);
+				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, callback);
 			}
 			else {
-				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries,callback);
+				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, callback);
 			}
 		}
 	}
@@ -435,10 +447,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	if (foundProjectFile) {
 		fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
 		log.info('Assets done.');
-		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
+		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, secondPass);
 	}
 	else {
-		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, secondPass);
+		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, secondPass);
 	}
 }
 

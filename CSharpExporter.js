@@ -30,7 +30,7 @@ class CSharpExporter extends KhaExporter {
 		}
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
 		this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 		const defines = [
