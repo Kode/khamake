@@ -196,7 +196,7 @@ var options = [
 		full: 'name',
 		description: 'Project name to use when initializing a project',
 		value: true,
-		default: 'Unknown'
+		default: 'Project'
 	},
 	{
 		full: 'server',
@@ -307,7 +307,7 @@ if (parsedOptions.init) {
 
 	if (!fs.existsSync(path.join(parsedOptions.from, parsedOptions.projectfile))) {
 		fs.writeFileSync(path.join(parsedOptions.from, parsedOptions.projectfile),
-			  "var project = new Project('Blocks');\n"
+			  "var project = new Project('New Project');\n"
 			+ "project.addAssets('Assets/**');\n"
 			+ "project.addSources('Sources');\n"
 			+ "return project;\n",
