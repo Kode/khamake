@@ -24,7 +24,7 @@ class KoreExporter extends KhaExporter {
 		return this.platform;
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
 		let defines = [
 			'no-compilation',
 			'sys_' + platform,

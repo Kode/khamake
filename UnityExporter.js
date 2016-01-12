@@ -22,7 +22,7 @@ class UnityExporter extends KhaExporter {
 		return 'unity';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
 		this.addSourceDirectory("Kha/Backends/Unity");
 
 		const defines = [

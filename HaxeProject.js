@@ -109,7 +109,8 @@ function hxml(projectdir, options) {
 	}
 	else if (options.language === 'as') {
 		data += '-swf ' + path.normalize(options.to) + '\n';
-		data += '-swf-version 16.0\n';
+		data += '-swf-version ' + options.swfVersion + '\n';
+		data += '-swf-header ' + options.width + ':' + options.height + ':' + options.framerate + ':' + options.stageBackground + '\n'
 	}
 	for (let param of options.parameters) {
 		data += param + '\n';
@@ -139,6 +140,12 @@ function FlashDevelop(projectdir, options) {
 			break;
 	}
 
+    options.swfVersion = 'swfVersion' in options ? options.swfVersion : 16.0;
+    options.stageBackground = 'stageBackground' in options ? options.stageBackground : 'ffffff';
+    options.framerate = 'framerate' in options ? options.framerate : 30;
+    
+	let swfVersion = parseFloat(options.swfVersion).toFixed(1).split('.');
+	
 	let output = {
 		n: 'output',
 		e: [
@@ -156,7 +163,7 @@ function FlashDevelop(projectdir, options) {
 			},
 			{
 				n: 'movie',
-				fps: 60
+				fps: options.framerate
 			},
 			{
 				n: 'movie',
@@ -168,11 +175,11 @@ function FlashDevelop(projectdir, options) {
 			},
 			{
 				n: 'movie',
-				version: 16
+				version: swfVersion[0]
 			},
 			{
 				n: 'movie',
-				minorVersion: 0
+				minorVersion: swfVersion[1]
 			},
 			{
 				n: 'movie',
@@ -180,7 +187,7 @@ function FlashDevelop(projectdir, options) {
 			},
 			{
 				n: 'movie',
-				background: '#FFFFFF'
+				background: '#' + options.stageBackground
 			}
 		]
 	};
