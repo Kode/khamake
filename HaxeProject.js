@@ -140,7 +140,11 @@ function FlashDevelop(projectdir, options) {
 			break;
 	}
 
-	let swfVersion = parseFloat(options.swfVersion).toString().split('.');
+    options.swfVersion = 'swfVersion' in options ? options.swfVersion : 16.0;
+    options.stageBackground = 'stageBackground' in options ? options.stageBackground : 'ffffff';
+    options.framerate = 'framerate' in options ? options.framerate : 30;
+    
+	let swfVersion = parseFloat(options.swfVersion).toFixed(1).split('.');
 	
 	let output = {
 		n: 'output',
