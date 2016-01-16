@@ -28,6 +28,7 @@ const PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
 const WpfExporter = require('./WpfExporter.js');
 const XnaExporter = require('./XnaExporter.js');
 const UnityExporter = require('./UnityExporter.js');
+const DebugHtml5Exporter = require('./DebugHtml5Exporter.js');
 
 function escapeRegExp(string) {
 	return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -77,6 +78,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 		}
 		case Platform.HTML5:
 		case Platform.HTML5 + '-native':
+		case Platform.DebugHTML5:
 		case Platform.HTML5Worker:
 		case Platform.Android:
 		case Platform.Android + '-native':
@@ -304,6 +306,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			break;
 		case Platform.HTML5Worker:
 			exporter = new Html5WorkerExporter(khaDirectory, to);
+			break;
+		case Platform.DebugHTML5:
+			exporter = new DebugHtml5Exporter(khaDirectory, to);
 			break;
 		case Platform.WPF:
 			exporter = new WpfExporter(khaDirectory, to);

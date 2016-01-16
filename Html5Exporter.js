@@ -37,6 +37,9 @@ class Html5Exporter extends KhaExporter {
 				'nodejs'
 			]
 		}
+		if (this.sysdir() === 'debug-html5') {
+			this.parameters.push('-debug');
+		}
 
 		const options = {
 			from: from.toString(),
