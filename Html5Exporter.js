@@ -38,6 +38,7 @@ class Html5Exporter extends KhaExporter {
 			]
 		}
 		if (this.sysdir() === 'debug-html5') {
+			defines.push('sys_debug_html5');
 			this.parameters.push('-debug');
 		}
 
