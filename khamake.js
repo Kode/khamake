@@ -213,6 +213,11 @@ var options = [
 		full: 'debug',
 		description: 'Compile in debug mode for native targets.',
 		value: false
+	},
+	{
+		full: 'silent',
+		description: 'Silent mode.',
+		value: false
 	}
 ];
 

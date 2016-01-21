@@ -476,7 +476,12 @@ function exportProject(from, to, platform, khaDirectory, haxeDirectory, oggEncod
 exports.api = 1;
 
 exports.run = function (options, loglog, callback) {
-	log.set(loglog);
+	if (options.silent) {
+		log.silent();
+	}
+	else {
+		log.set(loglog);
+	}
 
 	let done = (name) => {
 		if (options.target === Platform.Linux && options.run) {

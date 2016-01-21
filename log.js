@@ -13,6 +13,11 @@ exports.set = function (log) {
 	myError = log.error;
 };
 
+exports.silent = function () {
+	myInfo = function () {};
+	myError = function () {};
+};
+
 exports.info = function (text) {
 	myInfo(text);
 };
