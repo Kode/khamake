@@ -210,72 +210,71 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 }
 
 function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, targetOptions, callback) {
-	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, function () {
-		if (haxeDirectory.path !== '' && kore) {
-			{
-				fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
+	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions);
+	if (haxeDirectory.path !== '' && kore) {
+		{
+			fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
 
-				let out = '';
-				out += "var solution = new Solution('" + name + "');\n";
-				out += "var project = new Project('" + name + "');\n";
+			let out = '';
+			out += "var solution = new Solution('" + name + "');\n";
+			out += "var project = new Project('" + name + "');\n";
 
-				out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
+			out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 
-				let buildpath = from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/');
-				if (buildpath.startsWith('..')) buildpath = pathlib.resolve(pathlib.join(from.toString(), buildpath));
-				out += "project.addSubProject(Solution.createProject('" + buildpath.replaceAll('\\', '/') + "'));\n";
-				out += "project.addSubProject(Solution.createProject('" + pathlib.normalize(options.kha).replaceAll('\\', '/') + "'));\n";
-				out += "project.addSubProject(Solution.createProject('" + pathlib.join(options.kha, 'Kore').replaceAll('\\', '/') + "'));\n";
-				out += "solution.addProject(project);\n";
+			let buildpath = from.relativize(to.resolve(exporter.sysdir() + "-build")).toString().replaceAll('\\', '/');
+			if (buildpath.startsWith('..')) buildpath = pathlib.resolve(pathlib.join(from.toString(), buildpath));
+			out += "project.addSubProject(Solution.createProject('" + buildpath.replaceAll('\\', '/') + "'));\n";
+			out += "project.addSubProject(Solution.createProject('" + pathlib.normalize(options.kha).replaceAll('\\', '/') + "'));\n";
+			out += "project.addSubProject(Solution.createProject('" + pathlib.join(options.kha, 'Kore').replaceAll('\\', '/') + "'));\n";
+			out += "solution.addProject(project);\n";
 
-				/*out += "if (fs.existsSync('Libraries')) {\n";
-				out += "\tvar libraries = fs.readdirSync('Libraries');\n";
-				out += "\tfor (var l in libraries) {\n";
-				out += "\t\tvar lib = libraries[l];\n";
-				out += "\t\tif (fs.existsSync(path.join('Libraries', lib, 'korefile.js'))) {\n";
-				out += "\t\t\tproject.addSubProject(Solution.createProject('Libraries/' + lib));\n";
-				out += "\t\t}\n";
-				out += "\t}\n";
-				out += "}\n";*/
+			/*out += "if (fs.existsSync('Libraries')) {\n";
+			out += "\tvar libraries = fs.readdirSync('Libraries');\n";
+			out += "\tfor (var l in libraries) {\n";
+			out += "\t\tvar lib = libraries[l];\n";
+			out += "\t\tif (fs.existsSync(path.join('Libraries', lib, 'korefile.js'))) {\n";
+			out += "\t\t\tproject.addSubProject(Solution.createProject('Libraries/' + lib));\n";
+			out += "\t\t}\n";
+			out += "\t}\n";
+			out += "}\n";*/
 
-				for (let lib of libraries) {
-					out += "if (fs.existsSync(path.join('" + lib.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
-					out += "\tproject.addSubProject(Solution.createProject('" + lib.replaceAll('\\', '/') + "'));\n";
-					out += "}\n";
-				}
-
-				out += 'return solution;\n';
-				fs.writeFileSync(from.resolve("korefile.js").toString(), out);
+			for (let lib of libraries) {
+				out += "if (fs.existsSync(path.join('" + lib.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
+				out += "\tproject.addSubProject(Solution.createProject('" + lib.replaceAll('\\', '/') + "'));\n";
+				out += "}\n";
 			}
 
+			out += 'return solution;\n';
+			fs.writeFileSync(from.resolve("korefile.js").toString(), out);
+		}
+
+		{
+			require(pathlib.join(korepath.get(), 'main.js')).run(
 			{
-				require(pathlib.join(korepath.get(), 'main.js')).run(
-				{
-					from: from,
-					to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
-					target: koreplatform(platform),
-					graphics: Options.graphicsApi,
-					vrApi: Options.vrApi,
-					visualstudio: Options.visualStudioVersion,
-					compile: options.compile,
-					run: options.run,
-					debug: options.debug
-				},
-				{
-					info: log.info,
-					error: log.error
-				},
-				function () {
-					log.info('Done.');
-					callback(name);
-				});
-			}
+				from: from,
+				to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
+				target: koreplatform(platform),
+				graphics: Options.graphicsApi,
+				vrApi: Options.vrApi,
+				visualstudio: Options.visualStudioVersion,
+				compile: options.compile,
+				run: options.run,
+				debug: options.debug
+			},
+			{
+				info: log.info,
+				error: log.error
+			},
+			function () {
+				log.info('Done.');
+				callback(name);
+			});
 		}
-		else {
-			log.info('Done.');
-			callback(name);
-		}
-	});
+	}
+	else {
+		log.info('Done.');
+		callback(name);
+	}
 }
 
 function koreplatform(platform) {

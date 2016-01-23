@@ -33,7 +33,7 @@ class FlashExporter extends KhaExporter {
 		return 'flash';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions) {
 		let defines = [
 			'swf-script-timeout=60',
 			'sys_' + platform,
@@ -105,10 +105,10 @@ class FlashExporter extends KhaExporter {
 		}
 
 		if (Options.compilation) {
-			Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
+			return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
 		}
 		else {
-			callback();
+			return 0;
 		}
 	}
 

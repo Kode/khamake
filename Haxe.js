@@ -6,7 +6,7 @@ const path = require('path');
 const log = require('./log.js');
 const exec = require('./exec.js');
 
-exports.executeHaxe = function (from, haxeDirectory, options, callback) {
+exports.executeHaxe = function (from, haxeDirectory, options) {
 	let exe = 'haxe';
 	let env = process.env;
 	if (fs.existsSync(haxeDirectory.toString()) && fs.statSync(haxeDirectory.toString()).isDirectory()) {
@@ -18,22 +18,15 @@ exports.executeHaxe = function (from, haxeDirectory, options, callback) {
 			env.HAXE_STD_PATH = stddir;
 		}
 	}
-	let haxe = child_process.spawn(exe, options, { env: env, cwd: path.normalize(from.toString()) });
+	let result = child_process.spawnSync(exe, options, { env: env, cwd: path.normalize(from.toString()) });
 
-	haxe.stdout.on('data', (data) => {
-		log.info('Haxe stdout: ' + data);
-	});
+	if (result.stdout.toString() !== '') {
+		log.info(result.stdout.toString());
+	}
 
-	haxe.stderr.on('data', (data) => {
-		log.error('Haxe stderr: ' + data);
-	});
+	if (result.stderr.toString() !== '') {
+		log.error(result.stderr.toString());
+	}
 	
-	haxe.on('error', (err) => {
-		log.error('Haxe error: ' + err);
-	});
-
-	haxe.on('close', (code) => {
-		if (code !== 0) log.error('Haxe process exited with code ' + code);
-		callback();
-	});
+	return result.status;
 };

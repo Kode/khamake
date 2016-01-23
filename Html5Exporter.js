@@ -22,7 +22,7 @@ class Html5Exporter extends KhaExporter {
 		return 'html5';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
 		this.createDirectory(this.directory.resolve(this.sysdir()));
 
 		let defines = [
@@ -90,10 +90,10 @@ class Html5Exporter extends KhaExporter {
 		}
 		
 		if (Options.compilation) {
-			Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
+			return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
 		}
 		else {
-			callback();
+			return 0;
 		}
 	}
 

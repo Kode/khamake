@@ -22,7 +22,7 @@ class UnityExporter extends KhaExporter {
 		return 'unity';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
 		this.addSourceDirectory("Kha/Backends/Unity");
 
 		const defines = [
@@ -50,20 +50,19 @@ class UnityExporter extends KhaExporter {
 
 		Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Assets", "Sources")));
 
-		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], () => {
-			var copyDirectory = (from, to) => {
-				let files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
-				this.createDirectory(this.directory.resolve(Paths.get(this.sysdir(), to)));
-				for (let file of files) {
-					var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', from, file), {encoding: 'utf8'});
-					fs.writeFileSync(this.directory.resolve(Paths.get(this.sysdir(), to, file)).toString(), text);
-				}
-			};
-			copyDirectory('Assets', 'Assets');
-			copyDirectory('Editor', 'Assets/Editor');
-			copyDirectory('ProjectSettings', 'ProjectSettings');
-			callback();
-		});
+		let result = Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		var copyDirectory = (from, to) => {
+			let files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
+			this.createDirectory(this.directory.resolve(Paths.get(this.sysdir(), to)));
+			for (let file of files) {
+				var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', from, file), {encoding: 'utf8'});
+				fs.writeFileSync(this.directory.resolve(Paths.get(this.sysdir(), to, file)).toString(), text);
+			}
+		};
+		copyDirectory('Assets', 'Assets');
+		copyDirectory('Editor', 'Assets/Editor');
+		copyDirectory('ProjectSettings', 'ProjectSettings');
+		return result;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {

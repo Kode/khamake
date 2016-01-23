@@ -31,7 +31,7 @@ class AndroidExporter extends KhaExporter {
 		return "Android";
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
 		const safename = name.replaceAll(' ', '-');
 
 		const defines = [
@@ -58,7 +58,7 @@ class AndroidExporter extends KhaExporter {
 
 		this.exportAndroidStudioProject(name);
 
-		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], callback);
+		return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
 	}
 
 	exportAndroidStudioProject(name) {

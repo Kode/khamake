@@ -24,7 +24,7 @@ class KoreExporter extends KhaExporter {
 		return this.platform;
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
 		let defines = [
 			'no-compilation',
 			'sys_' + platform,
@@ -58,7 +58,7 @@ class KoreExporter extends KhaExporter {
 
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		Haxe.executeHaxe(this.directory, haxeDirectory, ["project-" + this.sysdir() + ".hxml"], callback);
+		return Haxe.executeHaxe(this.directory, haxeDirectory, ["project-" + this.sysdir() + ".hxml"]);
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {

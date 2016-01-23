@@ -21,7 +21,7 @@ class JavaExporter extends KhaExporter {
 		return 'java';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
 		this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 		this.createDirectory(this.directory.resolve(this.sysdir()));
@@ -50,10 +50,9 @@ class JavaExporter extends KhaExporter {
 
 		Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Sources")));
 
-		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], () => {
-			this.exportEclipseProject();
-			callback();
-		});
+		let result = Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		this.exportEclipseProject();
+		return result;
 	}
 
 	backend() {

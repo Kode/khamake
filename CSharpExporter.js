@@ -30,7 +30,7 @@ class CSharpExporter extends KhaExporter {
 		}
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, callback) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
 		this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 		const defines = [
@@ -58,13 +58,12 @@ class CSharpExporter extends KhaExporter {
 
 		Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml'], () => {
-			const projectUuid = uuid.v4();
-			this.exportSLN(projectUuid);
-			this.exportCsProj(projectUuid);
-			this.exportResources();
-			callback();
-		});
+		let result = Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		const projectUuid = uuid.v4();
+		this.exportSLN(projectUuid);
+		this.exportCsProj(projectUuid);
+		this.exportResources();
+		return result;
 	}
 
 	exportSLN(projectUuid) {
