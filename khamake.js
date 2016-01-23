@@ -309,54 +309,7 @@ if (parsedOptions.run) {
 
 if (parsedOptions.init) {
 	console.log('Initializing Kha project.\n');
-
-	if (!fs.existsSync(path.join(parsedOptions.from, parsedOptions.projectfile))) {
-		fs.writeFileSync(path.join(parsedOptions.from, parsedOptions.projectfile),
-			  "var project = new Project('New Project');\n"
-			+ "project.addAssets('Assets/**');\n"
-			+ "project.addSources('Sources');\n"
-			+ "return project;\n",
-		{ encoding: 'utf8' });
-	}
-
-	if (!fs.existsSync(path.join(parsedOptions.from, 'Assets'))) fs.mkdirSync(path.join(parsedOptions.from, 'Assets'));
-	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources'))) fs.mkdirSync(path.join(parsedOptions.from, 'Sources'));
-
-	var friendlyName = parsedOptions.name;
-	friendlyName = friendlyName.replace(/ /g, '_');
-	friendlyName = friendlyName.replace(/-/g, '_');
-
-	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'))) {
-		var mainsource = 'package;\n\nimport kha.System;\n\n'
-			+ 'class Main {\n'
-			+ '\tpublic static function main() {\n'
-			+ '\t\tSystem.init("' + parsedOptions.name + '", 1024, 768, function () {\n'
-			+ '\t\t\tnew ' + friendlyName + '();\n'
-			+ '\t\t});\n'
-			+ '\t}\n'
-			+ '}\n';
-		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', 'Main.hx'), mainsource, { encoding: 'utf8' });
-	}
-
-	if (!fs.existsSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'))) {
-		var projectsource = 'package;\n\nimport kha.Framebuffer;\nimport kha.Scheduler;\nimport kha.System;\n\n'
-			+ 'class ' + friendlyName + ' {\n'
-			+ '\tpublic function new() {\n'
-			+ '\t\tSystem.notifyOnRender(render);\n'
-			+ '\t\tScheduler.addTimeTask(update, 0, 1 / 60);\n'
-			+ '\t}\n'
-			+ '\n'
-			+ '\tfunction update(): Void {\n'
-			+ '\t\t\n'
-			+ '\t}\n'
-			+ '\n'
-			+ '\tfunction render(framebuffer: Framebuffer): Void {'
-			+ '\t\t\n'
-			+ '\t}\n'
-			+ '}\n';
-		fs.writeFileSync(path.join(parsedOptions.from, 'Sources', friendlyName + '.hx'), projectsource, { encoding: 'utf8' });
-	}
-
+	require('./init.js').run(parsedOptions.name, parsedOptions.from, parsedOptions.projectfile);
 	console.log('If you want to use the git version of Kha, execute "git init" and "git add submodule https://github.com/ktxsoftware/Kha.git".');
 }
 else if (parsedOptions.server) {
