@@ -1,3 +1,6 @@
+// Called from the end of khamake.js
+// Entry point is at the bottom, exports.run(...)
+
 "use strict";
 
 const child_process = require('child_process');
@@ -212,6 +215,8 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, targetOptions, callback) {
 	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions);
 	if (haxeDirectory.path !== '' && kore) {
+		// If target is a Kore project, generate additional project folders here.
+		// generate the korefile.js
 		{
 			fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
 
@@ -249,6 +254,10 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 		}
 
 		{
+			// Similar to khamake.js -> main.js -> run(...)
+			// We now do koremake.js -> main.js -> run(...)
+			// This will create additional project folders for the target,
+			// e.g. 'build/android-native-build'
 			require(pathlib.join(korepath.get(), 'main.js')).run(
 			{
 				from: from,
@@ -272,6 +281,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 		}
 	}
 	else {
+		// If target is not a Kore project, e.g. HTML5, finish building here.
 		log.info('Done.');
 		callback(name);
 	}
@@ -290,7 +300,9 @@ function koreplatform(platform) {
 function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback) {
 	log.info('Creating Kha project.');
 
+	// Create the 'build' folder
 	Files.createDirectories(to);
+	// Create the 'build/temp' folder
 	let temp = to.resolve('temp');
 	Files.createDirectories(temp);
 
@@ -336,14 +348,20 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			break;
 	}
 
+	// Create the target build folder
+	// e.g. 'build/android-native'
 	Files.createDirectories(to.resolve(exporter.sysdir()));
 
 	let name = '';
 	let project = null;
 
 	let foundProjectFile = false;
+	// get project name, e.g. 'MyBunnyMark'
 	if (name === '') name = from.toAbsolutePath().getFileName();
 
+	// get the khafile.js and load the config code,
+	// then create the project config object, which contains stuff
+	// like project name, assets paths, sources path, library path...
 	if (Files.exists(from.resolve(options.projectfile))) {
 		project = ProjectFile(from, options.projectfile);
 		foundProjectFile = true;
@@ -421,6 +439,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		}
 	}
 
+	// Push assets files to be loaded
 	let files = [];
 	for (let asset of project.assets) {
 		files.push(asset);
@@ -434,6 +453,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 
 	function secondPass() {
+		// First pass is for main project files. Second pass is for shaders.
+		// Will try to look for the folder, e.g. 'build/Shaders'.
+		// if it exists, export files similar to other a
 		let hxslDir = pathlib.join('build', 'Shaders');
 		if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) {
 			addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir() + '-resources'), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
@@ -451,11 +473,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	if (foundProjectFile) {
 		fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
 		log.info('Assets done.');
-		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, secondPass);
 	}
-	else {
-		exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, secondPass);
-	}
+
+	// Begin exporting project files
+	exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, secondPass);
 }
 
 function isKhaProject(directory, projectfile) {
