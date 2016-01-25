@@ -141,10 +141,15 @@ class Project {
 	addLibrary(library) {
 		let self = this;
 		function findLibraryDirectory(name) {
+			// Tries to load the default library from inside the kha project.
+			// e.g. 'Libraries/wyngine'
 			let libpath = path.join(self.scriptdir, 'Libraries', name);
 			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
 				return libpath;
 			}
+			// If the library couldn't be found in Libraries folder, try
+			// looking in the haxelib folders.
+			// e.g. addLibrary('hxcpp') => '/usr/lib/haxelib/hxcpp/3,2,193'
             try {
                 libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.toLowerCase());
             }
@@ -156,10 +161,13 @@ class Project {
                     return fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
                 }
                 else if (fs.existsSync(path.join(libpath, '.current'))) {
+                	// Get the latest version of the haxelib path,
+                	// e.g. for 'hxcpp', latest version '3,2,193'
                     let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
                     return path.join(libpath, current.replaceAll('.', ','));
                 }
 			}
+			// Show error if library isn't found in Libraries or haxelib folder
 			log.error('Error: Library ' + name + ' not found.');
 			return '';
 		}
@@ -168,15 +176,20 @@ class Project {
 		
 		if (dir !== '') {
 			this.libraries.push(dir);
-			
+			// If this is a haxelib library, there must be a haxelib.json
 			if (fs.existsSync(path.join(dir, 'haxelib.json'))) {
 				let options = JSON.parse(fs.readFileSync(path.join(dir, 'haxelib.json'), 'utf8'));
+				// If there is a classPath value, add that directory to be loaded.
+				// Otherwise, just load the current path.
 				if (options.classPath) {
+					// TODO find an example haxelib that has a classPath value
 					this.sources.push(path.join(dir, options.classPath));
 				}
 				else {
+					// e.g. '/usr/lib/haxelib/hxcpp/3,2,193'
 					this.sources.push(dir);
 				}
+				// If this haxelib has other library dependencies, add them too
 				if (options.dependencies) {
 					for (let dependency in options.dependencies) {
 						if (dependency.toLowerCase() !== 'kha') {
@@ -186,6 +199,9 @@ class Project {
 				}
 			}
 			else {
+				// If there is no haxelib.json file, then just load the library
+				// by the Sources folder.
+				// e.g. Libraries/wyngine/Sources
 				this.sources.push(path.join(dir, 'Sources'));
 			}
 			

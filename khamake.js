@@ -1,4 +1,8 @@
-﻿"use strict";
+﻿// Called from entry point, e.g. Kha/make.js
+// This is where options are processed:
+// e.g. '-t html5 --server'
+
+"use strict";
 
 var version = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
