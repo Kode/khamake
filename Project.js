@@ -151,7 +151,7 @@ class Project {
 			// looking in the haxelib folders.
 			// e.g. addLibrary('hxcpp') => '/usr/lib/haxelib/hxcpp/3,2,193'
             try {
-                libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.toLowerCase());
+                libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replaceAll('.', ',').toLowerCase());
             }
             catch (error) {
                 libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
