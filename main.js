@@ -212,8 +212,8 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 	}
 }
 
-function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, targetOptions, callback) {
-	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions);
+function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, libraries, targetOptions, defines, callback) {
+	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
 	if (haxeDirectory.path !== '' && kore) {
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
@@ -490,7 +490,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 
 	// Begin exporting project files
-	exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, secondPass);
+	exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, project.defines, secondPass);
 }
 
 function isKhaProject(directory, projectfile) {

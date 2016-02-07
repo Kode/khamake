@@ -31,15 +31,16 @@ class AndroidExporter extends KhaExporter {
 		return "Android";
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
 		const safename = name.replaceAll(' ', '-');
 
-		const defines = [
-			'no-compilation',
-			'sys_' + platform,
-			'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
-			'sys_a1'
-		];
+		defines.push('no-compilation');
+		defines.push('sys_' + platform);
+		defines.push('sys_g1');
+		defines.push('sys_g2');
+		defines.push('sys_g3');
+		defines.push('sys_g4');
+		defines.push('sys_a1');
 
 		const options = {
 			from: from.toString(),

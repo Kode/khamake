@@ -21,17 +21,16 @@ class JavaExporter extends KhaExporter {
 		return 'java';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
 		this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 		this.createDirectory(this.directory.resolve(this.sysdir()));
 
-		const defines = [
-			'no-compilation',
-			'sys_' + platform,
-			'sys_g1', 'sys_g2',
-			'sys_a1'
-		];
+		defines.push('no-compilation');
+		defines.push('sys_' + platform);
+		defines.push('sys_g1');
+		defines.push('sys_g2');
+		defines.push('sys_a1');
 
 		const options = {
 			from: from.toString(),

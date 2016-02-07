@@ -24,13 +24,16 @@ class KoreExporter extends KhaExporter {
 		return this.platform;
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions) {
-		let defines = [
-			'no-compilation',
-			'sys_' + platform,
-			'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
-			'sys_a1', 'sys_a2'
-		];
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
+		defines.push('no-compilation');
+		defines.push('sys_' + platform);
+		defines.push('sys_g1');
+		defines.push('sys_g2');
+		defines.push('sys_g3');
+		defines.push('sys_g4');
+		defines.push('sys_a1');
+		defines.push('sys_a2');
+
 		if (this.vr === 'gearvr') {
 			defines.push('vr_gearvr');
 		}

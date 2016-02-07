@@ -33,13 +33,16 @@ class FlashExporter extends KhaExporter {
 		return 'flash';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions) {
-		let defines = [
-			'swf-script-timeout=60',
-			'sys_' + platform,
-			'sys_g1', 'sys_g2', 'sys_g3', 'sys_g4',
-			'sys_a1', 'sys_a2'
-		];
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines) {
+		defines.push('swf-script-timeout=60');
+		defines.push('sys_' + platform);
+		defines.push('sys_g1');
+		defines.push('sys_g2');
+		defines.push('sys_g3');
+		defines.push('sys_g4');
+		defines.push('sys_a1');
+		defines.push('sys_a2');
+
 		if (this.embed) defines.push('KHA_EMBEDDED_ASSETS');
 
 		let defaultFlashOptions = {
