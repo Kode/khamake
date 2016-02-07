@@ -223,6 +223,20 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 			let out = '';
 			out += "var solution = new Solution('" + name + "');\n";
 			out += "var project = new Project('" + name + "');\n";
+			
+			if (targetOptions) {
+				let koreTargetOptions = {};
+				for (let option in targetOptions) {
+					if (option.endsWith('_native')) continue;
+					koreTargetOptions[option] = targetOptions[option];
+				}
+				for (let option in targetOptions) {
+					if (option.endsWith('_native')) {
+						koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
+					}
+				}
+				out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
+			}
 
 			out += "project.setDebugDir('" + from.relativize(to.resolve(exporter.sysdir())).toString().replaceAll('\\', '/') + "');\n";
 

@@ -68,7 +68,9 @@ class Project {
 		
 		this.windowOptions = {}		
 		this.targetOptions = {
-			flash : {}
+			flash: {},
+			android: {},
+			android_native: {}
 		}
 	}
 
