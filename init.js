@@ -24,7 +24,7 @@ exports.run = function (name, from, projectfile) {
 		var mainsource = 'package;\n\nimport kha.System;\n\n'
 			+ 'class Main {\n'
 			+ '\tpublic static function main() {\n'
-			+ '\t\tSystem.init("' + name + '", 1024, 768, function () {\n'
+			+ '\t\tSystem.init({title: "' + name + '", width: 1024, height: 768}, function () {\n'
 			+ '\t\t\tnew ' + friendlyName + '();\n'
 			+ '\t\t});\n'
 			+ '\t}\n'
