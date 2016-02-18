@@ -71,6 +71,10 @@ public class UnityBackend : MonoBehaviour {
 		TextAsset asset = Resources.Load("Blobs/" + filename) as TextAsset;
 		return asset.bytes;
 	}
+	
+	public static AudioClip loadSound(string filename) {
+		return Resources.Load("Sounds/" + cutEnding(filename)) as AudioClip;
+	}
 
 	private static string cutEnding(string filename) {
 		return filename.Substring(0, filename.LastIndexOf('.'));
