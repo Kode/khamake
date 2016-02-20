@@ -79,19 +79,30 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 			exporter.addShader(name + '.agal');
 			break;
 		}
+		case Platform.Android:
+		case Platform.Android + '-native': {
+			if (Options.graphicsApi === GraphicsApi.Vulkan) {
+				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, platform, kfx);
+				addShader(project, name, '.spirv');
+			}
+			else {
+				let shaderpath = to.resolve(name + '.essl');
+				compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform, kfx);
+				addShader(project, name, ".essl");
+			}
+			break;
+		}
 		case Platform.HTML5:
 		case Platform.HTML5 + '-native':
 		case Platform.DebugHTML5:
 		case Platform.HTML5Worker:
-		case Platform.Android:
-		case Platform.Android + '-native':
 		case Platform.Tizen:
 		case Platform.iOS: {
 			if (Options.graphicsApi === GraphicsApi.Metal) {
 				if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
 					Files.createDirectories(to.resolve(Paths.get('..', 'ios-build', 'Sources')));
 				}
-				var funcname = name;
+				let funcname = name;
 				funcname = funcname.replaceAll('-', '_');
 				funcname = funcname.replaceAll('.', '_');
 				funcname += '_main';
@@ -100,14 +111,18 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 				addShader(project, name, ".metal");
 			}
 			else {
-				var shaderpath = to.resolve(name + '.essl');
+				let shaderpath = to.resolve(name + '.essl');
 				compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform, kfx);
 				addShader(project, name, ".essl");
 			}
 			break;
 		}
 		case Platform.Windows: {
-			if (Options.graphicsApi == GraphicsApi.OpenGL || Options.graphicsApi == GraphicsApi.OpenGL2) {
+			if (Options.graphicsApi === GraphicsApi.Vulkan) {
+				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, platform, kfx);
+				addShader(project, name, '.spirv');
+			}
+			else if (Options.graphicsApi === GraphicsApi.OpenGL || Options.graphicsApi === GraphicsApi.OpenGL2) {
 				compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
 				addShader(project, name, ".glsl");
 			}
@@ -132,7 +147,17 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 			addShader(project, name, ".d3d9");
 			break;
 		}
-		case Platform.Linux:
+		case Platform.Linux: {
+			if (Options.graphicsApi === GraphicsApi.Vulkan) {
+				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, platform, kfx);
+				addShader(project, name, '.spirv');
+			}
+			else {
+				compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
+				addShader(project, name, ".glsl");
+			}
+			break;
+		}
 		case Platform.OSX: {
 			compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
 			addShader(project, name, ".glsl");
