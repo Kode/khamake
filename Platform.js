@@ -19,5 +19,6 @@ module.exports = {
 	Tizen: 'tizen',
 	Unity: 'unity',
 	Node: 'node',
-	DebugHTML5: 'debug-html5'
+	DebugHTML5: 'debug-html5',
+	Empty: 'empty'
 };

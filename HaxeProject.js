@@ -112,6 +112,10 @@ function hxml(projectdir, options) {
 		data += '-swf-version ' + options.swfVersion + '\n';
 		data += '-swf-header ' + options.width + ':' + options.height + ':' + options.framerate + ':' + options.stageBackground + '\n'
 	}
+	else if (options.language === 'xml') {
+		data += '-xml ' + path.normalize(options.to) + '\n';
+		data += "--macro include('kha')\n";
+	}
 	for (let param of options.parameters) {
 		data += param + '\n';
 	}

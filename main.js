@@ -32,6 +32,7 @@ const WpfExporter = require('./WpfExporter.js');
 const XnaExporter = require('./XnaExporter.js');
 const UnityExporter = require('./UnityExporter.js');
 const DebugHtml5Exporter = require('./DebugHtml5Exporter.js');
+const EmptyExporter = require('./EmptyExporter.js');
 
 function escapeRegExp(string) {
 	return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -67,8 +68,9 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 	let name = shader.name;
 	if (name.endsWith('.inc')) return;
 	switch (platform) {
+		case Platform.Empty:
 		case Platform.Node: {
-			Files.copy(shader.files[0], to.resolve(name + '.glsl'), true);
+			Files.copy(Paths.get(shader.files[0]), to.resolve(name + '.glsl'), true);
 			addShader(project, name, '.glsl');
 			exporter.addShader(name + '.glsl');
 			break;
@@ -380,6 +382,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			break;
 		case Platform.Unity:
 			exporter = new UnityExporter(khaDirectory, to);
+			break;
+		case Platform.Empty:
+			exporter = new EmptyExporter(khaDirectory, to);
 			break;
 		default:
 			kore = true;
