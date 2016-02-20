@@ -9,7 +9,9 @@ const Options = require('./Options.js');
 const Paths = require('./Paths.js');
 const exportImage = require('./ImageTool.js');
 const fs = require('fs-extra');
+const child_process = require('child_process');
 const HaxeProject = require('./HaxeProject.js');
+const log = require('./log.js');
 
 class EmptyExporter extends KhaExporter {
 	constructor(khaDirectory, directory) {
@@ -48,7 +50,18 @@ class EmptyExporter extends KhaExporter {
 		HaxeProject(this.directory.toString(), options);
 
 		if (Options.compilation) {
-			return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+			let result = Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+			if (result === 0) {
+				let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', options.to)], { env: process.env, cwd: path.normalize(from.toString()) });
+				if (doxresult.stdout.toString() !== '') {
+					log.info(doxresult.stdout.toString());
+				}
+
+				if (doxresult.stderr.toString() !== '') {
+					log.error(doxresult.stderr.toString());
+				}
+			}
+			return result;
 		}
 		else {
 			return 0;
