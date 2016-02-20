@@ -258,8 +258,9 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 			out += "}\n";*/
 
 			for (let lib of libraries) {
-				out += "if (fs.existsSync(path.join('" + lib.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
-				out += "\tproject.addSubProject(Solution.createProject('" + lib.replaceAll('\\', '/') + "'));\n";
+				var libPath = lib.libpath;
+				out += "if (fs.existsSync(path.join('" + libPath.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
+				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replaceAll('\\', '/') + "'));\n";
 				out += "}\n";
 			}
 
@@ -403,6 +404,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	
 	for (let source of project.sources) {
 		exporter.addSourceDirectory(source);
+	}
+	for (let library of project.libraries) {
+		exporter.addLibrary(library);
 	}
 	exporter.parameters = project.parameters;
 	project.scriptdir = options.kha;

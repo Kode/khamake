@@ -3,6 +3,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const XmlWriter = require('./XmlWriter.js');
+const log = require('./log.js');
 
 function copyAndReplace(from, to, names, values) {
 	let data = fs.readFileSync(from, { encoding: 'utf8' });
@@ -16,14 +17,26 @@ function IntelliJ(projectdir, options) {
     let indir = path.join(__dirname, 'Data', 'intellij');
     let outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
 
-    let sources = '';
-    for (let i = 0; i < options.sources.length; ++i) {
+	let sources = '';
+	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
 			sources += '      <sourceFolder url="file://' + options.sources[i] + '" isTestSource="false" />\n';
 		}
 		else {
 			sources += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(outdir, path.resolve(options.from, options.sources[i])).replaceAll('\\', '/') + '" isTestSource="false" />\n';
 		}
+	}
+    	let libraries = '';
+    	for (let i = 0; i < options.libraries.length; ++i) {
+		if (path.isAbsolute(options.libraries[i].libpath)) {
+			libraries += '    <content url="file://' + options.libraries[i].libroot + '">\n';
+			libraries += '      <sourceFolder url="file://' + options.libraries[i].libpath + '" isTestSource="false" />\n';
+		}
+		else {
+			libraries += '    <content url="file://$MODULE_DIR$/' + path.relative(outdir, path.resolve(options.from, options.libraries[i].libroot)).replaceAll('\\', '/') + '">\n';
+			libraries += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(outdir, path.resolve(options.from, options.libraries[i].libpath)).replaceAll('\\', '/') + '" isTestSource="false" />\n';
+		}
+		libraries += '    </content>\n'
 	}
 
 	let args = '';
@@ -63,8 +76,8 @@ function IntelliJ(projectdir, options) {
 			break;
 	}
 
-    fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'));
-	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{target}', '{system}', '{args}'], [options.name, sources, target, options.system, args]);
+	fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'));
+	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{libraries}', '{target}', '{system}', '{args}'], [options.name, sources, libraries, target, options.system, args]);
 
 	fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'));
 	copyAndReplace(path.join(indir, 'idea', 'haxe.xml'), path.join(outdir, '.idea', 'haxe.xml'), ['{defines}'], [defines]);
@@ -83,6 +96,14 @@ function hxml(projectdir, options) {
 		}
 		else {
 			data += '-cp ' + path.relative(projectdir, path.resolve(options.from, options.sources[i])) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+		}
+	}
+	for (let i = 0; i < options.libraries.length; ++i) {
+		if (path.isAbsolute(options.libraries[i].libpath)) {
+			data += '-cp ' + options.libraries[i].libpath + '\n';
+		}
+		else {
+			data += '-cp ' + path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
 	for (let d in options.defines) {
