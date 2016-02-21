@@ -147,37 +147,40 @@ class Project {
 			// e.g. 'Libraries/wyngine'
 			let libpath = path.join(self.scriptdir, 'Libraries', name);
 			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-				return libpath;
+				return { libpath: libpath, libroot: '' };
 			}
 			// If the library couldn't be found in Libraries folder, try
 			// looking in the haxelib folders.
 			// e.g. addLibrary('hxcpp') => '/usr/lib/haxelib/hxcpp/3,2,193'
-            try {
-                libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replaceAll('.', ',').toLowerCase());
-            }
-            catch (error) {
-                libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
-            }
-            if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-                if (fs.existsSync(path.join(libpath, '.dev'))) {
-                    return fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
-                }
-                else if (fs.existsSync(path.join(libpath, '.current'))) {
-                	// Get the latest version of the haxelib path,
-                	// e.g. for 'hxcpp', latest version '3,2,193'
-                    let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
-                    return path.join(libpath, current.replaceAll('.', ','));
-                }
+			try {
+				libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replaceAll('.', ',').toLowerCase());
+			}
+			catch (error) {
+				libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+			}
+			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
+				if (fs.existsSync(path.join(libpath, '.dev'))) {
+					//return fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
+					return { libpath: fs.readFileSync(path.join(libpath, '.dev'), 'utf8'), libroot: libpath};
+				}
+				else if (fs.existsSync(path.join(libpath, '.current'))) {
+					// Get the latest version of the haxelib path,
+					// e.g. for 'hxcpp', latest version '3,2,193'
+					let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
+					//return path.join(libpath, current.replaceAll('.', ','));
+					return { libpath: path.join(libpath, current.replaceAll('.', ',')), libroot: libpath };
+				}
 			}
 			// Show error if library isn't found in Libraries or haxelib folder
 			log.error('Error: Library ' + name + ' not found.');
-			return '';
+			log.error('Install it using \'haxelib install ' + name + '\' or add it to the \'Libraries\' folder.');
+			process.exit(1);
 		}
 		
-		let dir = findLibraryDirectory(library);
+		let libInfo = findLibraryDirectory(library);
+		let dir = libInfo.libpath;
 		
 		if (dir !== '') {
-			this.libraries.push(dir);
 			// If this is a haxelib library, there must be a haxelib.json
 			if (fs.existsSync(path.join(dir, 'haxelib.json'))) {
 				let options = JSON.parse(fs.readFileSync(path.join(dir, 'haxelib.json'), 'utf8'));
@@ -185,11 +188,17 @@ class Project {
 				// Otherwise, just load the current path.
 				if (options.classPath) {
 					// TODO find an example haxelib that has a classPath value
-					this.sources.push(path.join(dir, options.classPath));
+					this.libraries.push({
+						libpath: path.join(dir, options.classPath),
+						libroot: libInfo.libroot
+					});
 				}
 				else {
 					// e.g. '/usr/lib/haxelib/hxcpp/3,2,193'
-					this.sources.push(dir);
+					this.libraries.push({
+						libpath: dir,
+						libroot: libInfo.libroot
+					});
 				}
 				// If this haxelib has other library dependencies, add them too
 				if (options.dependencies) {

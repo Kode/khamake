@@ -12,6 +12,7 @@ class KhaExporter extends Exporter {
 		this.width = 640;
 		this.height = 480;
 		this.sources = [];
+		this.libraries = [];
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
 	}
 
@@ -53,6 +54,10 @@ class KhaExporter extends Exporter {
 
 	addSourceDirectory(path) {
 		this.sources.push(path);
+	}
+
+	addLibrary(library) {
+		this.libraries.push(library);
 	}
 
 	removeSourceDirectory(path) {

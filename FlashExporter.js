@@ -57,6 +57,7 @@ class FlashExporter extends KhaExporter {
 			from: from.toString(),
 			to: path.join(this.sysdir(), 'kha.swf'),
 			sources: this.sources,
+			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
 			haxeDirectory: haxeDirectory.toString(),

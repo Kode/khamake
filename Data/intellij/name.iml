@@ -17,6 +17,7 @@
     <content url="file://$MODULE_DIR$/../..">
 {sources}
     </content>
+{libraries}    
     <orderEntry type="jdk" jdkName="Haxe 3.2.0" jdkType="Haxe toolkit" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

@@ -38,6 +38,7 @@ class UnityExporter extends KhaExporter {
 			from: from.toString(),
 			to: path.join(this.sysdir(), 'Assets', 'Sources'),
 			sources: this.sources,
+			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
 			haxeDirectory: haxeDirectory.toString(),
