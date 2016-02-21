@@ -241,6 +241,20 @@ function FlashDevelop(projectdir, options) {
 			});
 		}
 	}
+	for (let i = 0; i < options.libraries.length; ++i) {
+		if (path.isAbsolute(options.libraries[i].libpath)) {
+			classpaths.e.push({
+				n: 'class',
+				path: options.libraries[i].libpath
+			});
+		}
+		else {
+			classpaths.e.push({
+				n: 'class',
+				path: path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath))
+			});
+		}
+	}
 
 	let otheroptions = [
 		{
