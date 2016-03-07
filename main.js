@@ -285,7 +285,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 			out += "}\n";*/
 
 			for (let lib of libraries) {
-				var libPath = lib.libpath;
+				var libPath = lib.libroot;
 				out += "if (fs.existsSync(path.join('" + libPath.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
 				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replaceAll('\\', '/') + "'));\n";
 				out += "}\n";
