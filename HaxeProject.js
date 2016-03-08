@@ -137,6 +137,9 @@ function hxml(projectdir, options) {
 		data += '-xml ' + path.normalize(options.to) + '\n';
 		data += "--macro include('kha')\n";
 	}
+	else if (options.language === 'hl') {
+		data += '-hl ' + path.normalize(options.to + '.c') + '\n';
+	}
 	for (let param of options.parameters) {
 		data += param + '\n';
 	}
