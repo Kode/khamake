@@ -20,5 +20,6 @@ module.exports = {
 	Unity: 'unity',
 	Node: 'node',
 	DebugHTML5: 'debug-html5',
-	Empty: 'empty'
+	Empty: 'empty',
+	Pi: 'pi'
 };

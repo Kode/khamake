@@ -99,6 +99,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 		case Platform.DebugHTML5:
 		case Platform.HTML5Worker:
 		case Platform.Tizen:
+		case Platform.Pi:
 		case Platform.iOS: {
 			if (Options.graphicsApi === GraphicsApi.Metal) {
 				if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
