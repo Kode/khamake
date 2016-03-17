@@ -181,6 +181,10 @@ class Project {
 		let dir = libInfo.libpath;
 		
 		if (dir !== '') {
+			this.libraries.push({
+				libpath: dir,
+				libroot: libInfo.libroot
+			});
 			// If this is a haxelib library, there must be a haxelib.json
 			if (fs.existsSync(path.join(dir, 'haxelib.json'))) {
 				let options = JSON.parse(fs.readFileSync(path.join(dir, 'haxelib.json'), 'utf8'));
@@ -188,17 +192,11 @@ class Project {
 				// Otherwise, just load the current path.
 				if (options.classPath) {
 					// TODO find an example haxelib that has a classPath value
-					this.libraries.push({
-						libpath: path.join(dir, options.classPath),
-						libroot: libInfo.libroot
-					});
+					this.sources.push(path.join(dir, options.classPath));
 				}
 				else {
 					// e.g. '/usr/lib/haxelib/hxcpp/3,2,193'
-					this.libraries.push({
-						libpath: dir,
-						libroot: libInfo.libroot
-					});
+					this.sources.push(dir);
 				}
 				// If this haxelib has other library dependencies, add them too
 				if (options.dependencies) {
