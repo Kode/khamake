@@ -58,14 +58,24 @@ class AndroidExporter extends KhaExporter {
 		};
 		HaxeProject(this.directory.toString(), options);
 
-		this.exportAndroidStudioProject(name);
+		this.exportAndroidStudioProject(name, _targetOptions);
 
 		return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
 	}
 
-	exportAndroidStudioProject(name) {
+	exportAndroidStudioProject(name, _targetOptions) {
 		let safename = name.replaceAll(' ', '-');
 		this.safename = safename;
+
+		let targetOptions = {
+			package: 'com.ktxsoftware.kha',
+			screenOrientation: 'sensor'
+		};
+		if (_targetOptions != null && _targetOptions.android != null) {
+			let userOptions = _targetOptions.android;
+			if (userOptions.package != null) targetOptions.package = userOptions.package;
+			if (userOptions.screenOrientation != null) targetOptions.screenOrientation = userOptions.screenOrientation;
+		}
 
 		let indir = path.join(__dirname, 'Data', 'android');
 		let outdir = path.join(this.directory.path, this.sysdir(), safename);
@@ -83,7 +93,7 @@ class AndroidExporter extends KhaExporter {
 		fs.copySync(path.join(indir, 'app', 'proguard-rules.pro'), path.join(outdir, 'app', 'proguard-rules.pro'));
 
 		let gradle = fs.readFileSync(path.join(indir, 'app', 'build.gradle'), {encoding: 'utf8'});
-		gradle = gradle.replaceAll('{name}', safename);
+		gradle = gradle.replaceAll('{package}', targetOptions.package);
 		fs.writeFileSync(path.join(outdir, 'app', 'build.gradle'), gradle, {encoding: 'utf8'});
 
 		let appiml = fs.readFileSync(path.join(indir, 'app', 'app.iml'), {encoding: 'utf8'});
@@ -93,7 +103,12 @@ class AndroidExporter extends KhaExporter {
 		fs.ensureDirSync(path.join(outdir, 'app', 'src'));
 		//fs.emptyDirSync(path.join(outdir, 'app', 'src'));
 
-		fs.copySync(path.join(indir, 'main', 'AndroidManifest.xml'), path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'));
+		// fs.copySync(path.join(indir, 'main', 'AndroidManifest.xml'), path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'));
+		let manifest = fs.readFileSync(path.join(indir, 'main', 'AndroidManifest.xml'), {encoding: 'utf8'});
+		manifest = manifest.replaceAll('{package}', targetOptions.package);
+		manifest = manifest.replaceAll('{screenOrientation}', targetOptions.screenOrientation);
+		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main'));
+		fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'), manifest, {encoding: 'utf8'});
 
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'values'));
 		let strings = fs.readFileSync(path.join(indir, 'main', 'res', 'values', 'strings.xml'), {encoding: 'utf8'});
