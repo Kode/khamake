@@ -58,12 +58,12 @@ class AndroidExporter extends KhaExporter {
 		};
 		HaxeProject(this.directory.toString(), options);
 
-		this.exportAndroidStudioProject(name, _targetOptions);
+		this.exportAndroidStudioProject(name, _targetOptions, from);
 
 		return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
 	}
 
-	exportAndroidStudioProject(name, _targetOptions) {
+	exportAndroidStudioProject(name, _targetOptions, from) {
 		let safename = name.replaceAll(' ', '-');
 		this.safename = safename;
 
@@ -116,22 +116,22 @@ class AndroidExporter extends KhaExporter {
 		fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'strings.xml'), strings, {encoding: 'utf8'});
 
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-hdpi'));
-		exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher")), {
+		exportImage(findIcon(from), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher")), {
 			width: 72,
 			height: 72
 		});
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-mdpi'));
-		exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-mdpi', "ic_launcher")), {
+		exportImage(findIcon(from), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-mdpi', "ic_launcher")), {
 			width: 48,
 			height: 48
 		});
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xhdpi'));
-		exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xhdpi', "ic_launcher")), {
+		exportImage(findIcon(from), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xhdpi', "ic_launcher")), {
 			width: 96,
 			height: 96
 		});
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi'));
-		exportImage(findIcon(this.directory), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi', "ic_launcher")), {
+		exportImage(findIcon(from), this.directory.resolve(Paths.get(this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi', "ic_launcher")), {
 			width: 144,
 			height: 144
 		});
