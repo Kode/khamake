@@ -116,7 +116,7 @@ class FlashExporter extends KhaExporter {
 		}
 	}
 
-	/*copyMusic(platform, from, to, encoders) {
+	copySound(platform, from, to, encoders) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		var ogg = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder);
 		var mp3 = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp3'), encoders.mp3Encoder);
@@ -130,13 +130,6 @@ class FlashExporter extends KhaExporter {
 			if (this.embed) this.sounds.push(to + '.mp3');
 		}
 		return files;
-	}*/
-
-	copySound(platform, from, to, encoders) {
-		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder);
-		if (this.embed) this.sounds.push(to + '.ogg');
-		return [to + '.ogg'];
 	}
 
 	copyImage(platform, from, to, asset) {
