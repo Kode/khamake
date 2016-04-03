@@ -17,13 +17,17 @@ function findFiles(dir, match) {
 	if (match.indexOf('*') >= 0) {
 		let beforeStar = match.substring(0, match.indexOf('*'));
 		subdir = beforeStar.substring(0, beforeStar.lastIndexOf('/'));
-	}
-		
-	let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
+        
+        let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
 	
-	let collected = [];
-	findFiles2(dir, subdir, regex, collected);
-	return collected;
+        let collected = [];
+        findFiles2(dir, subdir, regex, collected);
+        return collected;
+	}
+    else {
+        let file = path.resolve(dir, match);
+        return [file];
+    }
 }
 
 function findFiles2(basedir, dir, regex, collected) {
