@@ -36,6 +36,7 @@ function getWidthAndHeight(from, to, asset, format, prealpha, callback) {
 module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 	if (format === undefined) {
 		if (from.toString().endsWith('.png')) format = 'png';
+		else if (from.toString().endsWith('.hdr')) format = 'hdr'; 
 		else format = 'jpg';
 	}
 
@@ -45,16 +46,19 @@ module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 	else if (format === 'pvr') {
 		to = to + '.pvr';
 	}
+	else if (format === 'hdr') {
+		to = to + '.hdr';
+	}
 	else {
 		format = 'png';
-        if (prealpha) to = to + '.kng';
+		if (prealpha) to = to + '.kng';
 		else to = to + '.png';
 	}
-    
-    let outputformat = format;
-    if (format === 'png' && prealpha) {
-        outputformat = 'kng';
-    }
+	
+	let outputformat = format;
+	if (format === 'png' && prealpha) {
+		outputformat = 'kng';
+	}
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
 		let wh = getWidthAndHeight(from, to, asset, format, prealpha);
@@ -65,7 +69,7 @@ module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
 
 	Files.createDirectories(Paths.get(path.dirname(to)));
 
-	if (format === 'jpg') {
+	if (format === 'jpg' || format === 'hdr') {
 		Files.copy(Paths.get(from), Paths.get(to), true);
 		let wh = getWidthAndHeight(from, to, asset, format, prealpha);
 		asset.original_width = wh.w;
