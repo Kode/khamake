@@ -17,17 +17,17 @@ function findFiles(dir, match) {
 	if (match.indexOf('*') >= 0) {
 		let beforeStar = match.substring(0, match.indexOf('*'));
 		subdir = beforeStar.substring(0, beforeStar.lastIndexOf('/'));
-        
-        let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
+		
+		let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
 	
-        let collected = [];
-        findFiles2(dir, subdir, regex, collected);
-        return collected;
+		let collected = [];
+		findFiles2(dir, subdir, regex, collected);
+		return collected;
 	}
-    else {
-        let file = path.resolve(dir, match);
-        return [file];
-    }
+	else {
+		let file = path.resolve(dir, match);
+		return [file];
+	}
 }
 
 function findFiles2(basedir, dir, regex, collected) {
@@ -89,7 +89,7 @@ class Project {
 			let file = path.parse(f);
 			let name = file.name;
 			let type = 'blob';
-			if (file.ext === '.png' || file.ext === '.jpg' || file.ext === '.jpeg') {
+			if (file.ext === '.png' || file.ext === '.jpg' || file.ext === '.jpeg' || file.ext === '.hdr') {
 				type = 'image';
 			}
 			else if (file.ext === '.wav') {
