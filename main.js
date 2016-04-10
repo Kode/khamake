@@ -329,7 +329,8 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
 		{
-			fs.copySync(pathlib.join(__dirname, 'Data', 'build-korefile-hl.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
+			fs.copySync(pathlib.join(__dirname, 'Data', 'hl', 'kore_sources.c'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'kore_sources.c'));
+			fs.copySync(pathlib.join(__dirname, 'Data', 'hl', 'korefile.js'), pathlib.join(to.resolve(exporter.sysdir() + "-build").toString(), 'korefile.js'));
 
 			let out = '';
 			out += "var solution = new Solution('" + name + "');\n";
