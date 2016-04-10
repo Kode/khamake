@@ -52,6 +52,7 @@ function IntelliJ(projectdir, options) {
 
 	let target;
 	switch (options.language) {
+		case 'hl':
 		case 'cpp':
 			target = 'C++';
 			break;
@@ -138,7 +139,7 @@ function hxml(projectdir, options) {
 		data += "--macro include('kha')\n";
 	}
 	else if (options.language === 'hl') {
-		data += '-hl ' + path.normalize(options.to + '.c') + '\n';
+		data += '-hl ' + path.normalize(options.to) + '\n';
 	}
 	for (let param of options.parameters) {
 		data += param + '\n';
@@ -151,6 +152,7 @@ function FlashDevelop(projectdir, options) {
 	let platform;
 
 	switch (options.language) {
+		case 'hl':
 		case 'cpp':
 			platform = 'C++';
 			break;
