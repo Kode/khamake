@@ -43,9 +43,9 @@ String.prototype.replaceAll = function (find, replace) {
 	return this.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 };
 
-function compileShader2(compiler, type, from, to, temp, system, kfx) {
+function compileShader2(compiler, type, from, to, temp, system) {
 	if (compiler !== '') {
-		let result = child_process.spawnSync(compiler, [type, from.toString(), to.toString(), temp.toString(), system, kfx]);
+		let result = child_process.spawnSync(compiler, [type, from.toString(), to.toString(), temp.toString(), system]);
 
 		if (result.stdout.toString() !== '') {
 			log.info(result.stdout.toString());
@@ -65,7 +65,7 @@ function addShader(project, name, extension) {
 	project.exportedShaders.push({files: [name + extension], name: name});
 }
 
-function compileShader(exporter, platform, project, shader, to, temp, compiler, kfx) {
+function compileShader(exporter, platform, project, shader, to, temp, compiler) {
 	let name = shader.name;
 	if (name.endsWith('.inc')) return;
 	if (platform.endsWith('-hl')) platform = platform.substr(0, platform.length - '-hl'.length);
@@ -78,7 +78,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 			break;
 		}
 		case Platform.Flash: {
-			compileShader2(compiler, 'agal', shader.files[0], to.resolve(name + '.agal'), temp, platform, kfx);
+			compileShader2(compiler, 'agal', shader.files[0], to.resolve(name + '.agal'), temp, platform);
 			addShader(project, name, '.agal');
 			exporter.addShader(name + '.agal');
 			break;
@@ -86,7 +86,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 		case Platform.Android:
 		case Platform.Android + '-native': {
 			if (Options.graphicsApi === GraphicsApi.Vulkan) {
-				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, 'android', kfx);
+				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, 'android');
 				addShader(project, name, '.spirv');
 			}
 			else {
@@ -112,64 +112,64 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 				funcname = funcname.replaceAll('.', '_');
 				funcname += '_main';
 				fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
-				compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), temp, platform, kfx);
+				compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), temp, platform);
 				addShader(project, name, ".metal");
 			}
 			else {
 				let shaderpath = to.resolve(name + '.essl');
-				compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform, kfx);
+				compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform);
 				addShader(project, name, ".essl");
 			}
 			break;
 		}
 		case Platform.Windows: {
 			if (Options.graphicsApi === GraphicsApi.Vulkan) {
-				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, platform, kfx);
+				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, platform);
 				addShader(project, name, '.spirv');
 			}
 			else if (Options.graphicsApi === GraphicsApi.OpenGL || Options.graphicsApi === GraphicsApi.OpenGL2) {
-				compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
+				compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform);
 				addShader(project, name, ".glsl");
 			}
 			else if (Options.graphicsApi === GraphicsApi.Direct3D11 || Options.graphicsApi === GraphicsApi.Direct3D12) {
-				compileShader2(compiler, "d3d11", shader.files[0], to.resolve(name + ".d3d11"), temp, platform, kfx);
+				compileShader2(compiler, "d3d11", shader.files[0], to.resolve(name + ".d3d11"), temp, platform);
 				addShader(project, name, ".d3d11");
 			}
 			else {
-				compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".d3d9"), temp, platform, kfx);
+				compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".d3d9"), temp, platform);
 				addShader(project, name, ".d3d9");
 			}
 			break;
 		}
 		case Platform.WindowsApp: {
-			compileShader2(compiler, "d3d11", shader.files[0], to.resolve(name + ".d3d11"), temp, platform, kfx);
+			compileShader2(compiler, "d3d11", shader.files[0], to.resolve(name + ".d3d11"), temp, platform);
 			addShader(project, name, ".d3d11");
 			break;
 		}
 		case Platform.Xbox360:
 		case Platform.PlayStation3: {
-			compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".d3d9"), temp, platform, kfx);
+			compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".d3d9"), temp, platform);
 			addShader(project, name, ".d3d9");
 			break;
 		}
 		case Platform.Linux: {
 			if (Options.graphicsApi === GraphicsApi.Vulkan) {
-				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, platform, kfx);
+				compileShader2(compiler, 'spirv', shader.files[0], to.resolve(name + ".spirv"), temp, platform);
 				addShader(project, name, '.spirv');
 			}
 			else {
-				compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
+				compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform);
 				addShader(project, name, ".glsl");
 			}
 			break;
 		}
 		case Platform.OSX: {
-			compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform, kfx);
+			compileShader2(compiler, "glsl", shader.files[0], to.resolve(name + ".glsl"), temp, platform);
 			addShader(project, name, ".glsl");
 			break;
 		}
 		case Platform.Unity: {
-			compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".hlsl"), temp, platform, kfx);
+			compileShader2(compiler, "d3d9", shader.files[0], to.resolve(name + ".hlsl"), temp, platform);
 			addShader(project, name, ".hlsl");
 			break;
 		}
@@ -192,7 +192,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler, 
 					}
 				}
 			}
-			compileShader2(customCompiler, platform, shader.files[0], to.resolve(name + '.' + platform), temp, platform, kfx);
+			compileShader2(customCompiler, platform, shader.files[0], to.resolve(name + '.' + platform), temp, platform);
 			addShader(project, name, '.' + platform);
 			break;
 		}
@@ -406,7 +406,7 @@ function koreplatform(platform) {
 	else return platform;
 }
 
-function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, kfx, krafix, khafolders, embedflashassets, options, callback) {
+function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, krafix, khafolders, embedflashassets, options, callback) {
 	log.info('Creating Kha project.');
 
 	// Create the 'build' folder
@@ -533,7 +533,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 	}
 	if (!Files.exists(shaderDir)) Files.createDirectories(shaderDir);
 	for (let shader of project.shaders) {
-		compileShader(exporter, platform, project, shader, shaderDir, temp, options.nokrafix ? kfx : krafix, kfx);
+		compileShader(exporter, platform, project, shader, shaderDir, temp, krafix);
 		if (platform === Platform.Unity) {
 			if (!Files.exists(to.resolve(exporter.sysdir() + '-resources'))) Files.createDirectories(to.resolve(exporter.sysdir() + '-resources'));
 			fs.writeFileSync(pathlib.join(to.resolve(exporter.sysdir() + '-resources').toString(), shader.name + '.hlsl'), shader.name);
@@ -580,7 +580,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		// if it exists, export files similar to other a
 		let hxslDir = pathlib.join('build', 'Shaders');
 		if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) {
-			addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir() + '-resources'), temp, from.resolve(Paths.get(hxslDir)), krafix, kfx);
+			addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir() + '-resources'), temp, from.resolve(Paths.get(hxslDir)), krafix);
 			if (foundProjectFile) {
 				fs.outputFileSync(to.resolve(Paths.get(exporter.sysdir() + '-resources', 'files.json')).toString(), JSON.stringify({ files: files }, null, '\t'), { encoding: 'utf8' });
 				log.info('Assets done.');
@@ -662,17 +662,12 @@ exports.run = function (options, loglog, callback) {
 		if (Files.isDirectory(path)) options.haxe = path.toString();
 	}
 
-	if (options.kfx === '') {
-		let path = Paths.get(options.kha, "Kore", "Tools", "kfx", "kfx" + exec.sys());
-		if (Files.exists(path)) options.kfx = path.toString();
-	}
-
 	if (options.krafix === '' || options.krafix === undefined) {
 		let path = Paths.get(options.kha, "Kore", "Tools", "krafix", "krafix" + exec.sys());
 		if (Files.exists(path)) options.krafix = path.toString();
 	}
 
-	if (options.ogg === '') {
+	if (options.ogg === '' || options.ogg === undefined) {
 		let path = Paths.get(options.kha, "Tools", "oggenc", "oggenc" + exec.sys());
 		if (Files.exists(path)) options.ogg = path.toString() + ' {in} -o {out} --quiet';
 	}
@@ -680,6 +675,30 @@ exports.run = function (options, loglog, callback) {
 	if (options.kravur === '' || options.kravur === undefined) {
 		let path = Paths.get(options.kha, 'Tools', 'kravur', 'kravur' + exec.sys());
 		if (Files.exists(path)) options.kravur = path.toString() + ' {in} {size} {out}';
+	}
+	
+	if (!options.aac && options.ffmpeg) {
+		options.aac = options.ffmpeg + ' -i {in} {out}';
+	}
+	
+	if (!options.mp3 && options.ffmpeg) {
+		options.mp3 = options.ffmpeg + ' -i {in} {out}'
+	}
+	
+	if (!options.h264 && options.ffmpeg) {
+		options.h264 = options.ffmpeg + ' -i {in} {out}';
+	}
+	
+	if (!options.webm && options.ffmpeg) {
+		options.webm = options.ffmpeg + ' -i {in} {out}';
+	}
+	
+	if (!options.wmv && options.ffmpeg) {
+		options.wmv = options.ffmpeg + ' -i {in} {out}';
+	}
+	
+	if (!options.theora && options.ffmpeg) {
+		options.theora = options.ffmpeg + ' -i {in} {out}';
 	}
 
 	if (options.graphics !== undefined) {
@@ -699,5 +718,5 @@ exports.run = function (options, loglog, callback) {
 		Options.visualStudioVersion = options.visualStudioVersion;
 	}
 
-	exportProject(Paths.get(options.from), Paths.get(options.to), options.target, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.kfx, options.krafix, false, options.embedflashassets, options, done);
+	exportProject(Paths.get(options.from), Paths.get(options.to), options.target, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.krafix, false, options.embedflashassets, options, done);
 };

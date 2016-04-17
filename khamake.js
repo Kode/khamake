@@ -77,12 +77,6 @@ var options = [
 		default: VrApi.None
 	},
 	{
-		full: 'pch',
-		description: 'Use precompiled headers for C++ targets',
-		value: false,
-		hidden: true
-	},
-	{
 		full: 'intermediate',
 		description: 'Intermediate location for object files.',
 		value: true,
@@ -118,50 +112,8 @@ var options = [
 		default: ''
 	},
 	{
-		full: 'ogg',
-		description: 'Argument line for ogg encoder',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'aac',
-		description: 'Argument line for aac encoder',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'mp3',
-		description: 'Argument line for mp3 encoder',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'h264',
-		description: 'Argument line for h264 encoder',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'webm',
-		description: 'Argument line for webm encoder',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'wmv',
-		description: 'Argument line for wmv encoder',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'theora',
-		description: 'Argument line for theora encoder',
-		value: true,
-		default: ''
-	},
-	{
-		full: 'kfx',
-		description: 'Location of kfx shader compiler',
+		full: 'ffmpeg',
+		description: 'Location of ffmpeg executable',
 		value: true,
 		default: ''
 	},
@@ -170,11 +122,6 @@ var options = [
 		description: 'Location of krafix shader compiler',
 		value: true,
 		default: ''
-	},
-	{
-		full: 'nokrafix',
-		description: 'Switch off the new shader compiler',
-		value: false
 	},
 	{
 		full: 'embedflashassets',
