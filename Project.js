@@ -69,7 +69,8 @@ class Project {
 		this.parameters = [];
 		this.scriptdir = Project.scriptdir;
 		this.libraries = [];
-		
+		this.localLibraryPath = 'Libraries';
+
 		this.windowOptions = {}		
 		this.targetOptions = {
 			flash: {},
@@ -149,9 +150,9 @@ class Project {
 		function findLibraryDirectory(name) {
 			// Tries to load the default library from inside the kha project.
 			// e.g. 'Libraries/wyngine'
-			let libpath = path.join(self.scriptdir, 'Libraries', name);
+			let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
 			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-				return { libpath: libpath, libroot: 'Libraries/' + name };
+				return { libpath: libpath, libroot: self.localLibraryPath + '/' + name };
 			}
 			// If the library couldn't be found in Libraries folder, try
 			// looking in the haxelib folders.
