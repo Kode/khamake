@@ -38,6 +38,7 @@ class Html5Exporter extends KhaExporter {
 			defines.push('nodejs');
 		}
 		else {
+			console.log("pppp:" + platform);
 			defines.push('sys_' + platform);
 		}
 		
@@ -79,8 +80,8 @@ class Html5Exporter extends KhaExporter {
 			
 			let electron = this.directory.resolve(Paths.get(this.sysdir(), 'electron.js'));
 			let protoelectron = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'electron.js'), {encoding: 'utf8'});
-			protoelectron = protoelectron.replaceAll('{Width}', this.width + 20);
-			protoelectron = protoelectron.replaceAll('{Height}', this.height + 20);
+			protoelectron = protoelectron.replaceAll('{Width}', this.width);
+			protoelectron = protoelectron.replaceAll('{Height}', this.height);
 			fs.writeFileSync(electron.toString(), protoelectron);
 		}
 		else {		
