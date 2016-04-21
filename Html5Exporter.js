@@ -38,7 +38,6 @@ class Html5Exporter extends KhaExporter {
 			defines.push('nodejs');
 		}
 		else {
-			console.log("pppp:" + platform);
 			defines.push('sys_' + platform);
 		}
 		
