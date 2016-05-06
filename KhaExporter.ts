@@ -11,9 +11,11 @@ export class KhaExporter extends Exporter {
 	libraries: Array<string>;
 	name: string;
 	safename: string;
+	directory: string;
 	
 	constructor(khaDirectory: string, directory: string) {
 		super();
+		this.directory = directory;
 		this.width = 640;
 		this.height = 480;
 		this.sources = [];

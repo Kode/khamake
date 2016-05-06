@@ -9,23 +9,23 @@ import {Platform} from './Platform';
 import {exportImage} from './ImageTool';
 import {writeHaxeProject} from './HaxeProject';
 
-export class KoreExporter extends KhaExporter {
+export class KoreHLExporter extends KhaExporter {
+	parameters: Array<string>;
 	platform: string;
 	vr: string;
-	parameters: Array<string>
 	
 	constructor(platform, khaDirectory, vr, directory) {
 		super(khaDirectory, directory);
 		this.platform = platform;
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Kore'));
 		this.vr = vr;
+		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/KoreHL'));
 	}
 
 	sysdir() {
-		return this.platform;
+		return this.platform + '-hl';
 	}
 
-	async exportSolution(name: string, platform: string, khaDirectory: string, haxeDirectory: string, from: string, _targetOptions: any, defines: Array<string>) {
+	async exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
 		defines.push('no-compilation');
 		defines.push('sys_' + platform);
 		defines.push('sys_g1');
@@ -47,23 +47,23 @@ export class KoreExporter extends KhaExporter {
 
 		const options = {
 			from: from.toString(),
-			to: path.join(this.sysdir() + '-build', 'Sources'),
+			to: path.join(this.sysdir() + '-build', 'sources.c'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
 			haxeDirectory: haxeDirectory.toString(),
 			system: this.sysdir(),
-			language: 'cpp',
+			language: 'hl',
 			width: this.width,
 			height: this.height,
 			name: name
 		};
-		writeHaxeProject(this.directory.toString(), options);
+		await writeHaxeProject(this.directory.toString(), options);
 
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		return executeHaxe(this.directory, haxeDirectory, ["project-" + this.sysdir() + ".hxml"]);
+		return await executeHaxe(this.directory, haxeDirectory, ["project-" + this.sysdir() + ".hxml"]);
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {
@@ -90,13 +90,13 @@ export class KoreExporter extends KhaExporter {
 		 exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 		 }*/
 		else {
-			let format = await exportImage(from, path.join(this.directory, this.sysdir(), to), asset, undefined, true);
+			let format = exportImage(from, path.join(this.directory, this.sysdir(), to), asset, undefined, true);
 			return [to + '.' + format];
 		}
 	}
 
 	async copyBlob(platform, from, to) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to).toString(), { clobber: true });
 		return [to];
 	}
 

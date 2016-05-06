@@ -20,8 +20,20 @@ const GraphicsApi_1 = require('./GraphicsApi');
 const Options_1 = require('./Options');
 const Platform_1 = require('./Platform');
 const ProjectFile_1 = require('./ProjectFile');
+const AndroidExporter_1 = require('./AndroidExporter');
+const DebugHtml5Exporter_1 = require('./DebugHtml5Exporter');
+const EmptyExporter_1 = require('./EmptyExporter');
+const FlashExporter_1 = require('./FlashExporter');
 const Html5Exporter_1 = require('./Html5Exporter');
+const Html5WorkerExporter_1 = require('./Html5WorkerExporter');
+const JavaExporter_1 = require('./JavaExporter');
 const KoreExporter_1 = require('./KoreExporter');
+const KoreHLExporter_1 = require('./KoreHLExporter');
+const NodeExporter_1 = require('./NodeExporter');
+const PlayStationMobileExporter_1 = require('./PlayStationMobileExporter');
+const WpfExporter_1 = require('./WpfExporter');
+const XnaExporter_1 = require('./XnaExporter');
+const UnityExporter_1 = require('./UnityExporter');
 function compileShader2(compiler, type, from, to, temp, system) {
     return new Promise((resolve, reject) => {
         if (compiler === '')
@@ -379,44 +391,45 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
         let korehl = false;
         switch (platform) {
             case Platform_1.Platform.Flash:
-                //**exporter = new FlashExporter(khaDirectory, to, embedflashassets);
+                exporter = new FlashExporter_1.FlashExporter(khaDirectory, to, embedflashassets);
                 break;
             case Platform_1.Platform.HTML5:
                 exporter = new Html5Exporter_1.Html5Exporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.HTML5Worker:
-                //**exporter = new Html5WorkerExporter(khaDirectory, to);
+                exporter = new Html5WorkerExporter_1.Html5WorkerExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.DebugHTML5:
-                //**exporter = new DebugHtml5Exporter(khaDirectory, to);
+                exporter = new DebugHtml5Exporter_1.DebugHtml5Exporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.WPF:
-                //**exporter = new WpfExporter(khaDirectory, to);
+                exporter = new WpfExporter_1.WpfExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.XNA:
-                //**exporter = new XnaExporter(khaDirectory, to);
+                exporter = new XnaExporter_1.XnaExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.Java:
-                //**exporter = new JavaExporter(khaDirectory, to);
+                exporter = new JavaExporter_1.JavaExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.PlayStationMobile:
-                //**exporter = new PlayStationMobileExporter(khaDirectory, to);
+                exporter = new PlayStationMobileExporter_1.PlayStationMobileExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.Android:
-                //**exporter = new AndroidExporter(khaDirectory, to);
+                exporter = new AndroidExporter_1.AndroidExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.Node:
-                //**exporter = new NodeExporter(khaDirectory, to);
+                exporter = new NodeExporter_1.NodeExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.Unity:
-                //**exporter = new UnityExporter(khaDirectory, to);
+                exporter = new UnityExporter_1.UnityExporter(khaDirectory, to);
                 break;
             case Platform_1.Platform.Empty:
-                //**exporter = new EmptyExporter(khaDirectory, to);
+                exporter = new EmptyExporter_1.EmptyExporter(khaDirectory, to);
                 break;
             default:
                 if (platform.endsWith('-hl')) {
                     korehl = true;
+                    exporter = new KoreHLExporter_1.KoreHLExporter(koreplatform(platform), khaDirectory, Options_1.Options.vrApi, to);
                 }
                 else {
                     kore = true;

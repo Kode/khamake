@@ -17,24 +17,21 @@ import {Options} from './Options';
 import {Platform} from './Platform';
 import {loadProject} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
-
-/*const AndroidExporter = require('./AndroidExporter.js');
-const FlashExporter = require('./FlashExporter.js');
-const Html5Exporter = require('./Html5Exporter.js');
-const Html5WorkerExporter = require('./Html5WorkerExporter.js');
-const JavaExporter = require('./JavaExporter.js');
-const KoreExporter = require('./KoreExporter.js');
-const KoreHLExporter = require('./KoreHLExporter.js');
-const NodeExporter = require('./NodeExporter.js');
-const PlayStationMobileExporter = require('./PlayStationMobileExporter.js');
-const WpfExporter = require('./WpfExporter.js');
-const XnaExporter = require('./XnaExporter.js');
-const UnityExporter = require('./UnityExporter.js');
-const DebugHtml5Exporter = require('./DebugHtml5Exporter.js');
-const EmptyExporter = require('./EmptyExporter.js');*/
 import {KhaExporter} from './KhaExporter';
+import {AndroidExporter} from './AndroidExporter';
+import {DebugHtml5Exporter} from './DebugHtml5Exporter';
+import {EmptyExporter} from './EmptyExporter';
+import {FlashExporter} from './FlashExporter';
 import {Html5Exporter} from './Html5Exporter';
+import {Html5WorkerExporter} from './Html5WorkerExporter';
+import {JavaExporter} from './JavaExporter';
 import {KoreExporter} from './KoreExporter';
+import {KoreHLExporter} from './KoreHLExporter';
+import {NodeExporter} from './NodeExporter';
+import {PlayStationMobileExporter} from './PlayStationMobileExporter';
+import {WpfExporter} from './WpfExporter';
+import {XnaExporter} from './XnaExporter';
+import {UnityExporter} from './UnityExporter';
 
 function compileShader2(compiler: string, type: string, from: string, to: string, temp: string, system: string) {
 	return new Promise((resolve, reject) => {
@@ -411,45 +408,45 @@ async function exportKhaProject(from: string, to: string, platform: string, khaD
 	let korehl = false;
 	switch (platform) {
 		case Platform.Flash:
-			//**exporter = new FlashExporter(khaDirectory, to, embedflashassets);
+			exporter = new FlashExporter(khaDirectory, to, embedflashassets);
 			break;
 		case Platform.HTML5:
 			exporter = new Html5Exporter(khaDirectory, to);
 			break;
 		case Platform.HTML5Worker:
-			//**exporter = new Html5WorkerExporter(khaDirectory, to);
+			exporter = new Html5WorkerExporter(khaDirectory, to);
 			break;
 		case Platform.DebugHTML5:
-			//**exporter = new DebugHtml5Exporter(khaDirectory, to);
+			exporter = new DebugHtml5Exporter(khaDirectory, to);
 			break;
 		case Platform.WPF:
-			//**exporter = new WpfExporter(khaDirectory, to);
+			exporter = new WpfExporter(khaDirectory, to);
 			break;
 		case Platform.XNA:
-			//**exporter = new XnaExporter(khaDirectory, to);
+			exporter = new XnaExporter(khaDirectory, to);
 			break;
 		case Platform.Java:
-			//**exporter = new JavaExporter(khaDirectory, to);
+			exporter = new JavaExporter(khaDirectory, to);
 			break;
 		case Platform.PlayStationMobile:
-			//**exporter = new PlayStationMobileExporter(khaDirectory, to);
+			exporter = new PlayStationMobileExporter(khaDirectory, to);
 			break;
 		case Platform.Android:
-			//**exporter = new AndroidExporter(khaDirectory, to);
+			exporter = new AndroidExporter(khaDirectory, to);
 			break;
 		case Platform.Node:
-			//**exporter = new NodeExporter(khaDirectory, to);
+			exporter = new NodeExporter(khaDirectory, to);
 			break;
 		case Platform.Unity:
-			//**exporter = new UnityExporter(khaDirectory, to);
+			exporter = new UnityExporter(khaDirectory, to);
 			break;
 		case Platform.Empty:
-			//**exporter = new EmptyExporter(khaDirectory, to);
+			exporter = new EmptyExporter(khaDirectory, to);
 			break;
 		default:
 			if (platform.endsWith('-hl')) {
 				korehl = true;
-				//**exporter = new KoreHLExporter(koreplatform(platform), khaDirectory, Options.vrApi, to);
+				exporter = new KoreHLExporter(koreplatform(platform), khaDirectory, Options.vrApi, to);
 			}
 			else {
 				kore = true;

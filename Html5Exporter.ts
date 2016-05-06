@@ -10,14 +10,12 @@ import {exportImage} from './ImageTool';
 import {writeHaxeProject} from './HaxeProject';
 
 export class Html5Exporter extends KhaExporter {
-	directory: string;
 	parameters: Array<string>;
 	width: number;
 	height: number;
 	
 	constructor(khaDirectory, directory) {
 		super(khaDirectory, directory);
-		this.directory = directory;
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5'));
 	}
 

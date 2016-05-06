@@ -12,6 +12,7 @@ const Exporter_1 = require('./Exporter');
 class KhaExporter extends Exporter_1.Exporter {
     constructor(khaDirectory, directory) {
         super();
+        this.directory = directory;
         this.width = 640;
         this.height = 480;
         this.sources = [];

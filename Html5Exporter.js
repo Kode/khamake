@@ -18,7 +18,6 @@ const HaxeProject_1 = require('./HaxeProject');
 class Html5Exporter extends KhaExporter_1.KhaExporter {
     constructor(khaDirectory, directory) {
         super(khaDirectory, directory);
-        this.directory = directory;
         this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5'));
     }
     sysdir() {
