@@ -1,114 +1,134 @@
 "use strict";
-
-const cp = require('child_process');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const Paths = require('./Paths.js');
-const Files = require('./Files.js');
-const log = require('./log.js');
-const exec = require('./exec.js');
-
-function getWidthAndHeight(from, to, asset, format, prealpha, callback) {
-	const exe = 'kraffiti' + exec.sys();
-	
-	let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
-	if (asset.scale !== undefined && asset.scale !== 1) {
-		params.push('scale=' + asset.scale);	
-	}
-	let status = cp.spawnSync(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
-	
-	if (status.status !== 0) {
-		log.error('kraffiti process exited with code ' + status.status + ' when trying to get size of ' + asset.name);
-		return {w: 0, h: 0};	
-	}
-	var lines = status.stdout.toString().split('\n');
-	for (var l in lines) {
-		var line = lines[l];
-		if (line.startsWith('#')) {
-			var numbers = line.substring(1).split('x');
-			return {w: parseInt(numbers[0]), h: parseInt(numbers[1])};
-		}
-	}
-	return {w: 0, h: 0};
-}
-
-module.exports = function (from, to, asset, format, prealpha, poweroftwo) {
-	if (format === undefined) {
-		if (from.toString().endsWith('.png')) format = 'png';
-		else if (from.toString().endsWith('.hdr')) format = 'hdr'; 
-		else format = 'jpg';
-	}
-
-	if (format === 'jpg' && (asset.scale === undefined || asset.scale === 1) && asset.background === undefined) {
-		to = to + '.jpg';
-	}
-	else if (format === 'pvr') {
-		to = to + '.pvr';
-	}
-	else if (format === 'hdr') {
-		to = to + '.hdr';
-	}
-	else {
-		format = 'png';
-		if (prealpha) to = to + '.kng';
-		else to = to + '.png';
-	}
-	
-	let outputformat = format;
-	if (format === 'png' && prealpha) {
-		outputformat = 'kng';
-	}
-
-	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
-		let wh = getWidthAndHeight(from, to, asset, format, prealpha);
-		asset.original_width = wh.w;
-		asset.original_height = wh.h;
-		return outputformat;
-	}
-
-	Files.createDirectories(Paths.get(path.dirname(to)));
-
-	if (format === 'jpg' || format === 'hdr') {
-		Files.copy(Paths.get(from), Paths.get(to), true);
-		let wh = getWidthAndHeight(from, to, asset, format, prealpha);
-		asset.original_width = wh.w;
-		asset.original_height = wh.h;
-		return outputformat;
-	}
-
-	const exe = 'kraffiti' + exec.sys();
-	
-	let params = ['from=' + from, 'to=' + to, 'format=' + format];
-	if (!poweroftwo) {
-		params.push('filter=nearest');
-	}
-	if (prealpha) params.push('prealpha');
-	if (asset.scale !== undefined && asset.scale !== 1) {
-		params.push('scale=' + asset.scale);	
-	}
-	if (asset.background !== undefined) {
-		params.push('transparent=' + ((asset.background.red << 24) | (asset.background.green << 16) | (asset.background.blue << 8) | 0xff).toString(16));
-	}
-	if (poweroftwo) {
-		params.push('poweroftwo');
-	}
-	
-	let status = cp.spawnSync(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
-		
-	if (status.status !== 0) {
-		log.error('kraffiti process exited with code ' + status.status + ' when trying to convert ' + asset.name);
-		return outputformat;
-	}
-	
-	const lines = status.stdout.toString().split('\n');
-	for (let line of lines) {
-		if (line.startsWith('#')) {
-			var numbers = line.substring(1).split('x');
-			asset.original_width = parseInt(numbers[0]);
-			asset.original_height = parseInt(numbers[1]);
-			return outputformat;
-		}
-	}
-	return outputformat;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
 };
+const child_process = require('child_process');
+const fs = require('fs-extra');
+const path = require('path');
+const log = require('./log');
+const exec_1 = require('./exec');
+function getWidthAndHeight(from, to, asset, format, prealpha) {
+    return new Promise((resolve, reject) => {
+        const exe = 'kraffiti' + exec_1.sys();
+        let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
+        if (asset.scale !== undefined && asset.scale !== 1) {
+            params.push('scale=' + asset.scale);
+        }
+        let process = child_process.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+        let output = '';
+        process.stdout.on('data', (data) => {
+            output += data.toString();
+        });
+        process.stderr.on('data', (data) => {
+        });
+        process.on('close', (code) => {
+            if (code !== 0) {
+                log.error('kraffiti process exited with code ' + code + ' when trying to get size of ' + asset.name);
+                resolve({ w: 0, h: 0 });
+                return;
+            }
+            var lines = output.split('\n');
+            for (var l in lines) {
+                var line = lines[l];
+                if (line.startsWith('#')) {
+                    var numbers = line.substring(1).split('x');
+                    resolve({ w: parseInt(numbers[0]), h: parseInt(numbers[1]) });
+                    return;
+                }
+            }
+            resolve({ w: 0, h: 0 });
+        });
+    });
+}
+function exportImage(from, to, asset, format, prealpha, poweroftwo = false) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (format === undefined) {
+            if (from.toString().endsWith('.png'))
+                format = 'png';
+            else if (from.toString().endsWith('.hdr'))
+                format = 'hdr';
+            else
+                format = 'jpg';
+        }
+        if (format === 'jpg' && (asset.scale === undefined || asset.scale === 1) && asset.background === undefined) {
+            to = to + '.jpg';
+        }
+        else if (format === 'pvr') {
+            to = to + '.pvr';
+        }
+        else if (format === 'hdr') {
+            to = to + '.hdr';
+        }
+        else {
+            format = 'png';
+            if (prealpha)
+                to = to + '.kng';
+            else
+                to = to + '.png';
+        }
+        let outputformat = format;
+        if (format === 'png' && prealpha) {
+            outputformat = 'kng';
+        }
+        if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
+            let wh = yield getWidthAndHeight(from, to, asset, format, prealpha);
+            asset.original_width = wh.w;
+            asset.original_height = wh.h;
+            return outputformat;
+        }
+        fs.ensureDirSync(path.dirname(to));
+        if (format === 'jpg' || format === 'hdr') {
+            fs.copySync(from, to, { clobber: true });
+            let wh = yield getWidthAndHeight(from, to, asset, format, prealpha);
+            asset.original_width = wh.w;
+            asset.original_height = wh.h;
+            return outputformat;
+        }
+        const exe = 'kraffiti' + exec_1.sys();
+        let params = ['from=' + from, 'to=' + to, 'format=' + format];
+        if (!poweroftwo) {
+            params.push('filter=nearest');
+        }
+        if (prealpha)
+            params.push('prealpha');
+        if (asset.scale !== undefined && asset.scale !== 1) {
+            params.push('scale=' + asset.scale);
+        }
+        if (asset.background !== undefined) {
+            params.push('transparent=' + ((asset.background.red << 24) | (asset.background.green << 16) | (asset.background.blue << 8) | 0xff).toString(16));
+        }
+        if (poweroftwo) {
+            params.push('poweroftwo');
+        }
+        let process = child_process.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+        let output = '';
+        process.stdout.on('data', (data) => {
+            output += data.toString();
+        });
+        process.stderr.on('data', (data) => {
+        });
+        process.on('close', (code) => {
+            if (code !== 0) {
+                log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + asset.name);
+                return outputformat;
+            }
+            const lines = output.split('\n');
+            for (let line of lines) {
+                if (line.startsWith('#')) {
+                    var numbers = line.substring(1).split('x');
+                    asset.original_width = parseInt(numbers[0]);
+                    asset.original_height = parseInt(numbers[1]);
+                    return outputformat;
+                }
+            }
+            return outputformat;
+        });
+    });
+}
+exports.exportImage = exportImage;
+//# sourceMappingURL=ImageTool.js.map

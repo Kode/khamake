@@ -1,27 +1,26 @@
 "use strict";
-
 let myInfo = function (text) {
-	console.log(text);
+    console.log(text);
 };
-
 let myError = function (text) {
-	console.log(text);
+    console.log(text);
 };
-
-exports.set = function (log) {
-	myInfo = log.info;
-	myError = log.error;
-};
-
-exports.silent = function () {
-	myInfo = function () {};
-	myError = function () {};
-};
-
-exports.info = function (text) {
-	myInfo(text);
-};
-
-exports.error = function (text) {
-	myError(text);
-};
+function set(log) {
+    myInfo = log.info;
+    myError = log.error;
+}
+exports.set = set;
+function silent() {
+    myInfo = function () { };
+    myError = function () { };
+}
+exports.silent = silent;
+function info(text) {
+    myInfo(text);
+}
+exports.info = info;
+function error(text) {
+    myError(text);
+}
+exports.error = error;
+//# sourceMappingURL=log.js.map

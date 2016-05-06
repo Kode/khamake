@@ -1,16 +1,15 @@
 "use strict";
-
-const GraphicsApi = require('./GraphicsApi.js');
-const VisualStudioVersion = require('./VisualStudioVersion.js');
-const VrApi = require('./VrApi.js');
-
-module.exports = {
-	precompiledHeaders: false,
-	intermediateDrive: '',
-	graphicsApi: GraphicsApi.Direct3D9,
-	vrApi: VrApi.None,
-	visualStudioVersion: VisualStudioVersion.VS2013,
-	compilation: true,
-	compile: false,
-	run: false
+const GraphicsApi_1 = require('./GraphicsApi');
+const VisualStudioVersion_1 = require('./VisualStudioVersion');
+const VrApi_1 = require('./VrApi');
+exports.Options = {
+    precompiledHeaders: false,
+    intermediateDrive: '',
+    graphicsApi: GraphicsApi_1.GraphicsApi.Direct3D9,
+    vrApi: VrApi_1.VrApi.None,
+    visualStudioVersion: VisualStudioVersion_1.VisualStudioVersion.VS2013,
+    compilation: true,
+    compile: false,
+    run: false
 };
+//# sourceMappingURL=Options.js.map
