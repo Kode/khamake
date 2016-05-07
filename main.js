@@ -36,7 +36,7 @@ const XnaExporter_1 = require('./XnaExporter');
 const UnityExporter_1 = require('./UnityExporter');
 function compileShader2(compiler, type, from, to, temp, system) {
     return new Promise((resolve, reject) => {
-        if (compiler === '')
+        if (!compiler)
             reject('No shader compiler found.');
         let process = child_process.spawn(compiler, [type, from, to, temp, system]);
         process.stdout.on('data', (data) => {

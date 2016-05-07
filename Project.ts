@@ -87,6 +87,7 @@ export class Project {
 	windowOptions: any;
 	targetOptions: any;
 	assetMatchers: Array<string>;
+	shaderMatchers: Array<string>;
 	
 	constructor(name) {
 		this.name = name;
@@ -100,6 +101,7 @@ export class Project {
 		this.libraries = [];
 		this.localLibraryPath = 'Libraries';
 		this.assetMatchers = [];
+		this.shaderMatchers = [];
 
 		this.windowOptions = {}		
 		this.targetOptions = {
@@ -156,6 +158,7 @@ export class Project {
 	 * The regex syntax is very simple: * for anything, ** for anything across directories.
 	 */
 	addShaders(match) {
+		this.shaderMatchers.push(match);
 		let shaders = findFiles(this.scriptdir, match);
 		for (let shader of shaders) {
 			let file = path.parse(shader);

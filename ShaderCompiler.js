@@ -1,21 +1,21 @@
 "use strict";
 const path = require('path');
 const chokidar = require('chokidar');
-class AssetConverter {
-    constructor(exporter, platform, assetMatchers) {
+class ShaderCompiler {
+    constructor(exporter, platform, shaderMatchers) {
         this.exporter = exporter;
         this.platform = platform;
-        for (let matcher of assetMatchers) {
+        for (let matcher of shaderMatchers) {
             console.log('Watching ' + matcher + '.');
         }
-        this.watcher = chokidar.watch(assetMatchers, { ignored: /[\/\\]\./, persistent: true });
+        this.watcher = chokidar.watch(shaderMatchers, { ignored: /[\/\\]\./, persistent: true });
         this.watcher.on('add', (file) => {
             let fileinfo = path.parse(file);
             console.log('New file: ' + file + ' ' + fileinfo.ext);
             switch (fileinfo.ext) {
-                case '.png':
-                    console.log('Exporting ' + fileinfo.name);
-                    this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+                case '.glsl':
+                    console.log('Compiling ' + fileinfo.name);
+                    this.compileShader(this.exporter, this.platform, {}, {}, fileinfo.name, 'temp', 'krafix');
                     break;
             }
         });
@@ -25,6 +25,8 @@ class AssetConverter {
             //log('Initial scan complete. Ready for changes')
         });
     }
+    compileShader(exporter, platform, project, shader, to, temp, compiler) {
+    }
 }
-exports.AssetConverter = AssetConverter;
-//# sourceMappingURL=AssetConverter.js.map
+exports.ShaderCompiler = ShaderCompiler;
+//# sourceMappingURL=ShaderCompiler.js.map

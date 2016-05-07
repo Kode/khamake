@@ -19,6 +19,7 @@ import {Platform} from './Platform';
 import {loadProject} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
+import {ShaderCompiler} from './ShaderCompiler';
 import {KhaExporter} from './KhaExporter';
 import {AndroidExporter} from './AndroidExporter';
 import {DebugHtml5Exporter} from './DebugHtml5Exporter';
@@ -37,7 +38,7 @@ import {UnityExporter} from './UnityExporter';
 
 function compileShader2(compiler: string, type: string, from: string, to: string, temp: string, system: string) {
 	return new Promise((resolve, reject) => {
-		if (compiler === '') reject('No shader compiler found.');
+		if (!compiler) reject('No shader compiler found.');
 	
 		let process = child_process.spawn(compiler, [type, from, to, temp, system]);	
 		

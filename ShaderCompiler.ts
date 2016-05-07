@@ -2,26 +2,26 @@ import * as path from 'path';
 import {KhaExporter} from './KhaExporter';
 import * as chokidar from 'chokidar';
 
-export class AssetConverter {
+export class ShaderCompiler {
 	exporter: KhaExporter;
 	platform: string;
 	watcher: chokidar.FSWatcher;
 	
-	constructor(exporter: KhaExporter, platform: string, assetMatchers: Array<string>) {
+	constructor(exporter: KhaExporter, platform: string, shaderMatchers: Array<string>) {
 		this.exporter = exporter;
 		this.platform = platform;
-		for (let matcher of assetMatchers) {
+		for (let matcher of shaderMatchers) {
 			console.log('Watching ' + matcher + '.');
 		}
-		this.watcher = chokidar.watch(assetMatchers, { ignored: /[\/\\]\./, persistent: true });
+		this.watcher = chokidar.watch(shaderMatchers, { ignored: /[\/\\]\./, persistent: true });
 		this.watcher.on('add', (file: string) => {
 			
 			let fileinfo = path.parse(file);
 			console.log('New file: ' + file + ' ' + fileinfo.ext);
 			switch (fileinfo.ext) {
-				case '.png':
-					console.log('Exporting ' + fileinfo.name);
-					this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+				case '.glsl':
+					console.log('Compiling ' + fileinfo.name);
+					this.compileShader(this.exporter, this.platform, {}, {}, fileinfo.name, 'temp', 'krafix');
 					break;
 			}
 		});
@@ -31,5 +31,9 @@ export class AssetConverter {
 		this.watcher.on('ready', () => {
 			//log('Initial scan complete. Ready for changes')
 		});
+	}
+	
+	compileShader(exporter: KhaExporter, platform: string, project: any, shader, to: string, temp: string, compiler: string) {
+		
 	}
 }

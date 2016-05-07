@@ -71,6 +71,7 @@ class Project {
         this.libraries = [];
         this.localLibraryPath = 'Libraries';
         this.assetMatchers = [];
+        this.shaderMatchers = [];
         this.windowOptions = {};
         this.targetOptions = {
             flash: {},
@@ -122,6 +123,7 @@ class Project {
      * The regex syntax is very simple: * for anything, ** for anything across directories.
      */
     addShaders(match) {
+        this.shaderMatchers.push(match);
         let shaders = findFiles(this.scriptdir, match);
         for (let shader of shaders) {
             let file = path.parse(shader);
