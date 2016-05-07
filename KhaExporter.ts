@@ -2,9 +2,10 @@
 
 import * as path from 'path';
 import {convert} from './Converter';
+import {Encoders} from './Encoders';
 import {Exporter} from './Exporter';
 
-export class KhaExporter extends Exporter {
+export abstract class KhaExporter extends Exporter {
 	width: number;
 	height: number;
 	sources: Array<string>;
@@ -22,34 +23,34 @@ export class KhaExporter extends Exporter {
 		this.libraries = [];
 		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
 	}
+	
+	abstract sysdir(): string;
 
-	getCurrentDirectoryName(directory) {
-		return directory.getFileName();
-	}
+	abstract async exportSolution(name: string, platform: string, khaDirectory: string, haxeDirectory: string, from: string, targetOptions: any, defines: Array<string>): Promise<{}>;
 
-	setWidthAndHeight(width: number, height: number) {
+	setWidthAndHeight(width: number, height: number): void {
 		this.width = width;
 		this.height = height;
 	}
 
-	setName(name: string) {
+	setName(name: string): void {
 		this.name = name;
 		this.safename = name.replace(/ /g, '-');
 	}
 
-	addShader(shader: string) {
+	addShader(shader: string): void {
 
 	}
 
-	addSourceDirectory(path: string) {
+	addSourceDirectory(path: string): void {
 		this.sources.push(path);
 	}
 
-	addLibrary(library: string) {
+	addLibrary(library: string): void {
 		this.libraries.push(library);
 	}
 
-	removeSourceDirectory(path: string) {
+	removeSourceDirectory(path: string): void {
 		for (let i = 0; i < this.sources.length; ++i) {
 			if (this.sources[i] === path) {
 				this.sources.splice(i, 1);
@@ -58,27 +59,23 @@ export class KhaExporter extends Exporter {
 		}
 	}
 
-	async copyImage(platform, from: string, to: string, asset): Promise<Array<string>> {
+	async copyImage(platform: string, from: string, to: string, asset): Promise<Array<string>> {
 		return [];
 	}
 
-	/*copyMusic(platform, from, to, encoders) {
-		return [];
-	}*/
-
-	async copySound(platform, from, to, encoders): Promise<Array<string>> {
+	async copySound(platform: string, from: string, to: string, encoders: Encoders): Promise<Array<string>> {
 		return [];
 	}
 
-	async copyVideo(platform, from, to, encoders): Promise<Array<string>> {
+	async copyVideo(platform: string, from: string, to: string, encoders: Encoders): Promise<Array<string>> {
 		return [];
 	}
 
-	async copyBlob(platform, from, to): Promise<Array<string>> {
+	async copyBlob(platform: string, from: string, to: string): Promise<Array<string>> {
 		return [];
 	}
 
-	async copyFont(platform, from, to): Promise<Array<string>> {
+	async copyFont(platform: string, from: string, to: string): Promise<Array<string>> {
 		return await this.copyBlob(platform, from, to + '.ttf');
 	}
 }

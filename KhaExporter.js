@@ -19,9 +19,6 @@ class KhaExporter extends Exporter_1.Exporter {
         this.libraries = [];
         this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
     }
-    getCurrentDirectoryName(directory) {
-        return directory.getFileName();
-    }
     setWidthAndHeight(width, height) {
         this.width = width;
         this.height = height;
@@ -51,9 +48,6 @@ class KhaExporter extends Exporter_1.Exporter {
             return [];
         });
     }
-    /*copyMusic(platform, from, to, encoders) {
-        return [];
-    }*/
     copySound(platform, from, to, encoders) {
         return __awaiter(this, void 0, Promise, function* () {
             return [];

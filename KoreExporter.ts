@@ -17,7 +17,7 @@ export class KoreExporter extends KhaExporter {
 	constructor(platform, khaDirectory, vr, directory) {
 		super(khaDirectory, directory);
 		this.platform = platform;
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Kore'));
+		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends', 'Kore'));
 		this.vr = vr;
 	}
 

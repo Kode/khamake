@@ -70,6 +70,7 @@ class Project {
         this.scriptdir = Project.scriptdir;
         this.libraries = [];
         this.localLibraryPath = 'Libraries';
+        this.assetMatchers = [];
         this.windowOptions = {};
         this.targetOptions = {
             flash: {},
@@ -83,6 +84,7 @@ class Project {
      * The regex syntax is very simple: * for anything, ** for anything across directories.
      */
     addAssets(match) {
+        this.assetMatchers.push(match);
         let files = findFiles(this.scriptdir, match);
         for (let f of files) {
             let file = path.parse(f);

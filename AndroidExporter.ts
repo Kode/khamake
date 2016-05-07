@@ -157,7 +157,7 @@ export class AndroidExporter extends KhaExporter {
 	}
 
 	async copyImage(platform, from, to, asset) {
-		let format = exportImage(from, path.join(this.directory, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), asset, undefined, false);
+		let format = await exportImage(from, path.join(this.directory, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 

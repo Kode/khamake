@@ -141,7 +141,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
     }
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = ImageTool_1.exportImage(from, path.join(this.directory, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(from, path.join(this.directory, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), asset, undefined, false);
             return [to + '.' + format];
         });
     }

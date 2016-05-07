@@ -86,6 +86,7 @@ export class Project {
 	localLibraryPath: string;
 	windowOptions: any;
 	targetOptions: any;
+	assetMatchers: Array<string>;
 	
 	constructor(name) {
 		this.name = name;
@@ -98,6 +99,7 @@ export class Project {
 		this.scriptdir = Project.scriptdir;
 		this.libraries = [];
 		this.localLibraryPath = 'Libraries';
+		this.assetMatchers = [];
 
 		this.windowOptions = {}		
 		this.targetOptions = {
@@ -112,7 +114,8 @@ export class Project {
 	 * Asset types are infered from the file suffix.
 	 * The regex syntax is very simple: * for anything, ** for anything across directories.
 	 */
-	addAssets(match) {
+	addAssets(match: string) {
+		this.assetMatchers.push(match);
 		let files = findFiles(this.scriptdir, match);
 		for (let f of files) {
 			let file = path.parse(f);
