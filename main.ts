@@ -19,6 +19,7 @@ import {Platform} from './Platform';
 import {loadProject} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
+import {HaxeCompiler} from './HaxeCompiler';
 import {ShaderCompiler} from './ShaderCompiler';
 import {KhaExporter} from './KhaExporter';
 import {AndroidExporter} from './AndroidExporter';
@@ -237,7 +238,11 @@ async function exportAssets(assets: Array<any>, exporter: KhaExporter, from: str
 }
 
 async function exportProjectFiles(name: string, from: string, to: string, options, exporter: KhaExporter, platform: string, khaDirectory: string, haxeDirectory: string, kore: boolean, korehl: boolean, libraries, targetOptions, defines, callback) {
-	if (haxeDirectory !== '') await exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
+	if (haxeDirectory !== '') {
+		await exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
+		let compiler = new HaxeCompiler(to, haxeDirectory, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
+		compiler.run(true);
+	}
 	if (haxeDirectory !== '' && kore) {
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js

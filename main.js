@@ -20,6 +20,7 @@ const Options_1 = require('./Options');
 const Platform_1 = require('./Platform');
 const ProjectFile_1 = require('./ProjectFile');
 const AssetConverter_1 = require('./AssetConverter');
+const HaxeCompiler_1 = require('./HaxeCompiler');
 const AndroidExporter_1 = require('./AndroidExporter');
 const DebugHtml5Exporter_1 = require('./DebugHtml5Exporter');
 const EmptyExporter_1 = require('./EmptyExporter');
@@ -232,8 +233,11 @@ function exportAssets(assets, exporter, from, platform, encoders) {
 }
 function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, libraries, targetOptions, defines, callback) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (haxeDirectory !== '')
+        if (haxeDirectory !== '') {
             yield exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(to, haxeDirectory, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
+            compiler.run(true);
+        }
         if (haxeDirectory !== '' && kore) {
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js

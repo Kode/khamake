@@ -96,7 +96,7 @@ export class Html5Exporter extends KhaExporter {
 		}
 		
 		if (Options.compilation) {
-			return await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+			//return await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
 		}
 		else {
 			return 0;

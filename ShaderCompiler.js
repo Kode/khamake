@@ -21,6 +21,8 @@ class ShaderCompiler {
         });
         this.watcher.on('change', (file) => {
         });
+        this.watcher.on('unlink', (file) => {
+        });
         this.watcher.on('ready', () => {
             //log('Initial scan complete. Ready for changes')
         });

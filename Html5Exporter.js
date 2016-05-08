@@ -11,7 +11,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('./Converter');
-const Haxe_1 = require('./Haxe');
 const Options_1 = require('./Options');
 const ImageTool_1 = require('./ImageTool');
 const HaxeProject_1 = require('./HaxeProject');
@@ -89,7 +88,6 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
                 }
             }
             if (Options_1.Options.compilation) {
-                return yield Haxe_1.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
             }
             else {
                 return 0;
