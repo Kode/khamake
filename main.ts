@@ -62,7 +62,7 @@ function addShader(project, name, extension) {
 	project.exportedShaders.push({files: [name + extension], name: name});
 }
 
-async function compileShader(exporter, platform, project, shader, to: string, temp, compiler) {
+async function compileShader(exporter: KhaExporter, platform: string, project, shader, to: string, temp: string, compiler: string) {
 	let name = shader.name;
 	if (name.endsWith('.inc')) return;
 	if (platform.endsWith('-hl')) platform = platform.substr(0, platform.length - '-hl'.length);
@@ -510,6 +510,7 @@ async function exportKhaProject(from: string, to: string, platform: string, khaD
 	exporter.parameters = project.parameters;
 	project.scriptdir = options.kha;
 	project.addShaders('Sources/Shaders/**');
+	project.addShaders('Kha/Sources/Shaders/**'); //**
 
 	let encoders: Encoders = {
 		oggEncoder: oggEncoder,
@@ -522,10 +523,10 @@ async function exportKhaProject(from: string, to: string, platform: string, khaD
 		kravur: options.kravur
 	};
 	console.log('Exporting assets.');
-	await exportAssets(project.assets, exporter, from, platform, encoders);
+	//await exportAssets(project.assets, exporter, from, platform, encoders);
 	new AssetConverter(exporter, platform, project.assetMatchers);
 	let shaderDir = path.join(to, exporter.sysdir() + '-resources');
-	if (platform === Platform.Unity) {
+	/*if (platform === Platform.Unity) {
 		shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
 	}
 	fs.ensureDirSync(shaderDir);
@@ -556,7 +557,10 @@ async function exportKhaProject(from: string, to: string, platform: string, khaD
 		for (let i = 0; i < project.exportedShaders.length; ++i) {
 			fs.writeFileSync(path.join(blobDir, project.exportedShaders[i].files[0] + '.bytes'), project.exportedShaders[i].name, { encoding: 'utf8'});
 		}
-	}
+	}*/
+	
+	fs.ensureDirSync(shaderDir);
+	new ShaderCompiler(exporter, platform, krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
 
 	// Push assets files to be loaded
 	let files = [];

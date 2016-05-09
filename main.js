@@ -21,6 +21,7 @@ const Platform_1 = require('./Platform');
 const ProjectFile_1 = require('./ProjectFile');
 const AssetConverter_1 = require('./AssetConverter');
 const HaxeCompiler_1 = require('./HaxeCompiler');
+const ShaderCompiler_1 = require('./ShaderCompiler');
 const AndroidExporter_1 = require('./AndroidExporter');
 const DebugHtml5Exporter_1 = require('./DebugHtml5Exporter');
 const EmptyExporter_1 = require('./EmptyExporter');
@@ -479,6 +480,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
         exporter.parameters = project.parameters;
         project.scriptdir = options.kha;
         project.addShaders('Sources/Shaders/**');
+        project.addShaders('Kha/Sources/Shaders/**'); //**
         let encoders = {
             oggEncoder: oggEncoder,
             aacEncoder: aacEncoder,
@@ -490,21 +492,21 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
             kravur: options.kravur
         };
         console.log('Exporting assets.');
-        yield exportAssets(project.assets, exporter, from, platform, encoders);
+        //await exportAssets(project.assets, exporter, from, platform, encoders);
         new AssetConverter_1.AssetConverter(exporter, platform, project.assetMatchers);
         let shaderDir = path.join(to, exporter.sysdir() + '-resources');
-        if (platform === Platform_1.Platform.Unity) {
+        /*if (platform === Platform.Unity) {
             shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
         }
         fs.ensureDirSync(shaderDir);
         for (let shader of project.shaders) {
-            yield compileShader(exporter, platform, project, shader, shaderDir, temp, krafix);
-            if (platform === Platform_1.Platform.Unity) {
+            await compileShader(exporter, platform, project, shader, shaderDir, temp, krafix);
+            if (platform === Platform.Unity) {
                 fs.ensureDirSync(path.join(to, exporter.sysdir() + '-resources'));
                 fs.writeFileSync(path.join(to, exporter.sysdir() + '-resources', shader.name + '.hlsl'), shader.name);
             }
         }
-        if (platform === Platform_1.Platform.Unity) {
+        if (platform === Platform.Unity) {
             let proto = fs.readFileSync(path.join(from, options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader'), { encoding: 'utf8' });
             for (let i1 = 0; i1 < project.exportedShaders.length; ++i1) {
                 if (project.exportedShaders[i1].name.endsWith('.vert')) {
@@ -514,7 +516,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
                             let proto2 = proto.replace(/{name}/g, shadername);
                             proto2 = proto2.replace(/{vert}/g, project.exportedShaders[i1].name);
                             proto2 = proto2.replace(/{frag}/g, project.exportedShaders[i2].name);
-                            fs.writeFileSync(path.join(shaderDir, shadername + '.shader'), proto2, { encoding: 'utf8' });
+                            fs.writeFileSync(path.join(shaderDir, shadername + '.shader'), proto2, { encoding: 'utf8'});
                         }
                     }
                 }
@@ -522,9 +524,11 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
             let blobDir = path.join(to, exporter.sysdir(), 'Assets', 'Resources', 'Blobs');
             fs.ensureDirSync(blobDir);
             for (let i = 0; i < project.exportedShaders.length; ++i) {
-                fs.writeFileSync(path.join(blobDir, project.exportedShaders[i].files[0] + '.bytes'), project.exportedShaders[i].name, { encoding: 'utf8' });
+                fs.writeFileSync(path.join(blobDir, project.exportedShaders[i].files[0] + '.bytes'), project.exportedShaders[i].name, { encoding: 'utf8'});
             }
-        }
+        }*/
+        fs.ensureDirSync(shaderDir);
+        new ShaderCompiler_1.ShaderCompiler(exporter, platform, krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
         // Push assets files to be loaded
         let files = [];
         for (let asset of project.assets) {
