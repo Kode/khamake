@@ -224,7 +224,14 @@ class Project {
 				for (let parameter of params.split('\n')) {
 					let param = parameter.trim();
 					if (param !== '') {
-						this.addParameter(param);
+                        if (param.startsWith('-lib')) {
+                            // (DK)
+                            //  - '-lib xxx' is for linking a library via haxe, it forces the use of the haxelib version
+                            //  - this should be handled by khamake though, as it tracks the dependencies better (local folder or haxelib)
+                            console.log('ignoring', dir + '/extraParams.hxml "' + param + '"');
+                        } else {
+                            this.addParameter(param);
+                        }
 					}
 				}
 			}
