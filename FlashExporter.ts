@@ -112,10 +112,10 @@ export class FlashExporter extends KhaExporter {
 		await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 	}
 
-	async copySound(platform, from, to, encoders) {
+	async copySound(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		var ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
-		var mp3 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), encoders.mp3Encoder);
+		var ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+		var mp3 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
 		var files = [];
 		if (ogg) {
 			files.push(to + '.ogg');
@@ -128,21 +128,21 @@ export class FlashExporter extends KhaExporter {
 		return files;
 	}
 
-	async copyImage(platform, from, to, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		let format = exportImage(from, path.join(this.options.to, this.sysdir(),to), asset, undefined, false);
 		if (this.options.embedflashassets) this.images.push(to + '.' + format);
 		return [to + '.' + format];
 	}
 
-	async copyBlob(platform, from, to) {
+	async copyBlob(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
 		if (this.options.embedflashassets) this.blobs.push(to);
 		return [to];
 	}
 
-	async copyVideo(platform, from, to, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
+		await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
 		return [to + '.mp4'];
 	}
 

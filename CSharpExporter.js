@@ -87,7 +87,7 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         this.p("EndGlobal");
         this.closeFile();
     }
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             return [to];
         });
@@ -104,7 +104,7 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
             return [to];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             return [to];
         });

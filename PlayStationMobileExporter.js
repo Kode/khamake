@@ -134,7 +134,7 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
     /*copyMusic(platform, from, to, encoders, callback) {
         callback();
     }*/
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             return [];
         });
@@ -153,7 +153,7 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
             return [to];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             return [];
         });

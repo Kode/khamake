@@ -2,7 +2,6 @@
 
 import * as path from 'path';
 import {convert} from './Converter';
-import {Encoders} from './Encoders';
 import {Exporter} from './Exporter';
 import {Options} from './Options';
 
@@ -60,15 +59,15 @@ export abstract class KhaExporter extends Exporter {
 		}
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset): Promise<Array<string>> {
+	async copyImage(platform: string, from: string, to: string, asset: any): Promise<Array<string>> {
 		return [];
 	}
 
-	async copySound(platform: string, from: string, to: string, encoders: Encoders): Promise<Array<string>> {
+	async copySound(platform: string, from: string, to: string): Promise<Array<string>> {
 		return [];
 	}
 
-	async copyVideo(platform: string, from: string, to: string, encoders: Encoders): Promise<Array<string>> {
+	async copyVideo(platform: string, from: string, to: string): Promise<Array<string>> {
 		return [];
 	}
 

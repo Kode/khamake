@@ -102,11 +102,11 @@ export abstract class CSharpExporter extends KhaExporter {
 	
 	abstract exportResources();
 
-	async copySound(platform, from, to, encoders) {
+	async copySound(platform: string, from: string, to: string) {
 		return [to];
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
@@ -116,7 +116,7 @@ export abstract class CSharpExporter extends KhaExporter {
 		return [to];
 	}
 
-	async copyVideo(platform, from, to, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		return [to];
 	}
 }

@@ -272,16 +272,16 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
             callback([to + '.mp4']);
         });
     }*/
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
             return [to + '.wav'];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), encoders.wmvEncoder);
+            yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), this.options.wmv);
             return [to + '.wmv'];
         });
     }

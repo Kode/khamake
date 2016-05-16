@@ -68,22 +68,22 @@ export class UnityExporter extends KhaExporter {
 		callback([to]);
 	}*/
 
-	async copySound(platform, from, to, encoders) {
-		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), encoders.oggEncoder);
+	async copySound(platform: string, from: string, to: string) {
+		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), this.options.ogg);
 		return [to + '.ogg'];
 	}
 
-	async copyImage(platform, from, to, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true);
 		return [to + '.' + format];
 	}
 
-	async copyBlob(platform, from, to) {
+	async copyBlob(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Blobs', to + '.bytes'), { clobber: true });
 		return [to];
 	}
 
-	async copyVideo(platform, from, to, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		return [to];
 	}
 }

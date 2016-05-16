@@ -22,10 +22,8 @@ export class Html5Exporter extends KhaExporter {
 	sysdir() {
 		return 'html5';
 	}
-
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
-		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-
+	
+	haxeOptions(defines: Array<string>) {
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -47,7 +45,7 @@ export class Html5Exporter extends KhaExporter {
 			this.parameters.push('-debug');
 		}
 
-		const options = {
+		return {
 			from: this.options.from.toString(),
 			to: path.join(this.sysdir(), 'kha.js'),
 			sources: this.sources,
@@ -61,7 +59,12 @@ export class Html5Exporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
-		writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
+
+		writeHaxeProject(this.options.to, this.haxeOptions(defines));
 
 		if (this.sysdir() === 'debug-html5') {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
@@ -110,17 +113,17 @@ export class Html5Exporter extends KhaExporter {
 		});
 	}*/
 
-	async copySound(platform: string, from: string, to: string, encoders) {
+	async copySound(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
-		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.aacEncoder);
+		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
 		var files = [];
 		if (ogg) files.push(to + '.ogg');
 		if (mp4) files.push(to + '.mp4');
 		return files;
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
@@ -130,10 +133,10 @@ export class Html5Exporter extends KhaExporter {
 		return [to];
 	}
 
-	async copyVideo(platform, from, to, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
-		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), encoders.webmEncoder);
+		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
 		let files = [];
 		if (mp4) files.push(to + '.mp4');
 		if (webm) files.push(to + '.webm');

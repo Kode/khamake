@@ -259,7 +259,7 @@ export class XnaExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	async copyImage(platform, from, to, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		this.images.push(asset['file']);
 		let format = await exportImage(from, path.join(this.options.to, 'xna', to), asset, undefined, false);
 		return [to + '.' + format];

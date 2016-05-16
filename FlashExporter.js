@@ -97,11 +97,11 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
             yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
         });
     }
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            var ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
-            var mp3 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), encoders.mp3Encoder);
+            var ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+            var mp3 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
             var files = [];
             if (ogg) {
                 files.push(to + '.ogg');
@@ -132,10 +132,10 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
             return [to];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
+            yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
             return [to + '.mp4'];
         });
     }

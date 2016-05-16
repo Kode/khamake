@@ -93,22 +93,22 @@ export class JavaExporter extends KhaExporter {
 		callback([to + '.wav']);
 	}*/
 
-	async copySound(platform, from, to, encoders) {
+	async copySound(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
 		return [to + '.wav'];
 	}
 
-	async copyImage(platform, from, to, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 
-	async copyBlob(platform, from, to) {
+	async copyBlob(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
 		return [to];
 	}
 
-	async copyVideo(platform, from, to, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		return [to];
 	}
 }

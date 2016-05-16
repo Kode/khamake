@@ -84,8 +84,8 @@ class Project {
      * Asset types are infered from the file suffix.
      * The regex syntax is very simple: * for anything, ** for anything across directories.
      */
-    addAssets(match) {
-        this.assetMatchers.push(match);
+    addAssets(match, options) {
+        this.assetMatchers.push({ match: match, options: options });
         let files = findFiles(this.scriptdir, match);
         for (let f of files) {
             let file = path.parse(f);
@@ -122,8 +122,8 @@ class Project {
      * Add all shaders matching the match regex relative to the directory containing the current khafile.
      * The regex syntax is very simple: * for anything, ** for anything across directories.
      */
-    addShaders(match) {
-        this.shaderMatchers.push(match);
+    addShaders(match, options) {
+        this.shaderMatchers.push({ match: match, options: options });
         let shaders = findFiles(this.scriptdir, match);
         for (let shader of shaders) {
             let file = path.parse(shader);
@@ -221,7 +221,7 @@ class Project {
                     }
                 }
             }
-            this.addShaders(dir + '/Sources/Shaders/**');
+            this.addShaders(dir + '/Sources/Shaders/**', {});
         }
     }
 }

@@ -151,6 +151,12 @@ var options: Array<any> = [
 		full: 'silent',
 		description: 'Silent mode.',
 		value: false
+	},
+	{
+		full: 'watch',
+		short: 'w',
+		description: 'Watch files and recompile on change.',
+		value: false
 	}
 ];
 

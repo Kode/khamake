@@ -280,14 +280,14 @@ export class WpfExporter extends CSharpExporter {
 		});
 	}*/
 
-	async copySound(platform, from, to, encoders) {
+	async copySound(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
 		return [to + '.wav'];
 	}
 
-	async copyVideo(platform, from, to, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		await convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), encoders.wmvEncoder);
+		await convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), this.options.wmv);
 		return [to + '.wmv'];
 	}
 }

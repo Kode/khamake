@@ -13,10 +13,10 @@ export class ShaderCompiler {
 	system: string;
 	to: string;
 	temp: string;
-	shaderMatchers: Array<string>;
+	shaderMatchers: Array<{ match: string, options: any }>;
 	watcher: chokidar.FSWatcher;
 	
-	constructor(exporter: KhaExporter, platform: string, compiler: string, type: string, system: string, to: string, temp: string, shaderMatchers: Array<string>) {
+	constructor(exporter: KhaExporter, platform: string, compiler: string, type: string, system: string, to: string, temp: string, shaderMatchers: Array<{ match: string, options: any }>) {
 		this.exporter = exporter;
 		this.platform = platform;
 		this.compiler = compiler;
@@ -27,14 +27,27 @@ export class ShaderCompiler {
 		this.shaderMatchers = shaderMatchers;
 	}
 	
-	run(watch: boolean): Promise<{}> {
-		return new Promise((resolve, reject) => {
-			this.watcher = chokidar.watch(this.shaderMatchers, { ignored: /[\/\\]\./, persistent: watch });
+	addShader(project, name, extension) {
+		project.exportedShaders.push({files: [name + extension], name: name});
+	}
+	
+	watch(watch: boolean, match: string, options: any) {
+		return new Promise<Array<{ files: Array<string>, name: string }>>((resolve, reject) => {
+			let shaders: Array<{ files: Array<string>, name: string }> = [];
+			let ready = false;
+			
+			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
 			this.watcher.on('add', (file: string) => {
-				switch (path.parse(file).ext) {
-					case '.glsl':
-						this.compileShader(file);
-						break;
+				if (ready) {
+					switch (path.parse(file).ext) {
+						case '.glsl':
+							this.compileShader(file);
+							break;
+					}
+				}
+				else {
+					let parsed = path.parse(file);
+					shaders.push({ files: [parsed.name + this.type], name: parsed.name});
 				}
 			});
 			this.watcher.on('change', (file: string) => {
@@ -47,13 +60,31 @@ export class ShaderCompiler {
 			this.watcher.on('unlink', (file: string) => {
 				
 			});
-			this.watcher.on('ready', () => {
-				resolve();
+			this.watcher.on('ready', async () => {
+				ready = true;
+				for (let shader of shaders) {
+					await this.compileShader(shader.name + '.glsl');
+				}
+				resolve(shaders);
 			});
 		});
 	}
 	
+	async run(watch: boolean): Promise<Array<{ files: Array<string>, name: string }>> {
+		let shaders: Array<{ files: Array<string>, name: string }> = [];
+		for (let matcher of this.shaderMatchers) {
+			shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options));
+		}
+		return shaders;
+	}
+	
 	compileShader(file: string) {
+		/*
+		let shaderpath = path.join(to, name + '.essl');
+		await compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform);
+		addShader(project, name, ".essl");
+		*/
+		
 		return new Promise((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
 		

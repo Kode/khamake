@@ -21,42 +21,44 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     sysdir() {
         return 'html5';
     }
+    haxeOptions(defines) {
+        defines.push('sys_g1');
+        defines.push('sys_g2');
+        defines.push('sys_g3');
+        defines.push('sys_g4');
+        defines.push('sys_a1');
+        defines.push('sys_a2');
+        if (this.sysdir() === 'node') {
+            defines.push('sys_node');
+            defines.push('sys_server');
+            defines.push('nodejs');
+        }
+        else {
+            defines.push('sys_' + this.options.target);
+        }
+        if (this.sysdir() === 'debug-html5') {
+            defines.push('sys_debug_html5');
+            this.parameters.push('-debug');
+        }
+        return {
+            from: this.options.from.toString(),
+            to: path.join(this.sysdir(), 'kha.js'),
+            sources: this.sources,
+            libraries: this.libraries,
+            defines: defines,
+            parameters: this.parameters,
+            haxeDirectory: this.options.haxe,
+            system: this.sysdir(),
+            language: 'js',
+            width: this.width,
+            height: this.height,
+            name: name
+        };
+    }
     exportSolution(name, _targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            defines.push('sys_g1');
-            defines.push('sys_g2');
-            defines.push('sys_g3');
-            defines.push('sys_g4');
-            defines.push('sys_a1');
-            defines.push('sys_a2');
-            if (this.sysdir() === 'node') {
-                defines.push('sys_node');
-                defines.push('sys_server');
-                defines.push('nodejs');
-            }
-            else {
-                defines.push('sys_' + this.options.target);
-            }
-            if (this.sysdir() === 'debug-html5') {
-                defines.push('sys_debug_html5');
-                this.parameters.push('-debug');
-            }
-            const options = {
-                from: this.options.from.toString(),
-                to: path.join(this.sysdir(), 'kha.js'),
-                sources: this.sources,
-                libraries: this.libraries,
-                defines: defines,
-                parameters: this.parameters,
-                haxeDirectory: this.options.haxe,
-                system: this.sysdir(),
-                language: 'js',
-                width: this.width,
-                height: this.height,
-                name: name
-            };
-            HaxeProject_1.writeHaxeProject(this.options.to, options);
+            HaxeProject_1.writeHaxeProject(this.options.to, this.haxeOptions(defines));
             if (this.sysdir() === 'debug-html5') {
                 let index = path.join(this.options.to, this.sysdir(), 'index.html');
                 if (!fs.existsSync(index)) {
@@ -100,11 +102,11 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             });
         });
     }*/
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
-            let mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.aacEncoder);
+            let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+            let mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
             var files = [];
             if (ogg)
                 files.push(to + '.ogg');
@@ -125,11 +127,11 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             return [to];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
-            let webm = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), encoders.webmEncoder);
+            let mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+            let webm = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
             let files = [];
             if (mp4)
                 files.push(to + '.mp4');

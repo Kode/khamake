@@ -57,7 +57,7 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
             }
         });
     }
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             return [];
         });
@@ -72,7 +72,7 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
             return [];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             return [];
         });

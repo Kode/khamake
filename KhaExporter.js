@@ -48,12 +48,12 @@ class KhaExporter extends Exporter_1.Exporter {
             return [];
         });
     }
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, Promise, function* () {
             return [];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, Promise, function* () {
             return [];
         });

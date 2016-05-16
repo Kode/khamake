@@ -4,9 +4,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Project} from './Project';
 
-export function loadProject(from: string, projectfile: string) {
-	let file = fs.readFileSync(path.join(from, projectfile), { encoding: 'utf8' });
-	Project.scriptdir = from.toString();
-	let project = new Function('Project', file)(Project);
-	return project;
+export async function loadProject(from: string, projectfile: string): Promise<Project> {
+	return new Promise<Project>((resolve, reject) => {
+		fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
+			Project.scriptdir = from;
+			new Function('Project', 'require', 'resolve', 'reject', data)(Project, require, resolve, reject);
+		});
+	});
 }

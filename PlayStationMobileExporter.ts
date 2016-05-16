@@ -149,7 +149,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 		callback();
 	}*/
 
-	async copySound(platform: string, from: string, to: string, encoders) {
+	async copySound(platform: string, from: string, to: string) {
 		return [];
 	}
 
@@ -165,7 +165,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 		return [to];
 	}
 
-	async copyVideo(platform: string, from: string, to: string, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		return [];
 	}
 }

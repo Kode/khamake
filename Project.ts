@@ -77,7 +77,7 @@ export class Project {
 	assets: Array<Asset>;
 	sources: Array<string>;
 	shaders: Array<Shader>;
-	exportedShaders: Array<string>;
+	exportedShaders: Array<any>;
 	defines: Array<string>;
 	parameters: Array<string>;
 	scriptdir: string;
@@ -86,8 +86,8 @@ export class Project {
 	localLibraryPath: string;
 	windowOptions: any;
 	targetOptions: any;
-	assetMatchers: Array<string>;
-	shaderMatchers: Array<string>;
+	assetMatchers: Array<{ match: string, options: any }>;
+	shaderMatchers: Array<{ match: string, options: any }>;
 	
 	constructor(name) {
 		this.name = name;
@@ -116,8 +116,8 @@ export class Project {
 	 * Asset types are infered from the file suffix.
 	 * The regex syntax is very simple: * for anything, ** for anything across directories.
 	 */
-	addAssets(match: string) {
-		this.assetMatchers.push(match);
+	addAssets(match: string, options: any) {
+		this.assetMatchers.push({ match: match, options: options });
 		let files = findFiles(this.scriptdir, match);
 		for (let f of files) {
 			let file = path.parse(f);
@@ -157,8 +157,8 @@ export class Project {
 	 * Add all shaders matching the match regex relative to the directory containing the current khafile.
 	 * The regex syntax is very simple: * for anything, ** for anything across directories.
 	 */
-	addShaders(match) {
-		this.shaderMatchers.push(match);
+	addShaders(match: string, options: any) {
+		this.shaderMatchers.push({ match: match, options: options });
 		let shaders = findFiles(this.scriptdir, match);
 		for (let shader of shaders) {
 			let file = path.parse(shader);
@@ -263,7 +263,7 @@ export class Project {
 				}
 			}
 			
-			this.addShaders(dir + '/Sources/Shaders/**');
+			this.addShaders(dir + '/Sources/Shaders/**', {});
 		}
 	}
 }

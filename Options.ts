@@ -39,6 +39,7 @@ export class Options {
 	port: string;
 	debug: boolean;
 	silent: boolean;
+	watch: boolean;
 	
 	ogg: string;
 	aac: string;

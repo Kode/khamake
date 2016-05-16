@@ -64,9 +64,9 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
     /*copyMusic(platform, from, to, encoders, callback) {
         callback([to]);
     }*/
-    copySound(platform, from, to, encoders) {
+    copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), encoders.oggEncoder);
+            let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), this.options.ogg);
             return [to + '.ogg'];
         });
     }
@@ -82,7 +82,7 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
             return [to];
         });
     }
-    copyVideo(platform, from, to, encoders) {
+    copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             return [to];
         });

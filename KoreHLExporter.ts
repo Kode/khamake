@@ -70,12 +70,12 @@ export class KoreHLExporter extends KhaExporter {
 		});
 	}*/
 
-	async copySound(platform, from, to, encoders) {
+	async copySound(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
 		return [to + '.wav'];
 	}
 
-	async copyImage(platform, from, to, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		if (platform === Platform.iOS && asset.compressed) {
 			let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
 			return [to + '.' + format];
@@ -92,23 +92,23 @@ export class KoreHLExporter extends KhaExporter {
 		}
 	}
 
-	async copyBlob(platform, from, to) {
+	async copyBlob(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to).toString(), { clobber: true });
 		return [to];
 	}
 
-	async copyVideo(platform, from, to, encoders) {
+	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		if (platform === Platform.iOS) {
-			await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
 			return [to + '.mp4'];
 		}
 		else if (platform === Platform.Android) {
-			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ts'), encoders.h264Encoder);
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ts'), this.options.h264);
 			return [to + '.ts'];
 		}
 		else {
-			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogv'), encoders.theoraEncoder);
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogv'), this.options.theora);
 			return [to + '.ogv'];
 		}
 	}
