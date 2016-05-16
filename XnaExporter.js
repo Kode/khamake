@@ -20,9 +20,8 @@ function findIcon(from) {
         return path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', 'ball.png');
 }
 class XnaExporter extends CSharpExporter_1.CSharpExporter {
-    constructor(khaDirectory, directory) {
-        super(khaDirectory, directory);
-        this.directory = directory;
+    constructor(options) {
+        super(options);
         this.images = [];
     }
     sysdir() {
@@ -32,8 +31,8 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         return "XNA";
     }
     exportResources() {
-        this.createDirectory(path.join(this.directory, this.sysdir() + '-build', 'Properties'));
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Properties', 'AssemblyInfo.cs'));
+        this.createDirectory(path.join(this.options.to, this.sysdir() + '-build', 'Properties'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Properties', 'AssemblyInfo.cs'));
         this.p("using System.Reflection;");
         this.p("using System.Runtime.CompilerServices;");
         this.p("using System.Runtime.InteropServices;");
@@ -54,8 +53,8 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.closeFile();
     }
     exportSLN(projectUuid) {
-        fs.ensureDirSync(path.join(this.directory, this.sysdir() + '-build'));
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.sln'));
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
         var solutionUuid = uuid.v4();
         var contentUuid = uuid.v4();
         this.p("Microsoft Visual Studio Solution File, Format Version 11.00");
@@ -82,7 +81,7 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.p("EndGlobalSection", 1);
         this.p("EndGlobal");
         this.closeFile();
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'ProjectContent.contentproj'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'ProjectContent.contentproj'));
         this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         this.p("<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
         this.p("<PropertyGroup>", 1);
@@ -129,9 +128,9 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.closeFile();
     }
     exportCsProj(projectUuid) {
-        ImageTool_1.exportImage(findIcon(this.directory), path.join(this.directory, this.sysdir() + '-build', 'GameThumbnail.png'), new Asset_1.Asset(64, 64), 'png', false);
-        ImageTool_1.exportImage(findIcon(this.directory), path.join(this.directory, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.csproj'));
+        ImageTool_1.exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), new Asset_1.Asset(64, 64), 'png', false);
+        ImageTool_1.exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
         this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         this.p("<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
         this.p("<PropertyGroup>", 1);
@@ -207,7 +206,7 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.p("</ItemGroup>", 1);
         this.p("<ItemGroup>", 1);
         this.p("<Compile Include=\"Properties\\AssemblyInfo.cs\" />", 2);
-        this.includeFiles(path.join(this.directory, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.directory, this.sysdir() + '-build'));
+        this.includeFiles(path.join(this.options.to, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.options.to, this.sysdir() + '-build'));
         this.p("</ItemGroup>", 1);
         this.p("<ItemGroup>", 1);
         this.p("<Content Include=\"Game.ico\" />", 2);
@@ -256,7 +255,7 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
             this.images.push(asset['file']);
-            let format = yield ImageTool_1.exportImage(from, path.join(this.directory, 'xna', to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, 'xna', to), asset, undefined, false);
             return [to + '.' + format];
         });
     }

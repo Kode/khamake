@@ -15,52 +15,50 @@ const Haxe_1 = require('./Haxe');
 const ImageTool_1 = require('./ImageTool');
 const uuid = require('./uuid.js');
 class UnityExporter extends KhaExporter_1.KhaExporter {
-    constructor(khaDirectory, directory) {
-        super(khaDirectory, directory);
-        this.directory = directory;
+    constructor(options) {
+        super(options);
     }
     sysdir() {
         return 'unity';
     }
-    exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
-        return __awaiter(this, void 0, void 0, function* () {
+    exportSolution(name, _targetOptions, defines) {
+        return __awaiter(this, void 0, Promise, function* () {
             this.addSourceDirectory("Kha/Backends/Unity");
             defines.push('no-root');
             defines.push('no-compilation');
-            defines.push('sys_' + platform);
+            defines.push('sys_' + this.options.target);
             defines.push('sys_g1');
             defines.push('sys_g2');
             defines.push('sys_g3');
             defines.push('sys_g4');
             defines.push('sys_a1');
             const options = {
-                from: from.toString(),
+                from: this.options.from,
                 to: path.join(this.sysdir(), 'Assets', 'Sources'),
                 sources: this.sources,
                 libraries: this.libraries,
                 defines: defines,
                 parameters: this.parameters,
-                haxeDirectory: haxeDirectory.toString(),
+                haxeDirectory: this.options.haxe,
                 system: this.sysdir(),
                 language: 'cs',
                 width: this.width,
                 height: this.height,
                 name: name
             };
-            fs.removeSync(path.join(this.directory, this.sysdir(), 'Assets', 'Sources'));
-            let result = yield Haxe_1.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+            fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
+            let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
             var copyDirectory = (from, to) => {
                 let files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
-                fs.ensureDirSync(path.join(this.directory, this.sysdir(), to));
+                fs.ensureDirSync(path.join(this.options.to, this.sysdir(), to));
                 for (let file of files) {
                     var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', from, file), { encoding: 'utf8' });
-                    fs.writeFileSync(path.join(this.directory, this.sysdir(), to, file), text);
+                    fs.writeFileSync(path.join(this.options.to, this.sysdir(), to, file), text);
                 }
             };
             copyDirectory('Assets', 'Assets');
             copyDirectory('Editor', 'Assets/Editor');
             copyDirectory('ProjectSettings', 'ProjectSettings');
-            return result;
         });
     }
     /*copyMusic(platform, from, to, encoders, callback) {
@@ -68,19 +66,19 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
     }*/
     copySound(platform, from, to, encoders) {
         return __awaiter(this, void 0, void 0, function* () {
-            let ogg = yield Converter_1.convert(from, path.join(this.directory, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), encoders.oggEncoder);
+            let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), encoders.oggEncoder);
             return [to + '.ogg'];
         });
     }
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = yield ImageTool_1.exportImage(from, path.join(this.directory, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true);
+            let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true);
             return [to + '.' + format];
         });
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), 'Assets', 'Resources', 'Blobs', to + '.bytes'), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Blobs', to + '.bytes'), { clobber: true });
             return [to];
         });
     }

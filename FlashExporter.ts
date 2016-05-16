@@ -17,28 +17,26 @@ function adjustFilename(filename: string): string {
 }
 
 export class FlashExporter extends KhaExporter {
-	embed: boolean;
 	images: Array<string>;
 	sounds: Array<string>;
 	blobs: Array<string>;
 	parameters: Array<string>;
 	
-	constructor(khaDirectory, directory, embedflashassets) {
-		super(khaDirectory, directory);
-		this.embed = embedflashassets;
+	constructor(options: Options) {
+		super(options);
 		this.images = [];
 		this.sounds = [];
 		this.blobs = [];
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Flash'));
+		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Flash'));
 	}
 
 	sysdir() {
 		return 'flash';
 	}
 
-	async exportSolution(name: string, platform: string, khaDirectory: string, haxeDirectory: string, from: string, targetOptions, defines) {
+	async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<void> {
 		defines.push('swf-script-timeout=60');
-		defines.push('sys_' + platform);
+		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -46,7 +44,7 @@ export class FlashExporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 
-		if (this.embed) defines.push('KHA_EMBEDDED_ASSETS');
+		if (this.options.embedflashassets) defines.push('KHA_EMBEDDED_ASSETS');
 
 		let defaultFlashOptions = {
 			framerate : 60,
@@ -57,13 +55,13 @@ export class FlashExporter extends KhaExporter {
 		let flashOptions = targetOptions ? targetOptions.flash ? targetOptions.flash : defaultFlashOptions : defaultFlashOptions;
 		
 		const options = {
-			from: from.toString(),
+			from: this.options.from,
 			to: path.join(this.sysdir(), 'kha.swf'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
-			haxeDirectory: haxeDirectory.toString(),
+			haxeDirectory: this.options.haxe,
 			system: this.sysdir(),
 			language: 'as',
 			width: this.width,
@@ -73,10 +71,10 @@ export class FlashExporter extends KhaExporter {
 			stageBackground: 'stageBackground' in flashOptions ? flashOptions.stageBackground : defaultFlashOptions.stageBackground,
 			swfVersion : 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion
 		};
-		await writeHaxeProject(this.directory.toString(), options);
+		await writeHaxeProject(this.options.to, options);
 
-		if (this.embed) {
-			this.writeFile(path.join(this.directory, '..', 'Sources', 'Assets.hx'));
+		if (this.options.embedflashassets) {
+			this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
 
 			this.p("package;");
 			this.p();
@@ -111,49 +109,44 @@ export class FlashExporter extends KhaExporter {
 			this.closeFile();
 		}
 
-		if (Options.compilation) {
-			return await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
-		}
-		else {
-			return 0;
-		}
+		await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 	}
 
 	async copySound(platform, from, to, encoders) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
-		var ogg = await convert(from, path.join(this.directory, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
-		var mp3 = await convert(from, path.join(this.directory, this.sysdir(), to + '.mp3'), encoders.mp3Encoder);
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+		var ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
+		var mp3 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), encoders.mp3Encoder);
 		var files = [];
 		if (ogg) {
 			files.push(to + '.ogg');
-			if (this.embed) this.sounds.push(to + '.ogg');
+			if (this.options.embedflashassets) this.sounds.push(to + '.ogg');
 		}
 		if (mp3) {
 			files.push(to + '.mp3');
-			if (this.embed) this.sounds.push(to + '.mp3');
+			if (this.options.embedflashassets) this.sounds.push(to + '.mp3');
 		}
 		return files;
 	}
 
 	async copyImage(platform, from, to, asset) {
-		let format = exportImage(from, path.join(this.directory, this.sysdir(),to), asset, undefined, false);
-		if (this.embed) this.images.push(to + '.' + format);
+		let format = exportImage(from, path.join(this.options.to, this.sysdir(),to), asset, undefined, false);
+		if (this.options.embedflashassets) this.images.push(to + '.' + format);
 		return [to + '.' + format];
 	}
 
 	async copyBlob(platform, from, to) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to), { clobber: true });
-		if (this.embed) this.blobs.push(to);
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
+		if (this.options.embedflashassets) this.blobs.push(to);
 		return [to];
 	}
 
 	async copyVideo(platform, from, to, encoders) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
-		await convert(from, path.join(this.directory, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+		await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
 		return [to + '.mp4'];
 	}
 
 	addShader(shader) {
-		if (this.embed) this.blobs.push(shader);
+		if (this.options.embedflashassets) this.blobs.push(shader);
 	}
 }

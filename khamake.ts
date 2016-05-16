@@ -7,16 +7,13 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-var exec = require('./exec.js');
-var korepath = require('./korepath.js');
-var Files = require('./Files.js');
-var GraphicsApi = require('./GraphicsApi.js');
-var VrApi = require('./VrApi.js');
-var Options = require('./Options.js');
-var Path = require('./Path.js');
-var Paths = require('./Paths.js');
-var Platform = require('./Platform.js');
-var VisualStudioVersion = require('./VisualStudioVersion.js');
+import {sys} from './exec';
+import * as korepath from './korepath';
+import {GraphicsApi} from './GraphicsApi';
+import {VrApi} from './VrApi';
+import {Options} from './Options';
+import {Platform} from './Platform';
+import {VisualStudioVersion} from './VisualStudioVersion';
 
 var defaultTarget;
 if (os.platform() === "linux") {
@@ -157,9 +154,7 @@ var options: Array<any> = [
 	}
 ];
 
-var parsedOptions: any = {
-
-};
+let parsedOptions = new Options();
 
 function printHelp() {
 	console.log('khamake options:\n');
@@ -273,21 +268,3 @@ else if (parsedOptions.server) {
 else {
 	runKhamake();
 }
-/*
-async function main() {
- await ping();
-}
-
-async function ping() {
- for (var i = 0; i < 10; i++) {
-  await delay(300);
-  console.log("ping");
- }
-}
-
-function delay(ms: number) {
- return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-main();
-*/

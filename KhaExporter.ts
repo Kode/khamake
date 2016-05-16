@@ -4,6 +4,7 @@ import * as path from 'path';
 import {convert} from './Converter';
 import {Encoders} from './Encoders';
 import {Exporter} from './Exporter';
+import {Options} from './Options';
 
 export abstract class KhaExporter extends Exporter {
 	width: number;
@@ -12,21 +13,21 @@ export abstract class KhaExporter extends Exporter {
 	libraries: Array<string>;
 	name: string;
 	safename: string;
-	directory: string;
+	options: Options;
 	
-	constructor(khaDirectory: string, directory: string) {
+	constructor(options: Options) {
 		super();
-		this.directory = directory;
+		this.options = options;
 		this.width = 640;
 		this.height = 480;
 		this.sources = [];
 		this.libraries = [];
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
+		this.addSourceDirectory(path.join(options.kha, 'Sources'));
 	}
 	
 	abstract sysdir(): string;
 
-	abstract async exportSolution(name: string, platform: string, khaDirectory: string, haxeDirectory: string, from: string, targetOptions: any, defines: Array<string>): Promise<{}>;
+	abstract async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<void>;
 
 	setWidthAndHeight(width: number, height: number): void {
 		this.width = width;

@@ -2,12 +2,13 @@
 
 import * as path from 'path';
 import {Html5Exporter} from './Html5Exporter';
+import {Options} from './Options';
 
 export class Html5WorkerExporter extends Html5Exporter {
-	constructor(khaDirectory, directory) {
-		super(khaDirectory, directory);
+	constructor(options: Options) {
+		super(options);
 		this.sources.pop();
-		this.addSourceDirectory(path.join(khaDirectory, 'Backends', 'HTML5-Worker'));
+		this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5-Worker'));
 	}
 
 	sysdir() {

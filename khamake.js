@@ -12,25 +12,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const os = require('os');
 const path = require('path');
-var exec = require('./exec.js');
-var korepath = require('./korepath.js');
-var Files = require('./Files.js');
-var GraphicsApi = require('./GraphicsApi.js');
-var VrApi = require('./VrApi.js');
-var Options = require('./Options.js');
-var Path = require('./Path.js');
-var Paths = require('./Paths.js');
-var Platform = require('./Platform.js');
-var VisualStudioVersion = require('./VisualStudioVersion.js');
+const GraphicsApi_1 = require('./GraphicsApi');
+const VrApi_1 = require('./VrApi');
+const Options_1 = require('./Options');
+const Platform_1 = require('./Platform');
+const VisualStudioVersion_1 = require('./VisualStudioVersion');
 var defaultTarget;
 if (os.platform() === "linux") {
-    defaultTarget = Platform.Linux;
+    defaultTarget = Platform_1.Platform.Linux;
 }
 else if (os.platform() === "win32") {
-    defaultTarget = Platform.Windows;
+    defaultTarget = Platform_1.Platform.Windows;
 }
 else {
-    defaultTarget = Platform.OSX;
+    defaultTarget = Platform_1.Platform.OSX;
 }
 var options = [
     {
@@ -62,7 +57,7 @@ var options = [
         full: 'vr',
         value: true,
         description: 'Target VR device',
-        default: VrApi.None
+        default: VrApi_1.VrApi.None
     },
     {
         full: 'intermediate',
@@ -76,14 +71,14 @@ var options = [
         short: 'g',
         description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal and opengl.',
         value: true,
-        default: GraphicsApi.Direct3D9
+        default: GraphicsApi_1.GraphicsApi.Direct3D9
     },
     {
         full: 'visualstudio',
         short: 'v',
         description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013 and vs2015.',
         value: true,
-        default: VisualStudioVersion.VS2015
+        default: VisualStudioVersion_1.VisualStudioVersion.VS2015
     },
     {
         full: 'kha',
@@ -159,7 +154,7 @@ var options = [
         value: false
     }
 ];
-var parsedOptions = {};
+let parsedOptions = new Options_1.Options();
 function printHelp() {
     console.log('khamake options:\n');
     for (var o in options) {
@@ -234,8 +229,8 @@ for (var i = 2; i < args.length; ++i) {
             parsedOptions.target = arg;
     }
 }
-if (parsedOptions.graphics === GraphicsApi.OpenGL) {
-    parsedOptions.graphics = GraphicsApi.OpenGL2;
+if (parsedOptions.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
+    parsedOptions.graphics = GraphicsApi_1.GraphicsApi.OpenGL2;
 }
 if (parsedOptions.run) {
     parsedOptions.compile = true;
@@ -271,22 +266,4 @@ else if (parsedOptions.server) {
 else {
     runKhamake();
 }
-/*
-async function main() {
- await ping();
-}
-
-async function ping() {
- for (var i = 0; i < 10; i++) {
-  await delay(300);
-  console.log("ping");
- }
-}
-
-function delay(ms: number) {
- return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-main();
-*/ 
 //# sourceMappingURL=khamake.js.map

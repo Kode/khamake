@@ -16,7 +16,6 @@ const exec_1 = require('./exec');
 const korepath = require('./korepath');
 const log = require('./log');
 const GraphicsApi_1 = require('./GraphicsApi');
-const Options_1 = require('./Options');
 const Platform_1 = require('./Platform');
 const ProjectFile_1 = require('./ProjectFile');
 const AssetConverter_1 = require('./AssetConverter');
@@ -58,11 +57,12 @@ function compileShader2(compiler, type, from, to, temp, system) {
 function addShader(project, name, extension) {
     project.exportedShaders.push({ files: [name + extension], name: name });
 }
-function compileShader(exporter, platform, project, shader, to, temp, compiler) {
+function compileShader(exporter, options, project, shader, to, temp, compiler) {
     return __awaiter(this, void 0, void 0, function* () {
         let name = shader.name;
         if (name.endsWith('.inc'))
             return;
+        let platform = options.target;
         if (platform.endsWith('-hl'))
             platform = platform.substr(0, platform.length - '-hl'.length);
         switch (platform) {
@@ -81,7 +81,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler) 
             }
             case Platform_1.Platform.Android:
             case Platform_1.Platform.Android + '-native': {
-                if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.Vulkan) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
                     yield compileShader2(compiler, 'spirv', shader.files[0], path.join(to, name + ".spirv"), temp, 'android');
                     addShader(project, name, '.spirv');
                 }
@@ -99,7 +99,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler) 
             case Platform_1.Platform.Tizen:
             case Platform_1.Platform.Pi:
             case Platform_1.Platform.iOS: {
-                if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.Metal) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
                     fs.ensureDirSync(path.join(to, '..', 'ios-build', 'Sources'));
                     let funcname = name;
                     funcname = funcname.replaceAll('-', '_');
@@ -117,15 +117,15 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler) 
                 break;
             }
             case Platform_1.Platform.Windows: {
-                if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.Vulkan) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
                     yield compileShader2(compiler, 'spirv', shader.files[0], path.join(to, name + ".spirv"), temp, platform);
                     addShader(project, name, '.spirv');
                 }
-                else if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.OpenGL || Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.OpenGL2) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.OpenGL2) {
                     yield compileShader2(compiler, "glsl", shader.files[0], path.join(to, name + ".glsl"), temp, platform);
                     addShader(project, name, ".glsl");
                 }
-                else if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.Direct3D11 || Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.Direct3D12) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12) {
                     yield compileShader2(compiler, "d3d11", shader.files[0], path.join(to, name + ".d3d11"), temp, platform);
                     addShader(project, name, ".d3d11");
                 }
@@ -147,7 +147,7 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler) 
                 break;
             }
             case Platform_1.Platform.Linux: {
-                if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.Vulkan) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
                     yield compileShader2(compiler, 'spirv', shader.files[0], path.join(to, name + ".spirv"), temp, platform);
                     addShader(project, name, '.spirv');
                 }
@@ -232,18 +232,18 @@ function exportAssets(assets, exporter, from, platform, encoders) {
         }
     });
 }
-function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, libraries, targetOptions, defines, callback) {
+function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines, callback) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (haxeDirectory !== '') {
-            yield exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
-            let compiler = new HaxeCompiler_1.HaxeCompiler(to, haxeDirectory, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
+        if (options.haxe !== '') {
+            yield exporter.exportSolution(name, targetOptions, defines);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
             compiler.run(true);
         }
-        if (haxeDirectory !== '' && kore) {
+        if (options.haxe !== '' && kore) {
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
             {
-                fs.copySync(path.join(__dirname, 'Data', 'build-korefile.js'), path.join(to, exporter.sysdir() + '-build', 'korefile.js'));
+                fs.copySync(path.join(__dirname, 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'));
                 let out = '';
                 out += "var solution = new Solution('" + name + "');\n";
                 out += "var project = new Project('" + name + "');\n";
@@ -261,10 +261,10 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
                     }
                     out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
                 }
-                out += "project.setDebugDir('" + path.relative(from, path.join(to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
-                let buildpath = path.relative(from, path.join(to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
+                out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
+                let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
                 if (buildpath.startsWith('..'))
-                    buildpath = path.resolve(path.join(from.toString(), buildpath));
+                    buildpath = path.resolve(path.join(options.from.toString(), buildpath));
                 out += "project.addSubProject(Solution.createProject('" + buildpath.replace(/\\/g, '/') + "'));\n";
                 out += "project.addSubProject(Solution.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "'));\n";
                 out += "project.addSubProject(Solution.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "'));\n";
@@ -285,7 +285,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
                     out += "}\n";
                 }
                 out += 'return solution;\n';
-                fs.writeFileSync(path.join(from, 'korefile.js'), out);
+                fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
             }
             {
                 // Similar to khamake.js -> main.js -> run(...)
@@ -293,12 +293,12 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
                 // This will create additional project folders for the target,
                 // e.g. 'build/android-native-build'
                 require(path.join(korepath.get(), 'main.js')).run({
-                    from: from,
-                    to: path.join(to, exporter.sysdir() + '-build'),
-                    target: koreplatform(platform),
-                    graphics: Options_1.Options.graphicsApi,
-                    vrApi: Options_1.Options.vrApi,
-                    visualstudio: Options_1.Options.visualStudioVersion,
+                    from: options.from,
+                    to: path.join(options.to, exporter.sysdir() + '-build'),
+                    target: koreplatform(options.target),
+                    graphics: options.graphics,
+                    vrApi: options.vr,
+                    visualstudio: options.visualstudio,
                     compile: options.compile,
                     run: options.run,
                     debug: options.debug
@@ -311,12 +311,12 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
                 });
             }
         }
-        else if (haxeDirectory !== '' && korehl) {
+        else if (options.haxe !== '' && korehl) {
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
             {
-                fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(to, exporter.sysdir() + '-build', 'kore_sources.c'));
-                fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(to, exporter.sysdir() + '-build', 'korefile.js'));
+                fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'));
+                fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'));
                 let out = '';
                 out += "var solution = new Solution('" + name + "');\n";
                 out += "var project = new Project('" + name + "');\n";
@@ -334,10 +334,10 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
                     }
                     out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
                 }
-                out += "project.setDebugDir('" + path.relative(from, path.join(to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
-                let buildpath = path.relative(from, path.join(to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
+                out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
+                let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
                 if (buildpath.startsWith('..'))
-                    buildpath = path.resolve(path.join(from.toString(), buildpath));
+                    buildpath = path.resolve(path.join(options.from.toString(), buildpath));
                 out += "project.addSubProject(Solution.createProject('" + buildpath.replace(/\\/g, '/') + "'));\n";
                 out += "project.addSubProject(Solution.createProject('" + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + "'));\n";
                 out += "project.addSubProject(Solution.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "'));\n";
@@ -349,16 +349,16 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
                     out += "}\n";
                 }
                 out += 'return solution;\n';
-                fs.writeFileSync(path.join(from, 'korefile.js'), out);
+                fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
             }
             {
                 require(path.join(korepath.get(), 'main.js')).run({
-                    from: from,
-                    to: path.join(to, exporter.sysdir() + '-build'),
-                    target: koreplatform(platform),
-                    graphics: Options_1.Options.graphicsApi,
-                    vrApi: Options_1.Options.vrApi,
-                    visualstudio: Options_1.Options.visualStudioVersion,
+                    from: options.from,
+                    to: path.join(options.to, exporter.sysdir() + '-build'),
+                    target: koreplatform(options.target),
+                    graphics: options.graphics,
+                    vrApi: options.vr,
+                    visualstudio: options.visualstudio,
                     compile: options.compile,
                     run: options.run,
                     debug: options.debug
@@ -386,76 +386,77 @@ function koreplatform(platform) {
     else
         return platform;
 }
-function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, krafix, embedflashassets, options, callback) {
+function exportKhaProject(options, callback) {
     return __awaiter(this, void 0, void 0, function* () {
         log.info('Creating Kha project.');
-        let temp = path.join(to, 'temp');
+        let temp = path.join(options.to, 'temp');
         fs.ensureDirSync(temp);
         let exporter = null;
         let kore = false;
         let korehl = false;
-        switch (platform) {
+        switch (options.target) {
             case Platform_1.Platform.Flash:
-                exporter = new FlashExporter_1.FlashExporter(khaDirectory, to, embedflashassets);
+                exporter = new FlashExporter_1.FlashExporter(options);
                 break;
             case Platform_1.Platform.HTML5:
-                exporter = new Html5Exporter_1.Html5Exporter(khaDirectory, to);
+                exporter = new Html5Exporter_1.Html5Exporter(options);
                 break;
             case Platform_1.Platform.HTML5Worker:
-                exporter = new Html5WorkerExporter_1.Html5WorkerExporter(khaDirectory, to);
+                exporter = new Html5WorkerExporter_1.Html5WorkerExporter(options);
                 break;
             case Platform_1.Platform.DebugHTML5:
-                exporter = new DebugHtml5Exporter_1.DebugHtml5Exporter(khaDirectory, to);
+                exporter = new DebugHtml5Exporter_1.DebugHtml5Exporter(options);
                 break;
             case Platform_1.Platform.WPF:
-                exporter = new WpfExporter_1.WpfExporter(khaDirectory, to);
+                exporter = new WpfExporter_1.WpfExporter(options);
                 break;
             case Platform_1.Platform.XNA:
-                exporter = new XnaExporter_1.XnaExporter(khaDirectory, to);
+                exporter = new XnaExporter_1.XnaExporter(options);
                 break;
             case Platform_1.Platform.Java:
-                exporter = new JavaExporter_1.JavaExporter(khaDirectory, to);
+                exporter = new JavaExporter_1.JavaExporter(options);
                 break;
             case Platform_1.Platform.PlayStationMobile:
-                exporter = new PlayStationMobileExporter_1.PlayStationMobileExporter(khaDirectory, to);
+                exporter = new PlayStationMobileExporter_1.PlayStationMobileExporter(options);
                 break;
             case Platform_1.Platform.Android:
-                exporter = new AndroidExporter_1.AndroidExporter(khaDirectory, to);
+                exporter = new AndroidExporter_1.AndroidExporter(options);
                 break;
             case Platform_1.Platform.Node:
-                exporter = new NodeExporter_1.NodeExporter(khaDirectory, to);
+                exporter = new NodeExporter_1.NodeExporter(options);
                 break;
             case Platform_1.Platform.Unity:
-                exporter = new UnityExporter_1.UnityExporter(khaDirectory, to);
+                exporter = new UnityExporter_1.UnityExporter(options);
                 break;
             case Platform_1.Platform.Empty:
-                exporter = new EmptyExporter_1.EmptyExporter(khaDirectory, to);
+                exporter = new EmptyExporter_1.EmptyExporter(options);
                 break;
             default:
-                if (platform.endsWith('-hl')) {
+                if (options.target.endsWith('-hl')) {
                     korehl = true;
-                    exporter = new KoreHLExporter_1.KoreHLExporter(koreplatform(platform), khaDirectory, Options_1.Options.vrApi, to);
+                    options.target = koreplatform(options.target);
+                    exporter = new KoreHLExporter_1.KoreHLExporter(options);
                 }
                 else {
                     kore = true;
-                    exporter = new KoreExporter_1.KoreExporter(platform, khaDirectory, Options_1.Options.vrApi, to);
+                    exporter = new KoreExporter_1.KoreExporter(options);
                 }
                 break;
         }
         // Create the target build folder
         // e.g. 'build/android-native'
-        fs.ensureDirSync(path.join(to, exporter.sysdir()));
+        fs.ensureDirSync(path.join(options.to, exporter.sysdir()));
         let name = '';
         let project = null;
         let foundProjectFile = false;
         // get project name, e.g. 'MyBunnyMark'
         if (name === '')
-            name = path.basename(path.resolve(from));
+            name = path.basename(path.resolve(options.from));
         // get the khafile.js and load the config code,
         // then create the project config object, which contains stuff
         // like project name, assets paths, sources path, library path...
-        if (fs.existsSync(path.join(from, options.projectfile))) {
-            project = ProjectFile_1.loadProject(from, options.projectfile);
+        if (fs.existsSync(path.join(options.from, options.projectfile))) {
+            project = ProjectFile_1.loadProject(options.from, options.projectfile);
             foundProjectFile = true;
         }
         else {
@@ -481,20 +482,10 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
         project.scriptdir = options.kha;
         project.addShaders('Sources/Shaders/**');
         project.addShaders('Kha/Sources/Shaders/**'); //**
-        let encoders = {
-            oggEncoder: oggEncoder,
-            aacEncoder: aacEncoder,
-            mp3Encoder: mp3Encoder,
-            h264Encoder: h264Encoder,
-            webmEncoder: webmEncoder,
-            wmvEncoder: wmvEncoder,
-            theoraEncoder: theoraEncoder,
-            kravur: options.kravur
-        };
         console.log('Exporting assets.');
         //await exportAssets(project.assets, exporter, from, platform, encoders);
-        new AssetConverter_1.AssetConverter(exporter, platform, project.assetMatchers);
-        let shaderDir = path.join(to, exporter.sysdir() + '-resources');
+        new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
+        let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
         /*if (platform === Platform.Unity) {
             shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
         }
@@ -516,7 +507,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
                             let proto2 = proto.replace(/{name}/g, shadername);
                             proto2 = proto2.replace(/{vert}/g, project.exportedShaders[i1].name);
                             proto2 = proto2.replace(/{frag}/g, project.exportedShaders[i2].name);
-                            fs.writeFileSync(path.join(shaderDir, shadername + '.shader'), proto2, { encoding: 'utf8'});
+                            fs.writeFileSync(path.join(shaderDir, shadername + '.shader'), proto2, { encoding: 'utf8' });
                         }
                     }
                 }
@@ -524,11 +515,12 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
             let blobDir = path.join(to, exporter.sysdir(), 'Assets', 'Resources', 'Blobs');
             fs.ensureDirSync(blobDir);
             for (let i = 0; i < project.exportedShaders.length; ++i) {
-                fs.writeFileSync(path.join(blobDir, project.exportedShaders[i].files[0] + '.bytes'), project.exportedShaders[i].name, { encoding: 'utf8'});
+                fs.writeFileSync(path.join(blobDir, project.exportedShaders[i].files[0] + '.bytes'), project.exportedShaders[i].name, { encoding: 'utf8' });
             }
         }*/
         fs.ensureDirSync(shaderDir);
-        new ShaderCompiler_1.ShaderCompiler(exporter, platform, krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
+        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
+        yield shaderCompiler.run(true);
         // Push assets files to be loaded
         let files = [];
         for (let asset of project.assets) {
@@ -559,19 +551,19 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
             }*/
         }
         if (foundProjectFile) {
-            fs.outputFileSync(path.join(to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
+            fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
             log.info('Assets done.');
         }
-        exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
+        exportProjectFiles(name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
     });
 }
 function isKhaProject(directory, projectfile) {
     return fs.existsSync(path.join(directory, 'Kha')) || fs.existsSync(path.join(directory, projectfile));
 }
-function exportProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, krafix, embedflashassets, options, callback) {
+function exportProject(options, callback) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (isKhaProject(from, options.projectfile)) {
-            yield exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, krafix, embedflashassets, options, callback);
+        if (isKhaProject(options.from, options.projectfile)) {
+            yield exportKhaProject(options, callback);
         }
         else {
             log.error('Neither Kha directory nor project file (' + options.projectfile + ') found.');
@@ -629,11 +621,10 @@ function run(options, loglog, callback) {
             if (fs.existsSync(oggpath))
                 options.ogg = oggpath + ' {in} -o {out} --quiet';
         }
-        if (!options.kravur) {
-            let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + exec_1.sys());
-            if (fs.existsSync(kravurpath))
-                options.kravur = kravurpath + ' {in} {size} {out}';
-        }
+        //if (!options.kravur) {
+        //	let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
+        //	if (fs.existsSync(kravurpath)) options.kravur = kravurpath + ' {in} {size} {out}';
+        //}
         if (!options.aac && options.ffmpeg) {
             options.aac = options.ffmpeg + ' -i {in} {out}';
         }
@@ -652,19 +643,7 @@ function run(options, loglog, callback) {
         if (!options.theora && options.ffmpeg) {
             options.theora = options.ffmpeg + ' -i {in} {out}';
         }
-        if (options.graphics) {
-            Options_1.Options.graphicsApi = options.graphics;
-        }
-        if (options.visualstudio) {
-            Options_1.Options.visualStudioVersion = options.visualstudio;
-        }
-        if (options.vr) {
-            Options_1.Options.vrApi = options.vr;
-        }
-        if (options.visualStudioVersion) {
-            Options_1.Options.visualStudioVersion = options.visualStudioVersion;
-        }
-        yield exportProject(options.from, options.to, options.target, options.kha, options.haxe, options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.krafix, options.embedflashassets, options, done);
+        yield exportProject(options, done);
     });
 }
 exports.run = run;

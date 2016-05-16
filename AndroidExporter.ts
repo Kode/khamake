@@ -18,9 +18,9 @@ function findIcon(from: string) {
 export class AndroidExporter extends KhaExporter {
 	parameters: Array<string>;
 	
-	constructor(khaDirectory: string, directory: string) {
-		super(khaDirectory, directory);
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Android'));
+	constructor(options: Options) {
+		super(options);
+		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Android'));
 	}
 
 	sysdir() {
@@ -31,11 +31,11 @@ export class AndroidExporter extends KhaExporter {
 		return "Android";
 	}
 
-	async exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
-		const safename = name.replaceAll(' ', '-');
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+		const safename = name.replace(/ /g, '-');
 
 		defines.push('no-compilation');
-		defines.push('sys_' + platform);
+		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -43,24 +43,24 @@ export class AndroidExporter extends KhaExporter {
 		defines.push('sys_a1');
 
 		const options = {
-			from: from.toString(),
+			from: this.options.from,
 			to: path.join(this.sysdir(), safename),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
-			haxeDirectory: haxeDirectory.toString(),
+			haxeDirectory: this.options.haxe,
 			system: this.sysdir(),
 			language: 'java',
 			width: this.width,
 			height: this.height,
 			name: name
 		};
-		writeHaxeProject(this.directory, options);
+		writeHaxeProject(this.options.to, options);
 
-		this.exportAndroidStudioProject(name, _targetOptions, from);
+		this.exportAndroidStudioProject(name, _targetOptions, this.options.from);
 
-		return executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 	}
 
 	exportAndroidStudioProject(name, _targetOptions, from) {
@@ -78,7 +78,7 @@ export class AndroidExporter extends KhaExporter {
 		}
 
 		let indir = path.join(__dirname, 'Data', 'android');
-		let outdir = path.join(this.directory, this.sysdir(), safename);
+		let outdir = path.join(this.options.to, this.sysdir(), safename);
 
 		fs.copySync(path.join(indir, 'build.gradle'), path.join(outdir, 'build.gradle'));
 		fs.copySync(path.join(indir, 'gradle.properties'), path.join(outdir, 'gradle.properties'));
@@ -116,13 +116,13 @@ export class AndroidExporter extends KhaExporter {
 		fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'strings.xml'), strings, {encoding: 'utf8'});
 
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-hdpi'));
-		exportImage(findIcon(from), path.join(this.directory, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher"), new Asset(72, 72), 'png', false);
+		exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher"), new Asset(72, 72), 'png', false);
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-mdpi'));
-		exportImage(findIcon(from), path.join(this.directory, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-mdpi', "ic_launcher"), new Asset(48, 48), 'png', false);
+		exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-mdpi', "ic_launcher"), new Asset(48, 48), 'png', false);
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xhdpi'));
-		exportImage(findIcon(from), path.join(this.directory, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xhdpi', "ic_launcher"), new Asset(96, 96), 'png', false);
+		exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xhdpi', "ic_launcher"), new Asset(96, 96), 'png', false);
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi'));
-		exportImage(findIcon(from), path.join(this.directory, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi', "ic_launcher"), new Asset(144, 144), 'png', false);
+		exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi', "ic_launcher"), new Asset(144, 144), 'png', false);
 
 		fs.copySync(path.join(indir, 'gradle', 'wrapper', 'gradle-wrapper.jar'), path.join(outdir, 'gradle', 'wrapper', 'gradle-wrapper.jar'));
 		fs.copySync(path.join(indir, 'gradle', 'wrapper', 'gradle-wrapper.properties'), path.join(outdir, 'gradle', 'wrapper', 'gradle-wrapper.properties'));
@@ -152,17 +152,17 @@ export class AndroidExporter extends KhaExporter {
 	}*/
 
 	async copySound(platform, from, to, encoders) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav'), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav'), { clobber: true });
 		return [to + '.wav'];
 	}
 
 	async copyImage(platform, from, to, asset) {
-		let format = await exportImage(from, path.join(this.directory, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), asset, undefined, false);
+		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 
 	async copyBlob(platform, from, to) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), { clobber: true });
 		return [to];
 	}
 

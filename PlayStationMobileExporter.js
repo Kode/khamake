@@ -13,8 +13,8 @@ const CSharpExporter_1 = require('./CSharpExporter');
 const ImageTool_1 = require('./ImageTool');
 const uuid = require('./uuid.js');
 class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
-    constructor(khaDirectory, directory) {
-        super(khaDirectory, directory);
+    constructor(options) {
+        super(options);
         this.files = [];
     }
     sysdir() {
@@ -24,8 +24,8 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
         return "PSM";
     }
     exportSLN(projectUuid) {
-        fs.ensureDirSync(path.join(this.directory, this.sysdir() + '-build'));
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.sln'));
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
         const solutionUuid = uuid.v4();
         this.p("Microsoft Visual Studio Solution File, Format Version 11.00");
         this.p("# Visual Studio 2010");
@@ -49,28 +49,28 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
         this.closeFile();
     }
     exportResources() {
-        this.createDirectory(path.join(this.directory, this.sysdir() + '-build', 'shaders'));
-        fs.writeFileSync(path.join(this.directory, this.sysdir() + '-build', 'shaders', 'Simple.fcg'), "void main(float4 out Color : COLOR, uniform float4 MaterialColor) {\n"
+        this.createDirectory(path.join(this.options.to, this.sysdir() + '-build', 'shaders'));
+        fs.writeFileSync(path.join(this.options.to, this.sysdir() + '-build', 'shaders', 'Simple.fcg'), "void main(float4 out Color : COLOR, uniform float4 MaterialColor) {\n"
             + "\tColor = MaterialColor;\n"
             + "}\n");
-        fs.writeFileSync(path.join(this.directory, this.sysdir() + '-build', 'shaders', 'Simple.vcg'), "void main(float4 in a_Position : POSITION, float4 out v_Position : POSITION, uniform float4x4 WorldViewProj) {\n"
+        fs.writeFileSync(path.join(this.options.to, this.sysdir() + '-build', 'shaders', 'Simple.vcg'), "void main(float4 in a_Position : POSITION, float4 out v_Position : POSITION, uniform float4x4 WorldViewProj) {\n"
             + "\tv_Position = mul(a_Position, WorldViewProj);\n"
             + "}\n");
-        fs.writeFileSync(path.join(this.directory, this.sysdir() + '-build', 'shaders', 'Texture.fcg'), "void main(float2 in  v_TexCoord : TEXCOORD0, float4 out Color : COLOR, uniform sampler2D Texture0 : TEXUNIT0) {\n"
+        fs.writeFileSync(path.join(this.options.to, this.sysdir() + '-build', 'shaders', 'Texture.fcg'), "void main(float2 in  v_TexCoord : TEXCOORD0, float4 out Color : COLOR, uniform sampler2D Texture0 : TEXUNIT0) {\n"
             + "\tColor = tex2D(Texture0, v_TexCoord);\n"
             + "}\n");
-        fs.writeFileSync(path.join(this.directory, this.sysdir() + '-build', 'shaders', 'Texture.vcg'), "void main(float4 in a_Position : POSITION, float2 in a_TexCoord : TEXCOORD0, float4 out v_Position : POSITION, float2 out v_TexCoord : TEXCOORD0, uniform float4x4 WorldViewProj) {\n"
+        fs.writeFileSync(path.join(this.options.to, this.sysdir() + '-build', 'shaders', 'Texture.vcg'), "void main(float4 in a_Position : POSITION, float2 in a_TexCoord : TEXCOORD0, float4 out v_Position : POSITION, float2 out v_TexCoord : TEXCOORD0, uniform float4x4 WorldViewProj) {\n"
             + "\tv_Position = mul(a_Position, WorldViewProj);\n"
             + "\tv_TexCoord  = a_TexCoord;\n"
             + "}\n");
-        let appxml = path.join(this.directory, this.sysdir() + '-build', 'app.xml');
+        let appxml = path.join(this.options.to, this.sysdir() + '-build', 'app.xml');
         if (!fs.existsSync(appxml)) {
             let appxmltext = fs.readFileSync(path.join(__dirname, "Data", "psm", "app.xml"), { encoding: 'utf8' });
             fs.writeFileSync(appxml.toString(), appxmltext);
         }
     }
     exportCsProj(projectUuid) {
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.csproj'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
         this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         this.p("<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
         this.p("<PropertyGroup>", 1);
@@ -109,7 +109,7 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
         this.p("<Reference Include=\"Sce.PlayStation.Core\" />", 2);
         this.p("</ItemGroup>", 1);
         this.p("<ItemGroup>", 1);
-        this.includeFiles(path.join(this.directory, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.directory, this.sysdir() + '-build'));
+        this.includeFiles(path.join(this.options.to, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.options.to, this.sysdir() + '-build'));
         this.p("</ItemGroup>", 1);
         this.p("<ItemGroup>", 1);
         this.p("<ShaderProgram Include=\"shaders\\Simple.fcg\" />", 2);
@@ -142,13 +142,13 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
             this.files.push(asset["file"]);
-            let format = ImageTool_1.exportImage(from, path.join(this.directory, this.sysdir(), to), asset, undefined, false);
+            let format = ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
             return [to + '.' + format];
         });
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
             this.files.push(to);
             return [to];
         });

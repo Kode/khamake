@@ -18,9 +18,8 @@ function findIcon(from: string) {
 export class XnaExporter extends CSharpExporter {
 	images: Array<string>;
 	
-	constructor(khaDirectory, directory) {
-		super(khaDirectory, directory);
-		this.directory = directory;
+	constructor(options: Options) {
+		super(options);
 		this.images = [];
 	}
 
@@ -33,8 +32,8 @@ export class XnaExporter extends CSharpExporter {
 	}
 
 	exportResources() {
-		this.createDirectory(path.join(this.directory, this.sysdir() + '-build', 'Properties'));
-		this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Properties', 'AssemblyInfo.cs'));
+		this.createDirectory(path.join(this.options.to, this.sysdir() + '-build', 'Properties'));
+		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Properties', 'AssemblyInfo.cs'));
 		this.p("using System.Reflection;");
 		this.p("using System.Runtime.CompilerServices;");
 		this.p("using System.Runtime.InteropServices;");
@@ -56,8 +55,8 @@ export class XnaExporter extends CSharpExporter {
 	}
 
 	exportSLN(projectUuid) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir() + '-build'));
-		this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.sln'));
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
+		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
 		var solutionUuid = uuid.v4();
 		var contentUuid = uuid.v4();
 
@@ -86,7 +85,7 @@ export class XnaExporter extends CSharpExporter {
 		this.p("EndGlobal");
 		this.closeFile();
 
-		this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'ProjectContent.contentproj'));
+		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'ProjectContent.contentproj'));
 		this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 		this.p("<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
 		this.p("<PropertyGroup>", 1);
@@ -134,10 +133,10 @@ export class XnaExporter extends CSharpExporter {
 	}
 
 	exportCsProj(projectUuid) {
-		exportImage(findIcon(this.directory), path.join(this.directory, this.sysdir() + '-build', 'GameThumbnail.png'), new Asset(64, 64), 'png', false);
-		exportImage(findIcon(this.directory), path.join(this.directory, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
+		exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), new Asset(64, 64), 'png', false);
+		exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
 
-		this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.csproj'));
+		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
 		this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 		this.p("<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
 		this.p("<PropertyGroup>", 1);
@@ -213,7 +212,7 @@ export class XnaExporter extends CSharpExporter {
 		this.p("</ItemGroup>", 1);
 		this.p("<ItemGroup>", 1);
 		this.p("<Compile Include=\"Properties\\AssemblyInfo.cs\" />", 2);
-		this.includeFiles(path.join(this.directory, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.directory, this.sysdir() + '-build'));
+		this.includeFiles(path.join(this.options.to, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.options.to, this.sysdir() + '-build'));
 		this.p("</ItemGroup>", 1);
 		this.p("<ItemGroup>", 1);
 		this.p("<Content Include=\"Game.ico\" />", 2);
@@ -262,7 +261,7 @@ export class XnaExporter extends CSharpExporter {
 
 	async copyImage(platform, from, to, asset) {
 		this.images.push(asset['file']);
-		let format = await exportImage(from, path.join(this.directory, 'xna', to), asset, undefined, false);
+		let format = await exportImage(from, path.join(this.options.to, 'xna', to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 }

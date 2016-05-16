@@ -13,8 +13,8 @@ const uuid = require('./uuid.js');
 export abstract class CSharpExporter extends KhaExporter {
 	parameters: Array<string>;
 	
-	constructor(khaDirectory, directory) {
-		super(khaDirectory, directory);
+	constructor(options: Options) {
+		super(options);
 	}
 
 	includeFiles(dir: string, baseDir: string) {
@@ -29,44 +29,43 @@ export abstract class CSharpExporter extends KhaExporter {
 		}
 	}
 
-	async exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
 		this.addSourceDirectory("Kha/Backends/" + this.backend());
 
 		defines.push('no-root');
 		defines.push('no-compilation');
-		defines.push('sys_' + platform);
+		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_a1');
 
 		const options = {
-			from: from.toString(),
+			from: this.options.from,
 			to: path.join(this.sysdir() + '-build', 'Sources'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
-			haxeDirectory: haxeDirectory.toString(),
+			haxeDirectory: this.options.haxe,
 			system: this.sysdir(),
 			language: 'cs',
 			width: this.width,
 			height: this.height,
 			name: name
 		};
-		await writeHaxeProject(this.directory.toString(), options);
+		await writeHaxeProject(this.options.to, options);
 
-		fs.removeSync(path.join(this.directory, this.sysdir() + '-build', 'Sources'));
+		fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
 
-		let result = await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		let result = await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 		const projectUuid = uuid.v4();
 		this.exportSLN(projectUuid);
 		this.exportCsProj(projectUuid);
 		this.exportResources();
-		return result;
 	}
 
 	exportSLN(projectUuid) {
-		this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.sln'));
+		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
 		const solutionUuid = uuid.v4();
 
 		this.p("Microsoft Visual Studio Solution File, Format Version 11.00");
@@ -108,12 +107,12 @@ export abstract class CSharpExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset) {
-		let format = exportImage(from, path.join(this.directory, this.sysdir(), to), asset, undefined, false);
+		let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		fs.copySync(from, path.join(this.directory, this.sysdir(), to), { clobber: true });
+		fs.copySync(from, path.join(this.options.to, this.sysdir(), to), { clobber: true });
 		return [to];
 	}
 

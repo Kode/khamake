@@ -1,8 +1,8 @@
 "use strict";
 const Html5Exporter_1 = require('./Html5Exporter');
 class DebugHtml5Exporter extends Html5Exporter_1.Html5Exporter {
-    constructor(khaDirectory, directory) {
-        super(khaDirectory, directory);
+    constructor(options) {
+        super(options);
     }
     sysdir() {
         return 'debug-html5';

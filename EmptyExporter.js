@@ -12,20 +12,19 @@ const fs = require('fs-extra');
 const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Haxe_1 = require('./Haxe');
-const Options_1 = require('./Options');
 const HaxeProject_1 = require('./HaxeProject');
 const log = require('./log');
 class EmptyExporter extends KhaExporter_1.KhaExporter {
-    constructor(khaDirectory, directory) {
-        super(khaDirectory, directory);
-        this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Empty'));
+    constructor(options) {
+        super(options);
+        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Empty'));
     }
     sysdir() {
         return 'empty';
     }
-    exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.directory, this.sysdir()));
+    exportSolution(name, _targetOptions, defines) {
+        return __awaiter(this, void 0, Promise, function* () {
+            fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
             defines.push('sys_g1');
             defines.push('sys_g2');
             defines.push('sys_g3');
@@ -33,34 +32,28 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
             defines.push('sys_a1');
             defines.push('sys_a2');
             const options = {
-                from: from.toString(),
+                from: this.options.from,
                 to: path.join(this.sysdir(), 'docs.xml'),
                 sources: this.sources,
                 defines: defines,
                 parameters: this.parameters,
-                haxeDirectory: haxeDirectory.toString(),
+                haxeDirectory: this.options.haxe,
                 system: this.sysdir(),
                 language: 'xml',
                 width: this.width,
                 height: this.height,
                 name: name
             };
-            yield HaxeProject_1.writeHaxeProject(this.directory.toString(), options);
-            if (Options_1.Options.compilation) {
-                let result = yield Haxe_1.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
-                if (result === 0) {
-                    let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', options.to)], { env: process.env, cwd: path.normalize(from.toString()) });
-                    if (doxresult.stdout.toString() !== '') {
-                        log.info(doxresult.stdout.toString());
-                    }
-                    if (doxresult.stderr.toString() !== '') {
-                        log.error(doxresult.stderr.toString());
-                    }
+            yield HaxeProject_1.writeHaxeProject(this.options.to, options);
+            let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
+            if (result === 0) {
+                let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', options.to)], { env: process.env, cwd: path.normalize(this.options.from) });
+                if (doxresult.stdout.toString() !== '') {
+                    log.info(doxresult.stdout.toString());
                 }
-                return result;
-            }
-            else {
-                return 0;
+                if (doxresult.stderr.toString() !== '') {
+                    log.error(doxresult.stderr.toString());
+                }
             }
         });
     }

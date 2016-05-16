@@ -14,17 +14,17 @@ export class Html5Exporter extends KhaExporter {
 	width: number;
 	height: number;
 	
-	constructor(khaDirectory, directory) {
-		super(khaDirectory, directory);
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/HTML5'));
+	constructor(options: Options) {
+		super(options);
+		this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5'));
 	}
 
 	sysdir() {
 		return 'html5';
 	}
 
-	async exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir()));
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
 		defines.push('sys_g1');
 		defines.push('sys_g2');
@@ -39,7 +39,7 @@ export class Html5Exporter extends KhaExporter {
 			defines.push('nodejs');
 		}
 		else {
-			defines.push('sys_' + platform);
+			defines.push('sys_' + this.options.target);
 		}
 		
 		if (this.sysdir() === 'debug-html5') {
@@ -48,23 +48,23 @@ export class Html5Exporter extends KhaExporter {
 		}
 
 		const options = {
-			from: from.toString(),
+			from: this.options.from.toString(),
 			to: path.join(this.sysdir(), 'kha.js'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
-			haxeDirectory: haxeDirectory.toString(),
+			haxeDirectory: this.options.haxe,
 			system: this.sysdir(),
 			language: 'js',
 			width: this.width,
 			height: this.height,
 			name: name
 		};
-		writeHaxeProject(this.directory.toString(), options);
+		writeHaxeProject(this.options.to, options);
 
 		if (this.sysdir() === 'debug-html5') {
-			let index = path.join(this.directory, this.sysdir(), 'index.html');
+			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 			if (!fs.existsSync(index)) {
 				let protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'index.html'), {encoding: 'utf8'});
 				protoindex = protoindex.replace(/{Name}/g, name);
@@ -73,19 +73,19 @@ export class Html5Exporter extends KhaExporter {
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 			
-			let pack = path.join(this.directory, this.sysdir(), 'package.json');
+			let pack = path.join(this.options.to, this.sysdir(), 'package.json');
 			let protopackage = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'package.json'), {encoding: 'utf8'});
 			protopackage = protopackage.replace(/{Name}/g, name);
 			fs.writeFileSync(pack.toString(), protopackage);
 
-			let electron = path.join(this.directory, this.sysdir(), 'electron.js');
+			let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
 			let protoelectron = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'electron.js'), {encoding: 'utf8'});
 			protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
 			protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
 			fs.writeFileSync(electron.toString(), protoelectron);
 		}
 		else {
-			let index = path.join(this.directory, this.sysdir(), 'index.html');
+			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 			if (!fs.existsSync(index)) {
 				let protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'html5', 'index.html'), {encoding: 'utf8'});
 				protoindex = protoindex.replace(/{Name}/g, name);
@@ -95,12 +95,7 @@ export class Html5Exporter extends KhaExporter {
 			}
 		}
 		
-		if (Options.compilation) {
-			//return await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
-		}
-		else {
-			return 0;
-		}
+		//return await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {
@@ -116,9 +111,9 @@ export class Html5Exporter extends KhaExporter {
 	}*/
 
 	async copySound(platform: string, from: string, to: string, encoders) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
-		let ogg = await convert(from, path.join(this.directory, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
-		let mp4 = await convert(from, path.join(this.directory, this.sysdir(), to + '.mp4'), encoders.aacEncoder);
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
+		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.aacEncoder);
 		var files = [];
 		if (ogg) files.push(to + '.ogg');
 		if (mp4) files.push(to + '.mp4');
@@ -126,19 +121,19 @@ export class Html5Exporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset) {
-		let format = await exportImage(from, path.join(this.directory, this.sysdir(), to), asset, undefined, false);
+		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
 		return [to];
 	}
 
 	async copyVideo(platform, from, to, encoders) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
-		let mp4 = await convert(from, path.join(this.directory, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
-		let webm = await convert(from, path.join(this.directory, this.sysdir(), to + '.webm'), encoders.webmEncoder);
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
+		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), encoders.webmEncoder);
 		let files = [];
 		if (mp4) files.push(to + '.mp4');
 		if (webm) files.push(to + '.webm');

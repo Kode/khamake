@@ -8,26 +8,23 @@ import {executeHaxe} from './Haxe';
 import {Platform} from './Platform';
 import {exportImage} from './ImageTool';
 import {writeHaxeProject} from './HaxeProject';
+import {Options} from './Options';
 
 export class KoreExporter extends KhaExporter {
-	platform: string;
-	vr: string;
 	parameters: Array<string>
 	
-	constructor(platform, khaDirectory, vr, directory) {
-		super(khaDirectory, directory);
-		this.platform = platform;
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends', 'Kore'));
-		this.vr = vr;
+	constructor(options: Options) {
+		super(options);
+		this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Kore'));
 	}
 
 	sysdir() {
-		return this.platform;
+		return this.options.target;
 	}
 
-	async exportSolution(name: string, platform: string, khaDirectory: string, haxeDirectory: string, from: string, _targetOptions: any, defines: Array<string>) {
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
 		defines.push('no-compilation');
-		defines.push('sys_' + platform);
+		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -35,35 +32,35 @@ export class KoreExporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 
-		if (this.vr === 'gearvr') {
+		if (this.options.vr === 'gearvr') {
 			defines.push('vr_gearvr');
 		}
-		else if (this.vr === 'cardboard') {
+		else if (this.options.vr === 'cardboard') {
 			defines.push('vr_cardboard');
 		}
-		else if (this.vr === 'rift') {
+		else if (this.options.vr === 'rift') {
 			defines.push('vr_rift');
 		}
 
 		const options = {
-			from: from.toString(),
+			from: this.options.from,
 			to: path.join(this.sysdir() + '-build', 'Sources'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
-			haxeDirectory: haxeDirectory.toString(),
+			haxeDirectory: this.options.haxe,
 			system: this.sysdir(),
 			language: 'cpp',
 			width: this.width,
 			height: this.height,
 			name: name
 		};
-		writeHaxeProject(this.directory.toString(), options);
+		writeHaxeProject(this.options.to, options);
 
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		return executeHaxe(this.directory, haxeDirectory, ["project-" + this.sysdir() + ".hxml"]);
+		await executeHaxe(this.options.to, this.options.haxe, ["project-" + this.sysdir() + ".hxml"]);
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {
@@ -74,13 +71,13 @@ export class KoreExporter extends KhaExporter {
 	}*/
 
 	async copySound(platform, from, to, encoders) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to + '.wav'), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
 		return [to + '.wav'];
 	}
 
 	async copyImage(platform, from, to, asset) {
 		if (platform === Platform.iOS && asset.compressed) {
-			let format = exportImage(from, path.join(this.directory, this.sysdir(), to), asset, 'pvr', true);
+			let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
 			return [to + '.' + format];
 		}
 		/*else if (platform === Platform.Android && asset.compressed) {
@@ -90,28 +87,28 @@ export class KoreExporter extends KhaExporter {
 		 exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 		 }*/
 		else {
-			let format = await exportImage(from, path.join(this.directory, this.sysdir(), to), asset, undefined, true);
+			let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
 			return [to + '.' + format];
 		}
 	}
 
 	async copyBlob(platform, from, to) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
 		return [to];
 	}
 
 	async copyVideo(platform, from, to, encoders) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		if (platform === Platform.iOS) {
-			await convert(from, path.join(this.directory, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
 			return [to + '.mp4'];
 		}
 		else if (platform === Platform.Android) {
-			await convert(from, path.join(this.directory, this.sysdir(), to + '.ts'), encoders.h264Encoder);
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ts'), encoders.h264Encoder);
 			return [to + '.ts'];
 		}
 		else {
-			await convert(from, path.join(this.directory, this.sysdir(), to + '.ogv'), encoders.theoraEncoder);
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogv'), encoders.theoraEncoder);
 			return [to + '.ogv'];
 		}
 	}

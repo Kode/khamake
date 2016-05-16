@@ -12,7 +12,6 @@ const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('./Converter');
 const Haxe_1 = require('./Haxe');
-const Options_1 = require('./Options');
 const ImageTool_1 = require('./ImageTool');
 const HaxeProject_1 = require('./HaxeProject');
 function adjustFilename(filename) {
@@ -22,28 +21,27 @@ function adjustFilename(filename) {
     return filename;
 }
 class FlashExporter extends KhaExporter_1.KhaExporter {
-    constructor(khaDirectory, directory, embedflashassets) {
-        super(khaDirectory, directory);
-        this.embed = embedflashassets;
+    constructor(options) {
+        super(options);
         this.images = [];
         this.sounds = [];
         this.blobs = [];
-        this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Flash'));
+        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Flash'));
     }
     sysdir() {
         return 'flash';
     }
-    exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines) {
-        return __awaiter(this, void 0, void 0, function* () {
+    exportSolution(name, targetOptions, defines) {
+        return __awaiter(this, void 0, Promise, function* () {
             defines.push('swf-script-timeout=60');
-            defines.push('sys_' + platform);
+            defines.push('sys_' + this.options.target);
             defines.push('sys_g1');
             defines.push('sys_g2');
             defines.push('sys_g3');
             defines.push('sys_g4');
             defines.push('sys_a1');
             defines.push('sys_a2');
-            if (this.embed)
+            if (this.options.embedflashassets)
                 defines.push('KHA_EMBEDDED_ASSETS');
             let defaultFlashOptions = {
                 framerate: 60,
@@ -52,13 +50,13 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
             };
             let flashOptions = targetOptions ? targetOptions.flash ? targetOptions.flash : defaultFlashOptions : defaultFlashOptions;
             const options = {
-                from: from.toString(),
+                from: this.options.from,
                 to: path.join(this.sysdir(), 'kha.swf'),
                 sources: this.sources,
                 libraries: this.libraries,
                 defines: defines,
                 parameters: this.parameters,
-                haxeDirectory: haxeDirectory.toString(),
+                haxeDirectory: this.options.haxe,
                 system: this.sysdir(),
                 language: 'as',
                 width: this.width,
@@ -68,9 +66,9 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
                 stageBackground: 'stageBackground' in flashOptions ? flashOptions.stageBackground : defaultFlashOptions.stageBackground,
                 swfVersion: 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion
             };
-            yield HaxeProject_1.writeHaxeProject(this.directory.toString(), options);
-            if (this.embed) {
-                this.writeFile(path.join(this.directory, '..', 'Sources', 'Assets.hx'));
+            yield HaxeProject_1.writeHaxeProject(this.options.to, options);
+            if (this.options.embedflashassets) {
+                this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
                 this.p("package;");
                 this.p();
                 this.p("import flash.display.BitmapData;");
@@ -96,28 +94,23 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
                 this.p("}");
                 this.closeFile();
             }
-            if (Options_1.Options.compilation) {
-                return yield Haxe_1.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
-            }
-            else {
-                return 0;
-            }
+            yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
         });
     }
     copySound(platform, from, to, encoders) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
-            var ogg = yield Converter_1.convert(from, path.join(this.directory, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
-            var mp3 = yield Converter_1.convert(from, path.join(this.directory, this.sysdir(), to + '.mp3'), encoders.mp3Encoder);
+            fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+            var ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), encoders.oggEncoder);
+            var mp3 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), encoders.mp3Encoder);
             var files = [];
             if (ogg) {
                 files.push(to + '.ogg');
-                if (this.embed)
+                if (this.options.embedflashassets)
                     this.sounds.push(to + '.ogg');
             }
             if (mp3) {
                 files.push(to + '.mp3');
-                if (this.embed)
+                if (this.options.embedflashassets)
                     this.sounds.push(to + '.mp3');
             }
             return files;
@@ -125,29 +118,29 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
     }
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = ImageTool_1.exportImage(from, path.join(this.directory, this.sysdir(), to), asset, undefined, false);
-            if (this.embed)
+            let format = ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+            if (this.options.embedflashassets)
                 this.images.push(to + '.' + format);
             return [to + '.' + format];
         });
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to), { clobber: true });
-            if (this.embed)
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
+            if (this.options.embedflashassets)
                 this.blobs.push(to);
             return [to];
         });
     }
     copyVideo(platform, from, to, encoders) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
-            yield Converter_1.convert(from, path.join(this.directory, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
+            fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+            yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), encoders.h264Encoder);
             return [to + '.mp4'];
         });
     }
     addShader(shader) {
-        if (this.embed)
+        if (this.options.embedflashassets)
             this.blobs.push(shader);
     }
 }

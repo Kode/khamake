@@ -14,17 +14,17 @@ import * as log from './log';
 export class EmptyExporter extends KhaExporter {
 	parameters: Array<string>;
 	
-	constructor(khaDirectory, directory) {
-		super(khaDirectory, directory);
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/Empty'));
+	constructor(options: Options) {
+		super(options);
+		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Empty'));
 	}
 
 	sysdir() {
 		return 'empty';
 	}
 
-	async exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
-		fs.ensureDirSync(path.join(this.directory, this.sysdir()));
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
 		defines.push('sys_g1');
 		defines.push('sys_g2');
@@ -34,36 +34,30 @@ export class EmptyExporter extends KhaExporter {
 		defines.push('sys_a2');
 		
 		const options = {
-			from: from.toString(),
+			from: this.options.from,
 			to: path.join(this.sysdir(), 'docs.xml'),
 			sources: this.sources,
 			defines: defines,
 			parameters: this.parameters,
-			haxeDirectory: haxeDirectory.toString(),
+			haxeDirectory: this.options.haxe,
 			system: this.sysdir(),
 			language: 'xml',
 			width: this.width,
 			height: this.height,
 			name: name
 		};
-		await writeHaxeProject(this.directory.toString(), options);
+		await writeHaxeProject(this.options.to, options);
 
-		if (Options.compilation) {
-			let result = await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
-			if (result === 0) {
-				let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', options.to)], { env: process.env, cwd: path.normalize(from.toString()) });
-				if (doxresult.stdout.toString() !== '') {
-					log.info(doxresult.stdout.toString());
-				}
-
-				if (doxresult.stderr.toString() !== '') {
-					log.error(doxresult.stderr.toString());
-				}
+		let result = await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
+		if (result === 0) {
+			let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', options.to)], { env: process.env, cwd: path.normalize(this.options.from) });
+			if (doxresult.stdout.toString() !== '') {
+				log.info(doxresult.stdout.toString());
 			}
-			return result;
-		}
-		else {
-			return 0;
+
+			if (doxresult.stderr.toString() !== '') {
+				log.error(doxresult.stderr.toString());
+			}
 		}
 	}
 

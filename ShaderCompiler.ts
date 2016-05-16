@@ -13,6 +13,7 @@ export class ShaderCompiler {
 	system: string;
 	to: string;
 	temp: string;
+	shaderMatchers: Array<string>;
 	watcher: chokidar.FSWatcher;
 	
 	constructor(exporter: KhaExporter, platform: string, compiler: string, type: string, system: string, to: string, temp: string, shaderMatchers: Array<string>) {
@@ -23,30 +24,32 @@ export class ShaderCompiler {
 		this.system = system;
 		this.to = to;
 		this.temp = temp;
-		
-		for (let matcher of shaderMatchers) {
-			console.log('Watching ' + matcher + '.');
-		}
-		this.watcher = chokidar.watch(shaderMatchers, { ignored: /[\/\\]\./, persistent: true });
-		this.watcher.on('add', (file: string) => {
-			switch (path.parse(file).ext) {
-				case '.glsl':
-					this.compileShader(file);
-					break;
-			}
-		});
-  		this.watcher.on('change', (file: string) => {
-			switch (path.parse(file).ext) {
-				case '.glsl':
-					this.compileShader(file);
-					break;
-			}  
-		});
-		this.watcher.on('unlink', (file: string) => {
-			
-		});
-		this.watcher.on('ready', () => {
-			//log('Initial scan complete. Ready for changes')
+		this.shaderMatchers = shaderMatchers;
+	}
+	
+	run(watch: boolean): Promise<{}> {
+		return new Promise((resolve, reject) => {
+			this.watcher = chokidar.watch(this.shaderMatchers, { ignored: /[\/\\]\./, persistent: watch });
+			this.watcher.on('add', (file: string) => {
+				switch (path.parse(file).ext) {
+					case '.glsl':
+						this.compileShader(file);
+						break;
+				}
+			});
+			this.watcher.on('change', (file: string) => {
+				switch (path.parse(file).ext) {
+					case '.glsl':
+						this.compileShader(file);
+						break;
+				}  
+			});
+			this.watcher.on('unlink', (file: string) => {
+				
+			});
+			this.watcher.on('ready', () => {
+				resolve();
+			});
 		});
 	}
 	

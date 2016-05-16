@@ -13,9 +13,8 @@ const CSharpExporter_1 = require('./CSharpExporter');
 const Converter_1 = require('./Converter');
 const uuid = require('./uuid.js');
 class WpfExporter extends CSharpExporter_1.CSharpExporter {
-    constructor(khaDirectory, directory) {
-        super(khaDirectory, directory);
-        this.directory = directory;
+    constructor(options) {
+        super(options);
     }
     sysdir() {
         return 'wpf';
@@ -24,8 +23,8 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
         return "WPF";
     }
     exportResources() {
-        fs.ensureDirSync(path.join(this.directory, this.sysdir() + '-build', 'Properties'));
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Properties', 'AssemblyInfo.cs'));
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build', 'Properties'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Properties', 'AssemblyInfo.cs'));
         this.p("using System.Reflection;");
         this.p("using System.Resources;");
         this.p("using System.Runtime.CompilerServices;");
@@ -51,7 +50,7 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
         this.p("[assembly: AssemblyVersion(\"1.0.0.0\")]");
         this.p("[assembly: AssemblyFileVersion(\"1.0.0.0\")]");
         this.closeFile();
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Properties', 'Resources.Designer.cs'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Properties', 'Resources.Designer.cs'));
         this.p("namespace WpfApplication1.Properties {");
         this.p("[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"System.Resources.Tools.StronglyTypedResourceBuilder\", \"4.0.0.0\")]", 1);
         this.p("[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]", 1);
@@ -93,7 +92,7 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
         this.p("}", 1);
         this.p("}");
         this.closeFile();
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Properties', 'Resources.resx'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Properties', 'Resources.resx'));
         this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         this.p("<root>");
         this.p("<xsd:schema id=\"root\" xmlns=\"\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:msdata=\"urn:schemas-microsoft-com:xml-msdata\">");
@@ -153,7 +152,7 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
         this.p("</resheader>");
         this.p("</root>");
         this.closeFile();
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Properties', 'Settings.Designer.cs'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Properties', 'Settings.Designer.cs'));
         this.p("namespace WpfApplication1.Properties");
         this.p("{");
         this.p("[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]", 1);
@@ -172,7 +171,7 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
         this.p("}", 1);
         this.p("}");
         this.closeFile();
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Properties', 'Settings.settings'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Properties', 'Settings.settings'));
         this.p("<?xml version='1.0' encoding='utf-8'?>");
         this.p("<SettingsFile xmlns=\"uri:settings\" CurrentProfile=\"(Default)\">");
         this.p("<Profiles>");
@@ -183,7 +182,7 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
         this.closeFile();
     }
     exportCsProj(projectUuid) {
-        this.writeFile(path.join(this.directory, this.sysdir() + '-build', 'Project.csproj'));
+        this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
         this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         this.p("<Project ToolsVersion=\"4.0\" DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
         this.p("<PropertyGroup>", 1);
@@ -237,7 +236,7 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
         this.p("<Reference Include=\"PresentationFramework\" />", 2);
         this.p("</ItemGroup>", 1);
         this.p("<ItemGroup>", 1);
-        this.includeFiles(path.join(this.directory, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.directory, this.sysdir() + '-build'));
+        this.includeFiles(path.join(this.options.to, this.sysdir() + '-build', 'Sources', 'src'), path.join(this.options.to, this.sysdir() + '-build'));
         this.p("</ItemGroup>", 1);
         this.p("<ItemGroup>", 1);
         this.p("<Compile Include=\"Properties\\AssemblyInfo.cs\">", 2);
@@ -275,14 +274,14 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
     }*/
     copySound(platform, from, to, encoders) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), to + '.wav'), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
             return [to + '.wav'];
         });
     }
     copyVideo(platform, from, to, encoders) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.directory, this.sysdir(), path.dirname(to)));
-            yield Converter_1.convert(from, path.join(this.directory, this.sysdir(), to + '.wmv'), encoders.wmvEncoder);
+            fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+            yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), encoders.wmvEncoder);
             return [to + '.wmv'];
         });
     }

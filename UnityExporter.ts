@@ -13,21 +13,20 @@ const uuid = require('./uuid.js');
 export class UnityExporter extends KhaExporter {
 	parameters: Array<string>;
 	
-	constructor(khaDirectory, directory) {
-		super(khaDirectory, directory);
-		this.directory = directory;
+	constructor(options: Options) {
+		super(options);
 	}
 
 	sysdir() {
 		return 'unity';
 	}
 
-	async exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
 		this.addSourceDirectory("Kha/Backends/Unity");
 
 		defines.push('no-root');
 		defines.push('no-compilation');
-		defines.push('sys_' + platform);
+		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -35,13 +34,13 @@ export class UnityExporter extends KhaExporter {
 		defines.push('sys_a1');
 
 		const options = {
-			from: from.toString(),
+			from: this.options.from,
 			to: path.join(this.sysdir(), 'Assets', 'Sources'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
-			haxeDirectory: haxeDirectory.toString(),
+			haxeDirectory: this.options.haxe,
 			system: this.sysdir(),
 			language: 'cs',
 			width: this.width,
@@ -49,21 +48,20 @@ export class UnityExporter extends KhaExporter {
 			name: name
 		};
 		
-		fs.removeSync(path.join(this.directory, this.sysdir(), 'Assets', 'Sources'));
+		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
 
-		let result = await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		let result = await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 		var copyDirectory = (from, to) => {
 			let files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
-			fs.ensureDirSync(path.join(this.directory, this.sysdir(), to));
+			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), to));
 			for (let file of files) {
 				var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', from, file), {encoding: 'utf8'});
-				fs.writeFileSync(path.join(this.directory, this.sysdir(), to, file), text);
+				fs.writeFileSync(path.join(this.options.to, this.sysdir(), to, file), text);
 			}
 		};
 		copyDirectory('Assets', 'Assets');
 		copyDirectory('Editor', 'Assets/Editor');
 		copyDirectory('ProjectSettings', 'ProjectSettings');
-		return result;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {
@@ -71,17 +69,17 @@ export class UnityExporter extends KhaExporter {
 	}*/
 
 	async copySound(platform, from, to, encoders) {
-		let ogg = await convert(from, path.join(this.directory, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), encoders.oggEncoder);
+		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), encoders.oggEncoder);
 		return [to + '.ogg'];
 	}
 
 	async copyImage(platform, from, to, asset) {
-		let format = await exportImage(from, path.join(this.directory, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true);
+		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true);
 		return [to + '.' + format];
 	}
 
 	async copyBlob(platform, from, to) {
-		fs.copySync(from.toString(), path.join(this.directory, this.sysdir(), 'Assets', 'Resources', 'Blobs', to + '.bytes'), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Blobs', to + '.bytes'), { clobber: true });
 		return [to];
 	}
 
