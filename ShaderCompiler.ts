@@ -26,14 +26,10 @@ export class ShaderCompiler {
 		this.temp = temp;
 		this.shaderMatchers = shaderMatchers;
 	}
-	
-	addShader(project, name, extension) {
-		project.exportedShaders.push({files: [name + extension], name: name});
-	}
-	
+
 	watch(watch: boolean, match: string, options: any) {
 		return new Promise<Array<{ files: Array<string>, name: string }>>((resolve, reject) => {
-			let shaders: Array<{ files: Array<string>, name: string }> = [];
+			let shaders: string[] = [];
 			let ready = false;
 			
 			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
@@ -46,8 +42,7 @@ export class ShaderCompiler {
 					}
 				}
 				else {
-					let parsed = path.parse(file);
-					shaders.push({ files: [parsed.name + this.type], name: parsed.name});
+					shaders.push(file);
 				}
 			});
 			this.watcher.on('change', (file: string) => {
@@ -62,10 +57,16 @@ export class ShaderCompiler {
 			});
 			this.watcher.on('ready', async () => {
 				ready = true;
+				let parsedShaders: { files: string[], name: string }[] = [];
+				let index = 0;
 				for (let shader of shaders) {
-					await this.compileShader(shader.name + '.glsl');
+					await this.compileShader(shader);
+					let parsed = path.parse(shader);
+					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
+					parsedShaders.push({ files: [parsed.name + '.' + this.type], name: parsed.name});
+					++index;
 				}
-				resolve(shaders);
+				resolve(parsedShaders);
 			});
 		});
 	}
@@ -79,12 +80,6 @@ export class ShaderCompiler {
 	}
 	
 	compileShader(file: string) {
-		/*
-		let shaderpath = path.join(to, name + '.essl');
-		await compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform);
-		addShader(project, name, ".essl");
-		*/
-		
 		return new Promise((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
 		
@@ -94,12 +89,11 @@ export class ShaderCompiler {
 			
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
-					if (fromErr || toErr || toStats.mtime.getTime() > fromStats.mtime.getTime()) {
-						log.info('Not compiling ' + file);
+					if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime())) {
+						if (fromErr) log.error('Shader compiler error: ' + fromErr);
 						resolve();
 					}
 					else {
-						log.info('Compiling ' + file + ' to ' + path.join(to, fileinfo.name + '.' + this.type));
 						let process = child_process.spawn(this.compiler, [this.type, from, to, this.temp, this.system]);
 						
 						process.stdout.on('data', (data) => {

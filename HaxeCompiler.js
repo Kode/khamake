@@ -133,7 +133,7 @@ class HaxeCompiler {
                     env.HAXE_STD_PATH = stddir;
                 }
             }
-            console.log('Haxe compile start.');
+            log.info('Compiling code.');
             let haxe = child_process.spawn(exe, [this.hxml], { env: env, cwd: path.normalize(this.from) });
             haxe.stdout.on('data', (data) => {
                 log.info(data.toString());
@@ -142,7 +142,6 @@ class HaxeCompiler {
                 log.error(data.toString());
             });
             haxe.on('close', (code) => {
-                console.log('Haxe compile end.');
                 if (code === 0)
                     resolve();
                 else

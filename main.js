@@ -237,7 +237,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
         if (options.haxe !== '') {
             yield exporter.exportSolution(name, targetOptions, defines);
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
-            compiler.run(true);
+            yield compiler.run(options.watch);
         }
         if (options.haxe !== '' && kore) {
             // If target is a Kore project, generate additional project folders here.
@@ -477,10 +477,9 @@ function exportKhaProject(options, callback) {
         project.scriptdir = options.kha;
         project.addShaders('Sources/Shaders/**', {});
         project.addShaders('Kha/Sources/Shaders/**', {}); //**
-        console.log('Exporting assets.');
         //await exportAssets(project.assets, exporter, from, platform, encoders);
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
-        yield assetConverter.run(options.watch);
+        let assets = yield assetConverter.run(options.watch);
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
         /*if (platform === Platform.Unity) {
             shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
@@ -517,12 +516,14 @@ function exportKhaProject(options, callback) {
         fs.ensureDirSync(shaderDir);
         let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
         let exportedShaders = yield shaderCompiler.run(options.watch);
-        // Push assets files to be loaded
         let files = [];
-        for (let asset of project.assets) {
-            files.push(asset);
+        for (let asset of assets) {
+            files.push({
+                name: fixName(path.parse(asset.from).name),
+                files: asset.files,
+                type: asset.type
+            });
         }
-        //for (let shader of project.exportedShaders) {
         for (let shader of exportedShaders) {
             files.push({
                 name: fixName(shader.name),
@@ -549,7 +550,6 @@ function exportKhaProject(options, callback) {
         }
         if (foundProjectFile) {
             fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
-            log.info('Assets done.');
         }
         exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
     });

@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const path = require('path');
+const log = require('./log');
 const chokidar = require('chokidar');
 class AssetConverter {
     constructor(exporter, platform, assetMatchers) {
@@ -17,29 +18,72 @@ class AssetConverter {
     }
     watch(watch, match, options) {
         return new Promise((resolve, reject) => {
+            let ready = false;
+            let files = [];
             this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
             this.watcher.on('add', (file) => {
-                let fileinfo = path.parse(file);
-                console.log('New file: ' + file + ' ' + fileinfo.ext);
-                switch (fileinfo.ext) {
-                    case '.png':
-                        console.log('Exporting ' + fileinfo.name);
-                        this.exporter.copyImage(this.platform, file, fileinfo.name, {});
-                        break;
+                if (ready) {
+                    let fileinfo = path.parse(file);
+                    switch (fileinfo.ext) {
+                        case '.png':
+                            this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+                            break;
+                    }
+                }
+                else {
+                    files.push(file);
                 }
             });
             this.watcher.on('change', (file) => {
             });
-            this.watcher.on('ready', () => {
-                resolve();
-            });
+            this.watcher.on('ready', () => __awaiter(this, void 0, void 0, function* () {
+                ready = true;
+                let parsedFiles = [];
+                let index = 0;
+                for (let file of files) {
+                    let fileinfo = path.parse(file);
+                    log.info('Exporting asset ' + (index + 1) + ' of ' + files.length + ' (' + fileinfo.base + ').');
+                    switch (fileinfo.ext) {
+                        case '.png':
+                        case '.jpg':
+                        case '.jpeg':
+                        case '.hdr':
+                            let images = yield this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+                            parsedFiles.push({ from: file, type: 'image', files: images });
+                            break;
+                        case '.wav':
+                            let sounds = yield this.exporter.copySound(this.platform, file, fileinfo.name);
+                            parsedFiles.push({ from: file, type: 'sound', files: sounds });
+                            break;
+                        case '.ttf':
+                            let fonts = yield this.exporter.copyFont(this.platform, file, fileinfo.name);
+                            parsedFiles.push({ from: file, type: 'font', files: fonts });
+                            break;
+                        case '.mp4':
+                        case '.webm':
+                        case '.wmv':
+                        case '.avi':
+                            let videos = yield this.exporter.copyVideo(this.platform, file, fileinfo.name);
+                            parsedFiles.push({ from: file, type: 'video', files: videos });
+                            break;
+                        default:
+                            let blobs = yield this.exporter.copyBlob(this.platform, file, fileinfo.name);
+                            parsedFiles.push({ from: file, type: 'blob', files: blobs });
+                            break;
+                    }
+                    ++index;
+                }
+                resolve(parsedFiles);
+            }));
         });
     }
     run(watch) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, void 0, Promise, function* () {
+            let files = [];
             for (let matcher of this.assetMatchers) {
-                yield this.watch(watch, matcher.match, matcher.options);
+                files = files.concat(yield this.watch(watch, matcher.match, matcher.options));
             }
+            return files;
         });
     }
 }

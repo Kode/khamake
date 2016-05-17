@@ -242,7 +242,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 	if (options.haxe !== '') {
 		await exporter.exportSolution(name, targetOptions, defines);
 		let compiler = new HaxeCompiler(options.to, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
-		compiler.run(true);
+		await compiler.run(options.watch);
 	}
 	if (options.haxe !== '' && kore) {
 		// If target is a Kore project, generate additional project folders here.
@@ -509,10 +509,9 @@ async function exportKhaProject(options: Options, callback) {
 	project.addShaders('Sources/Shaders/**', {});
 	project.addShaders('Kha/Sources/Shaders/**', {}); //**
 
-	console.log('Exporting assets.');
 	//await exportAssets(project.assets, exporter, from, platform, encoders);
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
-	await assetConverter.run(options.watch);
+	let assets = await assetConverter.run(options.watch);
 	let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
 	/*if (platform === Platform.Unity) {
 		shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
@@ -551,12 +550,14 @@ async function exportKhaProject(options: Options, callback) {
 	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
 	let exportedShaders = await shaderCompiler.run(options.watch);
 
-	// Push assets files to be loaded
 	let files = [];
-	for (let asset of project.assets) {
-		files.push(asset);
+	for (let asset of assets) {
+		files.push({
+			name: fixName(path.parse(asset.from).name),
+			files: asset.files,
+			type: asset.type
+		});
 	}
-	//for (let shader of project.exportedShaders) {
 	for (let shader of exportedShaders) {
 		files.push({
 			name: fixName(shader.name),
@@ -585,13 +586,12 @@ async function exportKhaProject(options: Options, callback) {
 
 	if (foundProjectFile) {
 		fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
-		log.info('Assets done.');
 	}
 
 	exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
 }
 
-function isKhaProject(directory, projectfile) {
+function isKhaProject(directory: string, projectfile: string) {
 	return fs.existsSync(path.join(directory, 'Kha')) || fs.existsSync(path.join(directory, projectfile));
 }
 

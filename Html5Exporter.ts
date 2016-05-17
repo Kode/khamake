@@ -23,7 +23,7 @@ export class Html5Exporter extends KhaExporter {
 		return 'html5';
 	}
 	
-	haxeOptions(defines: Array<string>) {
+	haxeOptions(name: string, defines: Array<string>) {
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -64,7 +64,7 @@ export class Html5Exporter extends KhaExporter {
 	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
-		writeHaxeProject(this.options.to, this.haxeOptions(defines));
+		writeHaxeProject(this.options.to, this.haxeOptions(name, defines));
 
 		if (this.sysdir() === 'debug-html5') {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');

@@ -23,9 +23,6 @@ class ShaderCompiler {
         this.temp = temp;
         this.shaderMatchers = shaderMatchers;
     }
-    addShader(project, name, extension) {
-        project.exportedShaders.push({ files: [name + extension], name: name });
-    }
     watch(watch, match, options) {
         return new Promise((resolve, reject) => {
             let shaders = [];
@@ -40,8 +37,7 @@ class ShaderCompiler {
                     }
                 }
                 else {
-                    let parsed = path.parse(file);
-                    shaders.push({ files: [parsed.name + this.type], name: parsed.name });
+                    shaders.push(file);
                 }
             });
             this.watcher.on('change', (file) => {
@@ -55,10 +51,16 @@ class ShaderCompiler {
             });
             this.watcher.on('ready', () => __awaiter(this, void 0, void 0, function* () {
                 ready = true;
+                let parsedShaders = [];
+                let index = 0;
                 for (let shader of shaders) {
-                    yield this.compileShader(shader.name + '.glsl');
+                    yield this.compileShader(shader);
+                    let parsed = path.parse(shader);
+                    log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
+                    parsedShaders.push({ files: [parsed.name + '.' + this.type], name: parsed.name });
+                    ++index;
                 }
-                resolve(shaders);
+                resolve(parsedShaders);
             }));
         });
     }
@@ -72,11 +74,6 @@ class ShaderCompiler {
         });
     }
     compileShader(file) {
-        /*
-        let shaderpath = path.join(to, name + '.essl');
-        await compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform);
-        addShader(project, name, ".essl");
-        */
         return new Promise((resolve, reject) => {
             if (!this.compiler)
                 reject('No shader compiler found.');
@@ -85,12 +82,12 @@ class ShaderCompiler {
             let to = path.join(this.to, fileinfo.name + '.' + this.type);
             fs.stat(from, (fromErr, fromStats) => {
                 fs.stat(to, (toErr, toStats) => {
-                    if (fromErr || toErr || toStats.mtime.getTime() > fromStats.mtime.getTime()) {
-                        log.info('Not compiling ' + file);
+                    if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime())) {
+                        if (fromErr)
+                            log.error('Shader compiler error: ' + fromErr);
                         resolve();
                     }
                     else {
-                        log.info('Compiling ' + file + ' to ' + path.join(to, fileinfo.name + '.' + this.type));
                         let process = child_process.spawn(this.compiler, [this.type, from, to, this.temp, this.system]);
                         process.stdout.on('data', (data) => {
                             log.info(data.toString());
