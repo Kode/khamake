@@ -120,8 +120,8 @@ export class HaxeCompiler {
 		});
 	}
 	
-	compile(): Promise<{}> {
-		return new Promise((resolve, reject) => {
+	compile(): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			let exe = 'haxe';
 			let env = process.env;
 			if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {

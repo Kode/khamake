@@ -75,9 +75,9 @@ export class KoreExporter extends KhaExporter {
 		return [to + '.wav'];
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset: any) {
-		if (platform === Platform.iOS && asset.compressed) {
-			let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
+	async copyImage(platform: string, from: string, to: string, options: any) {
+		if (platform === Platform.iOS && options.quality < 1) {
+			let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true);
 			return [to + '.' + format];
 		}
 		/*else if (platform === Platform.Android && asset.compressed) {
@@ -87,7 +87,7 @@ export class KoreExporter extends KhaExporter {
 		 exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 		 }*/
 		else {
-			let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
+			let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), options, 'snappy', true);
 			return [to + '.' + format];
 		}
 	}

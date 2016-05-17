@@ -6,15 +6,14 @@ import * as os from 'os';
 import * as path from 'path';
 import * as log from './log';
 import {sys} from './exec';
-import {Asset} from './Asset';
 
-function getWidthAndHeight(from: string, to: string, asset: Asset, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
+function getWidthAndHeight(from: string, to: string, options: any, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
 	return new Promise((resolve, reject) => {
 		const exe = 'kraffiti' + sys();
 		
 		let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
-		if (asset.scale !== undefined && asset.scale !== 1) {
-			params.push('scale=' + asset.scale);	
+		if (options.scale !== undefined && options.scale !== 1) {
+			params.push('scale=' + options.scale);	
 		}
 		let process = child_process.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
 		
@@ -29,7 +28,7 @@ function getWidthAndHeight(from: string, to: string, asset: Asset, format: strin
 
 		process.on('close', (code) => {
 			if (code !== 0) {
-				log.error('kraffiti process exited with code ' + code + ' when trying to get size of ' + asset.name);
+				log.error('kraffiti process exited with code ' + code + ' when trying to get size of ' + path.parse(from).name);
 				resolve({w: 0, h: 0});
 				return;	
 			}
@@ -47,14 +46,14 @@ function getWidthAndHeight(from: string, to: string, asset: Asset, format: strin
 	});
 }
 
-export async function exportImage(from: string, to: string, asset: Asset, format: string, prealpha: boolean, poweroftwo: boolean = false) {
+export async function exportImage(from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean = false) {
 	if (format === undefined) {
 		if (from.toString().endsWith('.png')) format = 'png';
 		else if (from.toString().endsWith('.hdr')) format = 'hdr'; 
 		else format = 'jpg';
 	}
 
-	if (format === 'jpg' && (asset.scale === undefined || asset.scale === 1) && asset.background === undefined) {
+	if (format === 'jpg' && (options.scale === undefined || options.scale === 1) && options.background === undefined) {
 		to = to + '.jpg';
 	}
 	else if (format === 'pvr') {
@@ -75,9 +74,9 @@ export async function exportImage(from: string, to: string, asset: Asset, format
 	}
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
-		let wh = await getWidthAndHeight(from, to, asset, format, prealpha);
-		asset.original_width = wh.w;
-		asset.original_height = wh.h;
+		let wh = await getWidthAndHeight(from, to, options, format, prealpha);
+		options.original_width = wh.w;
+		options.original_height = wh.h;
 		return outputformat;
 	}
 
@@ -85,9 +84,9 @@ export async function exportImage(from: string, to: string, asset: Asset, format
 
 	if (format === 'jpg' || format === 'hdr') {
 		fs.copySync(from, to, { clobber: true });
-		let wh = await getWidthAndHeight(from, to, asset, format, prealpha);
-		asset.original_width = wh.w;
-		asset.original_height = wh.h;
+		let wh = await getWidthAndHeight(from, to, options, format, prealpha);
+		options.original_width = wh.w;
+		options.original_height = wh.h;
 		return outputformat;
 	}
 
@@ -98,11 +97,11 @@ export async function exportImage(from: string, to: string, asset: Asset, format
 		params.push('filter=nearest');
 	}
 	if (prealpha) params.push('prealpha');
-	if (asset.scale !== undefined && asset.scale !== 1) {
-		params.push('scale=' + asset.scale);	
+	if (options.scale !== undefined && options.scale !== 1) {
+		params.push('scale=' + options.scale);	
 	}
-	if (asset.background !== undefined) {
-		params.push('transparent=' + ((asset.background.red << 24) | (asset.background.green << 16) | (asset.background.blue << 8) | 0xff).toString(16));
+	if (options.background !== undefined) {
+		params.push('transparent=' + ((options.background.red << 24) | (options.background.green << 16) | (options.background.blue << 8) | 0xff).toString(16));
 	}
 	if (poweroftwo) {
 		params.push('poweroftwo');
@@ -121,7 +120,7 @@ export async function exportImage(from: string, to: string, asset: Asset, format
 
 	process.on('close', (code) => {
 		if (code !== 0) {
-			log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + asset.name);
+			log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + path.parse(from).name);
 			return outputformat;
 		}
 		
@@ -129,8 +128,8 @@ export async function exportImage(from: string, to: string, asset: Asset, format
 		for (let line of lines) {
 			if (line.startsWith('#')) {
 				var numbers = line.substring(1).split('x');
-				asset.original_width = parseInt(numbers[0]);
-				asset.original_height = parseInt(numbers[1]);
+				options.original_width = parseInt(numbers[0]);
+				options.original_height = parseInt(numbers[1]);
 				return outputformat;
 			}
 		}

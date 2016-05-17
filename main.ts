@@ -15,7 +15,7 @@ import {GraphicsApi} from './GraphicsApi';
 import {VrApi} from './VrApi';
 import {Options} from './Options';
 import {Platform} from './Platform';
-import {Project} from './Project';
+import {Project, Target} from './Project';
 import {loadProject} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
@@ -408,6 +408,22 @@ function koreplatform(platform) {
 
 async function exportKhaProject(options: Options, callback) {
 	log.info('Creating Kha project.');
+		
+	let project: Project = null;
+	let foundProjectFile = false;
+
+	// get the khafile.js and load the config code,
+	// then create the project config object, which contains stuff
+	// like project name, assets paths, sources path, library path...
+	if (fs.existsSync(path.join(options.from, options.projectfile))) {
+		project = await loadProject(options.from, options.projectfile);
+		foundProjectFile = true;
+	}
+	else {
+		log.error('No khafile found.');
+		callback('Unknown');
+		return;
+	}
 
 	let temp = path.join(options.to, 'temp');
 	fs.ensureDirSync(temp);
@@ -415,7 +431,15 @@ async function exportKhaProject(options: Options, callback) {
 	let exporter = null;
 	let kore = false;
 	let korehl = false;
-	switch (options.target) {
+	
+	let target = options.target;
+	let customTarget: Target = null;
+	if (project.customTargets.get(options.target)) {
+		customTarget = project.customTargets.get(options.target);
+		target = customTarget.baseTarget;
+	}
+	
+	switch (target) {
 		case Platform.Flash:
 			exporter = new FlashExporter(options);
 			break;
@@ -453,13 +477,14 @@ async function exportKhaProject(options: Options, callback) {
 			exporter = new EmptyExporter(options);
 			break;
 		default:
-			if (options.target.endsWith('-hl')) {
+			if (target.endsWith('-hl')) {
 				korehl = true;
-				options.target = koreplatform(options.target);
+				options.target = koreplatform(target);
 				exporter = new KoreHLExporter(options);
 			}
 			else {
 				kore = true;
+				options.target = koreplatform(target);
 				exporter = new KoreExporter(options);
 			}
 			break;
@@ -468,23 +493,6 @@ async function exportKhaProject(options: Options, callback) {
 	// Create the target build folder
 	// e.g. 'build/android-native'
 	fs.ensureDirSync(path.join(options.to, exporter.sysdir()));
-
-	let project: Project = null;
-
-	let foundProjectFile = false;
-
-	// get the khafile.js and load the config code,
-	// then create the project config object, which contains stuff
-	// like project name, assets paths, sources path, library path...
-	if (fs.existsSync(path.join(options.from, options.projectfile))) {
-		project = await loadProject(options.from, options.projectfile);
-		foundProjectFile = true;
-	}
-	else {
-		log.error('No khafile found.');
-		callback('Unknown');
-		return;
-	}
 
 	let defaultWindowOptions = {
 		width: 800,

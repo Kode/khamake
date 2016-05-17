@@ -123,8 +123,8 @@ export class Html5Exporter extends KhaExporter {
 		return files;
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset: any) {
-		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+	async copyImage(platform: string, from: string, to: string, options: any) {
+		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), options, undefined, false);
 		return [to + '.' + format];
 	}
 
