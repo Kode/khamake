@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const fs = require('fs-extra');
 const path = require('path');
-const Asset_1 = require('./Asset');
 const CSharpExporter_1 = require('./CSharpExporter');
 const ImageTool_1 = require('./ImageTool');
 const uuid = require('./uuid.js');
@@ -128,7 +127,7 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.closeFile();
     }
     exportCsProj(projectUuid) {
-        ImageTool_1.exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), new Asset_1.Asset(64, 64), 'png', false);
+        ImageTool_1.exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), { width: 64, height: 64 }, 'png', false);
         ImageTool_1.exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
         this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
         this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");

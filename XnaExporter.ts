@@ -2,7 +2,6 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {Asset} from './Asset';
 import {CSharpExporter} from './CSharpExporter';
 import {convert} from './Converter';
 import {executeHaxe} from './Haxe';
@@ -133,7 +132,7 @@ export class XnaExporter extends CSharpExporter {
 	}
 
 	exportCsProj(projectUuid) {
-		exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), new Asset(64, 64), 'png', false);
+		exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), {width: 64, height: 64}, 'png', false);
 		exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
 
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));

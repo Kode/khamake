@@ -73,14 +73,14 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
             return [to + '.wav'];
         });
     }
-    copyImage(platform, from, to, asset) {
+    copyImage(platform, from, to, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (platform === Platform_1.Platform.iOS && asset.compressed) {
-                let format = ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
+            if (platform === Platform_1.Platform.iOS && options.quality < 1) {
+                let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true);
                 return [to + '.' + format];
             }
             else {
-                let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
+                let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), options, 'snappy', true);
                 return [to + '.' + format];
             }
         });

@@ -3,68 +3,19 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const log = require('./log');
-class Shader {
-}
-class Asset {
-}
 class Library {
 }
-function findFiles(dir, match) {
-    if (path.isAbsolute(match)) {
-        match = path.relative(dir, match);
-    }
-    match = match.replace(/\\/g, '/');
-    let subdir = '.';
-    if (match.indexOf('*') >= 0) {
-        let beforeStar = match.substring(0, match.indexOf('*'));
-        subdir = beforeStar.substring(0, beforeStar.lastIndexOf('/'));
-        let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
-        let collected = [];
-        findFiles2(dir, subdir, regex, collected);
-        return collected;
-    }
-    else {
-        let file = path.resolve(dir, match);
-        return [file];
+class Target {
+    constructor(baseTarget, backends) {
+        this.baseTarget = baseTarget;
+        this.backends = backends;
     }
 }
-function findFiles2(basedir, dir, regex, collected) {
-    let dirpath = path.resolve(basedir, dir);
-    if (!fs.existsSync(dirpath) || !fs.statSync(dirpath).isDirectory())
-        return;
-    let files = fs.readdirSync(dirpath);
-    /*nextfile:*/ for (let f of files) {
-        let file = path.resolve(dirpath, f);
-        if (!fs.existsSync(file) || fs.statSync(file).isDirectory())
-            continue;
-        //for (let exclude of this.excludes) {
-        //	if (this.matches(this.stringify(file), exclude)) continue nextfile;
-        //}
-        let filename = path.relative(basedir, file).replace(/\\/g, '/');
-        if (regex.test(filename)) {
-            collected.push(file.replace(/\\/g, '/'));
-        }
-        regex.lastIndex = 0;
-    }
-    /*nextdir:*/ for (let f of files) {
-        let file = path.resolve(dirpath, f);
-        if (!fs.existsSync(file) || !fs.statSync(file).isDirectory())
-            continue;
-        //for (let exclude of this.excludes) {
-        //	if (this.matchesAllSubdirs(this.basedir.relativize(dir), exclude)) {
-        //		continue nextdir;
-        //	}
-        //}
-        findFiles2(basedir, file, regex, collected);
-    }
-}
+exports.Target = Target;
 class Project {
     constructor(name) {
         this.name = name;
-        this.assets = [];
         this.sources = [];
-        this.shaders = [];
-        this.exportedShaders = [];
         this.defines = [];
         this.parameters = [];
         this.scriptdir = Project.scriptdir;
@@ -72,6 +23,7 @@ class Project {
         this.localLibraryPath = 'Libraries';
         this.assetMatchers = [];
         this.shaderMatchers = [];
+        this.customTargets = new Map();
         this.windowOptions = {};
         this.targetOptions = {
             flash: {},
@@ -86,34 +38,6 @@ class Project {
      */
     addAssets(match, options) {
         this.assetMatchers.push({ match: match, options: options });
-        let files = findFiles(this.scriptdir, match);
-        for (let f of files) {
-            let file = path.parse(f);
-            let name = file.name;
-            let type = 'blob';
-            if (file.ext === '.png' || file.ext === '.jpg' || file.ext === '.jpeg' || file.ext === '.hdr') {
-                type = 'image';
-            }
-            else if (file.ext === '.wav') {
-                type = 'sound';
-            }
-            else if (file.ext === '.ttf') {
-                type = 'font';
-            }
-            else if (file.ext === '.mp4' || file.ext === '.webm' || file.ext === '.wmv' || file.ext === '.avi') {
-                type = 'video';
-            }
-            else {
-                name = file.base;
-            }
-            if (!file.name.startsWith('.') && file.name.length > 0) {
-                this.assets.push({
-                    name: name,
-                    file: f,
-                    type: type
-                });
-            }
-        }
     }
     addSources(source) {
         this.sources.push(source);
@@ -124,22 +48,15 @@ class Project {
      */
     addShaders(match, options) {
         this.shaderMatchers.push({ match: match, options: options });
-        let shaders = findFiles(this.scriptdir, match);
-        for (let shader of shaders) {
-            let file = path.parse(shader);
-            if (!file.name.startsWith('.') && file.ext === '.glsl') {
-                this.shaders.push({
-                    name: file.name,
-                    files: [shader]
-                });
-            }
-        }
     }
     addDefine(define) {
         this.defines.push(define);
     }
     addParameter(parameter) {
         this.parameters.push(parameter);
+    }
+    addTarget(name, baseTarget, backends) {
+        this.customTargets.set(name, new Target(baseTarget, backends));
     }
     addLibrary(library) {
         let self = this;

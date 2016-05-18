@@ -243,7 +243,12 @@ if (parsedOptions.run) {
 }
 function runKhamake() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
+        try {
+            yield require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
+        }
+        catch (error) {
+            console.log(error);
+        }
     });
 }
 if (parsedOptions.init) {
