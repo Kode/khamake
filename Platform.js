@@ -1,5 +1,6 @@
 "use strict";
 exports.Platform = {
+    Krom: 'krom',
     Windows: 'windows',
     WindowsApp: 'windowsapp',
     PlayStation3: 'ps3',

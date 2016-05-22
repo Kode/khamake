@@ -30,6 +30,7 @@ const Html5WorkerExporter_1 = require('./Html5WorkerExporter');
 const JavaExporter_1 = require('./JavaExporter');
 const KoreExporter_1 = require('./KoreExporter');
 const KoreHLExporter_1 = require('./KoreHLExporter');
+const KromExporter_1 = require('./KromExporter');
 const NodeExporter_1 = require('./NodeExporter');
 const PlayStationMobileExporter_1 = require('./PlayStationMobileExporter');
 const WpfExporter_1 = require('./WpfExporter');
@@ -415,6 +416,9 @@ function exportKhaProject(options, callback) {
             target = customTarget.baseTarget;
         }
         switch (target) {
+            case Platform_1.Platform.Krom:
+                exporter = new KromExporter_1.KromExporter(options);
+                break;
             case Platform_1.Platform.Flash:
                 exporter = new FlashExporter_1.FlashExporter(options);
                 break;

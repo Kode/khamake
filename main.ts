@@ -31,6 +31,7 @@ import {Html5WorkerExporter} from './Html5WorkerExporter';
 import {JavaExporter} from './JavaExporter';
 import {KoreExporter} from './KoreExporter';
 import {KoreHLExporter} from './KoreHLExporter';
+import {KromExporter} from './KromExporter';
 import {NodeExporter} from './NodeExporter';
 import {PlayStationMobileExporter} from './PlayStationMobileExporter';
 import {WpfExporter} from './WpfExporter';
@@ -440,6 +441,9 @@ async function exportKhaProject(options: Options, callback) {
 	}
 	
 	switch (target) {
+		case Platform.Krom:
+			exporter = new KromExporter(options);
+			break;
 		case Platform.Flash:
 			exporter = new FlashExporter(options);
 			break;

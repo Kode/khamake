@@ -1,6 +1,7 @@
 "use strict";
 
 export var Platform = {
+	Krom: 'krom',
 	Windows: 'windows',
 	WindowsApp: 'windowsapp',
 	PlayStation3: 'ps3',
