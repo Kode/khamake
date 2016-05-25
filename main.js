@@ -118,7 +118,8 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler) 
 			else {
 				let shaderpath = to.resolve(name + '.essl');
 				compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform);
-				addShader(project, name, ".essl");
+				compileShader2(compiler, "js", shader.files[0], to.resolve(Paths.get('..', 'debug-html5', name + '.js')), temp, platform);
+				addShader(project, name, '.essl');
 			}
 			break;
 		}
@@ -242,8 +243,8 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 	}
 }
 
-function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, libraries, targetOptions, defines, callback) {
-	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
+function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, libraries, targetOptions, defines, callback, files) {
+	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines, files);
 	if (haxeDirectory.path !== '' && kore) {
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
@@ -597,7 +598,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		log.info('Assets done.');
 	}
 
-	exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
+	exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass, files);
 }
 
 function isKhaProject(directory, projectfile) {

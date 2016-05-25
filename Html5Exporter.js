@@ -22,7 +22,7 @@ class Html5Exporter extends KhaExporter {
 		return 'html5';
 	}
 
-	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
+	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines, files) {
 		this.createDirectory(this.directory.resolve(this.sysdir()));
 
 		defines.push('sys_g1');
@@ -69,6 +69,18 @@ class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replaceAll('{Name}', name);
 				protoindex = protoindex.replaceAll('{Width}', this.width);
 				protoindex = protoindex.replaceAll('{Height}', this.height);
+				
+				/*files.push({
+			name: fixName(shader.name),
+			files: shader.files,
+			type: 'shader'
+		});*/
+				let shaders = '';
+				for (let file of files) {
+					if (file.type === 'shader') shaders += "<script src=\"" + file.files[0].substr(0, file.files[0].length - 5) + ".js\"></script>\n";
+				}
+				protoindex = protoindex.replaceAll('{Scripts}', shaders);
+				
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 			
