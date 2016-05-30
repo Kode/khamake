@@ -236,8 +236,8 @@ function exportAssets(assets, exporter, from, platform) {
 function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines, callback) {
     return __awaiter(this, void 0, void 0, function* () {
         if (options.haxe !== '') {
-            yield exporter.exportSolution(name, targetOptions, defines);
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
+            let haxeoptions = yield exporter.exportSolution(name, targetOptions, defines);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeoptions.to, haxeoptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
             yield compiler.run(options.watch);
         }
         if (options.haxe !== '' && kore) {

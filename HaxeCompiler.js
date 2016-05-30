@@ -14,11 +14,13 @@ const chokidar = require('chokidar');
 const log = require('./log');
 const exec_1 = require('./exec');
 class HaxeCompiler {
-    constructor(from, haxeDirectory, hxml, sourceDirectories) {
+    constructor(from, temp, to, haxeDirectory, hxml, sourceDirectories) {
         this.ready = true;
         this.todo = false;
         this.port = '7000';
         this.from = from;
+        this.temp = temp;
+        this.to = to;
         this.haxeDirectory = haxeDirectory;
         this.hxml = hxml;
         this.sourceMatchers = [];
@@ -106,6 +108,7 @@ class HaxeCompiler {
                 log.error(data.toString());
             });
             haxe.on('close', (code) => {
+                fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
                 this.ready = true;
                 if (this.todo) {
                     this.scheduleCompile();
@@ -142,12 +145,22 @@ class HaxeCompiler {
                 log.error(data.toString());
             });
             haxe.on('close', (code) => {
-                if (code === 0)
+                if (code === 0) {
+                    fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
                     resolve();
+                }
                 else
                     reject('Haxe compiler error.');
             });
         });
+    }
+    static spinRename(from, to) {
+        for (;;) {
+            if (fs.existsSync(from)) {
+                fs.renameSync(from, to);
+                return;
+            }
+        }
     }
 }
 exports.HaxeCompiler = HaxeCompiler;

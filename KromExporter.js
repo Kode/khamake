@@ -22,6 +22,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         return 'krom';
     }
     haxeOptions(name, defines) {
+        defines.push('js-classic');
         defines.push('sys_g1');
         defines.push('sys_g2');
         defines.push('sys_g3');
@@ -30,7 +31,8 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         //defines.push('sys_a2');
         return {
             from: this.options.from.toString(),
-            to: path.join(this.sysdir(), 'krom.js'),
+            to: path.join(this.sysdir(), 'krom.js.temp'),
+            realto: path.join(this.sysdir(), 'krom.js'),
             sources: this.sources,
             libraries: this.libraries,
             defines: defines,
@@ -47,6 +49,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         return __awaiter(this, void 0, Promise, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
             HaxeProject_1.writeHaxeProject(this.options.to, this.haxeOptions(name, defines));
+            return this.haxeOptions(name, defines);
         });
     }
     copySound(platform, from, to) {
@@ -62,6 +65,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     copyImage(platform, from, to, options) {
         return __awaiter(this, void 0, void 0, function* () {
             let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), options, undefined, false);
+            console.log('Image format is ' + format);
             return [to + '.' + format];
         });
     }

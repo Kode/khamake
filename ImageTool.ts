@@ -46,7 +46,7 @@ function getWidthAndHeight(from: string, to: string, options: any, format: strin
 	});
 }
 
-export async function exportImage(from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean = false) {
+export async function exportImage(from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean = false): Promise<string> {
 	if (format === undefined) {
 		if (from.toString().endsWith('.png')) format = 'png';
 		else if (from.toString().endsWith('.hdr')) format = 'hdr'; 
@@ -68,6 +68,8 @@ export async function exportImage(from: string, to: string, options: any, format
 		else to = to + '.png';
 	}
 	
+	let temp = to + '.temp';
+	
 	let outputformat = format;
 	if (format === 'png' && prealpha) {
 		outputformat = 'kng';
@@ -83,7 +85,8 @@ export async function exportImage(from: string, to: string, options: any, format
 	fs.ensureDirSync(path.dirname(to));
 
 	if (format === 'jpg' || format === 'hdr') {
-		fs.copySync(from, to, { clobber: true });
+		fs.copySync(from, temp, { clobber: true });
+		fs.renameSync(temp, to);
 		let wh = await getWidthAndHeight(from, to, options, format, prealpha);
 		options.original_width = wh.w;
 		options.original_height = wh.h;
@@ -92,7 +95,7 @@ export async function exportImage(from: string, to: string, options: any, format
 
 	const exe = 'kraffiti' + sys();
 	
-	let params = ['from=' + from, 'to=' + to, 'format=' + format];
+	let params = ['from=' + from, 'to=' + temp, 'format=' + format];
 	if (!poweroftwo) {
 		params.push('filter=nearest');
 	}
@@ -123,6 +126,8 @@ export async function exportImage(from: string, to: string, options: any, format
 			log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + path.parse(from).name);
 			return outputformat;
 		}
+
+		fs.renameSync(temp, to);
 		
 		const lines = output.split('\n');
 		for (let line of lines) {

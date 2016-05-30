@@ -26,7 +26,7 @@ export abstract class KhaExporter extends Exporter {
 	
 	abstract sysdir(): string;
 
-	abstract async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<void>;
+	abstract async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<any>;
 
 	setWidthAndHeight(width: number, height: number): void {
 		this.width = width;

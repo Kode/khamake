@@ -24,16 +24,18 @@ export class KromExporter extends KhaExporter {
 	}
 	
 	haxeOptions(name: string, defines: Array<string>) {
+		defines.push('js-classic');
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
 		defines.push('sys_g4');
 		defines.push('sys_a1');
 		//defines.push('sys_a2');
-		
+
 		return {
 			from: this.options.from.toString(),
-			to: path.join(this.sysdir(), 'krom.js'),
+			to: path.join(this.sysdir(), 'krom.js.temp'),
+			realto: path.join(this.sysdir(), 'krom.js'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
@@ -47,10 +49,12 @@ export class KromExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
 		writeHaxeProject(this.options.to, this.haxeOptions(name, defines));
+		
+		return this.haxeOptions(name, defines);
 	}
 
 	async copySound(platform: string, from: string, to: string) {
@@ -63,6 +67,7 @@ export class KromExporter extends KhaExporter {
 
 	async copyImage(platform: string, from: string, to: string, options: any) {
 		let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), options, undefined, false);
+		console.log('Image format is ' + format);
 		return [to + '.' + format];
 	}
 

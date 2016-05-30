@@ -14,9 +14,13 @@ export class HaxeCompiler {
 	ready: boolean = true;
 	todo: boolean = false;
 	port: string = '7000';
+	temp: string;
+	to: string;
 		
-	constructor(from: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>) {
+	constructor(from: string, temp: string, to: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>) {
 		this.from = from;
+		this.temp = temp;
+		this.to = to;
 		this.haxeDirectory = haxeDirectory;
 		this.hxml = hxml;
 		
@@ -109,6 +113,7 @@ export class HaxeCompiler {
 			});
 			
 			haxe.on('close', (code) => {
+				fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
 				this.ready = true;
 				if (this.todo) {
 					this.scheduleCompile();
@@ -145,9 +150,21 @@ export class HaxeCompiler {
 			});
 			
 			haxe.on('close', (code) => {
-				if (code === 0) resolve();
+				if (code === 0) {
+					fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
+					resolve();
+				}
 				else reject('Haxe compiler error.')
 			});
 		});
+	}
+	
+	private static spinRename(from: string, to: string): void {
+		for (;;) {
+			if (fs.existsSync(from)) {
+				fs.renameSync(from, to);
+				return;
+			}
+		}
 	}
 }

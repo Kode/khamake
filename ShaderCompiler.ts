@@ -86,6 +86,7 @@ export class ShaderCompiler {
 			let fileinfo = path.parse(file);
 			let from = file;
 			let to = path.join(this.to, fileinfo.name + '.' + this.type);
+			let temp = to + '.temp';
 			
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
@@ -94,7 +95,7 @@ export class ShaderCompiler {
 						resolve();
 					}
 					else {
-						let process = child_process.spawn(this.compiler, [this.type, from, to, this.temp, this.system]);
+						let process = child_process.spawn(this.compiler, [this.type, from, temp, this.temp, this.system]);
 						
 						process.stdout.on('data', (data) => {
 							log.info(data.toString());
@@ -105,7 +106,10 @@ export class ShaderCompiler {
 						});
 
 						process.on('close', (code) => {
-							if (code === 0) resolve();
+							if (code === 0) {
+								fs.renameSync(temp, to);
+								resolve();
+							}
 							else reject('Shader compiler error.')
 						});
 					}

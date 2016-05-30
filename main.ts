@@ -241,8 +241,8 @@ async function exportAssets(assets: Array<any>, exporter: KhaExporter, from: str
 
 async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries, targetOptions, defines, callback) {
 	if (options.haxe !== '') {
-		await exporter.exportSolution(name, targetOptions, defines);
-		let compiler = new HaxeCompiler(options.to, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
+		let haxeoptions = await exporter.exportSolution(name, targetOptions, defines);
+		let compiler = new HaxeCompiler(options.to, haxeoptions.to, haxeoptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
 		await compiler.run(options.watch);
 	}
 	if (options.haxe !== '' && kore) {
