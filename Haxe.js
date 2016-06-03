@@ -20,13 +20,17 @@ exports.executeHaxe = function (from, haxeDirectory, options) {
 	}
 	let result = child_process.spawnSync(exe, options, { env: env, cwd: path.normalize(from.toString()) });
 
-	if (result.stdout.toString() !== '') {
+	if (result.stdout && result.stdout.toString() !== '') {
 		log.info(result.stdout.toString());
 	}
 
-	if (result.stderr.toString() !== '') {
+	if (result.stderr && result.stderr.toString() !== '') {
 		log.error(result.stderr.toString());
 	}
 	
+	if (result.error) {
+		log.error('Haxe.js ' + from + ' error (' + options + '): ' + result.error);
+	}
+
 	return result.status;
 };
