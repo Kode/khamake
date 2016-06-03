@@ -47,11 +47,11 @@ function compileShader2(compiler, type, from, to, temp, system) {
 	if (compiler !== '') {
 		let result = child_process.spawnSync(compiler, [type, from.toString(), to.toString(), temp.toString(), system]);
 
-		if (result.stdout.toString() !== '') {
+		if (result.stdout && result.stdout.toString() !== '') {
 			log.info(result.stdout.toString());
 		}
 
-		if (result.stderr.toString() !== '') {
+		if (result.stderr && result.stderr.toString() !== '') {
 			log.info(result.stderr.toString());
 		}
 
