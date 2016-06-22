@@ -319,7 +319,7 @@ function FlashDevelop(projectdir, options) {
 	if (options.language === 'cs' && fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'netlib'))) {
 		def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '&#xA;';
 	}
-	def += '-D kha_output=\\&quot;' + path.resolve(path.join('build', options.to)) + '\\&quot;&#xA;';
+	def += '-D kha_output=&quot;' + path.resolve(path.join(projectdir, options.to)) + '&quot;&#xA;';
 	for (let param of options.parameters) {
 		def += param + '&#xA;';
 	}
