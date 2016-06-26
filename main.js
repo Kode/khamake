@@ -243,7 +243,10 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 }
 
 function exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, libraries, targetOptions, defines, callback) {
-	if (haxeDirectory.path !== '') exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
+	let success = false;
+	if (haxeDirectory.path !== '') {
+		success = exporter.exportSolution(name, platform, khaDirectory, haxeDirectory, from, targetOptions, defines);
+	}
 	if (haxeDirectory.path !== '' && kore) {
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
@@ -398,6 +401,7 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 		log.info('Done.');
 		callback(name);
 	}
+	return success;
 }
 
 function koreplatform(platform) {
@@ -597,7 +601,7 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		log.info('Assets done.');
 	}
 
-	exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
+	return exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
 }
 
 function isKhaProject(directory, projectfile) {
@@ -606,11 +610,12 @@ function isKhaProject(directory, projectfile) {
 
 function exportProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, krafix, khafolders, embedflashassets, options, callback) {
 	if (isKhaProject(from, options.projectfile)) {
-		exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, krafix, khafolders, embedflashassets, options, callback);
+		return exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEncoder, aacEncoder, mp3Encoder, h264Encoder, webmEncoder, wmvEncoder, theoraEncoder, krafix, khafolders, embedflashassets, options, callback);
 	}
 	else {
 		log.error('Neither Kha directory nor project file (' + options.projectfile + ') found.');
 		callback('Unknown');
+		return false;
 	}
 }
 
@@ -718,5 +723,5 @@ exports.run = function (options, loglog, callback) {
 		Options.visualStudioVersion = options.visualStudioVersion;
 	}
 	
-	exportProject(Paths.get(options.from), Paths.get(options.to), options.target, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.krafix, false, options.embedflashassets, options, done);
+	return exportProject(Paths.get(options.from), Paths.get(options.to), options.target, Paths.get(options.kha), Paths.get(options.haxe), options.ogg, options.aac, options.mp3, options.h264, options.webm, options.wmv, options.theora, options.krafix, false, options.embedflashassets, options, done);
 };
