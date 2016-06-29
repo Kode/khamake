@@ -15,7 +15,7 @@ function copyAndReplace(from, to, names, values) {
 
 function IntelliJ(projectdir, options) {
     let indir = path.join(__dirname, 'Data', 'intellij');
-    let outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
+    let outdir = path.join(projectdir, options.name + '-project-' + options.system + '-intellij');
 
 	let sources = '';
 	for (let i = 0; i < options.sources.length; ++i) {
@@ -145,7 +145,7 @@ function hxml(projectdir, options) {
 		data += param + '\n';
 	}
 	data += '-main Main' + '\n';
-	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
+	fs.outputFileSync(path.join(projectdir, options.name + '-project-' + options.system + '.hxml'), data);
 }
 
 function FlashDevelop(projectdir, options) {
@@ -407,7 +407,7 @@ function FlashDevelop(projectdir, options) {
 		]
 	};
 
-	XmlWriter(project, path.join(projectdir, 'project-' + options.system + '.hxproj'));
+	XmlWriter(project, path.join(projectdir, options.name + '-project-' + options.system + '.hxproj'));
 }
 
 module.exports = function (projectdir, options) {

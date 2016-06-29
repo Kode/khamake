@@ -62,7 +62,7 @@ class KoreExporter extends KhaExporter {
 
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		return Haxe.executeHaxe(this.directory, haxeDirectory, ["project-" + this.sysdir() + ".hxml"]);
+		return Haxe.executeHaxe(this.directory, haxeDirectory, [name + '-project-' + this.sysdir() + ".hxml"]);
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {

@@ -109,7 +109,7 @@ class FlashExporter extends KhaExporter {
 		}
 
 		if (Options.compilation) {
-			return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+			return Haxe.executeHaxe(this.directory, haxeDirectory, [name + '-project-' + this.sysdir() + '.hxml']);
 		}
 		else {
 			return 0;

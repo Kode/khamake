@@ -60,7 +60,7 @@ class AndroidExporter extends KhaExporter {
 
 		this.exportAndroidStudioProject(name, _targetOptions, from);
 
-		return Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		return Haxe.executeHaxe(this.directory, haxeDirectory, [name + '-project-' + this.sysdir() + '.hxml']);
 	}
 
 	exportAndroidStudioProject(name, _targetOptions, from) {

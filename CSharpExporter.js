@@ -58,7 +58,7 @@ class CSharpExporter extends KhaExporter {
 
 		Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		let result = Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		let result = Haxe.executeHaxe(this.directory, haxeDirectory, [name + '-project-' + this.sysdir() + '.hxml']);
 		const projectUuid = uuid.v4();
 		this.exportSLN(projectUuid);
 		this.exportCsProj(projectUuid);

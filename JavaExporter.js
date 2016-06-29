@@ -50,7 +50,7 @@ class JavaExporter extends KhaExporter {
 
 		Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Sources")));
 
-		let result = Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		let result = Haxe.executeHaxe(this.directory, haxeDirectory, [name + '-project-' + this.sysdir() + '.hxml']);
 		this.exportEclipseProject();
 		return result;
 	}

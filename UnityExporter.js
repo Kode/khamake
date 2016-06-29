@@ -52,7 +52,7 @@ class UnityExporter extends KhaExporter {
 
 		Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir(), "Assets", "Sources")));
 
-		let result = Haxe.executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		let result = Haxe.executeHaxe(this.directory, haxeDirectory, [name + '-project-' + this.sysdir() + '.hxml']);
 		var copyDirectory = (from, to) => {
 			let files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
 			this.createDirectory(this.directory.resolve(Paths.get(this.sysdir(), to)));
