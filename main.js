@@ -218,19 +218,19 @@ function exportAssets(assets, exporter, from, khafolders, platform, encoders) {
 
 		switch (asset.type) {
 			case 'image':
-				files = exporter.copyImage(platform, asset.file, fileinfo.name, asset);
+				files = exporter.copyImage(platform, asset.file, asset.name, asset);
 				break;
 			case 'sound':
-				files = exporter.copySound(platform, asset.file, fileinfo.name, encoders);
+				files = exporter.copySound(platform, asset.file, asset.name, encoders);
 				break;
 			case 'font':
-				files = exporter.copyFont(platform, asset.file, fileinfo.name);
+				files = exporter.copyFont(platform, asset.file, asset.name);
 				break;
 			case 'video':
-				files = exporter.copyVideo(platform, asset.file, fileinfo.name, encoders);
+				files = exporter.copyVideo(platform, asset.file, asset.name, encoders);
 				break;
 			case 'blob':
-				files = exporter.copyBlob(platform, asset.file, fileinfo.base);
+				files = exporter.copyBlob(platform, asset.file, asset.name);
 				break;
 		}
 
