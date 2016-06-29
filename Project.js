@@ -118,6 +118,8 @@ class Project {
 
 	addSources(source) {
 		this.sources.push(source);
+		// get System.init options from Main.hx
+		this.addWindowOptions();
 	}
 
 	/**
@@ -143,6 +145,22 @@ class Project {
 	
 	addParameter(parameter) {
 		this.parameters.push(parameter);
+	}
+
+	addWindowOptions(){
+		let self = this;
+		// open Main.hx class
+		let mainpath = this.scriptdir + "/Sources/Main.hx";
+		let mainHx = fs.readFileSync(mainpath, 'utf8');
+		
+		// get the width and height from the Main.hx class
+		mainHx.toString().split(/\n/).forEach(function(line){
+			if(line.indexOf("System.init") > -1){
+				let ops = line.substring(line.indexOf("{"), line.lastIndexOf("}")+1);
+				let initParms = eval("(" +ops+ ")");
+				self.windowOptions = initParms;
+			}
+		});
 	}
 
 	addLibrary(library) {
