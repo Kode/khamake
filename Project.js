@@ -13,20 +13,25 @@ function findFiles(dir, match) {
 	}
 	match = match.replace(/\\/g, '/');
 	
-	let subdir = '.'
+	let subdir = '.';
+	let collected = [];
 	if (match.indexOf('*') >= 0) {
 		let beforeStar = match.substring(0, match.indexOf('*'));
 		subdir = beforeStar.substring(0, beforeStar.lastIndexOf('/'));
 		
 		let regex = new RegExp('^' + match.replace(/\./g, "\\.").replace(/\*\*/g, ".?").replace(/\*/g, "[^/]*").replace(/\?/g, '*') + '$', 'g');
 	
-		let collected = [];
 		findFiles2(dir, subdir, regex, collected);
-		return collected;
 	}
 	else {
 		let file = path.resolve(dir, match);
-		return [file];
+		subdir = path.dirname(file);
+		collected.push(file);
+	}
+
+	return {
+		subdir:subdir,
+		files:collected
 	}
 }
 
@@ -83,10 +88,12 @@ class Project {
 	 * Add all assets matching the match regex relative to the directory containing the current khafile.
 	 * Asset types are infered from the file suffix.
 	 * The regex syntax is very simple: * for anything, ** for anything across directories.
+	 * 
+	 * If subfolderSeparator is defined, then subfolder names will be added to assets names  
 	 */
-	addAssets(match) {
+	addAssets(match, subfolderSeparator) {
 		let files = findFiles(this.scriptdir, match);
-		for (let f of files) {
+		for (let f of files.files) {
 			let file = path.parse(f);
 			let name = file.name;
 			let type = 'blob';
@@ -104,6 +111,11 @@ class Project {
 			}
 			else {
 				name = file.base;
+			}
+
+			if(subfolderSeparator)
+			{
+				name = path.relative(files.subdir, path.join(path.dirname(f), name)).split(path.sep).join(subfolderSeparator); 
 			}
 
 			if (!file.name.startsWith('.') && file.name.length > 0) {
@@ -126,7 +138,7 @@ class Project {
 	 */
 	addShaders(match) {
 		let shaders = findFiles(this.scriptdir, match);
-		for (let shader of shaders) {
+		for (let shader of shaders.files) {
 			let file = path.parse(shader);
 			if (!file.name.startsWith('.') && file.ext === '.glsl') {
 				this.shaders.push({
