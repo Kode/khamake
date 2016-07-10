@@ -32,5 +32,5 @@ exports.executeHaxe = function (from, haxeDirectory, options) {
 		log.error('Haxe.js ' + from + ' error (' + options + '): ' + result.error);
 	}
 
-	return result.status;
+	return result.status === 0;
 };
