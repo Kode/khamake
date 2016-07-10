@@ -21,5 +21,6 @@ module.exports = {
 	Node: 'node',
 	DebugHTML5: 'debug-html5',
 	Empty: 'empty',
-	Pi: 'pi'
+	Pi: 'pi',
+	tvOS: 'tvos'
 };

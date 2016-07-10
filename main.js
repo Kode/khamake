@@ -102,17 +102,22 @@ function compileShader(exporter, platform, project, shader, to, temp, compiler) 
 		case Platform.HTML5Worker:
 		case Platform.Tizen:
 		case Platform.Pi:
+		case Platform.tvOS:
 		case Platform.iOS: {
 			if (Options.graphicsApi === GraphicsApi.Metal) {
-				if (!Files.isDirectory(to.resolve(Paths.get('..', 'ios-build', 'Sources')))) {
-					Files.createDirectories(to.resolve(Paths.get('..', 'ios-build', 'Sources')));
+				let builddir = 'ios-build';
+				if (platform === Platform.tvOS) {
+					builddir = 'tvos-build';
+				}
+				if (!Files.isDirectory(to.resolve(Paths.get('..', builddir, 'Sources')))) {
+					Files.createDirectories(to.resolve(Paths.get('..', builddir, 'Sources')));
 				}
 				let funcname = name;
 				funcname = funcname.replaceAll('-', '_');
 				funcname = funcname.replaceAll('.', '_');
 				funcname += '_main';
 				fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
-				compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', 'ios-build', 'Sources', name + ".metal")), temp, platform);
+				compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', builddir, 'Sources', name + ".metal")), temp, platform);
 				addShader(project, name, ".metal");
 			}
 			else {
