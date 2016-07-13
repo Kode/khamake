@@ -83,6 +83,12 @@ class Html5Exporter extends KhaExporter {
 			protoelectron = protoelectron.replaceAll('{Height}', this.height);
 			fs.writeFileSync(electron.toString(), protoelectron);
 		}
+		else if (this.sysdir() === 'node') {
+			let pack = this.directory.resolve(Paths.get(this.sysdir(), 'package.json'));
+			let protopackage = fs.readFileSync(path.join(__dirname, 'Data', 'node', 'package.json'), {encoding: 'utf8'});
+			protopackage = protopackage.replaceAll('{Name}', name);
+			fs.writeFileSync(pack.toString(), protopackage);
+		}
 		else {		
 			let index = this.directory.resolve(Paths.get(this.sysdir(), 'index.html'));
 			if (!Files.exists(index)) {
