@@ -412,6 +412,7 @@ function FlashDevelop(projectdir, options) {
 
 module.exports = function (projectdir, options) {
 	options.defines.push('kha');
+	options.defines.push('kha_version=1607');
 	FlashDevelop(projectdir, options);
 	IntelliJ(projectdir, options);
 	hxml(projectdir, options);
