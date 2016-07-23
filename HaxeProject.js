@@ -229,39 +229,22 @@ function FlashDevelop(projectdir, options) {
 		});
 	}
 
-	var classpaths = {
-		n: 'classpaths',
-		e: [
-
-		]
-	};
+	let classpaths = [];
 
 	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
-			classpaths.e.push({
-				n: 'class',
-				path: options.sources[i]
-			});
+			classpaths.push(options.sources[i])
 		}
 		else {
-			classpaths.e.push({
-				n: 'class',
-				path: path.relative(projectdir, path.resolve(options.from, options.sources[i]))
-			});
+			classpaths.push(path.relative(projectdir, path.resolve(options.from, options.sources[i])))
 		}
 	}
 	for (let i = 0; i < options.libraries.length; ++i) {
 		if (path.isAbsolute(options.libraries[i].libpath)) {
-			classpaths.e.push({
-				n: 'class',
-				path: options.libraries[i].libpath
-			});
+			classpaths.push(options.libraries[i].libpath)
 		}
 		else {
-			classpaths.e.push({
-				n: 'class',
-				path: path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath))
-			});
+			classpaths.push(path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)))
 		}
 	}
 
@@ -331,7 +314,10 @@ function FlashDevelop(projectdir, options) {
 			'Output SWF options',
 			output,
 			'Other classes to be compiled into your SWF',
-			classpaths,
+			{n: 'classpaths', e: classpaths
+				.reduce(function( a, b ) { if (a.indexOf(b) < 0) a.push(b); return a; }, [] )
+				.map(function( e ) { return {n: 'class', path: e} })
+			},
 			'Build options',
 			{
 				n: 'build',
