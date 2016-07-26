@@ -22,6 +22,14 @@ class Html5Exporter extends KhaExporter {
 		return 'html5';
 	}
 
+	isDebugHtml5() {
+		return this.sysdir() === 'debug-html5';
+	}
+
+	isNode() {
+		return this.sysdir() === 'node';
+	}
+
 	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
 		this.createDirectory(this.directory.resolve(this.sysdir()));
 
@@ -32,7 +40,7 @@ class Html5Exporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 		
-		if (this.sysdir() === 'node') {
+		if (this.isNode()) {
 			defines.push('sys_node');
 			defines.push('sys_server');
 			defines.push('nodejs');
@@ -41,7 +49,7 @@ class Html5Exporter extends KhaExporter {
 			defines.push('sys_' + platform);
 		}
 		
-		if (this.sysdir() === 'debug-html5') {
+		if (this.isDebugHtml5()) {
 			defines.push('sys_debug_html5');
 			this.parameters.push('-debug');
 		}
@@ -62,7 +70,7 @@ class Html5Exporter extends KhaExporter {
 		};
 		HaxeProject(this.directory.toString(), options);
 
-		if (this.sysdir() === 'debug-html5') {
+		if (this.isDebugHtml5()) {
 			let index = this.directory.resolve(Paths.get(this.sysdir(), 'index.html'));
 			if (!Files.exists(index)) {
 				let protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'index.html'), {encoding: 'utf8'});
@@ -83,7 +91,7 @@ class Html5Exporter extends KhaExporter {
 			protoelectron = protoelectron.replaceAll('{Height}', this.height);
 			fs.writeFileSync(electron.toString(), protoelectron);
 		}
-		else if (this.sysdir() === 'node') {
+		else if (this.isNode()) {
 			let pack = this.directory.resolve(Paths.get(this.sysdir(), 'package.json'));
 			let protopackage = fs.readFileSync(path.join(__dirname, 'Data', 'node', 'package.json'), {encoding: 'utf8'});
 			protopackage = protopackage.replaceAll('{Name}', name);
@@ -123,7 +131,8 @@ class Html5Exporter extends KhaExporter {
 	copySound(platform, from, to, encoders) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
 		let ogg = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder);
-		let mp4 = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder);
+		let mp4 = null;
+		if (!this.isDebugHtml5()) Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.mp4'), encoders.aacEncoder);
 		var files = [];
 		if (ogg) files.push(to + '.ogg');
 		if (mp4) files.push(to + '.mp4');
@@ -142,7 +151,8 @@ class Html5Exporter extends KhaExporter {
 
 	copyVideo(platform, from, to, encoders) {
 		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		let mp4 = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".mp4"), encoders.h264Encoder);
+		let mp4 = null;
+		if (!this.isDebugHtml5()) Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".mp4"), encoders.h264Encoder);
 		let webm = Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + ".webm"), encoders.webmEncoder);
 		let files = [];
 		if (mp4) files.push(to + '.mp4');
