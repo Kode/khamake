@@ -282,19 +282,6 @@ else if (parsedOptions.server) {
 	server.listen(parsedOptions.port);
 }
 else {
-	let success = false;
-	let callbackCalled = false;
-	let runEnded = false;
-	
-	success = require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) {
-		callbackCalled = true;
-		if (runEnded) {
-			process.exit(success ? 0 : 1);
-		}
-	});
-
-	runEnded = true;
-	if (callbackCalled) {
-		process.exit(success ? 0 : 1);
-	}
+	let success = require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
+	process.exitCode = success ? 0 : 1;
 }
