@@ -583,10 +583,8 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 		});
 	}
 
-	function secondPass() {
-		// First pass is for main project files. Second pass is for shaders.
-		// Will try to look for the folder, e.g. 'build/Shaders'.
-		// if it exists, export files similar to other a
+	function secondPass(name) {
+		// Just for hxsl
 		let hxslDir = pathlib.join('build', 'Shaders');
 		if (fs.existsSync(hxslDir) && fs.readdirSync(hxslDir).length > 0) {
 			addShaders(exporter, platform, project, from, to.resolve(exporter.sysdir() + '-resources'), temp, from.resolve(Paths.get(hxslDir)), krafix);
@@ -598,6 +596,9 @@ function exportKhaProject(from, to, platform, khaDirectory, haxeDirectory, oggEn
 			else {
 				exportProjectFiles(name, from, to, options, exporter, platform, khaDirectory, haxeDirectory, kore, project.libraries, project.targetOptions, callback);
 			}
+		}
+		else {
+			callback(name);
 		}
 	}
 

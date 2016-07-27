@@ -282,5 +282,8 @@ else if (parsedOptions.server) {
 	server.listen(parsedOptions.port);
 }
 else {
-	require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
+	let success = false;
+	success = require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) {
+		process.exit(success ? 0 : 1);
+	});
 }
