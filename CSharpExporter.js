@@ -31,7 +31,7 @@ class CSharpExporter extends KhaExporter {
 	}
 
 	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
-		this.addSourceDirectory("Kha/Backends/" + this.backend());
+		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/' + this.backend()));
 
 		defines.push('no-root');
 		defines.push('no-compilation');
@@ -67,6 +67,7 @@ class CSharpExporter extends KhaExporter {
 	}
 
 	exportSLN(projectUuid) {
+		fs.ensureDirSync(this.directory.resolve(Paths.get(this.sysdir() + "-build")).toString());
 		this.writeFile(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Project.sln")));
 		const solutionUuid = uuid.v4();
 
