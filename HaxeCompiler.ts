@@ -10,7 +10,7 @@ export class HaxeCompiler {
 	haxeDirectory: string;
 	hxml: string;
 	sourceMatchers: Array<string>;
-	watcher: chokidar.FSWatcher;
+	watcher: fs.FSWatcher;
 	ready: boolean = true;
 	todo: boolean = false;
 	port: string = '7000';

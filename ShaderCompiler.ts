@@ -14,7 +14,7 @@ export class ShaderCompiler {
 	to: string;
 	temp: string;
 	shaderMatchers: Array<{ match: string, options: any }>;
-	watcher: chokidar.FSWatcher;
+	watcher: fs.FSWatcher;
 	
 	constructor(exporter: KhaExporter, platform: string, compiler: string, type: string, system: string, to: string, temp: string, shaderMatchers: Array<{ match: string, options: any }>) {
 		this.exporter = exporter;

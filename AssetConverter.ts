@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import {KhaExporter} from './Exporters/KhaExporter';
 import * as log from './log';
@@ -7,7 +8,7 @@ export class AssetConverter {
 	exporter: KhaExporter;
 	platform: string;
 	assetMatchers: Array<{ match: string, options: any }>;
-	watcher: chokidar.FSWatcher;
+	watcher: fs.FSWatcher;
 	
 	constructor(exporter: KhaExporter, platform: string, assetMatchers: Array<{ match: string, options: any }>) {
 		this.exporter = exporter;
