@@ -20,7 +20,7 @@ export class UnityExporter extends KhaExporter {
 	}
 
 	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
-		this.addSourceDirectory("Kha/Backends/Unity");
+		this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
 
 		defines.push('no-root');
 		defines.push('no-compilation');

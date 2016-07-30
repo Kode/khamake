@@ -15,7 +15,7 @@ export class KoreExporter extends KhaExporter {
 	
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Kore'));
+		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Kore'));
 	}
 
 	sysdir() {

@@ -18,7 +18,7 @@ const HaxeProject_1 = require('./HaxeProject');
 class KoreExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Kore'));
+        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Kore'));
     }
     sysdir() {
         return this.options.target;
