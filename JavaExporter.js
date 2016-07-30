@@ -22,7 +22,7 @@ class JavaExporter extends KhaExporter {
 	}
 
 	exportSolution(name, platform, khaDirectory, haxeDirectory, from, _targetOptions, defines) {
-		this.addSourceDirectory("Kha/Backends/" + this.backend());
+		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Backends/' + this.backend()));
 
 		this.createDirectory(this.directory.resolve(this.sysdir()));
 
