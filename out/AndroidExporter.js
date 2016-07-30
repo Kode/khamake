@@ -13,11 +13,11 @@ const KhaExporter_1 = require('./KhaExporter');
 const Haxe_1 = require('./Haxe');
 const ImageTool_1 = require('./ImageTool');
 const HaxeProject_1 = require('./HaxeProject');
-function findIcon(from) {
+function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
     else
-        return path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', 'ball.png');
+        return path.join(options.kha, 'Kore', 'Tools', 'kraffiti', 'ball.png');
 }
 class AndroidExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
@@ -103,13 +103,13 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         strings = strings.replace(/{name}/g, name);
         fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'res', 'values', 'strings.xml'), strings, { encoding: 'utf8' });
         fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-hdpi'));
-        ImageTool_1.exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher"), { width: 72, height: 72 }, 'png', false);
+        ImageTool_1.exportImage(findIcon(from, this.options), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-hdpi', "ic_launcher"), { width: 72, height: 72 }, 'png', false);
         fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-mdpi'));
-        ImageTool_1.exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-mdpi', "ic_launcher"), { width: 48, height: 48 }, 'png', false);
+        ImageTool_1.exportImage(findIcon(from, this.options), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-mdpi', "ic_launcher"), { width: 48, height: 48 }, 'png', false);
         fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xhdpi'));
-        ImageTool_1.exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xhdpi', "ic_launcher"), { width: 96, height: 96 }, 'png', false);
+        ImageTool_1.exportImage(findIcon(from, this.options), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xhdpi', "ic_launcher"), { width: 96, height: 96 }, 'png', false);
         fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi'));
-        ImageTool_1.exportImage(findIcon(from), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi', "ic_launcher"), { width: 144, height: 144 }, 'png', false);
+        ImageTool_1.exportImage(findIcon(from, this.options), path.join(this.options.to, this.sysdir(), safename, 'app', 'src', 'main', 'res', 'mipmap-xxhdpi', "ic_launcher"), { width: 144, height: 144 }, 'png', false);
         fs.copySync(path.join(indir, 'gradle', 'wrapper', 'gradle-wrapper.jar'), path.join(outdir, 'gradle', 'wrapper', 'gradle-wrapper.jar'));
         fs.copySync(path.join(indir, 'gradle', 'wrapper', 'gradle-wrapper.properties'), path.join(outdir, 'gradle', 'wrapper', 'gradle-wrapper.properties'));
         fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'));
