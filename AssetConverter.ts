@@ -1,5 +1,5 @@
 import * as path from 'path';
-import {KhaExporter} from './KhaExporter';
+import {KhaExporter} from './Exporters/KhaExporter';
 import * as log from './log';
 import * as chokidar from 'chokidar';
 

@@ -1,8 +1,3 @@
-// Called from the end of khamake.js
-// Entry point is at the bottom, exports.run(...)
-
-"use strict";
-
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -21,22 +16,22 @@ import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
 import {HaxeCompiler} from './HaxeCompiler';
 import {ShaderCompiler} from './ShaderCompiler';
-import {KhaExporter} from './KhaExporter';
-import {AndroidExporter} from './AndroidExporter';
-import {DebugHtml5Exporter} from './DebugHtml5Exporter';
-import {EmptyExporter} from './EmptyExporter';
-import {FlashExporter} from './FlashExporter';
-import {Html5Exporter} from './Html5Exporter';
-import {Html5WorkerExporter} from './Html5WorkerExporter';
-import {JavaExporter} from './JavaExporter';
-import {KoreExporter} from './KoreExporter';
-import {KoreHLExporter} from './KoreHLExporter';
-import {KromExporter} from './KromExporter';
-import {NodeExporter} from './NodeExporter';
-import {PlayStationMobileExporter} from './PlayStationMobileExporter';
-import {WpfExporter} from './WpfExporter';
-import {XnaExporter} from './XnaExporter';
-import {UnityExporter} from './UnityExporter';
+import {KhaExporter} from './Exporters/KhaExporter';
+import {AndroidExporter} from './Exporters/AndroidExporter';
+import {DebugHtml5Exporter} from './Exporters/DebugHtml5Exporter';
+import {EmptyExporter} from './Exporters/EmptyExporter';
+import {FlashExporter} from './Exporters/FlashExporter';
+import {Html5Exporter} from './Exporters/Html5Exporter';
+import {Html5WorkerExporter} from './Exporters/Html5WorkerExporter';
+import {JavaExporter} from './Exporters/JavaExporter';
+import {KoreExporter} from './Exporters/KoreExporter';
+import {KoreHLExporter} from './Exporters/KoreHLExporter';
+import {KromExporter} from './Exporters/KromExporter';
+import {NodeExporter} from './Exporters/NodeExporter';
+import {PlayStationMobileExporter} from './Exporters/PlayStationMobileExporter';
+import {WpfExporter} from './Exporters/WpfExporter';
+import {XnaExporter} from './Exporters/XnaExporter';
+import {UnityExporter} from './Exporters/UnityExporter';
 
 function compileShader2(compiler: string, type: string, from: string, to: string, temp: string, system: string) {
 	return new Promise((resolve, reject) => {
@@ -617,7 +612,7 @@ async function exportProject(options: Options, callback) {
 	}
 }
 
-export var api = 1;
+export let api = 1;
 
 export async function run(options: Options, loglog, callback) {
 	if (options.silent) {

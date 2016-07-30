@@ -1,5 +1,3 @@
-// Called from the end of khamake.js
-// Entry point is at the bottom, exports.run(...)
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -21,21 +19,21 @@ const ProjectFile_1 = require('./ProjectFile');
 const AssetConverter_1 = require('./AssetConverter');
 const HaxeCompiler_1 = require('./HaxeCompiler');
 const ShaderCompiler_1 = require('./ShaderCompiler');
-const AndroidExporter_1 = require('./AndroidExporter');
-const DebugHtml5Exporter_1 = require('./DebugHtml5Exporter');
-const EmptyExporter_1 = require('./EmptyExporter');
-const FlashExporter_1 = require('./FlashExporter');
-const Html5Exporter_1 = require('./Html5Exporter');
-const Html5WorkerExporter_1 = require('./Html5WorkerExporter');
-const JavaExporter_1 = require('./JavaExporter');
-const KoreExporter_1 = require('./KoreExporter');
-const KoreHLExporter_1 = require('./KoreHLExporter');
-const KromExporter_1 = require('./KromExporter');
-const NodeExporter_1 = require('./NodeExporter');
-const PlayStationMobileExporter_1 = require('./PlayStationMobileExporter');
-const WpfExporter_1 = require('./WpfExporter');
-const XnaExporter_1 = require('./XnaExporter');
-const UnityExporter_1 = require('./UnityExporter');
+const AndroidExporter_1 = require('./Exporters/AndroidExporter');
+const DebugHtml5Exporter_1 = require('./Exporters/DebugHtml5Exporter');
+const EmptyExporter_1 = require('./Exporters/EmptyExporter');
+const FlashExporter_1 = require('./Exporters/FlashExporter');
+const Html5Exporter_1 = require('./Exporters/Html5Exporter');
+const Html5WorkerExporter_1 = require('./Exporters/Html5WorkerExporter');
+const JavaExporter_1 = require('./Exporters/JavaExporter');
+const KoreExporter_1 = require('./Exporters/KoreExporter');
+const KoreHLExporter_1 = require('./Exporters/KoreHLExporter');
+const KromExporter_1 = require('./Exporters/KromExporter');
+const NodeExporter_1 = require('./Exporters/NodeExporter');
+const PlayStationMobileExporter_1 = require('./Exporters/PlayStationMobileExporter');
+const WpfExporter_1 = require('./Exporters/WpfExporter');
+const XnaExporter_1 = require('./Exporters/XnaExporter');
+const UnityExporter_1 = require('./Exporters/UnityExporter');
 function compileShader2(compiler, type, from, to, temp, system) {
     return new Promise((resolve, reject) => {
         if (!compiler)

@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
-import {KhaExporter} from './KhaExporter';
+import {KhaExporter} from './Exporters/KhaExporter';
 import * as log from './log';
 
 export class ShaderCompiler {
