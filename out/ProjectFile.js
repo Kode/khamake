@@ -14,8 +14,18 @@ function loadProject(from, projectfile) {
     return __awaiter(this, void 0, Promise, function* () {
         return new Promise((resolve, reject) => {
             fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
+                let resolved = false;
+                let resolver = () => {
+                    resolved = true;
+                    resolve();
+                };
+                process.on('exit', (code) => {
+                    if (!resolved) {
+                        console.error('Error: khafile.js did not call resolve, no project created.');
+                    }
+                });
                 Project_1.Project.scriptdir = from;
-                new Function('Project', 'require', 'resolve', 'reject', data)(Project_1.Project, require, resolve, reject);
+                new Function('Project', 'require', 'resolve', 'reject', data)(Project_1.Project, require, resolver, reject);
             });
         });
     });
