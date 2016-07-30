@@ -5,10 +5,10 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
-			"program": "khamake.js",
+			"program": "${workspaceRoot}/khamake.js",
 			"stopOnEntry": false,
 			"args": ["html5"],
-			"cwd": "../../..",
+			"cwd": "${workspaceRoot}/../../..",
 			"runtimeExecutable": null,
 			"runtimeArgs": [
 				"--nolazy"

@@ -1,97 +1,73 @@
 "use strict";
-
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
+};
 const path = require('path');
-const Exporter = require('./Exporter.js');
-const Files = require('./Files.js');
-const Paths = require('./Paths.js');
-const Converter = require('./Converter.js');
-
-class KhaExporter extends Exporter {
-	constructor(khaDirectory, directory) {
-		super();
-		this.width = 640;
-		this.height = 480;
-		this.sources = [];
-		this.libraries = [];
-		this.addSourceDirectory(path.join(khaDirectory.toString(), 'Sources'));
-	}
-
-	getCurrentDirectoryName(directory) {
-		return directory.getFileName();
-	}
-
-	copyFile(from, to) {
-		Files.copy(from, to, true);
-	}
-
-	copyDirectory(from, to) {
-		this.createDirectory(to);
-		var files = Files.newDirectoryStream(from);
-		for (let f in files) {
-			let file = Paths.get(from, files[f]);
-			if (Files.isDirectory(file)) this.copyDirectory(file, to.resolve(file));
-			else this.copyFile(file, to.resolve(file));
-		}
-	}
-
-	createDirectory(dir) {
-		if (!Files.exists(dir)) Files.createDirectories(dir);
-	}
-
-	setWidthAndHeight(width, height) {
-		this.width = width;
-		this.height = height;
-	}
-
-	setName(name) {
-		this.name = name;
-		this.safename = name.replaceAll(' ', '-');
-	}
-
-	addShader(shader) {
-
-	}
-
-	addSourceDirectory(path) {
-		this.sources.push(path);
-	}
-
-	addLibrary(library) {
-		this.libraries.push(library);
-	}
-
-	removeSourceDirectory(path) {
-		for (let i in this.sources) {
-			if (this.sources[i] === path) {
-				this.sources.splice(i, 1);
-				return;
-			}
-		}
-	}
-
-	copyImage(platform, from, to, asset) {
-		return [];
-	}
-
-	/*copyMusic(platform, from, to, encoders) {
-		return [];
-	}*/
-
-	copySound(platform, from, to, encoders) {
-		return [];
-	}
-
-	copyVideo(platform, from, to, encoders) {
-		return [];
-	}
-
-	copyBlob(platform, from, to) {
-		return [];
-	}
-
-	copyFont(platform, from, to) {
-		return this.copyBlob(platform, from, to + '.ttf');
-	}
+const Exporter_1 = require('./Exporter');
+class KhaExporter extends Exporter_1.Exporter {
+    constructor(options) {
+        super();
+        this.options = options;
+        this.width = 640;
+        this.height = 480;
+        this.sources = [];
+        this.libraries = [];
+        this.addSourceDirectory(path.join(options.kha, 'Sources'));
+    }
+    setWidthAndHeight(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+    setName(name) {
+        this.name = name;
+        this.safename = name.replace(/ /g, '-');
+    }
+    addShader(shader) {
+    }
+    addSourceDirectory(path) {
+        this.sources.push(path);
+    }
+    addLibrary(library) {
+        this.libraries.push(library);
+    }
+    removeSourceDirectory(path) {
+        for (let i = 0; i < this.sources.length; ++i) {
+            if (this.sources[i] === path) {
+                this.sources.splice(i, 1);
+                return;
+            }
+        }
+    }
+    copyImage(platform, from, to, asset) {
+        return __awaiter(this, void 0, Promise, function* () {
+            return [];
+        });
+    }
+    copySound(platform, from, to) {
+        return __awaiter(this, void 0, Promise, function* () {
+            return [];
+        });
+    }
+    copyVideo(platform, from, to) {
+        return __awaiter(this, void 0, Promise, function* () {
+            return [];
+        });
+    }
+    copyBlob(platform, from, to) {
+        return __awaiter(this, void 0, Promise, function* () {
+            return [];
+        });
+    }
+    copyFont(platform, from, to) {
+        return __awaiter(this, void 0, Promise, function* () {
+            return yield this.copyBlob(platform, from, to + '.ttf');
+        });
+    }
 }
-
-module.exports = KhaExporter;
+exports.KhaExporter = KhaExporter;
+//# sourceMappingURL=KhaExporter.js.map
