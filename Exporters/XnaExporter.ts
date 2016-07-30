@@ -7,9 +7,9 @@ import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 const uuid = require('uuid');
 
-function findIcon(from: string) {
+function findIcon(from: string, options: any) {
 	if (fs.existsSync(path.join(from, 'icon.png'))) return path.join(from, 'icon.png');
-	else return path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', 'ball.png');
+	else return path.join(options.kha, 'Kore', 'Tools', 'kraffiti', 'ball.png');
 }
 
 export class XnaExporter extends CSharpExporter {
@@ -130,8 +130,8 @@ export class XnaExporter extends CSharpExporter {
 	}
 
 	exportCsProj(projectUuid) {
-		exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), {width: 64, height: 64}, 'png', false);
-		exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
+		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), {width: 64, height: 64}, 'png', false);
+		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
 
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
 		this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -258,7 +258,7 @@ export class XnaExporter extends CSharpExporter {
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
 		this.images.push(asset['file']);
-		let format = await exportImage(from, path.join(this.options.to, 'xna', to), asset, undefined, false);
+		let format = await exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 }

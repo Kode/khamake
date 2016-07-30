@@ -127,7 +127,7 @@ export class FlashExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
-		let format = exportImage(from, path.join(this.options.to, this.sysdir(),to), asset, undefined, false);
+		let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(),to), asset, undefined, false);
 		if (this.options.embedflashassets) this.images.push(to + '.' + format);
 		return [to + '.' + format];
 	}

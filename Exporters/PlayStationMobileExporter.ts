@@ -153,7 +153,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 
 	async copyImage(platform: string, from: string, to: string, asset) {
 		this.files.push(asset["file"]);
-		let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+		let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 

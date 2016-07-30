@@ -75,7 +75,7 @@ export class KoreExporter extends KhaExporter {
 
 	async copyImage(platform: string, from: string, to: string, options: any) {
 		if (platform === Platform.iOS && options.quality < 1) {
-			let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true);
+			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true);
 			return [to + '.' + format];
 		}
 		/*else if (platform === Platform.Android && asset.compressed) {
@@ -85,7 +85,7 @@ export class KoreExporter extends KhaExporter {
 		 exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 		 }*/
 		else {
-			let format = await exportImage(from, path.join(this.options.to, this.sysdir(), to), options, 'snappy', true);
+			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'snappy', true);
 			return [to + '.' + format];
 		}
 	}

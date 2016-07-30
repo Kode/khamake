@@ -132,7 +132,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     }
     copyImage(platform, from, to, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), options, undefined, false);
+            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false);
             return [to + '.' + format];
         });
     }

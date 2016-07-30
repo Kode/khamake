@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as log from './log';
 import {sys} from './exec';
 
-function getWidthAndHeight(from: string, to: string, options: any, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
+function getWidthAndHeight(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
 	return new Promise((resolve, reject) => {
 		const exe = 'kraffiti' + sys();
 		
@@ -15,7 +15,7 @@ function getWidthAndHeight(from: string, to: string, options: any, format: strin
 		if (options.scale !== undefined && options.scale !== 1) {
 			params.push('scale=' + options.scale);	
 		}
-		let process = child_process.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+		let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
 		
 		let output = '';
 		process.stdout.on('data', (data) => {
@@ -46,7 +46,7 @@ function getWidthAndHeight(from: string, to: string, options: any, format: strin
 	});
 }
 
-export async function exportImage(from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean = false): Promise<string> {
+export async function exportImage(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean = false): Promise<string> {
 	if (format === undefined) {
 		if (from.toString().endsWith('.png')) format = 'png';
 		else if (from.toString().endsWith('.hdr')) format = 'hdr'; 
@@ -76,7 +76,7 @@ export async function exportImage(from: string, to: string, options: any, format
 	}
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
-		let wh = await getWidthAndHeight(from, to, options, format, prealpha);
+		let wh = await getWidthAndHeight(kha, from, to, options, format, prealpha);
 		options.original_width = wh.w;
 		options.original_height = wh.h;
 		return outputformat;
@@ -87,7 +87,7 @@ export async function exportImage(from: string, to: string, options: any, format
 	if (format === 'jpg' || format === 'hdr') {
 		fs.copySync(from, temp, { clobber: true });
 		fs.renameSync(temp, to);
-		let wh = await getWidthAndHeight(from, to, options, format, prealpha);
+		let wh = await getWidthAndHeight(kha, from, to, options, format, prealpha);
 		options.original_width = wh.w;
 		options.original_height = wh.h;
 		return outputformat;
@@ -110,7 +110,7 @@ export async function exportImage(from: string, to: string, options: any, format
 		params.push('poweroftwo');
 	}
 	
-	let process = child_process.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+	let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
 	
 	let output = '';
 	process.stdout.on('data', (data) => {

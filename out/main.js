@@ -604,7 +604,7 @@ function run(options, loglog, callback) {
                 callback(name);
         };
         if (options.kha === undefined || options.kha === '') {
-            let p = path.join(__dirname, '..', '..');
+            let p = path.join(__dirname, '..', '..', '..');
             if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
                 options.kha = p;
             }

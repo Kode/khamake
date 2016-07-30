@@ -106,7 +106,7 @@ export abstract class CSharpExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
-		let format = exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+		let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 

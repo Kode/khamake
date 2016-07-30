@@ -646,7 +646,7 @@ export async function run(options: Options, loglog, callback) {
 	};
 
 	if (options.kha === undefined || options.kha === '') {
-		let p = path.join(__dirname, '..', '..');
+		let p = path.join(__dirname, '..', '..', '..');
 		if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
 			options.kha = p;
 		}

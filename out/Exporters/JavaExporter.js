@@ -93,7 +93,7 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
     }
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+            let format = ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
             return [to + '.' + format];
         });
     }

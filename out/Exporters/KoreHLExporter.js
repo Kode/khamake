@@ -76,11 +76,11 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
             if (platform === Platform_1.Platform.iOS && asset.compressed) {
-                let format = ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
+                let format = ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
                 return [to + '.' + format];
             }
             else {
-                let format = ImageTool_1.exportImage(from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
+                let format = ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
                 return [to + '.' + format];
             }
         });

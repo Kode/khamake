@@ -12,11 +12,11 @@ const path = require('path');
 const CSharpExporter_1 = require('./CSharpExporter');
 const ImageTool_1 = require('../ImageTool');
 const uuid = require('uuid');
-function findIcon(from) {
+function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
     else
-        return path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', 'ball.png');
+        return path.join(options.kha, 'Kore', 'Tools', 'kraffiti', 'ball.png');
 }
 class XnaExporter extends CSharpExporter_1.CSharpExporter {
     constructor(options) {
@@ -127,8 +127,8 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.closeFile();
     }
     exportCsProj(projectUuid) {
-        ImageTool_1.exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), { width: 64, height: 64 }, 'png', false);
-        ImageTool_1.exportImage(findIcon(this.options.to), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
+        ImageTool_1.exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), { width: 64, height: 64 }, 'png', false);
+        ImageTool_1.exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
         this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
         this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         this.p("<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
@@ -254,7 +254,7 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
             this.images.push(asset['file']);
-            let format = yield ImageTool_1.exportImage(from, path.join(this.options.to, 'xna', to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false);
             return [to + '.' + format];
         });
     }

@@ -12,14 +12,14 @@ const fs = require('fs-extra');
 const path = require('path');
 const log = require('./log');
 const exec_1 = require('./exec');
-function getWidthAndHeight(from, to, options, format, prealpha) {
+function getWidthAndHeight(kha, from, to, options, format, prealpha) {
     return new Promise((resolve, reject) => {
         const exe = 'kraffiti' + exec_1.sys();
         let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
         if (options.scale !== undefined && options.scale !== 1) {
             params.push('scale=' + options.scale);
         }
-        let process = child_process.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+        let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
         let output = '';
         process.stdout.on('data', (data) => {
             output += data.toString();
@@ -45,7 +45,7 @@ function getWidthAndHeight(from, to, options, format, prealpha) {
         });
     });
 }
-function exportImage(from, to, options, format, prealpha, poweroftwo = false) {
+function exportImage(kha, from, to, options, format, prealpha, poweroftwo = false) {
     return __awaiter(this, void 0, Promise, function* () {
         if (format === undefined) {
             if (from.toString().endsWith('.png'))
@@ -77,7 +77,7 @@ function exportImage(from, to, options, format, prealpha, poweroftwo = false) {
             outputformat = 'kng';
         }
         if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
-            let wh = yield getWidthAndHeight(from, to, options, format, prealpha);
+            let wh = yield getWidthAndHeight(kha, from, to, options, format, prealpha);
             options.original_width = wh.w;
             options.original_height = wh.h;
             return outputformat;
@@ -86,7 +86,7 @@ function exportImage(from, to, options, format, prealpha, poweroftwo = false) {
         if (format === 'jpg' || format === 'hdr') {
             fs.copySync(from, temp, { clobber: true });
             fs.renameSync(temp, to);
-            let wh = yield getWidthAndHeight(from, to, options, format, prealpha);
+            let wh = yield getWidthAndHeight(kha, from, to, options, format, prealpha);
             options.original_width = wh.w;
             options.original_height = wh.h;
             return outputformat;
@@ -107,7 +107,7 @@ function exportImage(from, to, options, format, prealpha, poweroftwo = false) {
         if (poweroftwo) {
             params.push('poweroftwo');
         }
-        let process = child_process.spawn(path.join(__dirname, '..', '..', 'Kore', 'Tools', 'kraffiti', exe), params);
+        let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
         let output = '';
         process.stdout.on('data', (data) => {
             output += data.toString();
