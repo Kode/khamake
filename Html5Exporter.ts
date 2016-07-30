@@ -22,6 +22,14 @@ export class Html5Exporter extends KhaExporter {
 	sysdir() {
 		return 'html5';
 	}
+
+	isDebugHtml5() {
+ 		return this.sysdir() === 'debug-html5';
+ 	}
+ 
+ 	isNode() {
+ 		return this.sysdir() === 'node';
+ 	}
 	
 	haxeOptions(name: string, defines: Array<string>) {
 		defines.push('sys_g1');
@@ -31,7 +39,7 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 		
-		if (this.sysdir() === 'node') {
+		if (this.isNode()) {
 			defines.push('sys_node');
 			defines.push('sys_server');
 			defines.push('nodejs');
@@ -40,7 +48,7 @@ export class Html5Exporter extends KhaExporter {
 			defines.push('sys_' + this.options.target);
 		}
 		
-		if (this.sysdir() === 'debug-html5') {
+		if (this.isDebugHtml5()) {
 			defines.push('sys_debug_html5');
 			this.parameters.push('-debug');
 		}
@@ -66,7 +74,7 @@ export class Html5Exporter extends KhaExporter {
 
 		writeHaxeProject(this.options.to, this.haxeOptions(name, defines));
 
-		if (this.sysdir() === 'debug-html5') {
+		if (this.isDebugHtml5()) {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 			if (!fs.existsSync(index)) {
 				let protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'index.html'), {encoding: 'utf8'});
@@ -86,6 +94,12 @@ export class Html5Exporter extends KhaExporter {
 			protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
 			protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
 			fs.writeFileSync(electron.toString(), protoelectron);
+		}
+		else if (this.isNode()) {
+			let pack = path.join(this.options.to, this.sysdir(), 'package.json');
+			let protopackage = fs.readFileSync(path.join(__dirname, 'Data', 'node', 'package.json'), {encoding: 'utf8'});
+			protopackage = protopackage.replace(/{Name}/g, name);
+			fs.writeFileSync(pack.toString(), protopackage);
 		}
 		else {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
@@ -116,7 +130,10 @@ export class Html5Exporter extends KhaExporter {
 	async copySound(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+		let mp4 = null;
+		if (!this.isDebugHtml5()) {
+			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+		}
 		var files = [];
 		if (ogg) files.push(to + '.ogg');
 		if (mp4) files.push(to + '.mp4');
@@ -135,7 +152,10 @@ export class Html5Exporter extends KhaExporter {
 
 	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		let mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+		let mp4 = null;
+		if (!this.isDebugHtml5()) {
+			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+		}
 		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
 		let files = [];
 		if (mp4) files.push(to + '.mp4');

@@ -293,7 +293,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 // We now do koremake.js -> main.js -> run(...)
                 // This will create additional project folders for the target,
                 // e.g. 'build/android-native-build'
-                require(path.join(korepath.get(), 'main.js')).run({
+                require(path.join(korepath.get(), 'out', 'main.js')).run({
                     from: options.from,
                     to: path.join(options.to, exporter.sysdir() + '-build'),
                     target: koreplatform(options.target),
@@ -353,7 +353,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
             }
             {
-                require(path.join(korepath.get(), 'main.js')).run({
+                require(path.join(korepath.get(), 'out', 'main.js')).run({
                     from: options.from,
                     to: path.join(options.to, exporter.sysdir() + '-build'),
                     target: koreplatform(options.target),

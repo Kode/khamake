@@ -22,7 +22,7 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
     }
     exportSolution(name, _targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
-            this.addSourceDirectory("Kha/Backends/" + this.backend());
+            this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
             defines.push('no-compilation');
             defines.push('sys_' + this.options.target);

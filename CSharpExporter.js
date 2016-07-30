@@ -33,7 +33,7 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
     }
     exportSolution(name, _targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
-            this.addSourceDirectory("Kha/Backends/" + this.backend());
+            this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
             defines.push('no-root');
             defines.push('no-compilation');
             defines.push('sys_' + this.options.target);
@@ -64,6 +64,7 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         });
     }
     exportSLN(projectUuid) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
         this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
         const solutionUuid = uuid.v4();
         this.p("Microsoft Visual Studio Solution File, Format Version 11.00");

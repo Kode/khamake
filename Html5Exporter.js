@@ -21,6 +21,12 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     sysdir() {
         return 'html5';
     }
+    isDebugHtml5() {
+        return this.sysdir() === 'debug-html5';
+    }
+    isNode() {
+        return this.sysdir() === 'node';
+    }
     haxeOptions(name, defines) {
         defines.push('sys_g1');
         defines.push('sys_g2');
@@ -28,7 +34,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g4');
         defines.push('sys_a1');
         defines.push('sys_a2');
-        if (this.sysdir() === 'node') {
+        if (this.isNode()) {
             defines.push('sys_node');
             defines.push('sys_server');
             defines.push('nodejs');
@@ -36,7 +42,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         else {
             defines.push('sys_' + this.options.target);
         }
-        if (this.sysdir() === 'debug-html5') {
+        if (this.isDebugHtml5()) {
             defines.push('sys_debug_html5');
             this.parameters.push('-debug');
         }
@@ -59,7 +65,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         return __awaiter(this, void 0, Promise, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
             HaxeProject_1.writeHaxeProject(this.options.to, this.haxeOptions(name, defines));
-            if (this.sysdir() === 'debug-html5') {
+            if (this.isDebugHtml5()) {
                 let index = path.join(this.options.to, this.sysdir(), 'index.html');
                 if (!fs.existsSync(index)) {
                     let protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'index.html'), { encoding: 'utf8' });
@@ -77,6 +83,12 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
                 protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
                 protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
                 fs.writeFileSync(electron.toString(), protoelectron);
+            }
+            else if (this.isNode()) {
+                let pack = path.join(this.options.to, this.sysdir(), 'package.json');
+                let protopackage = fs.readFileSync(path.join(__dirname, 'Data', 'node', 'package.json'), { encoding: 'utf8' });
+                protopackage = protopackage.replace(/{Name}/g, name);
+                fs.writeFileSync(pack.toString(), protopackage);
             }
             else {
                 let index = path.join(this.options.to, this.sysdir(), 'index.html');
@@ -106,7 +118,10 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
             let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-            let mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+            let mp4 = null;
+            if (!this.isDebugHtml5()) {
+                mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+            }
             var files = [];
             if (ogg)
                 files.push(to + '.ogg');
@@ -130,7 +145,10 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+            let mp4 = null;
+            if (!this.isDebugHtml5()) {
+                mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+            }
             let webm = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
             let files = [];
             if (mp4)
