@@ -311,9 +311,9 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 			// We now do koremake.js -> main.js -> run(...)
 			// This will create additional project folders for the target,
 			// e.g. 'build/android-native-build'
-			require(pathlib.join(korepath.get(), 'main.js')).run(
+			require(pathlib.join(korepath.get(), 'out', 'main.js')).run(
 			{
-				from: from,
+				from: from.toString(),
 				to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
 				target: koreplatform(platform),
 				graphics: Options.graphicsApi,
@@ -379,9 +379,9 @@ function exportProjectFiles(name, from, to, options, exporter, platform, khaDire
 		}
 
 		{
-			require(pathlib.join(korepath.get(), 'main.js')).run(
+			require(pathlib.join(korepath.get(), 'out', 'main.js')).run(
 			{
-				from: from,
+				from: from.toString(),
 				to: to.resolve(Paths.get(exporter.sysdir() + "-build")).toString(),
 				target: koreplatform(platform),
 				graphics: Options.graphicsApi,
