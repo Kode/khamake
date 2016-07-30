@@ -8,9 +8,9 @@ export async function loadProject(from: string, projectfile: string): Promise<Pr
 	return new Promise<Project>((resolve, reject) => {
 		fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
 			let resolved = false;
-			let resolver = () => {
+			let resolver = (project: Project) => {
 				resolved = true;
-				resolve();
+				resolve(project);
 			};
 
 			process.on('exit', (code) => {

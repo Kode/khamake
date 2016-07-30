@@ -15,9 +15,9 @@ function loadProject(from, projectfile) {
         return new Promise((resolve, reject) => {
             fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
                 let resolved = false;
-                let resolver = () => {
+                let resolver = (project) => {
                     resolved = true;
-                    resolve();
+                    resolve(project);
                 };
                 process.on('exit', (code) => {
                     if (!resolved) {
