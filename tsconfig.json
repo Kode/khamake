@@ -1,8 +1,14 @@
 {
 	"compilerOptions": {
-		"target": "ES6",
+		"target": "es6",
 		"module": "commonjs",
 		"sourceMap": true,
-		"watch": true
-	}
+		"outDir": "out"
+	},
+	"exclude": [
+		"Data",
+		"node_modules",
+		"out"
+	],
+	"compileOnSave": true
 }
