@@ -11,7 +11,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const CSharpExporter_1 = require('./CSharpExporter');
 const Converter_1 = require('./Converter');
-const uuid = require('./uuid.js');
+const uuid = require('uuid');
 class WpfExporter extends CSharpExporter_1.CSharpExporter {
     constructor(options) {
         super(options);

@@ -13,7 +13,7 @@ const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('./Converter');
 const Haxe_1 = require('./Haxe');
 const ImageTool_1 = require('./ImageTool');
-const uuid = require('./uuid.js');
+const uuid = require('uuid');
 class UnityExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);

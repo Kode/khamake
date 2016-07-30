@@ -1,5 +1,3 @@
-"use strict";
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {KhaExporter} from './KhaExporter';
@@ -8,7 +6,7 @@ import {executeHaxe} from './Haxe';
 import {Options} from './Options';
 import {exportImage} from './ImageTool';
 import {writeHaxeProject} from './HaxeProject';
-const uuid = require('./uuid.js');
+const uuid = require('uuid');
 
 export class UnityExporter extends KhaExporter {
 	parameters: Array<string>;

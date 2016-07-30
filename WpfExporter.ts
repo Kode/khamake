@@ -1,5 +1,3 @@
-"use strict";
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {CSharpExporter} from './CSharpExporter';
@@ -7,7 +5,7 @@ import {convert} from './Converter';
 import {executeHaxe} from './Haxe';
 import {Options} from './Options';
 import {exportImage} from './ImageTool';
-const uuid = require('./uuid.js');
+const uuid = require('uuid');
 
 export class WpfExporter extends CSharpExporter {
 	constructor(options: Options) {

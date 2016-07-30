@@ -14,7 +14,7 @@
     "kha"
   ],
   "author": "Robert Konrad",
-  "license": "zlib",
+  "license": "Zlib",
   "bugs": {
     "url": "https://github.com/ktxsoftware/khamake/issues"
   },
@@ -22,6 +22,7 @@
   "dependencies": {
     "chokidar": "^1.4.3",
     "fs-extra": "^0.20.0",
-    "node-static": "^0.7.6"
+    "node-static": "^0.7.6",
+    "uuid": "^2.0.2"
   }
 }

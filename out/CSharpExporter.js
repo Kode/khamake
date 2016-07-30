@@ -13,7 +13,7 @@ const KhaExporter_1 = require('./KhaExporter');
 const Haxe_1 = require('./Haxe');
 const ImageTool_1 = require('./ImageTool');
 const HaxeProject_1 = require('./HaxeProject');
-const uuid = require('./uuid.js');
+const uuid = require('uuid');
 class CSharpExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);

@@ -1,9 +1,7 @@
-"use strict";
+import * as fs from 'fs';
+import * as path from 'path';
 
-const fs = require('fs');
-const path = require('path');
-
-exports.run = function (name, from, projectfile) {
+export function run(name: string, from: string, projectfile: string) {
 	if (!fs.existsSync(path.join(from, projectfile))) {
 		fs.writeFileSync(path.join(from, projectfile),
 			  "var project = new Project('New Project');\n"
@@ -50,4 +48,4 @@ exports.run = function (name, from, projectfile) {
 			+ '}\n';
 		fs.writeFileSync(path.join(from, 'Sources', friendlyName + '.hx'), projectsource, { encoding: 'utf8' });
 	}
-};
+}

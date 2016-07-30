@@ -11,7 +11,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const CSharpExporter_1 = require('./CSharpExporter');
 const ImageTool_1 = require('./ImageTool');
-const uuid = require('./uuid.js');
+const uuid = require('uuid');
 function findIcon(from) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
