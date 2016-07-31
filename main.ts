@@ -200,40 +200,6 @@ function fixName(name) {
 	return name;
 }
 
-async function exportAssets(assets: Array<any>, exporter: KhaExporter, from: string, platform: string) {
-	let index = 0;
-	for (let asset of assets) {
-		let fileinfo = path.parse(asset.file);
-		log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + fileinfo.base + ').');
-
-		let files: Array<string> = [];
-
-		switch (asset.type) {
-			case 'image':
-				files = await exporter.copyImage(platform, asset.file, fileinfo.name, asset);
-				break;
-			case 'sound':
-				files = await exporter.copySound(platform, asset.file, fileinfo.name);
-				break;
-			case 'font':
-				files = await exporter.copyFont(platform, asset.file, fileinfo.name);
-				break;
-			case 'video':
-				files = await exporter.copyVideo(platform, asset.file, fileinfo.name);
-				break;
-			case 'blob':
-				files = await exporter.copyBlob(platform, asset.file, fileinfo.base);
-				break;
-		}
-
-		asset.name = fixName(asset.name);
-		asset.files = files;
-		delete asset.file;
-
-		++index;
-	}
-}
-
 async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries, targetOptions, defines): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeoptions = await exporter.exportSolution(name, targetOptions, defines);
@@ -511,9 +477,9 @@ async function exportKhaProject(options: Options): Promise<string> {
 	project.addShaders('Sources/Shaders/**', {});
 	project.addShaders('Kha/Sources/Shaders/**', {}); //**
 
-	//await exportAssets(project.assets, exporter, from, platform, encoders);
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
-	let assets = await assetConverter.run(options.watch);
+	let assets = await assetConverter.run(options.watch, options.from);
+	log.info('Found ' + assets.length + ' assets.');
 	let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
 	/*if (platform === Platform.Unity) {
 		shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
@@ -550,7 +516,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	
 	fs.ensureDirSync(shaderDir);
 	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
-	let exportedShaders = await shaderCompiler.run(options.watch);
+	let exportedShaders = await shaderCompiler.run(options.watch, options.from);
 
 	let files = [];
 	for (let asset of assets) {

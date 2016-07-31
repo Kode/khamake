@@ -25,13 +25,14 @@ export class AssetConverter {
 		else return fileinfo.name;
 	}
 	
-	watch(watch: boolean, match: string, options: any): Promise<{ name: string, from: string, type: string, files: string[] }[]> {
+	watch(watch: boolean, match: string, cwd: string, options: any): Promise<{ name: string, from: string, type: string, files: string[] }[]> {
 		return new Promise<{ from: string, type: string, files: string[] }[]>((resolve, reject) => {
 			if (!options) options = {};
 			let ready = false;
 			let files: string[] = [];
-			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
+			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch, cwd: cwd });
 			this.watcher.on('add', (file: string) => {
+				file = path.join(cwd, file);
 				if (ready) {
 					let fileinfo = path.parse(file);
 					switch (fileinfo.ext) {
@@ -91,10 +92,10 @@ export class AssetConverter {
 		});
 	}
 	
-	async run(watch: boolean): Promise<{ from: string, type: string, files: string[] }[]> {
+	async run(watch: boolean, cwd: string): Promise<{ from: string, type: string, files: string[] }[]> {
 		let files: { from: string, type: string, files: string[] }[] = [];
 		for (let matcher of this.assetMatchers) {
-			files = files.concat(await this.watch(watch, matcher.match, matcher.options));
+			files = files.concat(await this.watch(watch, matcher.match, cwd, matcher.options));
 		}
 		return files;
 	}

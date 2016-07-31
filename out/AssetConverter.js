@@ -26,14 +26,15 @@ class AssetConverter {
         else
             return fileinfo.name;
     }
-    watch(watch, match, options) {
+    watch(watch, match, cwd, options) {
         return new Promise((resolve, reject) => {
             if (!options)
                 options = {};
             let ready = false;
             let files = [];
-            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
+            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch, cwd: cwd });
             this.watcher.on('add', (file) => {
+                file = path.join(cwd, file);
                 if (ready) {
                     let fileinfo = path.parse(file);
                     switch (fileinfo.ext) {
@@ -89,11 +90,11 @@ class AssetConverter {
             }));
         });
     }
-    run(watch) {
+    run(watch, cwd) {
         return __awaiter(this, void 0, Promise, function* () {
             let files = [];
             for (let matcher of this.assetMatchers) {
-                files = files.concat(yield this.watch(watch, matcher.match, matcher.options));
+                files = files.concat(yield this.watch(watch, matcher.match, cwd, matcher.options));
             }
             return files;
         });

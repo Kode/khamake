@@ -200,37 +200,6 @@ function fixName(name) {
     }
     return name;
 }
-function exportAssets(assets, exporter, from, platform) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let index = 0;
-        for (let asset of assets) {
-            let fileinfo = path.parse(asset.file);
-            log.info('Exporting asset ' + (index + 1) + ' of ' + assets.length + ' (' + fileinfo.base + ').');
-            let files = [];
-            switch (asset.type) {
-                case 'image':
-                    files = yield exporter.copyImage(platform, asset.file, fileinfo.name, asset);
-                    break;
-                case 'sound':
-                    files = yield exporter.copySound(platform, asset.file, fileinfo.name);
-                    break;
-                case 'font':
-                    files = yield exporter.copyFont(platform, asset.file, fileinfo.name);
-                    break;
-                case 'video':
-                    files = yield exporter.copyVideo(platform, asset.file, fileinfo.name);
-                    break;
-                case 'blob':
-                    files = yield exporter.copyBlob(platform, asset.file, fileinfo.base);
-                    break;
-            }
-            asset.name = fixName(asset.name);
-            asset.files = files;
-            delete asset.file;
-            ++index;
-        }
-    });
-}
 function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines) {
     return __awaiter(this, void 0, Promise, function* () {
         if (options.haxe !== '') {
@@ -483,9 +452,9 @@ function exportKhaProject(options) {
         project.scriptdir = options.kha;
         project.addShaders('Sources/Shaders/**', {});
         project.addShaders('Kha/Sources/Shaders/**', {}); //**
-        //await exportAssets(project.assets, exporter, from, platform, encoders);
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
-        let assets = yield assetConverter.run(options.watch);
+        let assets = yield assetConverter.run(options.watch, options.from);
+        log.info('Found ' + assets.length + ' assets.');
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
         /*if (platform === Platform.Unity) {
             shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
@@ -521,7 +490,7 @@ function exportKhaProject(options) {
         }*/
         fs.ensureDirSync(shaderDir);
         let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
-        let exportedShaders = yield shaderCompiler.run(options.watch);
+        let exportedShaders = yield shaderCompiler.run(options.watch, options.from);
         let files = [];
         for (let asset of assets) {
             files.push({
