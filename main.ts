@@ -234,7 +234,7 @@ async function exportAssets(assets: Array<any>, exporter: KhaExporter, from: str
 	}
 }
 
-async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries, targetOptions, defines, callback) {
+async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries, targetOptions, defines): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeoptions = await exporter.exportSolution(name, targetOptions, defines);
 		let compiler = new HaxeCompiler(options.to, haxeoptions.to, haxeoptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
@@ -299,7 +299,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			// We now do koremake.js -> main.js -> run(...)
 			// This will create additional project folders for the target,
 			// e.g. 'build/android-native-build'
-			require(path.join(korepath.get(), 'out', 'main.js')).run(
+			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
 			{
 				from: options.from,
 				to: path.join(options.to, exporter.sysdir() + '-build'),
@@ -314,11 +314,9 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			{
 				info: log.info,
 				error: log.error
-			},
-			function () {
-				log.info('Done.');
-				callback(name);
 			});
+			log.info('Done.');
+			return name;
 		}
 	}
 	else if (options.haxe !== '' && korehl) {
@@ -367,7 +365,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 		}
 
 		{
-			require(path.join(korepath.get(), 'out', 'main.js')).run(
+			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
 			{
 				from: options.from,
 				to: path.join(options.to, exporter.sysdir() + '-build'),
@@ -382,17 +380,15 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			{
 				info: log.info,
 				error: log.error
-			},
-			function () {
-				log.info('Done.');
-				callback(name);
 			});
+			log.info('Done.');
+			return name;
 		}
 	}
 	else {
 		// If target is not a Kore project, e.g. HTML5, finish building here.
 		log.info('Done.');
-		callback(name);
+		return name;
 	}
 }
 
@@ -402,7 +398,7 @@ function koreplatform(platform) {
 	else return platform;
 }
 
-async function exportKhaProject(options: Options, callback) {
+async function exportKhaProject(options: Options): Promise<string> {
 	log.info('Creating Kha project.');
 		
 	let project: Project = null;
@@ -417,8 +413,7 @@ async function exportKhaProject(options: Options, callback) {
 	}
 	else {
 		log.error('No khafile found.');
-		callback('Unknown');
-		return;
+		return 'Unknown';
 	}
 
 	let temp = path.join(options.to, 'temp');
@@ -595,55 +590,54 @@ async function exportKhaProject(options: Options, callback) {
 		fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
 	}
 
-	exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
+	return await exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines);
 }
 
 function isKhaProject(directory: string, projectfile: string) {
 	return fs.existsSync(path.join(directory, 'Kha')) || fs.existsSync(path.join(directory, projectfile));
 }
 
-async function exportProject(options: Options, callback) {
+async function exportProject(options: Options): Promise<string> {
 	if (isKhaProject(options.from, options.projectfile)) {
-		await exportKhaProject(options, callback);
+		return await exportKhaProject(options);
 	}
 	else {
 		log.error('Neither Kha directory nor project file (' + options.projectfile + ') found.');
-		callback('Unknown');
+		return 'Unknown';
 	}
 }
 
-export let api = 1;
+function runProject(options: any): Promise<void> {
+	return new Promise<void>((resolve, reject) => {
+		log.info('Running...');
+		var run = child_process.spawn(
+			path.join(process.cwd(), options.to, 'linux-build', name),
+			[],
+			{ cwd: path.join(process.cwd(), options.to, 'linux') });
 
-export async function run(options: Options, loglog, callback) {
+		run.stdout.on('data', function (data) {
+			log.info(data.toString());
+		});
+
+		run.stderr.on('data', function (data) {
+			log.error(data.toString());
+		});
+
+		run.on('close', function (code) {
+			resolve();
+		});
+	});
+}
+
+export let api = 2;
+
+export async function run(options: Options, loglog): Promise<string> {
 	if (options.silent) {
 		log.silent();
 	}
 	else {
 		log.set(loglog);
 	}
-
-	let done = (name) => {
-		if (options.target === Platform.Linux && options.run) {
-			log.info('Running...');
-			var run = child_process.spawn(
-				path.join(process.cwd(), options.to, 'linux-build', name),
-				[],
-				{ cwd: path.join(process.cwd(), options.to, 'linux') });
-
-			run.stdout.on('data', function (data) {
-				log.info(data.toString());
-			});
-
-			run.stderr.on('data', function (data) {
-				log.error(data.toString());
-			});
-
-			run.on('close', function (code) {
-				callback(name);
-			});
-		}
-		else callback(name);
-	};
 
 	if (options.kha === undefined || options.kha === '') {
 		let p = path.join(__dirname, '..', '..', '..');
@@ -699,5 +693,11 @@ export async function run(options: Options, loglog, callback) {
 		options.theora = options.ffmpeg + ' -i {in} {out}';
 	}
 	
-	await exportProject(options, done);
+	let name = await exportProject(options);
+
+	if (options.target === Platform.Linux && options.run) {
+		await runProject(options);
+	}
+
+	return name;
 }

@@ -231,8 +231,8 @@ function exportAssets(assets, exporter, from, platform) {
         }
     });
 }
-function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines, callback) {
-    return __awaiter(this, void 0, void 0, function* () {
+function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines) {
+    return __awaiter(this, void 0, Promise, function* () {
         if (options.haxe !== '') {
             let haxeoptions = yield exporter.exportSolution(name, targetOptions, defines);
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeoptions.to, haxeoptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
@@ -291,7 +291,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 // We now do koremake.js -> main.js -> run(...)
                 // This will create additional project folders for the target,
                 // e.g. 'build/android-native-build'
-                require(path.join(korepath.get(), 'out', 'main.js')).run({
+                let name = yield require(path.join(korepath.get(), 'out', 'main.js')).run({
                     from: options.from,
                     to: path.join(options.to, exporter.sysdir() + '-build'),
                     target: koreplatform(options.target),
@@ -304,10 +304,9 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 }, {
                     info: log.info,
                     error: log.error
-                }, function () {
-                    log.info('Done.');
-                    callback(name);
                 });
+                log.info('Done.');
+                return name;
             }
         }
         else if (options.haxe !== '' && korehl) {
@@ -351,7 +350,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
             }
             {
-                require(path.join(korepath.get(), 'out', 'main.js')).run({
+                let name = yield require(path.join(korepath.get(), 'out', 'main.js')).run({
                     from: options.from,
                     to: path.join(options.to, exporter.sysdir() + '-build'),
                     target: koreplatform(options.target),
@@ -364,16 +363,15 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 }, {
                     info: log.info,
                     error: log.error
-                }, function () {
-                    log.info('Done.');
-                    callback(name);
                 });
+                log.info('Done.');
+                return name;
             }
         }
         else {
             // If target is not a Kore project, e.g. HTML5, finish building here.
             log.info('Done.');
-            callback(name);
+            return name;
         }
     });
 }
@@ -385,8 +383,8 @@ function koreplatform(platform) {
     else
         return platform;
 }
-function exportKhaProject(options, callback) {
-    return __awaiter(this, void 0, void 0, function* () {
+function exportKhaProject(options) {
+    return __awaiter(this, void 0, Promise, function* () {
         log.info('Creating Kha project.');
         let project = null;
         let foundProjectFile = false;
@@ -399,8 +397,7 @@ function exportKhaProject(options, callback) {
         }
         else {
             log.error('No khafile found.');
-            callback('Unknown');
-            return;
+            return 'Unknown';
         }
         let temp = path.join(options.to, 'temp');
         fs.ensureDirSync(temp);
@@ -560,49 +557,47 @@ function exportKhaProject(options, callback) {
         if (foundProjectFile) {
             fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
         }
-        exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, secondPass);
+        return yield exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines);
     });
 }
 function isKhaProject(directory, projectfile) {
     return fs.existsSync(path.join(directory, 'Kha')) || fs.existsSync(path.join(directory, projectfile));
 }
-function exportProject(options, callback) {
-    return __awaiter(this, void 0, void 0, function* () {
+function exportProject(options) {
+    return __awaiter(this, void 0, Promise, function* () {
         if (isKhaProject(options.from, options.projectfile)) {
-            yield exportKhaProject(options, callback);
+            return yield exportKhaProject(options);
         }
         else {
             log.error('Neither Kha directory nor project file (' + options.projectfile + ') found.');
-            callback('Unknown');
+            return 'Unknown';
         }
     });
 }
-exports.api = 1;
-function run(options, loglog, callback) {
-    return __awaiter(this, void 0, void 0, function* () {
+function runProject(options) {
+    return new Promise((resolve, reject) => {
+        log.info('Running...');
+        var run = child_process.spawn(path.join(process.cwd(), options.to, 'linux-build', name), [], { cwd: path.join(process.cwd(), options.to, 'linux') });
+        run.stdout.on('data', function (data) {
+            log.info(data.toString());
+        });
+        run.stderr.on('data', function (data) {
+            log.error(data.toString());
+        });
+        run.on('close', function (code) {
+            resolve();
+        });
+    });
+}
+exports.api = 2;
+function run(options, loglog) {
+    return __awaiter(this, void 0, Promise, function* () {
         if (options.silent) {
             log.silent();
         }
         else {
             log.set(loglog);
         }
-        let done = (name) => {
-            if (options.target === Platform_1.Platform.Linux && options.run) {
-                log.info('Running...');
-                var run = child_process.spawn(path.join(process.cwd(), options.to, 'linux-build', name), [], { cwd: path.join(process.cwd(), options.to, 'linux') });
-                run.stdout.on('data', function (data) {
-                    log.info(data.toString());
-                });
-                run.stderr.on('data', function (data) {
-                    log.error(data.toString());
-                });
-                run.on('close', function (code) {
-                    callback(name);
-                });
-            }
-            else
-                callback(name);
-        };
         if (options.kha === undefined || options.kha === '') {
             let p = path.join(__dirname, '..', '..', '..');
             if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
@@ -649,7 +644,11 @@ function run(options, loglog, callback) {
         if (!options.theora && options.ffmpeg) {
             options.theora = options.ffmpeg + ' -i {in} {out}';
         }
-        yield exportProject(options, done);
+        let name = yield exportProject(options);
+        if (options.target === Platform_1.Platform.Linux && options.run) {
+            yield runProject(options);
+        }
+        return name;
     });
 }
 exports.run = run;
