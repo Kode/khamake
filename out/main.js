@@ -453,7 +453,7 @@ function exportKhaProject(options) {
         project.addShaders('Sources/Shaders/**', {});
         project.addShaders('Kha/Sources/Shaders/**', {}); //**
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
-        let assets = yield assetConverter.run(options.watch, options.from);
+        let assets = yield assetConverter.run(options.watch);
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
         /*if (platform === Platform.Unity) {
             shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
@@ -489,7 +489,7 @@ function exportKhaProject(options) {
         }*/
         fs.ensureDirSync(shaderDir);
         let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
-        let exportedShaders = yield shaderCompiler.run(options.watch, options.from);
+        let exportedShaders = yield shaderCompiler.run(options.watch);
         let files = [];
         for (let asset of assets) {
             files.push({

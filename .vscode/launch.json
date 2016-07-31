@@ -5,10 +5,10 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/out/khamake.js",
+			"program": "${workspaceRoot}/../../make.js",
 			"stopOnEntry": false,
-			"args": [],
-			"cwd": "${workspaceRoot}/../../..",
+			"args": ["--kha", ".", "--from", "Tests/Empty"],
+			"cwd": "${workspaceRoot}/../..",
 			"preLaunchTask": null,
 			"runtimeExecutable": null,
 			"runtimeArgs": [

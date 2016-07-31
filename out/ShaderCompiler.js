@@ -102,13 +102,12 @@ class ShaderCompiler {
                 return 'none';
         }
     }
-    watch(watch, match, cwd, options) {
+    watch(watch, match, options) {
         return new Promise((resolve, reject) => {
             let shaders = [];
             let ready = false;
-            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch, cwd: cwd });
+            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
             this.watcher.on('add', (file) => {
-                file = path.join(cwd, file);
                 if (ready) {
                     switch (path.parse(file).ext) {
                         case '.glsl':
@@ -121,7 +120,6 @@ class ShaderCompiler {
                 }
             });
             this.watcher.on('change', (file) => {
-                file = path.join(cwd, file);
                 switch (path.parse(file).ext) {
                     case '.glsl':
                         this.compileShader(file);
@@ -145,11 +143,11 @@ class ShaderCompiler {
             }));
         });
     }
-    run(watch, cwd) {
+    run(watch) {
         return __awaiter(this, void 0, Promise, function* () {
             let shaders = [];
             for (let matcher of this.shaderMatchers) {
-                shaders = shaders.concat(yield this.watch(watch, matcher.match, cwd, matcher.options));
+                shaders = shaders.concat(yield this.watch(watch, matcher.match, matcher.options));
             }
             return shaders;
         });

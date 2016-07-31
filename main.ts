@@ -478,7 +478,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	project.addShaders('Kha/Sources/Shaders/**', {}); //**
 
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
-	let assets = await assetConverter.run(options.watch, options.from);
+	let assets = await assetConverter.run(options.watch);
 	let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
 	/*if (platform === Platform.Unity) {
 		shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
@@ -515,7 +515,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	
 	fs.ensureDirSync(shaderDir);
 	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
-	let exportedShaders = await shaderCompiler.run(options.watch, options.from);
+	let exportedShaders = await shaderCompiler.run(options.watch);
 
 	let files = [];
 	for (let asset of assets) {
