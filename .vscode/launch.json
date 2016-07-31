@@ -7,7 +7,7 @@
 			"request": "launch",
 			"program": "${workspaceRoot}/out/khamake.js",
 			"stopOnEntry": false,
-			"args": [],
+			"args": ["html5"],
 			"cwd": "${workspaceRoot}/../../..",
 			"preLaunchTask": null,
 			"runtimeExecutable": null,

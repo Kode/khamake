@@ -14,7 +14,7 @@ function copyAndReplace(from, to, names, values) {
 }
 
 function IntelliJ(projectdir, options) {
-    let indir = path.join(__dirname, 'Data', 'intellij');
+    let indir = path.join(__dirname, '..', 'Data', 'intellij');
     let outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
 
 	let sources = '';

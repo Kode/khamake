@@ -50,9 +50,10 @@ export class KromExporter extends KhaExporter {
 	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
-		writeHaxeProject(this.options.to, this.haxeOptions(name, defines));
+		let haxeOptions = this.haxeOptions(name, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 		
-		return this.haxeOptions(name, defines);
+		return haxeOptions;
 	}
 
 	async copySound(platform: string, from: string, to: string) {

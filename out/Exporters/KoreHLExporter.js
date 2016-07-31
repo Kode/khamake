@@ -11,7 +11,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
-const Haxe_1 = require('../Haxe');
 const Platform_1 = require('../Platform');
 const ImageTool_1 = require('../ImageTool');
 const HaxeProject_1 = require('../HaxeProject');
@@ -23,42 +22,45 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     sysdir() {
         return this.options.target + '-hl';
     }
+    haxeOptions(name, targetOptions, defines) {
+        defines.push('no-compilation');
+        defines.push('sys_' + this.options.target);
+        defines.push('sys_g1');
+        defines.push('sys_g2');
+        defines.push('sys_g3');
+        defines.push('sys_g4');
+        defines.push('sys_a1');
+        defines.push('sys_a2');
+        if (this.options.vr === 'gearvr') {
+            defines.push('vr_gearvr');
+        }
+        else if (this.options.vr === 'cardboard') {
+            defines.push('vr_cardboard');
+        }
+        else if (this.options.vr === 'rift') {
+            defines.push('vr_rift');
+        }
+        return {
+            from: this.options.from,
+            to: path.join(this.sysdir() + '-build', 'sources.c'),
+            sources: this.sources,
+            libraries: this.libraries,
+            defines: defines,
+            parameters: this.parameters,
+            haxeDirectory: this.options.haxe,
+            system: this.sysdir(),
+            language: 'hl',
+            width: this.width,
+            height: this.height,
+            name: name
+        };
+    }
     exportSolution(name, _targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
-            defines.push('no-compilation');
-            defines.push('sys_' + this.options.target);
-            defines.push('sys_g1');
-            defines.push('sys_g2');
-            defines.push('sys_g3');
-            defines.push('sys_g4');
-            defines.push('sys_a1');
-            defines.push('sys_a2');
-            if (this.options.vr === 'gearvr') {
-                defines.push('vr_gearvr');
-            }
-            else if (this.options.vr === 'cardboard') {
-                defines.push('vr_cardboard');
-            }
-            else if (this.options.vr === 'rift') {
-                defines.push('vr_rift');
-            }
-            const options = {
-                from: this.options.from,
-                to: path.join(this.sysdir() + '-build', 'sources.c'),
-                sources: this.sources,
-                libraries: this.libraries,
-                defines: defines,
-                parameters: this.parameters,
-                haxeDirectory: this.options.haxe,
-                system: this.sysdir(),
-                language: 'hl',
-                width: this.width,
-                height: this.height,
-                name: name
-            };
-            yield HaxeProject_1.writeHaxeProject(this.options.to, options);
+            let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
             //Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
-            yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ["project-" + this.sysdir() + ".hxml"]);
+            return haxeOptions;
         });
     }
     /*copyMusic(platform, from, to, encoders, callback) {
@@ -76,11 +78,11 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
             if (platform === Platform_1.Platform.iOS && asset.compressed) {
-                let format = ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
+                let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
                 return [to + '.' + format];
             }
             else {
-                let format = ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
+                let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
                 return [to + '.' + format];
             }
         });

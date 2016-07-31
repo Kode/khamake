@@ -22,32 +22,35 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
     sysdir() {
         return 'empty';
     }
+    haxeOptions(name, targetOptions, defines) {
+        defines.push('sys_g1');
+        defines.push('sys_g2');
+        defines.push('sys_g3');
+        defines.push('sys_g4');
+        defines.push('sys_a1');
+        defines.push('sys_a2');
+        return {
+            from: this.options.from,
+            to: path.join(this.sysdir(), 'docs.xml'),
+            sources: this.sources,
+            defines: defines,
+            parameters: this.parameters,
+            haxeDirectory: this.options.haxe,
+            system: this.sysdir(),
+            language: 'xml',
+            width: this.width,
+            height: this.height,
+            name: name
+        };
+    }
     exportSolution(name, _targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            defines.push('sys_g1');
-            defines.push('sys_g2');
-            defines.push('sys_g3');
-            defines.push('sys_g4');
-            defines.push('sys_a1');
-            defines.push('sys_a2');
-            const options = {
-                from: this.options.from,
-                to: path.join(this.sysdir(), 'docs.xml'),
-                sources: this.sources,
-                defines: defines,
-                parameters: this.parameters,
-                haxeDirectory: this.options.haxe,
-                system: this.sysdir(),
-                language: 'xml',
-                width: this.width,
-                height: this.height,
-                name: name
-            };
-            yield HaxeProject_1.writeHaxeProject(this.options.to, options);
+            let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
             let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
             if (result === 0) {
-                let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', options.to)], { env: process.env, cwd: path.normalize(this.options.from) });
+                let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.from) });
                 if (doxresult.stdout.toString() !== '') {
                     log.info(doxresult.stdout.toString());
                 }
@@ -55,6 +58,7 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
                     log.error(doxresult.stderr.toString());
                 }
             }
+            return haxeOptions;
         });
     }
     copySound(platform, from, to) {

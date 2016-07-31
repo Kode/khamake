@@ -19,9 +19,7 @@ export class UnityExporter extends KhaExporter {
 		return 'unity';
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
-		this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
-
+	haxeOptions(name: string, defines: Array<string>) {
 		defines.push('no-root');
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);
@@ -31,7 +29,7 @@ export class UnityExporter extends KhaExporter {
 		defines.push('sys_g4');
 		defines.push('sys_a1');
 
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'Assets', 'Sources'),
 			sources: this.sources,
@@ -45,6 +43,10 @@ export class UnityExporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+		this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
 		
 		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
 

@@ -523,7 +523,7 @@ function exportKhaProject(options, callback) {
             }
         }*/
         fs.ensureDirSync(shaderDir);
-        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
+        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
         let exportedShaders = yield shaderCompiler.run(options.watch);
         let files = [];
         for (let asset of assets) {

@@ -21,9 +21,7 @@ export class EmptyExporter extends KhaExporter {
 		return 'empty';
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
-		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -31,7 +29,7 @@ export class EmptyExporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 		
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'docs.xml'),
 			sources: this.sources,
@@ -44,11 +42,17 @@ export class EmptyExporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
-		await writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
+
+		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		let result = await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 		if (result === 0) {
-			let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', options.to)], { env: process.env, cwd: path.normalize(this.options.from) });
+			let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.from) });
 			if (doxresult.stdout.toString() !== '') {
 				log.info(doxresult.stdout.toString());
 			}
@@ -57,6 +61,8 @@ export class EmptyExporter extends KhaExporter {
 				log.error(doxresult.stderr.toString());
 			}
 		}
+
+		return haxeOptions;
 	}
 
 	async copySound(platform: string, from: string, to: string) {

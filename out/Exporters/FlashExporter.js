@@ -11,7 +11,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
-const Haxe_1 = require('../Haxe');
 const ImageTool_1 = require('../ImageTool');
 const HaxeProject_1 = require('../HaxeProject');
 function adjustFilename(filename) {
@@ -31,42 +30,45 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
     sysdir() {
         return 'flash';
     }
+    haxeOptions(name, targetOptions, defines) {
+        defines.push('swf-script-timeout=60');
+        defines.push('sys_' + this.options.target);
+        defines.push('sys_g1');
+        defines.push('sys_g2');
+        defines.push('sys_g3');
+        defines.push('sys_g4');
+        defines.push('sys_a1');
+        defines.push('sys_a2');
+        if (this.options.embedflashassets)
+            defines.push('KHA_EMBEDDED_ASSETS');
+        let defaultFlashOptions = {
+            framerate: 60,
+            stageBackground: 'ffffff',
+            swfVersion: '16.0'
+        };
+        let flashOptions = targetOptions ? (targetOptions.flash ? targetOptions.flash : defaultFlashOptions) : defaultFlashOptions;
+        return {
+            from: this.options.from,
+            to: path.join(this.sysdir(), 'kha.swf'),
+            sources: this.sources,
+            libraries: this.libraries,
+            defines: defines,
+            parameters: this.parameters,
+            haxeDirectory: this.options.haxe,
+            system: this.sysdir(),
+            language: 'as',
+            width: this.width,
+            height: this.height,
+            name: name,
+            framerate: 'framerate' in flashOptions ? flashOptions.framerate : defaultFlashOptions.framerate,
+            stageBackground: 'stageBackground' in flashOptions ? flashOptions.stageBackground : defaultFlashOptions.stageBackground,
+            swfVersion: 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion
+        };
+    }
     exportSolution(name, targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
-            defines.push('swf-script-timeout=60');
-            defines.push('sys_' + this.options.target);
-            defines.push('sys_g1');
-            defines.push('sys_g2');
-            defines.push('sys_g3');
-            defines.push('sys_g4');
-            defines.push('sys_a1');
-            defines.push('sys_a2');
-            if (this.options.embedflashassets)
-                defines.push('KHA_EMBEDDED_ASSETS');
-            let defaultFlashOptions = {
-                framerate: 60,
-                stageBackground: 'ffffff',
-                swfVersion: '16.0'
-            };
-            let flashOptions = targetOptions ? targetOptions.flash ? targetOptions.flash : defaultFlashOptions : defaultFlashOptions;
-            const options = {
-                from: this.options.from,
-                to: path.join(this.sysdir(), 'kha.swf'),
-                sources: this.sources,
-                libraries: this.libraries,
-                defines: defines,
-                parameters: this.parameters,
-                haxeDirectory: this.options.haxe,
-                system: this.sysdir(),
-                language: 'as',
-                width: this.width,
-                height: this.height,
-                name: name,
-                framerate: 'framerate' in flashOptions ? flashOptions.framerate : defaultFlashOptions.framerate,
-                stageBackground: 'stageBackground' in flashOptions ? flashOptions.stageBackground : defaultFlashOptions.stageBackground,
-                swfVersion: 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion
-            };
-            yield HaxeProject_1.writeHaxeProject(this.options.to, options);
+            let haxeOptions = this.haxeOptions(name, targetOptions, defines);
+            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
             if (this.options.embedflashassets) {
                 this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
                 this.p("package;");
@@ -94,7 +96,7 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
                 this.p("}");
                 this.closeFile();
             }
-            yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
+            return haxeOptions;
         });
     }
     copySound(platform, from, to) {
@@ -118,7 +120,7 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
     }
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
             if (this.options.embedflashassets)
                 this.images.push(to + '.' + format);
             return [to + '.' + format];

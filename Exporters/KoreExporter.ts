@@ -20,7 +20,7 @@ export class KoreExporter extends KhaExporter {
 		return this.options.target;
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
@@ -40,7 +40,7 @@ export class KoreExporter extends KhaExporter {
 			defines.push('vr_rift');
 		}
 
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir() + '-build', 'Sources'),
 			sources: this.sources,
@@ -54,11 +54,15 @@ export class KoreExporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
-		writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		await executeHaxe(this.options.to, this.options.haxe, ["project-" + this.sysdir() + ".hxml"]);
+		return haxeOptions;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {

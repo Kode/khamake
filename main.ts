@@ -554,7 +554,7 @@ async function exportKhaProject(options: Options, callback) {
 	}*/
 	
 	fs.ensureDirSync(shaderDir);
-	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, 'essl', 'html5', shaderDir, temp, project.shaderMatchers);
+	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
 	let exportedShaders = await shaderCompiler.run(options.watch);
 
 	let files = [];

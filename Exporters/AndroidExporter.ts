@@ -28,9 +28,9 @@ export class AndroidExporter extends KhaExporter {
 		return "Android";
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		const safename = name.replace(/ /g, '-');
-
+		
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
@@ -39,7 +39,7 @@ export class AndroidExporter extends KhaExporter {
 		defines.push('sys_g4');
 		defines.push('sys_a1');
 
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), safename),
 			sources: this.sources,
@@ -53,11 +53,15 @@ export class AndroidExporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
-		writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		this.exportAndroidStudioProject(name, _targetOptions, this.options.from);
 
-		await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
+		return haxeOptions;
 	}
 
 	exportAndroidStudioProject(name, _targetOptions, from) {

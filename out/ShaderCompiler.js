@@ -11,17 +11,96 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const chokidar = require('chokidar');
+const GraphicsApi_1 = require('./GraphicsApi');
+const Platform_1 = require('./Platform');
 const log = require('./log');
 class ShaderCompiler {
-    constructor(exporter, platform, compiler, type, system, to, temp, shaderMatchers) {
+    constructor(exporter, platform, compiler, to, temp, options, shaderMatchers) {
         this.exporter = exporter;
+        if (platform.endsWith('-native'))
+            platform = platform.substr(0, platform.length - '-native'.length);
+        if (platform.endsWith('-hl'))
+            platform = platform.substr(0, platform.length - '-hl'.length);
         this.platform = platform;
         this.compiler = compiler;
-        this.type = type;
-        this.system = system;
+        this.type = ShaderCompiler.findType(platform, options);
         this.to = to;
         this.temp = temp;
         this.shaderMatchers = shaderMatchers;
+    }
+    static findType(platform, options) {
+        switch (platform) {
+            case Platform_1.Platform.Empty:
+            case Platform_1.Platform.Node:
+                return 'glsl';
+            case Platform_1.Platform.Flash:
+                return 'agal';
+            case Platform_1.Platform.Android:
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
+                    return 'spirv';
+                }
+                else {
+                    return 'essl';
+                }
+            case Platform_1.Platform.HTML5:
+            case Platform_1.Platform.DebugHTML5:
+            case Platform_1.Platform.HTML5Worker:
+            case Platform_1.Platform.Tizen:
+            case Platform_1.Platform.Pi:
+            case Platform_1.Platform.tvOS:
+            case Platform_1.Platform.iOS:
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
+                    /*let builddir = 'ios-build';
+                    if (platform === Platform.tvOS) {
+                        builddir = 'tvos-build';
+                    }
+                    if (!Files.isDirectory(to.resolve(Paths.get('..', builddir, 'Sources')))) {
+                        Files.createDirectories(to.resolve(Paths.get('..', builddir, 'Sources')));
+                    }
+                    let funcname = name;
+                    funcname = funcname.replaceAll('-', '_');
+                    funcname = funcname.replaceAll('.', '_');
+                    funcname += '_main';
+                    fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
+                    compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', builddir, 'Sources', name + ".metal")), temp, platform);
+                    addShader(project, name, ".metal");*/
+                    return 'metal';
+                }
+                else {
+                    return 'essl';
+                }
+            case Platform_1.Platform.Windows:
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
+                    return 'spirv';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.OpenGL2) {
+                    return 'glsl';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12) {
+                    return 'd3d11';
+                }
+                else {
+                    return 'd3d9';
+                }
+            case Platform_1.Platform.WindowsApp:
+                return 'd3d11';
+            case Platform_1.Platform.Xbox360:
+            case Platform_1.Platform.PlayStation3:
+                return 'd3d9';
+            case Platform_1.Platform.Linux:
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
+                    return 'spirv';
+                }
+                else {
+                    return 'glsl';
+                }
+            case Platform_1.Platform.OSX:
+                return 'glsl';
+            case Platform_1.Platform.Unity:
+                return 'hlsl';
+            default:
+                return 'none';
+        }
     }
     watch(watch, match, options) {
         return new Promise((resolve, reject) => {
@@ -89,7 +168,7 @@ class ShaderCompiler {
                         resolve();
                     }
                     else {
-                        let process = child_process.spawn(this.compiler, [this.type, from, temp, this.temp, this.system]);
+                        let process = child_process.spawn(this.compiler, [this.type, from, temp, this.temp, this.platform]);
                         process.stdout.on('data', (data) => {
                             log.info(data.toString());
                         });

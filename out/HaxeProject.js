@@ -10,7 +10,7 @@ function copyAndReplace(from, to, names, values) {
     fs.writeFileSync(to, data, { encoding: 'utf8' });
 }
 function IntelliJ(projectdir, options) {
-    let indir = path.join(__dirname, 'Data', 'intellij');
+    let indir = path.join(__dirname, '..', 'Data', 'intellij');
     let outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
     let sources = '';
     for (let i = 0; i < options.sources.length; ++i) {

@@ -32,7 +32,7 @@ export class FlashExporter extends KhaExporter {
 		return 'flash';
 	}
 
-	async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<void> {
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('swf-script-timeout=60');
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
@@ -50,9 +50,9 @@ export class FlashExporter extends KhaExporter {
 			swfVersion : '16.0'
 		}
 		
-		let flashOptions = targetOptions ? targetOptions.flash ? targetOptions.flash : defaultFlashOptions : defaultFlashOptions;
+		let flashOptions = targetOptions ? (targetOptions.flash ? targetOptions.flash : defaultFlashOptions) : defaultFlashOptions;
 		
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'kha.swf'),
 			sources: this.sources,
@@ -69,7 +69,11 @@ export class FlashExporter extends KhaExporter {
 			stageBackground: 'stageBackground' in flashOptions ? flashOptions.stageBackground : defaultFlashOptions.stageBackground,
 			swfVersion : 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion
 		};
-		await writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<any> {
+		let haxeOptions = this.haxeOptions(name, targetOptions, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		if (this.options.embedflashassets) {
 			this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
@@ -107,7 +111,7 @@ export class FlashExporter extends KhaExporter {
 			this.closeFile();
 		}
 
-		await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
+		return haxeOptions;
 	}
 
 	async copySound(platform: string, from: string, to: string) {
@@ -127,7 +131,7 @@ export class FlashExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
-		let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(),to), asset, undefined, false);
+		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(),to), asset, undefined, false);
 		if (this.options.embedflashassets) this.images.push(to + '.' + format);
 		return [to + '.' + format];
 	}

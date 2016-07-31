@@ -27,9 +27,7 @@ export abstract class CSharpExporter extends KhaExporter {
 		}
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
-		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
-
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-root');
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);
@@ -37,7 +35,7 @@ export abstract class CSharpExporter extends KhaExporter {
 		defines.push('sys_g2');
 		defines.push('sys_a1');
 
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir() + '-build', 'Sources'),
 			sources: this.sources,
@@ -51,15 +49,22 @@ export abstract class CSharpExporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
-		await writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
+		
+		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
 
-		let result = await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 		const projectUuid = uuid.v4();
 		this.exportSLN(projectUuid);
 		this.exportCsProj(projectUuid);
 		this.exportResources();
+
+		return haxeOptions;
 	}
 
 	exportSLN(projectUuid) {
@@ -106,7 +111,7 @@ export abstract class CSharpExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
-		let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 

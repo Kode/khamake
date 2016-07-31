@@ -67,15 +67,16 @@ export class Html5Exporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
-		writeHaxeProject(this.options.to, this.haxeOptions(name, defines));
+		let haxeOptions = this.haxeOptions(name, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		if (this.isDebugHtml5()) {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 			if (!fs.existsSync(index)) {
-				let protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'index.html'), {encoding: 'utf8'});
+				let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), {encoding: 'utf8'});
 				protoindex = protoindex.replace(/{Name}/g, name);
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
@@ -83,26 +84,26 @@ export class Html5Exporter extends KhaExporter {
 			}
 			
 			let pack = path.join(this.options.to, this.sysdir(), 'package.json');
-			let protopackage = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'package.json'), {encoding: 'utf8'});
+			let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), {encoding: 'utf8'});
 			protopackage = protopackage.replace(/{Name}/g, name);
 			fs.writeFileSync(pack.toString(), protopackage);
 
 			let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
-			let protoelectron = fs.readFileSync(path.join(__dirname, 'Data', 'debug-html5', 'electron.js'), {encoding: 'utf8'});
+			let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), {encoding: 'utf8'});
 			protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
 			protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
 			fs.writeFileSync(electron.toString(), protoelectron);
 		}
 		else if (this.isNode()) {
 			let pack = path.join(this.options.to, this.sysdir(), 'package.json');
-			let protopackage = fs.readFileSync(path.join(__dirname, 'Data', 'node', 'package.json'), {encoding: 'utf8'});
+			let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'package.json'), {encoding: 'utf8'});
 			protopackage = protopackage.replace(/{Name}/g, name);
 			fs.writeFileSync(pack.toString(), protopackage);
 		}
 		else {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 			if (!fs.existsSync(index)) {
-				let protoindex = fs.readFileSync(path.join(__dirname, 'Data', 'html5', 'index.html'), {encoding: 'utf8'});
+				let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'html5', 'index.html'), {encoding: 'utf8'});
 				protoindex = protoindex.replace(/{Name}/g, name);
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
@@ -110,7 +111,7 @@ export class Html5Exporter extends KhaExporter {
 			}
 		}
 		
-		//return await executeHaxe(this.directory, haxeDirectory, ['project-' + this.sysdir() + '.hxml']);
+		return haxeOptions;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {

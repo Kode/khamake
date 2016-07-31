@@ -20,7 +20,7 @@ export class KoreHLExporter extends KhaExporter {
 		return this.options.target + '-hl';
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
@@ -40,7 +40,7 @@ export class KoreHLExporter extends KhaExporter {
 			defines.push('vr_rift');
 		}
 
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir() + '-build', 'sources.c'),
 			sources: this.sources,
@@ -54,11 +54,15 @@ export class KoreHLExporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
-		await writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 
-		await executeHaxe(this.options.to, this.options.haxe, ["project-" + this.sysdir() + ".hxml"]);
+		return haxeOptions;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {
@@ -75,7 +79,7 @@ export class KoreHLExporter extends KhaExporter {
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
 		if (platform === Platform.iOS && asset.compressed) {
-			let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
+			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, 'pvr', true);
 			return [to + '.' + format];
 		}
 		/*else if (platform === Platform.Android && asset.compressed) {
@@ -85,7 +89,7 @@ export class KoreHLExporter extends KhaExporter {
 		 exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 		 }*/
 		else {
-			let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
+			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, true);
 			return [to + '.' + format];
 		}
 	}

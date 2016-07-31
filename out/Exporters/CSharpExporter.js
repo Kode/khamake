@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const fs = require('fs-extra');
 const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
-const Haxe_1 = require('../Haxe');
 const ImageTool_1 = require('../ImageTool');
 const HaxeProject_1 = require('../HaxeProject');
 const uuid = require('uuid');
@@ -31,36 +30,39 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
             }
         }
     }
+    haxeOptions(name, targetOptions, defines) {
+        defines.push('no-root');
+        defines.push('no-compilation');
+        defines.push('sys_' + this.options.target);
+        defines.push('sys_g1');
+        defines.push('sys_g2');
+        defines.push('sys_a1');
+        return {
+            from: this.options.from,
+            to: path.join(this.sysdir() + '-build', 'Sources'),
+            sources: this.sources,
+            libraries: this.libraries,
+            defines: defines,
+            parameters: this.parameters,
+            haxeDirectory: this.options.haxe,
+            system: this.sysdir(),
+            language: 'cs',
+            width: this.width,
+            height: this.height,
+            name: name
+        };
+    }
     exportSolution(name, _targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
             this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
-            defines.push('no-root');
-            defines.push('no-compilation');
-            defines.push('sys_' + this.options.target);
-            defines.push('sys_g1');
-            defines.push('sys_g2');
-            defines.push('sys_a1');
-            const options = {
-                from: this.options.from,
-                to: path.join(this.sysdir() + '-build', 'Sources'),
-                sources: this.sources,
-                libraries: this.libraries,
-                defines: defines,
-                parameters: this.parameters,
-                haxeDirectory: this.options.haxe,
-                system: this.sysdir(),
-                language: 'cs',
-                width: this.width,
-                height: this.height,
-                name: name
-            };
-            yield HaxeProject_1.writeHaxeProject(this.options.to, options);
+            let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
             fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
-            let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
             const projectUuid = uuid.v4();
             this.exportSLN(projectUuid);
             this.exportCsProj(projectUuid);
             this.exportResources();
+            return haxeOptions;
         });
     }
     exportSLN(projectUuid) {
@@ -95,7 +97,7 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
     }
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
             return [to + '.' + format];
         });
     }

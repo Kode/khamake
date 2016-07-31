@@ -21,31 +21,33 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
     sysdir() {
         return 'unity';
     }
+    haxeOptions(name, defines) {
+        defines.push('no-root');
+        defines.push('no-compilation');
+        defines.push('sys_' + this.options.target);
+        defines.push('sys_g1');
+        defines.push('sys_g2');
+        defines.push('sys_g3');
+        defines.push('sys_g4');
+        defines.push('sys_a1');
+        return {
+            from: this.options.from,
+            to: path.join(this.sysdir(), 'Assets', 'Sources'),
+            sources: this.sources,
+            libraries: this.libraries,
+            defines: defines,
+            parameters: this.parameters,
+            haxeDirectory: this.options.haxe,
+            system: this.sysdir(),
+            language: 'cs',
+            width: this.width,
+            height: this.height,
+            name: name
+        };
+    }
     exportSolution(name, _targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
             this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
-            defines.push('no-root');
-            defines.push('no-compilation');
-            defines.push('sys_' + this.options.target);
-            defines.push('sys_g1');
-            defines.push('sys_g2');
-            defines.push('sys_g3');
-            defines.push('sys_g4');
-            defines.push('sys_a1');
-            const options = {
-                from: this.options.from,
-                to: path.join(this.sysdir(), 'Assets', 'Sources'),
-                sources: this.sources,
-                libraries: this.libraries,
-                defines: defines,
-                parameters: this.parameters,
-                haxeDirectory: this.options.haxe,
-                system: this.sysdir(),
-                language: 'cs',
-                width: this.width,
-                height: this.height,
-                name: name
-            };
             fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
             let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
             var copyDirectory = (from, to) => {

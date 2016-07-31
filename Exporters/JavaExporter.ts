@@ -18,18 +18,14 @@ export class JavaExporter extends KhaExporter {
 		return 'java';
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<void> {
-		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
-
-		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-		
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_a1');
 
-		const options = {
+		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'Sources'),
 			sources: this.sources,
@@ -43,12 +39,21 @@ export class JavaExporter extends KhaExporter {
 			height: this.height,
 			name: name
 		};
-		await writeHaxeProject(this.options.to, options);
+	}
+
+	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
+
+		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
+		
+		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
+		writeHaxeProject(this.options.to, haxeOptions);
 
 		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
 
-		let result = await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 		this.exportEclipseProject();
+
+		return haxeOptions;
 	}
 
 	backend() {
@@ -97,7 +102,7 @@ export class JavaExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
-		let format = exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];
 	}
 

@@ -113,7 +113,9 @@ export class HaxeCompiler {
 			});
 			
 			haxe.on('close', (code) => {
-				fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
+				if (this.to) {
+					fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
+				}
 				this.ready = true;
 				if (this.todo) {
 					this.scheduleCompile();
@@ -151,7 +153,9 @@ export class HaxeCompiler {
 			
 			haxe.on('close', (code) => {
 				if (code === 0) {
-					fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
+					if (this.to) {
+						fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
+					}
 					resolve();
 				}
 				else reject('Haxe compiler error.')
