@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const path = require('path');
-const Exporter_1 = require('../Exporter');
+const Exporter_1 = require('./Exporter');
 class KhaExporter extends Exporter_1.Exporter {
     constructor(options) {
         super();

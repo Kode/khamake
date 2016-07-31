@@ -1,6 +1,6 @@
 import * as path from 'path';
 import {convert} from '../Converter';
-import {Exporter} from '../Exporter';
+import {Exporter} from './Exporter';
 import {Options} from '../Options';
 
 export abstract class KhaExporter extends Exporter {
