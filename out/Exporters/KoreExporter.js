@@ -82,7 +82,7 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
                 return [to + '.' + format];
             }
             else {
-                let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'snappy', true);
+                let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'png' /*'snappy'*/, true);
                 return [to + '.' + format];
             }
         });

@@ -45,6 +45,36 @@ function getWidthAndHeight(kha, from, to, options, format, prealpha) {
         });
     });
 }
+function convertImage(from, temp, to, kha, exe, params, options) {
+    return new Promise((resolve, reject) => {
+        let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
+        let output = '';
+        process.stdout.on('data', (data) => {
+            output += data.toString();
+        });
+        process.stderr.on('data', (data) => {
+        });
+        process.on('close', (code) => {
+            if (code !== 0) {
+                log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + path.parse(from).name);
+                resolve();
+                return;
+            }
+            fs.renameSync(temp, to);
+            const lines = output.split('\n');
+            for (let line of lines) {
+                if (line.startsWith('#')) {
+                    var numbers = line.substring(1).split('x');
+                    options.original_width = parseInt(numbers[0]);
+                    options.original_height = parseInt(numbers[1]);
+                    resolve();
+                    return;
+                }
+            }
+            resolve();
+        });
+    });
+}
 function exportImage(kha, from, to, options, format, prealpha, poweroftwo = false) {
     return __awaiter(this, void 0, Promise, function* () {
         if (format === undefined) {
@@ -107,30 +137,8 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
         if (poweroftwo) {
             params.push('poweroftwo');
         }
-        let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
-        let output = '';
-        process.stdout.on('data', (data) => {
-            output += data.toString();
-        });
-        process.stderr.on('data', (data) => {
-        });
-        process.on('close', (code) => {
-            if (code !== 0) {
-                log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + path.parse(from).name);
-                return outputformat;
-            }
-            fs.renameSync(temp, to);
-            const lines = output.split('\n');
-            for (let line of lines) {
-                if (line.startsWith('#')) {
-                    var numbers = line.substring(1).split('x');
-                    options.original_width = parseInt(numbers[0]);
-                    options.original_height = parseInt(numbers[1]);
-                    return outputformat;
-                }
-            }
-            return outputformat;
-        });
+        yield convertImage(from, temp, to, kha, exe, params, options);
+        return outputformat;
     });
 }
 exports.exportImage = exportImage;

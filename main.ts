@@ -244,7 +244,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
 		{
-			fs.copySync(path.join(__dirname, 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'));
+			fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'));
 
 			let out = '';
 			out += "var solution = new Solution('" + name + "');\n";
