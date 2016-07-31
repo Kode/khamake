@@ -153,8 +153,10 @@ class HaxeCompiler {
                     }
                     resolve();
                 }
-                else
+                else {
+                    process.exitCode = 1;
                     reject('Haxe compiler error.');
+                }
             });
         });
     }

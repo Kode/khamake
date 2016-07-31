@@ -158,7 +158,10 @@ export class HaxeCompiler {
 					}
 					resolve();
 				}
-				else reject('Haxe compiler error.')
+				else {
+					process.exitCode = 1;
+					reject('Haxe compiler error.');
+				}
 			});
 		});
 	}
