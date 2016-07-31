@@ -454,7 +454,6 @@ function exportKhaProject(options) {
         project.addShaders('Kha/Sources/Shaders/**', {}); //**
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
         let assets = yield assetConverter.run(options.watch, options.from);
-        log.info('Found ' + assets.length + ' assets.');
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
         /*if (platform === Platform.Unity) {
             shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
