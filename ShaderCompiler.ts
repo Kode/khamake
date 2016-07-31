@@ -160,6 +160,11 @@ export class ShaderCompiler {
 	compileShader(file: string) {
 		return new Promise((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
+
+			if (this.type === 'none') {
+				resolve();
+				return;
+			}
 		
 			let fileinfo = path.parse(file);
 			let from = file;

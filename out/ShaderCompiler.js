@@ -156,6 +156,10 @@ class ShaderCompiler {
         return new Promise((resolve, reject) => {
             if (!this.compiler)
                 reject('No shader compiler found.');
+            if (this.type === 'none') {
+                resolve();
+                return;
+            }
             let fileinfo = path.parse(file);
             let from = file;
             let to = path.join(this.to, fileinfo.name + '.' + this.type);
