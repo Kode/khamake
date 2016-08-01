@@ -62,7 +62,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         });
     }
     exportAndroidStudioProject(name, _targetOptions, from) {
-        let safename = name.replaceAll(' ', '-');
+        let safename = name.replace(/ /g, '-');
         this.safename = safename;
         let targetOptions = {
             package: 'com.ktxsoftware.kha',

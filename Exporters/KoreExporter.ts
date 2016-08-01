@@ -85,7 +85,7 @@ export class KoreExporter extends KhaExporter {
 		/*else if (platform === Platform.Android && asset.compressed) {
 		 var index = to.toString().lastIndexOf('.');
 		 to = to.toString().substr(0, index) + '.astc';
-		 asset.file = to.toString().replaceAll('\\', '/');
+		 asset.file = to.toString().replace(/\\/g, '/');
 		 exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
 		 }*/
 		else {

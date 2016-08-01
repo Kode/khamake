@@ -90,7 +90,7 @@ export class Project {
 
 	addLibrary(library) {
 		let self = this;
-		function findLibraryDirectory(name) {
+		function findLibraryDirectory(name: string) {
 			// Tries to load the default library from inside the kha project.
 			// e.g. 'Libraries/wyngine'
 			let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
@@ -101,7 +101,7 @@ export class Project {
 			// looking in the haxelib folders.
 			// e.g. addLibrary('hxcpp') => '/usr/lib/haxelib/hxcpp/3,2,193'
 			try {
-				libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replaceAll('.', ',').toLowerCase());
+				libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replace(/\./g, ',').toLowerCase());
 			}
 			catch (error) {
 				libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
@@ -115,7 +115,7 @@ export class Project {
 					// Get the latest version of the haxelib path,
 					// e.g. for 'hxcpp', latest version '3,2,193'
 					let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
-					//return path.join(libpath, current.replaceAll('.', ','));
+					//return path.join(libpath, current.replace(/\./g, ','));
 					return { libpath: path.join(libpath, current.replace(/\./g, ',')), libroot: libpath };
 				}
 			}

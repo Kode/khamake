@@ -60,8 +60,8 @@ export class ShaderCompiler {
 					Files.createDirectories(to.resolve(Paths.get('..', builddir, 'Sources')));
 				}
 				let funcname = name;
-				funcname = funcname.replaceAll('-', '_');
-				funcname = funcname.replaceAll('.', '_');
+				funcname = funcname.replace(/-/g, '_');
+				funcname = funcname.replace(/\./g, '_');
 				funcname += '_main';
 				fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
 				compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', builddir, 'Sources', name + ".metal")), temp, platform);

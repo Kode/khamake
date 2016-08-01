@@ -58,139 +58,6 @@ function addShader(project, name, extension) {
 	project.exportedShaders.push({files: [name + extension], name: name});
 }
 
-async function compileShader(exporter: KhaExporter, options: Options, project, shader, to: string, temp: string, compiler: string) {
-	let name = shader.name;
-	if (name.endsWith('.inc')) return;
-	let platform = options.target;
-	if (platform.endsWith('-hl')) platform = platform.substr(0, platform.length - '-hl'.length);
-	switch (platform) {
-		case Platform.Empty:
-		case Platform.Node: {
-			fs.copySync(shader.files[0], path.join(to, name + '.glsl'), {clobber: true});
-			addShader(project, name, '.glsl');
-			exporter.addShader(name + '.glsl');
-			break;
-		}
-		case Platform.Flash: {
-			await compileShader2(compiler, 'agal', shader.files[0], path.join(to, name + '.agal'), temp, platform);
-			addShader(project, name, '.agal');
-			exporter.addShader(name + '.agal');
-			break;
-		}
-		case Platform.Android:
-		case Platform.Android + '-native': {
-			if (options.graphics === GraphicsApi.Vulkan) {
-				await compileShader2(compiler, 'spirv', shader.files[0], path.join(to, name + ".spirv"), temp, 'android');
-				addShader(project, name, '.spirv');
-			}
-			else {
-				let shaderpath = path.join(to, name + '.essl');
-				await compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, 'android');
-				addShader(project, name, ".essl");
-			}
-			break;
-		}
-		case Platform.HTML5:
-		case Platform.HTML5 + '-native':
-		case Platform.DebugHTML5:
-		case Platform.HTML5Worker:
-		case Platform.Tizen:
-		case Platform.Pi:
-		case Platform.iOS: {
-			if (options.graphics === GraphicsApi.Metal) {
-				fs.ensureDirSync(path.join(to, '..', 'ios-build', 'Sources'));
-				let funcname = name;
-				funcname = funcname.replaceAll('-', '_');
-				funcname = funcname.replaceAll('.', '_');
-				funcname += '_main';
-				fs.writeFileSync(path.join(to, name + ".metal"), funcname, { encoding: 'utf8' });
-				await compileShader2(compiler, "metal", shader.files[0], path.join(to, '..', 'ios-build', 'Sources', name + '.metal'), temp, platform);
-				addShader(project, name, ".metal");
-			}
-			else {
-				let shaderpath = path.join(to, name + '.essl');
-				await compileShader2(compiler, "essl", shader.files[0], shaderpath, temp, platform);
-				addShader(project, name, ".essl");
-			}
-			break;
-		}
-		case Platform.Windows: {
-			if (options.graphics === GraphicsApi.Vulkan) {
-				await compileShader2(compiler, 'spirv', shader.files[0], path.join(to, name + ".spirv"), temp, platform);
-				addShader(project, name, '.spirv');
-			}
-			else if (options.graphics === GraphicsApi.OpenGL || options.graphics === GraphicsApi.OpenGL2) {
-				await compileShader2(compiler, "glsl", shader.files[0], path.join(to, name + ".glsl"), temp, platform);
-				addShader(project, name, ".glsl");
-			}
-			else if (options.graphics === GraphicsApi.Direct3D11 || options.graphics === GraphicsApi.Direct3D12) {
-				await compileShader2(compiler, "d3d11", shader.files[0], path.join(to, name + ".d3d11"), temp, platform);
-				addShader(project, name, ".d3d11");
-			}
-			else {
-				await compileShader2(compiler, "d3d9", shader.files[0], path.join(to, name + ".d3d9"), temp, platform);
-				addShader(project, name, ".d3d9");
-			}
-			break;
-		}
-		case Platform.WindowsApp: {
-			await compileShader2(compiler, "d3d11", shader.files[0], path.join(to, name + ".d3d11"), temp, platform);
-			addShader(project, name, ".d3d11");
-			break;
-		}
-		case Platform.Xbox360:
-		case Platform.PlayStation3: {
-			await compileShader2(compiler, "d3d9", shader.files[0], path.join(to, name + ".d3d9"), temp, platform);
-			addShader(project, name, ".d3d9");
-			break;
-		}
-		case Platform.Linux: {
-			if (options.graphics === GraphicsApi.Vulkan) {
-				await compileShader2(compiler, 'spirv', shader.files[0], path.join(to, name + ".spirv"), temp, platform);
-				addShader(project, name, '.spirv');
-			}
-			else {
-				await compileShader2(compiler, "glsl", shader.files[0], path.join(to, name + ".glsl"), temp, platform);
-				addShader(project, name, ".glsl");
-			}
-			break;
-		}
-		case Platform.OSX: {
-			await compileShader2(compiler, "glsl", shader.files[0], path.join(to, name + ".glsl"), temp, platform);
-			addShader(project, name, ".glsl");
-			break;
-		}
-		case Platform.Unity: {
-			await compileShader2(compiler, "d3d9", shader.files[0], path.join(to, name + ".hlsl"), temp, platform);
-			addShader(project, name, ".hlsl");
-			break;
-		}
-		case Platform.WPF:
-		case Platform.XNA:
-		case Platform.Java:
-		case Platform.PlayStationMobile:
-			break;
-		default: {
-			/** let customCompiler = compiler;
-			if (fs.existsSync(pathlib.join(from.toString(), 'Backends'))) {
-				var libdirs = fs.readdirSync(pathlib.join(from.toString(), 'Backends'));
-				for (var ld in libdirs) {
-					var libdir = pathlib.join(from.toString(), 'Backends', libdirs[ld]);
-					if (fs.statSync(libdir).isDirectory()) {
-						var exe = pathlib.join(libdir, 'krafix', 'krafix-' + platform + '.exe');
-						if (fs.existsSync(exe)) {
-							customCompiler = exe;
-						}
-					}
-				}
-			}
-			compileShader2(customCompiler, platform, shader.files[0], to.resolve(name + '.' + platform), temp, platform);
-			addShader(project, name, '.' + platform);*/
-			break;
-		}
-	}
-}
-
 function fixName(name) {
 	name = name.replace(/\./g, '_').replace(/-/g, '_');
 	if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
@@ -250,9 +117,9 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			out += "}\n";*/
 
 			for (let lib of libraries) {
-				var libPath = lib.libroot;
-				out += "if (fs.existsSync(path.join('" + libPath.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
-				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replaceAll('\\', '/') + "'));\n";
+				let libPath: string = lib.libroot;
+				out += "if (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
+				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
 				out += "}\n";
 			}
 
@@ -320,9 +187,9 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			out += "solution.addProject(project);\n";
 
 			for (let lib of libraries) {
-				var libPath = lib.libroot;
-				out += "if (fs.existsSync(path.join('" + libPath.replaceAll('\\', '/') + "', 'korefile.js'))) {\n";
-				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replaceAll('\\', '/') + "'));\n";
+				var libPath: string = lib.libroot;
+				out += "if (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
+				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
 				out += "}\n";
 			}
 

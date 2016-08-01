@@ -71,7 +71,7 @@ class Project {
             // looking in the haxelib folders.
             // e.g. addLibrary('hxcpp') => '/usr/lib/haxelib/hxcpp/3,2,193'
             try {
-                libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replaceAll('.', ',').toLowerCase());
+                libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replace(/\./g, ',').toLowerCase());
             }
             catch (error) {
                 libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
@@ -85,7 +85,7 @@ class Project {
                     // Get the latest version of the haxelib path,
                     // e.g. for 'hxcpp', latest version '3,2,193'
                     let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
-                    //return path.join(libpath, current.replaceAll('.', ','));
+                    //return path.join(libpath, current.replace(/\./g, ','));
                     return { libpath: path.join(libpath, current.replace(/\./g, ',')), libroot: libpath };
                 }
             }

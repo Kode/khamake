@@ -64,8 +64,8 @@ export class AndroidExporter extends KhaExporter {
 		return haxeOptions;
 	}
 
-	exportAndroidStudioProject(name, _targetOptions, from) {
-		let safename = name.replaceAll(' ', '-');
+	exportAndroidStudioProject(name: string, _targetOptions, from: string) {
+		let safename = name.replace(/ /g, '-');
 		this.safename = safename;
 
 		let targetOptions = {
