@@ -88,7 +88,6 @@ var options: Array<any> = [
 	},
 	{
 		full: 'haxe',
-		short: 'h',
 		description: 'Location of Haxe directory',
 		value: true,
 		default: ''

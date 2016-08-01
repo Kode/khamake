@@ -89,7 +89,6 @@ var options = [
     },
     {
         full: 'haxe',
-        short: 'h',
         description: 'Location of Haxe directory',
         value: true,
         default: ''
