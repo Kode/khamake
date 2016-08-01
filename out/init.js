@@ -3,10 +3,10 @@ const fs = require('fs');
 const path = require('path');
 function run(name, from, projectfile) {
     if (!fs.existsSync(path.join(from, projectfile))) {
-        fs.writeFileSync(path.join(from, projectfile), "var project = new Project('New Project');\n"
+        fs.writeFileSync(path.join(from, projectfile), "let project = new Project('New Project');\n"
             + "project.addAssets('Assets/**');\n"
             + "project.addSources('Sources');\n"
-            + "return project;\n", { encoding: 'utf8' });
+            + "resolve(project);\n", { encoding: 'utf8' });
     }
     if (!fs.existsSync(path.join(from, 'Assets')))
         fs.mkdirSync(path.join(from, 'Assets'));

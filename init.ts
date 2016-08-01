@@ -4,10 +4,10 @@ import * as path from 'path';
 export function run(name: string, from: string, projectfile: string) {
 	if (!fs.existsSync(path.join(from, projectfile))) {
 		fs.writeFileSync(path.join(from, projectfile),
-			  "var project = new Project('New Project');\n"
+			  "let project = new Project('New Project');\n"
 			+ "project.addAssets('Assets/**');\n"
 			+ "project.addSources('Sources');\n"
-			+ "return project;\n",
+			+ "resolve(project);\n",
 		{ encoding: 'utf8' });
 	}
 
