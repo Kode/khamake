@@ -355,11 +355,16 @@ function exportKhaProject(options) {
         let exportedShaders = yield shaderCompiler.run(options.watch);
         let files = [];
         for (let asset of assets) {
-            files.push({
+            let file = {
                 name: fixName(asset.name),
                 files: asset.files,
                 type: asset.type
-            });
+            };
+            if (file.type == "image") {
+                file.original_width = asset.original_width;
+                file.original_height = asset.original_height;
+            }
+            files.push(file);
         }
         for (let shader of exportedShaders) {
             files.push({
