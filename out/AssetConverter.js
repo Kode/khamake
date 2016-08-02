@@ -20,7 +20,11 @@ class AssetConverter {
     createName(fileinfo, keepextension, options, from) {
         if (options.name) {
             let name = options.name;
-            return name.replace(/{name}/g, fileinfo.name).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, path.relative(from, fileinfo.dir));
+            let basePath = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
+            let dirValue = path.relative(basePath, fileinfo.dir);
+            if (dirValue.length > 0)
+                 dirValue += '_';
+            return name.replace(/{name}/g, fileinfo.name).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, dirValue);
         }
         else if (keepextension)
             return fileinfo.name + '.' + fileinfo.ext;

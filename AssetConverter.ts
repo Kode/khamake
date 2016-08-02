@@ -20,7 +20,9 @@ export class AssetConverter {
 	createName(fileinfo: path.ParsedPath, keepextension: boolean, options: any, from: string): string {
 		if (options.name) {
 			let name: string = options.name;
-			return name.replace(/{name}/g, fileinfo.name).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, path.relative(from, fileinfo.dir));
+			let basePath: string = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
+			console.log(basePath, path.relative(basePath, fileinfo.dir)); 
+			return name.replace(/{name}/g, fileinfo.name).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, path.relative(basePath, fileinfo.dir));
 		}
 		else if (keepextension) return fileinfo.name + '.' + fileinfo.ext;
 		else return fileinfo.name;
