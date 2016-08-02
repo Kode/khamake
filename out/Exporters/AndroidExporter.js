@@ -75,7 +75,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
             if (userOptions.screenOrientation != null)
                 targetOptions.screenOrientation = userOptions.screenOrientation;
         }
-        let indir = path.join(__dirname, 'Data', 'android');
+        let indir = path.join(__dirname, '..', '..', 'Data', 'android');
         let outdir = path.join(this.options.to, this.sysdir(), safename);
         fs.copySync(path.join(indir, 'build.gradle'), path.join(outdir, 'build.gradle'));
         fs.copySync(path.join(indir, 'gradle.properties'), path.join(outdir, 'gradle.properties'));
