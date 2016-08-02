@@ -3,6 +3,7 @@ import * as path from 'path';
 import {KhaExporter} from './Exporters/KhaExporter';
 import * as log from './log';
 import * as chokidar from 'chokidar';
+import {fixName} from "./main"
 
 export class AssetConverter {
 	exporter: KhaExporter;
@@ -61,8 +62,9 @@ export class AssetConverter {
 						case '.jpg':
 						case '.jpeg':
 						case '.hdr':
-							let images = await this.exporter.copyImage(this.platform, file, fileinfo.name, options);
-							parsedFiles.push({ name: this.createName(fileinfo, false, options, this.exporter.options.from), from: file, type: 'image', files: images });
+							let name = fixName(this.createName(fileinfo, false, options, this.exporter.options.from));
+							let images = await this.exporter.copyImage(this.platform, file, name, options);
+							parsedFiles.push({ name: name, from: file, type: 'image', files: images });
 							break;
 						case '.wav':
 							let sounds = await this.exporter.copySound(this.platform, file, fileinfo.name);
@@ -91,8 +93,8 @@ export class AssetConverter {
 		});
 	}
 	
-	async run(watch: boolean): Promise<{ from: string, type: string, files: string[] }[]> {
-		let files: { from: string, type: string, files: string[] }[] = [];
+	async run(watch: boolean): Promise<{ name: string, from: string, type: string, files: string[] }[]> {
+		let files: { name: string, from: string, type: string, files: string[] }[] = [];
 		for (let matcher of this.assetMatchers) {
 			files = files.concat(await this.watch(watch, matcher.match, matcher.options));
 		}

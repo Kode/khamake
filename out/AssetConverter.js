@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const path = require('path');
 const log = require('./log');
 const chokidar = require('chokidar');
+const main_1 = require("./main");
 class AssetConverter {
     constructor(exporter, platform, assetMatchers) {
         this.exporter = exporter;
@@ -60,8 +61,9 @@ class AssetConverter {
                         case '.jpg':
                         case '.jpeg':
                         case '.hdr':
-                            let images = yield this.exporter.copyImage(this.platform, file, fileinfo.name, options);
-                            parsedFiles.push({ name: this.createName(fileinfo, false, options, this.exporter.options.from), from: file, type: 'image', files: images });
+                            let name = main_1.fixName(this.createName(fileinfo, false, options, this.exporter.options.from));
+                            let images = yield this.exporter.copyImage(this.platform, file, name, options);
+                            parsedFiles.push({ name: name, from: file, type: 'image', files: images });
                             break;
                         case '.wav':
                             let sounds = yield this.exporter.copySound(this.platform, file, fileinfo.name);
