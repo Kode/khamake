@@ -21,8 +21,18 @@ export class AssetConverter {
 		if (options.name) {
 			let name: string = options.name;
 			let basePath: string = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
-			console.log(basePath, path.relative(basePath, fileinfo.dir)); 
-			return name.replace(/{name}/g, fileinfo.name).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, path.relative(basePath, fileinfo.dir));
+			let dirValue: string = path.relative(basePath, fileinfo.dir);
+            if (basePath.length > 0 
+                && basePath[basePath.length - 1] == path.sep 
+                && dirValue.length > 0
+                && dirValue[dirValue.length - 1] != path.sep) 
+                    dirValue += path.sep;
+            if (options.namePathSeparator)
+                dirValue = dirValue.split(path.sep).join(options.namePathSeparator);
+			let nameValue = fileinfo.name;
+			if(keepextension && name.indexOf("{ext}") < 0)
+				nameValue += fileinfo.ext;
+			return name.replace(/{name}/g, nameValue).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, dirValue);
 		}
 		else if (keepextension) return fileinfo.name + '.' + fileinfo.ext;
 		else return fileinfo.name;
@@ -63,30 +73,39 @@ export class AssetConverter {
 						case '.png':
 						case '.jpg':
 						case '.jpeg':
-						case '.hdr':
-							let name = fixName(this.createName(fileinfo, false, options, this.exporter.options.from));
+						case '.hdr': {
+							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
 							let images = await this.exporter.copyImage(this.platform, file, name, options);
 							parsedFiles.push({ name: name, from: file, type: 'image', files: images });
 							break;
-						case '.wav':
-							let sounds = await this.exporter.copySound(this.platform, file, fileinfo.name);
-							parsedFiles.push({ name: this.createName(fileinfo, false, options, this.exporter.options.from), from: file, type: 'sound', files: sounds });
+						}
+						case '.wav': {
+							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+							let sounds = await this.exporter.copySound(this.platform, file, name);
+							parsedFiles.push({ name: name, from: file, type: 'sound', files: sounds });
 							break;
-						case '.ttf':
-							let fonts = await this.exporter.copyFont(this.platform, file, fileinfo.name);
-							parsedFiles.push({ name: this.createName(fileinfo, false, options, this.exporter.options.from), from: file, type: 'font', files: fonts });
+						}
+						case '.ttf': {
+							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+							let fonts = await this.exporter.copyFont(this.platform, file, name);
+							parsedFiles.push({ name: name, from: file, type: 'font', files: fonts });
 							break;
+						}
 						case '.mp4':
 						case '.webm':
 						case '.wmv':
-						case '.avi':
-							let videos = await this.exporter.copyVideo(this.platform, file, fileinfo.name);
-							parsedFiles.push({ name: this.createName(fileinfo, false, options, this.exporter.options.from), from: file, type: 'video', files: videos });
+						case '.avi': {
+							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+							let videos = await this.exporter.copyVideo(this.platform, file, name);
+							parsedFiles.push({ name: name, from: file, type: 'video', files: videos });
 							break;
-						default:
-							let blobs = await this.exporter.copyBlob(this.platform, file, fileinfo.name);
-							parsedFiles.push({ name: this.createName(fileinfo, true, options, this.exporter.options.from), from: file, type: 'blob', files: blobs });
+						}
+						default: {
+							let name = this.createName(fileinfo, true, options, this.exporter.options.from);
+							let blobs = await this.exporter.copyBlob(this.platform, file, name);
+							parsedFiles.push({ name: name, from: file, type: 'blob', files: blobs });
 							break;
+						}
 					}
 					++index;
 				}
