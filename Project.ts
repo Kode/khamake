@@ -89,6 +89,7 @@ export class Project {
 	}
 
 	addLibrary(library) {
+		this.addDefine(library);
 		let self = this;
 		function findLibraryDirectory(name: string) {
 			// Tries to load the default library from inside the kha project.
