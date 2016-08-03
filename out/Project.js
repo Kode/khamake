@@ -59,6 +59,7 @@ class Project {
         this.customTargets.set(name, new Target(baseTarget, backends));
     }
     addLibrary(library) {
+        this.addDefine(library);
         let self = this;
         function findLibraryDirectory(name) {
             // Tries to load the default library from inside the kha project.
