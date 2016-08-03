@@ -22,7 +22,7 @@ class AssetConverter {
             return name.replace(/{name}/g, fileinfo.name).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, path.relative(from, fileinfo.dir));
         }
         else if (keepextension)
-            return fileinfo.name + '.' + fileinfo.ext;
+            return fileinfo.name + fileinfo.ext;
         else
             return fileinfo.name;
     }
@@ -79,7 +79,7 @@ class AssetConverter {
                             parsedFiles.push({ name: this.createName(fileinfo, false, options, this.exporter.options.from), from: file, type: 'video', files: videos });
                             break;
                         default:
-                            let blobs = yield this.exporter.copyBlob(this.platform, file, fileinfo.name);
+                            let blobs = yield this.exporter.copyBlob(this.platform, file, fileinfo.name + fileinfo.ext);
                             parsedFiles.push({ name: this.createName(fileinfo, true, options, this.exporter.options.from), from: file, type: 'blob', files: blobs });
                             break;
                     }

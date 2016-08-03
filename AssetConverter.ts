@@ -21,7 +21,7 @@ export class AssetConverter {
 			let name: string = options.name;
 			return name.replace(/{name}/g, fileinfo.name).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, path.relative(from, fileinfo.dir));
 		}
-		else if (keepextension) return fileinfo.name + '.' + fileinfo.ext;
+		else if (keepextension) return fileinfo.name + fileinfo.ext;
 		else return fileinfo.name;
 	}
 	
@@ -80,7 +80,7 @@ export class AssetConverter {
 							parsedFiles.push({ name: this.createName(fileinfo, false, options, this.exporter.options.from), from: file, type: 'video', files: videos });
 							break;
 						default:
-							let blobs = await this.exporter.copyBlob(this.platform, file, fileinfo.name);
+							let blobs = await this.exporter.copyBlob(this.platform, file, fileinfo.name + fileinfo.ext);
 							parsedFiles.push({ name: this.createName(fileinfo, true, options, this.exporter.options.from), from: file, type: 'blob', files: blobs });
 							break;
 					}
@@ -91,8 +91,8 @@ export class AssetConverter {
 		});
 	}
 	
-	async run(watch: boolean): Promise<{ from: string, type: string, files: string[] }[]> {
-		let files: { from: string, type: string, files: string[] }[] = [];
+	async run(watch: boolean): Promise<{ name: string, from: string, type: string, files: string[] }[]> {
+		let files: { name: string, from: string, type: string, files: string[] }[] = [];
 		for (let matcher of this.assetMatchers) {
 			files = files.concat(await this.watch(watch, matcher.match, matcher.options));
 		}

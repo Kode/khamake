@@ -356,7 +356,7 @@ function exportKhaProject(options) {
         let files = [];
         for (let asset of assets) {
             files.push({
-                name: fixName(path.parse(asset.from).name),
+                name: fixName(asset.name),
                 files: asset.files,
                 type: asset.type
             });
