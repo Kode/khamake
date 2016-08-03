@@ -20,6 +20,10 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
         this.addSourceDirectory(path.join(options.kha, 'Backends', 'Kore'));
     }
     sysdir() {
+        if (this.options.target === 'android')
+            return 'android-native';
+        else if (this.options.target === 'html5')
+            return 'html5-native';
         return this.options.target;
     }
     haxeOptions(name, targetOptions, defines) {
