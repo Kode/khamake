@@ -63,7 +63,6 @@ function fixName(name) {
     }
     return name;
 }
-exports.fixName = fixName;
 function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines) {
     return __awaiter(this, void 0, Promise, function* () {
         if (options.haxe !== '') {
