@@ -74,7 +74,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
             {
-                fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'));
+                fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
                 let out = '';
                 out += "var solution = new Solution('" + name + "');\n";
                 out += "var project = new Project('" + name + "');\n";
@@ -145,8 +145,8 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
             {
-                fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'));
-                fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'));
+                fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { clobber: true });
+                fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
                 let out = '';
                 out += "var solution = new Solution('" + name + "');\n";
                 out += "var project = new Project('" + name + "');\n";
