@@ -37,7 +37,7 @@ export class AssetConverter {
 		else return fileinfo.name;
 	}
 	
-	watch(watch: boolean, match: string, options: any): Promise<{ name: string, from: string, type: string, files: string[] }[]> {
+	watch(watch: boolean, match: string, options: any): Promise<{ name: string, from: string, type: string, files: string[], original_width:number, original_height:number }[]> {
 		return new Promise<{ from: string, type: string, files: string[] }[]>((resolve, reject) => {
 			if (!options) options = {};
 			let ready = false;
@@ -63,7 +63,7 @@ export class AssetConverter {
 			
 			this.watcher.on('ready', async () => {
 				ready = true;
-				let parsedFiles: { name: string, from: string, type: string, files: string[] }[] = [];
+				let parsedFiles: { name: string, from: string, type: string, files: string[], original_width:number, original_height:number }[] = [];
 				let index = 0;
 				for (let file of files) {
 					let fileinfo = path.parse(file);
@@ -75,19 +75,19 @@ export class AssetConverter {
 						case '.hdr': {
 							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
 							let images = await this.exporter.copyImage(this.platform, file, name, options);
-							parsedFiles.push({ name: name, from: file, type: 'image', files: images });
+							parsedFiles.push({ name: name, from: file, type: 'image', files: images, original_width:options.original_width, original_height:options.original_height });
 							break;
 						}
 						case '.wav': {
 							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
 							let sounds = await this.exporter.copySound(this.platform, file, name);
-							parsedFiles.push({ name: name, from: file, type: 'sound', files: sounds });
+							parsedFiles.push({ name: name, from: file, type: 'sound', files: sounds, original_width:undefined, original_height:undefined });
 							break;
 						}
 						case '.ttf': {
 							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
 							let fonts = await this.exporter.copyFont(this.platform, file, name);
-							parsedFiles.push({ name: name, from: file, type: 'font', files: fonts });
+							parsedFiles.push({ name: name, from: file, type: 'font', files: fonts, original_width:undefined, original_height:undefined });
 							break;
 						}
 						case '.mp4':
@@ -96,13 +96,13 @@ export class AssetConverter {
 						case '.avi': {
 							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
 							let videos = await this.exporter.copyVideo(this.platform, file, name);
-							parsedFiles.push({ name: name, from: file, type: 'video', files: videos });
+							parsedFiles.push({ name: name, from: file, type: 'video', files: videos, original_width:undefined, original_height:undefined });
 							break;
 						}
 						default: {
 							let name = this.createName(fileinfo, true, options, this.exporter.options.from);
 							let blobs = await this.exporter.copyBlob(this.platform, file, name);
-							parsedFiles.push({ name: name, from: file, type: 'blob', files: blobs });
+							parsedFiles.push({ name: name, from: file, type: 'blob', files: blobs, original_width:undefined, original_height:undefined });
 							break;
 						}
 					}
@@ -113,8 +113,8 @@ export class AssetConverter {
 		});
 	}
 	
-	async run(watch: boolean): Promise<{ name: string, from: string, type: string, files: string[] }[]> {
-		let files: { name: string, from: string, type: string, files: string[] }[] = [];
+	async run(watch: boolean): Promise<{ name: string, from: string, type: string, files: string[], original_width:number, original_height:number }[]> {
+		let files: { name: string, from: string, type: string, files: string[], original_width:number, original_height:number }[] = [];
 		for (let matcher of this.assetMatchers) {
 			files = files.concat(await this.watch(watch, matcher.match, matcher.options));
 		}
