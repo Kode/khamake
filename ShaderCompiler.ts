@@ -6,6 +6,7 @@ import {KhaExporter} from './Exporters/KhaExporter';
 import {GraphicsApi} from './GraphicsApi';
 import {Options} from './Options';
 import {Platform} from './Platform';
+import {AssetConverter} from './AssetConverter';
 import * as log from './log';
 
 export class ShaderCompiler {
@@ -114,7 +115,7 @@ export class ShaderCompiler {
 				if (ready) {
 					switch (path.parse(file).ext) {
 						case '.glsl':
-							this.compileShader(file);
+							this.compileShader(file, options);
 							break;
 					}
 				}
@@ -125,7 +126,7 @@ export class ShaderCompiler {
 			this.watcher.on('change', (file: string) => {
 				switch (path.parse(file).ext) {
 					case '.glsl':
-						this.compileShader(file);
+						this.compileShader(file, options);
 						break;
 				}  
 			});
@@ -137,10 +138,10 @@ export class ShaderCompiler {
 				let parsedShaders: { files: string[], name: string }[] = [];
 				let index = 0;
 				for (let shader of shaders) {
-					await this.compileShader(shader);
+					await this.compileShader(shader, options);
 					let parsed = path.parse(shader);
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
-					parsedShaders.push({ files: [parsed.name + '.' + this.type], name: parsed.name});
+					parsedShaders.push({ files: [parsed.name + '.' + this.type], name: AssetConverter.createName(parsed, false, options, this.exporter.options.from)});
 					++index;
 				}
 				resolve(parsedShaders);
@@ -156,7 +157,7 @@ export class ShaderCompiler {
 		return shaders;
 	}
 	
-	compileShader(file: string) {
+	compileShader(file: string, options: any) {
 		return new Promise((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
 
@@ -164,7 +165,7 @@ export class ShaderCompiler {
 				resolve();
 				return;
 			}
-		
+
 			let fileinfo = path.parse(file);
 			let from = file;
 			let to = path.join(this.to, fileinfo.name + '.' + this.type);
@@ -177,7 +178,13 @@ export class ShaderCompiler {
 						resolve();
 					}
 					else {
-						let process = child_process.spawn(this.compiler, [this.type, from, temp, this.temp, this.platform]);
+						let parameters = [this.type, from, temp, this.temp, this.platform];
+						if (options.defines) {
+							for (let define of options.defines) {
+								parameters.push('-D' + define);
+							}
+						}
+						let process = child_process.spawn(this.compiler, parameters);
 						
 						process.stdout.on('data', (data) => {
 							log.info(data.toString());

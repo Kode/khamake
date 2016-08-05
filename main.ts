@@ -317,7 +317,6 @@ async function exportKhaProject(options: Options): Promise<string> {
 	exporter.parameters = project.parameters;
 	project.scriptdir = options.kha;
 	project.addShaders('Sources/Shaders/**', {});
-	project.addShaders('Kha/Sources/Shaders/**', {}); //**
 
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
 	let assets = await assetConverter.run(options.watch);

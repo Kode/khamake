@@ -16,7 +16,7 @@ export class AssetConverter {
 		this.assetMatchers = assetMatchers;
 	}
 	
-	createName(fileinfo: path.ParsedPath, keepextension: boolean, options: any, from: string): string {
+	static createName(fileinfo: path.ParsedPath, keepextension: boolean, options: any, from: string): string {
 		if (options.name) {
 			let name: string = options.name;
 			let basePath: string = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
@@ -73,19 +73,19 @@ export class AssetConverter {
 						case '.jpg':
 						case '.jpeg':
 						case '.hdr': {
-							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+							let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
 							let images = await this.exporter.copyImage(this.platform, file, name, options);
 							parsedFiles.push({ name: name, from: file, type: 'image', files: images, original_width:options.original_width, original_height:options.original_height });
 							break;
 						}
 						case '.wav': {
-							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+							let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
 							let sounds = await this.exporter.copySound(this.platform, file, name);
 							parsedFiles.push({ name: name, from: file, type: 'sound', files: sounds, original_width:undefined, original_height:undefined });
 							break;
 						}
 						case '.ttf': {
-							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+							let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
 							let fonts = await this.exporter.copyFont(this.platform, file, name);
 							parsedFiles.push({ name: name, from: file, type: 'font', files: fonts, original_width:undefined, original_height:undefined });
 							break;
@@ -94,13 +94,13 @@ export class AssetConverter {
 						case '.webm':
 						case '.wmv':
 						case '.avi': {
-							let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+							let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
 							let videos = await this.exporter.copyVideo(this.platform, file, name);
 							parsedFiles.push({ name: name, from: file, type: 'video', files: videos, original_width:undefined, original_height:undefined });
 							break;
 						}
 						default: {
-							let name = this.createName(fileinfo, true, options, this.exporter.options.from);
+							let name = AssetConverter.createName(fileinfo, true, options, this.exporter.options.from);
 							let blobs = await this.exporter.copyBlob(this.platform, file, name);
 							parsedFiles.push({ name: name, from: file, type: 'blob', files: blobs, original_width:undefined, original_height:undefined });
 							break;

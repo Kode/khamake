@@ -16,7 +16,7 @@ class AssetConverter {
         this.platform = platform;
         this.assetMatchers = assetMatchers;
     }
-    createName(fileinfo, keepextension, options, from) {
+    static createName(fileinfo, keepextension, options, from) {
         if (options.name) {
             let name = options.name;
             let basePath = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
@@ -72,19 +72,19 @@ class AssetConverter {
                         case '.jpg':
                         case '.jpeg':
                         case '.hdr': {
-                            let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+                            let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
                             let images = yield this.exporter.copyImage(this.platform, file, name, options);
                             parsedFiles.push({ name: name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height });
                             break;
                         }
                         case '.wav': {
-                            let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+                            let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
                             let sounds = yield this.exporter.copySound(this.platform, file, name);
                             parsedFiles.push({ name: name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined });
                             break;
                         }
                         case '.ttf': {
-                            let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+                            let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
                             let fonts = yield this.exporter.copyFont(this.platform, file, name);
                             parsedFiles.push({ name: name, from: file, type: 'font', files: fonts, original_width: undefined, original_height: undefined });
                             break;
@@ -93,13 +93,13 @@ class AssetConverter {
                         case '.webm':
                         case '.wmv':
                         case '.avi': {
-                            let name = this.createName(fileinfo, false, options, this.exporter.options.from);
+                            let name = AssetConverter.createName(fileinfo, false, options, this.exporter.options.from);
                             let videos = yield this.exporter.copyVideo(this.platform, file, name);
                             parsedFiles.push({ name: name, from: file, type: 'video', files: videos, original_width: undefined, original_height: undefined });
                             break;
                         }
                         default: {
-                            let name = this.createName(fileinfo, true, options, this.exporter.options.from);
+                            let name = AssetConverter.createName(fileinfo, true, options, this.exporter.options.from);
                             let blobs = yield this.exporter.copyBlob(this.platform, file, name);
                             parsedFiles.push({ name: name, from: file, type: 'blob', files: blobs, original_width: undefined, original_height: undefined });
                             break;

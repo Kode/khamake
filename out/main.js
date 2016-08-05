@@ -292,7 +292,6 @@ function exportKhaProject(options) {
         exporter.parameters = project.parameters;
         project.scriptdir = options.kha;
         project.addShaders('Sources/Shaders/**', {});
-        project.addShaders('Kha/Sources/Shaders/**', {}); //**
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
         let assets = yield assetConverter.run(options.watch);
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
