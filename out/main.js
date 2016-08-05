@@ -33,28 +33,6 @@ const PlayStationMobileExporter_1 = require('./Exporters/PlayStationMobileExport
 const WpfExporter_1 = require('./Exporters/WpfExporter');
 const XnaExporter_1 = require('./Exporters/XnaExporter');
 const UnityExporter_1 = require('./Exporters/UnityExporter');
-function compileShader2(compiler, type, from, to, temp, system) {
-    return new Promise((resolve, reject) => {
-        if (!compiler)
-            reject('No shader compiler found.');
-        let process = child_process.spawn(compiler, [type, from, to, temp, system]);
-        process.stdout.on('data', (data) => {
-            log.info(data.toString());
-        });
-        process.stderr.on('data', (data) => {
-            log.info(data.toString());
-        });
-        process.on('close', (code) => {
-            if (code === 0)
-                resolve();
-            else
-                reject('Shader compiler error.');
-        });
-    });
-}
-function addShader(project, name, extension) {
-    project.exportedShaders.push({ files: [name + extension], name: name });
-}
 function fixName(name) {
     name = name.replace(/[-./\\]/g, '_');
     if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
@@ -434,7 +412,7 @@ function run(options, loglog) {
         else {
             log.set(loglog);
         }
-        if (options.kha === undefined || options.kha === '') {
+        if (!options.kha) {
             let p = path.join(__dirname, '..', '..', '..');
             if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
                 options.kha = p;
