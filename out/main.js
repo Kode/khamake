@@ -34,7 +34,7 @@ const WpfExporter_1 = require('./Exporters/WpfExporter');
 const XnaExporter_1 = require('./Exporters/XnaExporter');
 const UnityExporter_1 = require('./Exporters/UnityExporter');
 function fixName(name) {
-    name = name.replace(/[-./\\]/g, '_');
+    name = name.replace(/[-\ \.\/\\]/g, '_');
     if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
         || name[0] === '5' || name[0] === '6' || name[0] === '7' || name[0] === '8' || name[0] === '9') {
         name = '_' + name;
@@ -338,7 +338,7 @@ function exportKhaProject(options) {
                 files: asset.files,
                 type: asset.type
             };
-            if (file.type == "image") {
+            if (file.type === 'image') {
                 file.original_width = asset.original_width;
                 file.original_height = asset.original_height;
             }
