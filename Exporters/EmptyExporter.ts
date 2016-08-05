@@ -33,6 +33,7 @@ export class EmptyExporter extends KhaExporter {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'docs.xml'),
 			sources: this.sources,
+			libraries: this.libraries,
 			defines: defines,
 			parameters: this.parameters,
 			haxeDirectory: this.options.haxe,
