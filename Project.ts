@@ -61,6 +61,7 @@ export class Project {
 	 * The regex syntax is very simple: * for anything, ** for anything across directories.
 	 */
 	addAssets(match: string, options: any) {
+		if (!options) options = {};
 		this.assetMatchers.push({ match: path.resolve(this.scriptdir, match), options: options });
 	}
 
@@ -73,6 +74,7 @@ export class Project {
 	 * The regex syntax is very simple: * for anything, ** for anything across directories.
 	 */
 	addShaders(match: string, options: any) {
+		if (!options) options = {};
 		this.shaderMatchers.push({ match: path.resolve(this.scriptdir, match), options: options });
 	}
 

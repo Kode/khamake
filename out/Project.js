@@ -37,6 +37,8 @@ class Project {
      * The regex syntax is very simple: * for anything, ** for anything across directories.
      */
     addAssets(match, options) {
+        if (!options)
+            options = {};
         this.assetMatchers.push({ match: path.resolve(this.scriptdir, match), options: options });
     }
     addSources(source) {
@@ -47,6 +49,8 @@ class Project {
      * The regex syntax is very simple: * for anything, ** for anything across directories.
      */
     addShaders(match, options) {
+        if (!options)
+            options = {};
         this.shaderMatchers.push({ match: path.resolve(this.scriptdir, match), options: options });
     }
     addDefine(define) {

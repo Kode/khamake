@@ -40,8 +40,6 @@ class AssetConverter {
     }
     watch(watch, match, options) {
         return new Promise((resolve, reject) => {
-            if (!options)
-                options = {};
             let ready = false;
             let files = [];
             this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
