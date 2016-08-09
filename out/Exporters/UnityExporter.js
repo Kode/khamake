@@ -11,17 +11,18 @@ const fs = require('fs-extra');
 const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
-const Haxe_1 = require('../Haxe');
 const ImageTool_1 = require('../ImageTool');
+const HaxeProject_1 = require('../HaxeProject');
 const uuid = require('uuid');
 class UnityExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
+        this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
     }
     sysdir() {
         return 'unity';
     }
-    haxeOptions(name, defines) {
+    haxeOptions(name, targetOptions, defines) {
         defines.push('no-root');
         defines.push('no-compilation');
         defines.push('sys_' + this.options.target);
@@ -45,22 +46,23 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
             name: name
         };
     }
-    exportSolution(name, _targetOptions, defines) {
+    exportSolution(name, targetOptions, defines) {
         return __awaiter(this, void 0, Promise, function* () {
-            this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
+            let haxeOptions = this.haxeOptions(name, targetOptions, defines);
+            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
             fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
-            let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
             var copyDirectory = (from, to) => {
-                let files = fs.readdirSync(path.join(__dirname, 'Data', 'unity', from));
+                let files = fs.readdirSync(path.join(__dirname, '..', '..', 'Data', 'unity', from));
                 fs.ensureDirSync(path.join(this.options.to, this.sysdir(), to));
                 for (let file of files) {
-                    var text = fs.readFileSync(path.join(__dirname, 'Data', 'unity', from, file), { encoding: 'utf8' });
+                    var text = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'unity', from, file), 'utf8');
                     fs.writeFileSync(path.join(this.options.to, this.sysdir(), to, file), text);
                 }
             };
             copyDirectory('Assets', 'Assets');
             copyDirectory('Editor', 'Assets/Editor');
             copyDirectory('ProjectSettings', 'ProjectSettings');
+            return haxeOptions;
         });
     }
     /*copyMusic(platform, from, to, encoders, callback) {
