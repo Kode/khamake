@@ -295,41 +295,37 @@ function exportKhaProject(options) {
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
         let assets = yield assetConverter.run(options.watch);
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
-        /*if (platform === Platform.Unity) {
-            shaderDir = path.join(to, exporter.sysdir(), 'Assets', 'Shaders');
+        if (target === Platform_1.Platform.Unity) {
+            shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
         }
         fs.ensureDirSync(shaderDir);
-        for (let shader of project.shaders) {
-            await compileShader(exporter, platform, project, shader, shaderDir, temp, krafix);
-            if (platform === Platform.Unity) {
-                fs.ensureDirSync(path.join(to, exporter.sysdir() + '-resources'));
-                fs.writeFileSync(path.join(to, exporter.sysdir() + '-resources', shader.name + '.hlsl'), shader.name);
+        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
+        let exportedShaders = yield shaderCompiler.run(options.watch);
+        if (target === Platform_1.Platform.Unity) {
+            fs.ensureDirSync(path.join(options.to, exporter.sysdir() + '-resources'));
+            for (let shader of exportedShaders) {
+                fs.writeFileSync(path.join(options.to, exporter.sysdir() + '-resources', shader.name + '.hlsl'), shader.name);
             }
-        }
-        if (platform === Platform.Unity) {
-            let proto = fs.readFileSync(path.join(from, options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader'), { encoding: 'utf8' });
-            for (let i1 = 0; i1 < project.exportedShaders.length; ++i1) {
-                if (project.exportedShaders[i1].name.endsWith('.vert')) {
-                    for (let i2 = 0; i2 < project.exportedShaders.length; ++i2) {
-                        if (project.exportedShaders[i2].name.endsWith('.frag')) {
-                            let shadername = project.exportedShaders[i1].name + '.' + project.exportedShaders[i2].name;
+            let proto = fs.readFileSync(path.join(options.from, options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader'), 'utf8');
+            for (let i1 = 0; i1 < exportedShaders.length; ++i1) {
+                if (exportedShaders[i1].name.endsWith('_vert')) {
+                    for (let i2 = 0; i2 < exportedShaders.length; ++i2) {
+                        if (exportedShaders[i2].name.endsWith('_frag')) {
+                            let shadername = exportedShaders[i1].name + '.' + exportedShaders[i2].name;
                             let proto2 = proto.replace(/{name}/g, shadername);
-                            proto2 = proto2.replace(/{vert}/g, project.exportedShaders[i1].name);
-                            proto2 = proto2.replace(/{frag}/g, project.exportedShaders[i2].name);
-                            fs.writeFileSync(path.join(shaderDir, shadername + '.shader'), proto2, { encoding: 'utf8' });
+                            proto2 = proto2.replace(/{vert}/g, exportedShaders[i1].name);
+                            proto2 = proto2.replace(/{frag}/g, exportedShaders[i2].name);
+                            fs.writeFileSync(path.join(shaderDir, shadername + '.shader'), proto2, 'utf8');
                         }
                     }
                 }
             }
-            let blobDir = path.join(to, exporter.sysdir(), 'Assets', 'Resources', 'Blobs');
+            let blobDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Resources', 'Blobs');
             fs.ensureDirSync(blobDir);
-            for (let i = 0; i < project.exportedShaders.length; ++i) {
-                fs.writeFileSync(path.join(blobDir, project.exportedShaders[i].files[0] + '.bytes'), project.exportedShaders[i].name, { encoding: 'utf8' });
+            for (let i = 0; i < exportedShaders.length; ++i) {
+                fs.writeFileSync(path.join(blobDir, exportedShaders[i].files[0] + '.bytes'), exportedShaders[i].name, 'utf8');
             }
-        }*/
-        fs.ensureDirSync(shaderDir);
-        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
-        let exportedShaders = yield shaderCompiler.run(options.watch);
+        }
         let files = [];
         for (let asset of assets) {
             let file = {
