@@ -336,9 +336,9 @@ async function exportKhaProject(options: Options): Promise<string> {
 		}
 		let proto = fs.readFileSync(path.join(options.from, options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader'), 'utf8');
 		for (let i1 = 0; i1 < exportedShaders.length; ++i1) {
-			if (exportedShaders[i1].name.endsWith('_vert')) {
+			if (exportedShaders[i1].name.endsWith('.vert')) {
 				for (let i2 = 0; i2 < exportedShaders.length; ++i2) {
-					if (exportedShaders[i2].name.endsWith('_frag')) {
+					if (exportedShaders[i2].name.endsWith('.frag')) {
 						let shadername = exportedShaders[i1].name + '.' + exportedShaders[i2].name;
 						let proto2 = proto.replace(/{name}/g, shadername);
 						proto2 = proto2.replace(/{vert}/g, exportedShaders[i1].name);
