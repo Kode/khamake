@@ -178,7 +178,7 @@ export class ShaderCompiler {
 						resolve();
 					}
 					else {
-						let parameters = [this.type, from, temp, this.temp, this.platform];
+						let parameters = [this.type === 'hlsl' ? 'd3d9' : this.type, from, temp, this.temp, this.platform];
 						if (options.defines) {
 							for (let define of options.defines) {
 								parameters.push('-D' + define);
