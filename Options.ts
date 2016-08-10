@@ -40,6 +40,7 @@ export class Options {
 	debug: boolean;
 	silent: boolean;
 	watch: boolean;
+	glsl2: boolean;
 	
 	ogg: string;
 	aac: string;

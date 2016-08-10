@@ -162,6 +162,11 @@ var options = [
         short: 'w',
         description: 'Watch files and recompile on change.',
         value: false
+    },
+    {
+        full: 'glsl2',
+        description: 'Use experimental SPIRV-Cross glsl mode.',
+        value: false
     }
 ];
 let parsedOptions = new Options_1.Options();

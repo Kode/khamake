@@ -25,6 +25,7 @@ class ShaderCompiler {
         this.platform = platform;
         this.compiler = compiler;
         this.type = ShaderCompiler.findType(platform, options);
+        this.options = options;
         this.to = to;
         this.temp = temp;
         this.shaderMatchers = shaderMatchers;
@@ -174,6 +175,9 @@ class ShaderCompiler {
                     }
                     else {
                         let parameters = [this.type === 'hlsl' ? 'd3d9' : this.type, from, temp, this.temp, this.platform];
+                        if (this.options.glsl2) {
+                            parameters.push('--glsl2');
+                        }
                         if (options.defines) {
                             for (let define of options.defines) {
                                 parameters.push('-D' + define);
