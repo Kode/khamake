@@ -1,10 +1,23 @@
-const port = 9876;
+const port = 6789;
 const playersPerSession = 2;
 
 const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+if (!fs.existsSync('node_modules')) {
+	console.log('Please run npm install.')
+	process.exit(1);
+}
+
 const express = require('express');
 app = express();
 require('express-ws')(app);
+
+if (!fs.existsSync(path.join('..', 'html5'))) {
+	console.log('Please compile for html5 before running the server.');
+	process.exit(1);
+}
 
 app.use('/', express.static('../html5'));
 
@@ -17,7 +30,7 @@ class Session {
 		this.clients = [];
 		this.instance = child_process.fork('./kha.js');
 		this.instance.on('message', (message) => {
-			this.clients[message.id].send(message);
+			this.clients[message.id].send(Buffer.from(message.data));
 		});
 	}
 }
@@ -49,7 +62,6 @@ app.ws('/', (socket, req) => {
 	
 	if (pendingSession.clients.length === playersPerSession) {
 		console.log('Starting session.');
-		pendingSession.instance.send({message: 'start'});
 		sessions.push(pendingSession);
 		pendingSession = new Session();
 	}

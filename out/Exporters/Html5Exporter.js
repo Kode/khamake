@@ -87,9 +87,11 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             }
             else if (this.isNode()) {
                 let pack = path.join(this.options.to, this.sysdir(), 'package.json');
-                let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'package.json'), { encoding: 'utf8' });
+                let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'package.json'), 'utf8');
                 protopackage = protopackage.replace(/{Name}/g, name);
-                fs.writeFileSync(pack.toString(), protopackage);
+                fs.writeFileSync(pack, protopackage);
+                let protoserver = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'server.js'), 'utf8');
+                fs.writeFileSync(path.join(this.options.to, this.sysdir(), 'server.js'), protoserver);
             }
             else {
                 let index = path.join(this.options.to, this.sysdir(), 'index.html');
