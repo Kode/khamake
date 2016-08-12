@@ -28,7 +28,8 @@ class Project {
         this.targetOptions = {
             flash: {},
             android: {},
-            android_native: {}
+            android_native: {},
+            ios: {}
         };
     }
     /**
