@@ -98,7 +98,7 @@ class Project {
             }
             // Show error if library isn't found in Libraries or haxelib folder
             log.error('Error: Library ' + name + ' not found.');
-            log.error('Install it using \'haxelib install ' + name + '\' or add it to the \'Libraries\' folder.');
+            log.error('Add it to the \'Libraries\' subdirectory of your project. You may also install it via haxelib but that\'s less cool.');
             throw 'Library ' + name + ' not found.';
         }
         let libInfo = findLibraryDirectory(library);
