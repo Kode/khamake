@@ -29,7 +29,7 @@ export class Html5Exporter extends KhaExporter {
  		return this.sysdir() === 'node';
  	}
 	
-	haxeOptions(name: string, defines: Array<string>) {
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
@@ -37,6 +37,12 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 		
+		let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
+		
+		if (webgl) {
+			defines.push('webgl');
+		}
+
 		if (this.isNode()) {
 			defines.push('sys_node');
 			defines.push('sys_server');
@@ -70,7 +76,7 @@ export class Html5Exporter extends KhaExporter {
 	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
-		let haxeOptions = this.haxeOptions(name, defines);
+		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
 		writeHaxeProject(this.options.to, haxeOptions);
 
 		if (this.isDebugHtml5()) {
