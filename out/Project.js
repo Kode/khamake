@@ -26,9 +26,11 @@ class Project {
         this.customTargets = new Map();
         this.windowOptions = {};
         this.targetOptions = {
+            html5: {},
             flash: {},
             android: {},
-            android_native: {}
+            android_native: {},
+            ios: {}
         };
     }
     /**
