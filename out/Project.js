@@ -80,25 +80,25 @@ class Project {
                 libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replace(/\./g, ',').toLowerCase());
             }
             catch (error) {
-                libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+                if (process.env.HAXEPATH) {
+                    libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+                }
             }
             if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
                 if (fs.existsSync(path.join(libpath, '.dev'))) {
-                    //return fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
                     return { libpath: fs.readFileSync(path.join(libpath, '.dev'), 'utf8'), libroot: libpath };
                 }
                 else if (fs.existsSync(path.join(libpath, '.current'))) {
                     // Get the latest version of the haxelib path,
                     // e.g. for 'hxcpp', latest version '3,2,193'
                     let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
-                    //return path.join(libpath, current.replace(/\./g, ','));
                     return { libpath: path.join(libpath, current.replace(/\./g, ',')), libroot: libpath };
                 }
             }
             // Show error if library isn't found in Libraries or haxelib folder
             log.error('Error: Library ' + name + ' not found.');
             log.error('Install it using \'haxelib install ' + name + '\' or add it to the \'Libraries\' folder.');
-            process.exit(1);
+            throw 'Library ' + name + ' not found.';
         }
         let libInfo = findLibraryDirectory(library);
         let dir = libInfo.libpath;
