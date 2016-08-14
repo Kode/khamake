@@ -18,6 +18,7 @@ class KhaExporter extends Exporter_1.Exporter {
         this.sources = [];
         this.libraries = [];
         this.addSourceDirectory(path.join(options.kha, 'Sources'));
+        this.projectFiles = !options.noproject;
     }
     setWidthAndHeight(width, height) {
         this.width = width;

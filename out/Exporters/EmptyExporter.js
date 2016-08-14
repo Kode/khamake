@@ -13,6 +13,7 @@ const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Haxe_1 = require('../Haxe');
 const HaxeProject_1 = require('../HaxeProject');
+const HaxeProject_2 = require('../HaxeProject');
 const log = require('../log');
 class EmptyExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
@@ -44,11 +45,13 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
             name: name
         };
     }
-    exportSolution(name, _targetOptions, defines) {
+    exportSolution(name, _targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
-            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+            HaxeProject_2.hxml(this.options.to, haxeOptions);
+            if (this.projectFiles) {
+                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+            }
             let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
             if (result === 0) {
                 let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.from) });
@@ -59,7 +62,6 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
                     log.error(doxresult.stderr.toString());
                 }
             }
-            return haxeOptions;
         });
     }
     copySound(platform, from, to) {

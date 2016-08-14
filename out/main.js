@@ -44,11 +44,14 @@ function fixName(name) {
 function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines) {
     return __awaiter(this, void 0, Promise, function* () {
         if (options.haxe !== '') {
-            let haxeoptions = yield exporter.exportSolution(name, targetOptions, defines);
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeoptions.to, haxeoptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
+            let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
+            //haxeOptions.defines.push('kha');
+            //haxeOptions.defines.push('kha_version=1607');
+            yield exporter.exportSolution(name, targetOptions, haxeOptions);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
             yield compiler.run(options.watch);
         }
-        if (options.haxe !== '' && kore) {
+        if (options.haxe !== '' && kore && !options.noproject) {
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
             {
@@ -119,7 +122,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 return name;
             }
         }
-        else if (options.haxe !== '' && korehl) {
+        else if (options.haxe !== '' && korehl && !options.noproject) {
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
             {

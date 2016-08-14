@@ -12,6 +12,7 @@ const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const ImageTool_1 = require('../ImageTool');
 const HaxeProject_1 = require('../HaxeProject');
+const HaxeProject_2 = require('../HaxeProject');
 class JavaExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
@@ -40,15 +41,16 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
             name: name
         };
     }
-    exportSolution(name, _targetOptions, defines) {
+    exportSolution(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
             this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
-            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+            HaxeProject_2.hxml(this.options.to, haxeOptions);
+            if (this.projectFiles) {
+                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+            }
             fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
             this.exportEclipseProject();
-            return haxeOptions;
         });
     }
     backend() {

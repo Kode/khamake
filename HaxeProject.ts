@@ -89,7 +89,7 @@ function IntelliJ(projectdir, options) {
 	fs.copySync(path.join(indir, 'idea', 'copyright', 'profiles_settings.xml'), path.join(outdir, '.idea', 'copyright', 'profiles_settings.xml'), { clobber: true });
 }
 
-function hxml(projectdir, options) {
+export function hxml(projectdir, options) {
 	let data = '';
 	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
@@ -404,9 +404,6 @@ function FlashDevelop(projectdir, options) {
 }
 
 export function writeHaxeProject(projectdir, options) {
-	options.defines.push('kha');
-	options.defines.push('kha_version=1607');
 	FlashDevelop(projectdir, options);
 	IntelliJ(projectdir, options);
-	hxml(projectdir, options);
 }

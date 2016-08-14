@@ -12,6 +12,7 @@ const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const ImageTool_1 = require('../ImageTool');
 const HaxeProject_1 = require('../HaxeProject');
+const HaxeProject_2 = require('../HaxeProject');
 function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
@@ -53,12 +54,13 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
             name: name
         };
     }
-    exportSolution(name, _targetOptions, defines) {
+    exportSolution(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
-            let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
-            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
-            this.exportAndroidStudioProject(name, _targetOptions, this.options.from);
-            return haxeOptions;
+            HaxeProject_2.hxml(this.options.to, haxeOptions);
+            if (this.projectFiles) {
+                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+                this.exportAndroidStudioProject(name, targetOptions, this.options.from);
+            }
         });
     }
     exportAndroidStudioProject(name, _targetOptions, from) {

@@ -111,6 +111,11 @@ var options: Array<any> = [
 		default: ''
 	},
 	{
+		full: 'noproject',
+		description: 'Only source files. Don\'t generate project files.',
+		value: false,
+	},
+	{
 		full: 'embedflashassets',
 		description: 'Embed assets in swf for flash target',
 		value: false

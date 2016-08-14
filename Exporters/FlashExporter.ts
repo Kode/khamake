@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {writeHaxeProject} from '../HaxeProject';
+import {hxml} from '../HaxeProject';
 
 function adjustFilename(filename: string): string {
 	filename = filename.replace(/\./g, '_');
@@ -71,9 +72,12 @@ export class FlashExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<any> {
-		let haxeOptions = this.haxeOptions(name, targetOptions, defines);
-		writeHaxeProject(this.options.to, haxeOptions);
+	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+		hxml(this.options.to, haxeOptions);
+
+		if (this.projectFiles) {
+			writeHaxeProject(this.options.to, haxeOptions);
+		}
 
 		if (this.options.embedflashassets) {
 			this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
@@ -110,8 +114,6 @@ export class FlashExporter extends KhaExporter {
 
 			this.closeFile();
 		}
-
-		return haxeOptions;
 	}
 
 	async copySound(platform: string, from: string, to: string) {

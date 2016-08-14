@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {writeHaxeProject} from '../HaxeProject';
+import {hxml} from '../HaxeProject';
 const uuid = require('uuid');
 
 export abstract class CSharpExporter extends KhaExporter {
@@ -51,11 +52,14 @@ export abstract class CSharpExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
 		
-		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
-		writeHaxeProject(this.options.to, haxeOptions);
+		hxml(this.options.to, haxeOptions);
+
+		if (this.projectFiles) {
+			writeHaxeProject(this.options.to, haxeOptions);
+		}
 
 		fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
 
@@ -63,8 +67,6 @@ export abstract class CSharpExporter extends KhaExporter {
 		this.exportSLN(projectUuid);
 		this.exportCsProj(projectUuid);
 		this.exportResources();
-
-		return haxeOptions;
 	}
 
 	exportSLN(projectUuid) {

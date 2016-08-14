@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Platform} from '../Platform';
 import {exportImage} from '../ImageTool';
 import {writeHaxeProject} from '../HaxeProject';
+import {hxml} from '../HaxeProject';
 import {Options} from '../Options';
 
 export class KoreExporter extends KhaExporter {
@@ -58,13 +59,13 @@ export class KoreExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
-		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
-		writeHaxeProject(this.options.to, haxeOptions);
+	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+		hxml(this.options.to, haxeOptions);
 
+		if (this.projectFiles) {
+			writeHaxeProject(this.options.to, haxeOptions);
+		}
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
-
-		return haxeOptions;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {
