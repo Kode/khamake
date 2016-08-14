@@ -137,6 +137,7 @@ function hxml(projectdir, options) {
     data += '-main Main' + '\n';
     fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 }
+exports.hxml = hxml;
 function FlashDevelop(projectdir, options) {
     let platform;
     switch (options.language) {
@@ -381,11 +382,8 @@ function FlashDevelop(projectdir, options) {
     XmlWriter_1.writeXml(project, path.join(projectdir, 'project-' + options.system + '.hxproj'));
 }
 function writeHaxeProject(projectdir, options) {
-    options.defines.push('kha');
-    options.defines.push('kha_version=1607');
     FlashDevelop(projectdir, options);
     IntelliJ(projectdir, options);
-    hxml(projectdir, options);
 }
 exports.writeHaxeProject = writeHaxeProject;
 //# sourceMappingURL=HaxeProject.js.map

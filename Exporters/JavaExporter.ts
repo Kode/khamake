@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {writeHaxeProject} from '../HaxeProject';
+import {hxml} from '../HaxeProject';
 
 export class JavaExporter extends KhaExporter {
 	parameters: Array<string>;
@@ -41,19 +42,20 @@ export class JavaExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
 
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 		
-		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
-		writeHaxeProject(this.options.to, haxeOptions);
+		hxml(this.options.to, haxeOptions);
+
+		if (this.projectFiles) {
+			writeHaxeProject(this.options.to, haxeOptions);
+		}
 
 		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
 
 		this.exportEclipseProject();
-
-		return haxeOptions;
 	}
 
 	backend() {

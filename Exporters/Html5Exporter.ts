@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {writeHaxeProject} from '../HaxeProject';
+import {hxml} from '../HaxeProject';
 
 export class Html5Exporter extends KhaExporter {
 	parameters: Array<string>;
@@ -73,11 +74,14 @@ export class Html5Exporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
-		let haxeOptions = this.haxeOptions(name, _targetOptions, defines);
-		writeHaxeProject(this.options.to, haxeOptions);
+		hxml(this.options.to, haxeOptions);
+
+		if (this.projectFiles) {
+			writeHaxeProject(this.options.to, haxeOptions);
+		}
 
 		if (this.isDebugHtml5()) {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
@@ -119,8 +123,6 @@ export class Html5Exporter extends KhaExporter {
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 		}
-		
-		return haxeOptions;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {

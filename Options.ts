@@ -30,6 +30,8 @@ export class Options {
 	haxe: string;
 	ffmpeg: string;
 	krafix: string;
+	
+	noproject: boolean;
 	embedflashassets: boolean;
 	compile: boolean;
 	run: boolean;

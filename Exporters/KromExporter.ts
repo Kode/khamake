@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {writeHaxeProject} from '../HaxeProject';
+import {hxml} from '../HaxeProject';
 
 export class KromExporter extends KhaExporter {
 	parameters: Array<string>;
@@ -47,13 +48,14 @@ export class KromExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, _targetOptions: any, defines: Array<string>): Promise<any> {
+	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
-		let haxeOptions = this.haxeOptions(name, defines);
-		writeHaxeProject(this.options.to, haxeOptions);
-		
-		return haxeOptions;
+		hxml(this.options.to, haxeOptions);
+
+		if (this.projectFiles) {
+			writeHaxeProject(this.options.to, haxeOptions);
+		}
 	}
 
 	async copySound(platform: string, from: string, to: string) {

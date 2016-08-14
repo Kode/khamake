@@ -11,6 +11,7 @@ export abstract class KhaExporter extends Exporter {
 	name: string;
 	safename: string;
 	options: Options;
+	projectFiles: boolean;
 	
 	constructor(options: Options) {
 		super();
@@ -20,11 +21,14 @@ export abstract class KhaExporter extends Exporter {
 		this.sources = [];
 		this.libraries = [];
 		this.addSourceDirectory(path.join(options.kha, 'Sources'));
+		this.projectFiles = !options.noproject;
 	}
 	
 	abstract sysdir(): string;
 
-	abstract async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<any>;
+	abstract haxeOptions(name: string, targetOptions: any, defines: Array<string>): any;
+
+	abstract async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void>;
 
 	setWidthAndHeight(width: number, height: number): void {
 		this.width = width;
