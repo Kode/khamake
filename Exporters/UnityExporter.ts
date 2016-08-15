@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {writeHaxeProject} from '../HaxeProject';
+import {hxml} from '../HaxeProject';
 const uuid = require('uuid');
 
 export class UnityExporter extends KhaExporter {
@@ -46,9 +47,12 @@ export class UnityExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, targetOptions: any, defines: Array<string>): Promise<any> {
-		let haxeOptions = this.haxeOptions(name, targetOptions, defines);
-		writeHaxeProject(this.options.to, haxeOptions);
+	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+		hxml(this.options.to, haxeOptions);
+
+		if (this.projectFiles) {
+			writeHaxeProject(this.options.to, haxeOptions);
+		}
 		
 		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
 
@@ -63,8 +67,6 @@ export class UnityExporter extends KhaExporter {
 		copyDirectory('Assets', 'Assets');
 		copyDirectory('Editor', 'Assets/Editor');
 		copyDirectory('ProjectSettings', 'ProjectSettings');
-
-		return haxeOptions;
 	}
 
 	/*copyMusic(platform, from, to, encoders, callback) {

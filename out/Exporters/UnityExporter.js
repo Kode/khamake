@@ -13,6 +13,7 @@ const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
 const ImageTool_1 = require('../ImageTool');
 const HaxeProject_1 = require('../HaxeProject');
+const HaxeProject_2 = require('../HaxeProject');
 const uuid = require('uuid');
 class UnityExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
@@ -46,10 +47,12 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
             name: name
         };
     }
-    exportSolution(name, targetOptions, defines) {
+    exportSolution(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
-            let haxeOptions = this.haxeOptions(name, targetOptions, defines);
-            HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+            HaxeProject_2.hxml(this.options.to, haxeOptions);
+            if (this.projectFiles) {
+                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+            }
             fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
             var copyDirectory = (from, to) => {
                 let files = fs.readdirSync(path.join(__dirname, '..', '..', 'Data', 'unity', from));
@@ -62,7 +65,6 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
             copyDirectory('Assets', 'Assets');
             copyDirectory('Editor', 'Assets/Editor');
             copyDirectory('ProjectSettings', 'ProjectSettings');
-            return haxeOptions;
         });
     }
     /*copyMusic(platform, from, to, encoders, callback) {
