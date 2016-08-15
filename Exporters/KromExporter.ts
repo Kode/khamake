@@ -22,7 +22,7 @@ export class KromExporter extends KhaExporter {
 		return 'krom';
 	}
 	
-	haxeOptions(name: string, defines: Array<string>) {
+	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('js-classic');
 		defines.push('sys_g1');
 		defines.push('sys_g2');

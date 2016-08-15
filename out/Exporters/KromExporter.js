@@ -22,7 +22,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     sysdir() {
         return 'krom';
     }
-    haxeOptions(name, defines) {
+    haxeOptions(name, targetOptions, defines) {
         defines.push('js-classic');
         defines.push('sys_g1');
         defines.push('sys_g2');
