@@ -104,22 +104,28 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 // We now do koremake.js -> main.js -> run(...)
                 // This will create additional project folders for the target,
                 // e.g. 'build/android-native-build'
-                let name = yield require(path.join(korepath.get(), 'out', 'main.js')).run({
-                    from: options.from,
-                    to: path.join(options.to, exporter.sysdir() + '-build'),
-                    target: koreplatform(options.target),
-                    graphics: options.graphics,
-                    vrApi: options.vr,
-                    visualstudio: options.visualstudio,
-                    compile: options.compile,
-                    run: options.run,
-                    debug: options.debug
-                }, {
-                    info: log.info,
-                    error: log.error
-                });
-                log.info('Done.');
-                return name;
+                try {
+                    let name = yield require(path.join(korepath.get(), 'out', 'main.js')).run({
+                        from: options.from,
+                        to: path.join(options.to, exporter.sysdir() + '-build'),
+                        target: koreplatform(options.target),
+                        graphics: options.graphics,
+                        vrApi: options.vr,
+                        visualstudio: options.visualstudio,
+                        compile: options.compile,
+                        run: options.run,
+                        debug: options.debug
+                    }, {
+                        info: log.info,
+                        error: log.error
+                    });
+                    log.info('Done.');
+                    return name;
+                }
+                catch (error) {
+                    log.error(error);
+                    return '';
+                }
             }
         }
         else if (options.haxe !== '' && korehl && !options.noproject) {

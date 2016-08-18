@@ -101,7 +101,12 @@ class ShaderCompiler {
             case Platform_1.Platform.Unity:
                 return 'hlsl';
             default:
-                return 'none';
+                for (let p in Platform_1.Platform) {
+                    if (platform === p) {
+                        return 'none';
+                    }
+                }
+                return 'glsl';
         }
     }
     watch(watch, match, options) {
