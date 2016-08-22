@@ -5,6 +5,7 @@ const path = require('path');
 const log = require('./log');
 class Library {
 }
+exports.Library = Library;
 class Target {
     constructor(baseTarget, backends) {
         this.baseTarget = baseTarget;

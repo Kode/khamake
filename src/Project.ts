@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as log from './log';
 
-class Library {
+export class Library {
 	libpath: string;
 	libroot: string;
 }
