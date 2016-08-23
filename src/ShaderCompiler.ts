@@ -145,9 +145,15 @@ export class ShaderCompiler {
 				let parsedShaders: { files: string[], name: string }[] = [];
 				let index = 0;
 				for (let shader of shaders) {
-					await this.compileShader(shader, options);
 					let parsed = path.parse(shader);
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
+					try {
+						await this.compileShader(shader, options);
+					}
+					catch (error) {
+						reject(error);
+						return;
+					}
 					parsedShaders.push({ files: [parsed.name + '.' + this.type], name: AssetConverter.createName(parsed, false, options, this.exporter.options.from)});
 					++index;
 				}
@@ -164,8 +170,8 @@ export class ShaderCompiler {
 		return shaders;
 	}
 	
-	compileShader(file: string, options: any) {
-		return new Promise((resolve, reject) => {
+	compileShader(file: string, options: any): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
 
 			if (this.type === 'none') {
@@ -194,22 +200,25 @@ export class ShaderCompiler {
 								parameters.push('-D' + define);
 							}
 						}
-						let process = child_process.spawn(this.compiler, parameters);
+						let child = child_process.spawn(this.compiler, parameters);
 						
-						process.stdout.on('data', (data) => {
+						child.stdout.on('data', (data) => {
 							log.info(data.toString());
 						});
 
-						process.stderr.on('data', (data) => {
+						child.stderr.on('data', (data) => {
 							log.info(data.toString());
 						});
 
-						process.on('close', (code) => {
+						child.on('close', (code) => {
 							if (code === 0) {
 								fs.renameSync(temp, to);
 								resolve();
 							}
-							else reject('Shader compiler error.')
+							else {
+								process.exitCode = 1;
+								reject('Shader compiler error.');
+							}
 						});
 					}
 				});

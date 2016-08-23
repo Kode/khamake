@@ -140,9 +140,15 @@ class ShaderCompiler {
                 let parsedShaders = [];
                 let index = 0;
                 for (let shader of shaders) {
-                    yield this.compileShader(shader, options);
                     let parsed = path.parse(shader);
                     log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
+                    try {
+                        yield this.compileShader(shader, options);
+                    }
+                    catch (error) {
+                        reject(error);
+                        return;
+                    }
                     parsedShaders.push({ files: [parsed.name + '.' + this.type], name: AssetConverter_1.AssetConverter.createName(parsed, false, options, this.exporter.options.from) });
                     ++index;
                 }
@@ -188,20 +194,22 @@ class ShaderCompiler {
                                 parameters.push('-D' + define);
                             }
                         }
-                        let process = child_process.spawn(this.compiler, parameters);
-                        process.stdout.on('data', (data) => {
+                        let child = child_process.spawn(this.compiler, parameters);
+                        child.stdout.on('data', (data) => {
                             log.info(data.toString());
                         });
-                        process.stderr.on('data', (data) => {
+                        child.stderr.on('data', (data) => {
                             log.info(data.toString());
                         });
-                        process.on('close', (code) => {
+                        child.on('close', (code) => {
                             if (code === 0) {
                                 fs.renameSync(temp, to);
                                 resolve();
                             }
-                            else
+                            else {
+                                process.exitCode = 1;
                                 reject('Shader compiler error.');
+                            }
                         });
                     }
                 });
