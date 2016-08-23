@@ -20,6 +20,16 @@ export class Target {
 	}
 }
 
+function contains(main, sub) {
+	main = path.resolve(main);
+	sub = path.resolve(sub);
+	if (process.platform === 'win32') {
+		main = main.toLowerCase();
+		sub = sub.toLowerCase();
+	}
+	return sub.indexOf(main) === 0 && sub.slice(main.length)[0] === path.sep;
+}
+
 export class Project {
 	name: string;
 	sources: Array<string>;
@@ -64,7 +74,14 @@ export class Project {
 	 */
 	addAssets(match: string, options: any) {
 		if (!options) options = {};
-		this.assetMatchers.push({ match: path.resolve(this.scriptdir, match), options: options });
+		
+		// try to avoid weird paths - remove when https://github.com/paulmillr/chokidar/issues/300 is fixed
+		match = path.resolve(this.scriptdir, match);
+		if (contains(process.cwd(), match)) {
+			match = path.relative(process.cwd(), match);
+		}
+		
+		this.assetMatchers.push({ match: match, options: options });
 	}
 
 	addSources(source) {
@@ -77,7 +94,14 @@ export class Project {
 	 */
 	addShaders(match: string, options: any) {
 		if (!options) options = {};
-		this.shaderMatchers.push({ match: path.resolve(this.scriptdir, match), options: options });
+		
+		// try to avoid weird paths - remove when https://github.com/paulmillr/chokidar/issues/300 is fixed
+		match = path.resolve(this.scriptdir, match);
+		if (contains(process.cwd(), match)) {
+			match = path.relative(process.cwd(), match);
+		}
+
+		this.shaderMatchers.push({ match: match, options: options });
 	}
 
 	addDefine(define) {
