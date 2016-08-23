@@ -214,9 +214,8 @@ function exportKhaProject(options) {
             project = yield ProjectFile_1.loadProject(options.from, options.projectfile);
             foundProjectFile = true;
         }
-        else {
-            log.error('No khafile found.');
-            return 'Unknown';
+        if (!foundProjectFile) {
+            throw 'No khafile found.';
         }
         let temp = path.join(options.to, 'temp');
         fs.ensureDirSync(temp);

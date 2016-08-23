@@ -2,6 +2,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as log from './log';
 import {Project} from './Project';
 
 export async function loadProject(from: string, projectfile: string): Promise<Project> {
@@ -20,7 +21,12 @@ export async function loadProject(from: string, projectfile: string): Promise<Pr
 			});
 	
 			Project.scriptdir = from;
-			new Function('Project', 'require', 'resolve', 'reject', data)(Project, require, resolver, reject);
+			try {
+				new Function('Project', 'require', 'resolve', 'reject', data)(Project, require, resolver, reject);
+			}
+			catch (error) {
+				reject(error);
+			}
 		});
 	});
 }

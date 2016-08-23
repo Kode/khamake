@@ -230,9 +230,9 @@ async function exportKhaProject(options: Options): Promise<string> {
 		project = await loadProject(options.from, options.projectfile);
 		foundProjectFile = true;
 	}
-	else {
-		log.error('No khafile found.');
-		return 'Unknown';
+	
+	if (!foundProjectFile) {
+		throw 'No khafile found.';
 	}
 
 	let temp = path.join(options.to, 'temp');

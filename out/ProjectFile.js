@@ -25,7 +25,12 @@ function loadProject(from, projectfile) {
                     }
                 });
                 Project_1.Project.scriptdir = from;
-                new Function('Project', 'require', 'resolve', 'reject', data)(Project_1.Project, require, resolver, reject);
+                try {
+                    new Function('Project', 'require', 'resolve', 'reject', data)(Project_1.Project, require, resolver, reject);
+                }
+                catch (error) {
+                    reject(error);
+                }
             });
         });
     });
