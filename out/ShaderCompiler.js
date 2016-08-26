@@ -149,7 +149,7 @@ class ShaderCompiler {
                         reject(error);
                         return;
                     }
-                    parsedShaders.push({ files: [parsed.name + '.' + this.type], name: AssetConverter_1.AssetConverter.createName(parsed, false, options, this.exporter.options.from) });
+                    parsedShaders.push({ files: [parsed.name + '.' + this.type], name: AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name });
                     ++index;
                 }
                 resolve(parsedShaders);
