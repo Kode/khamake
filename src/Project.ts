@@ -32,12 +32,13 @@ function contains(main, sub) {
 
 export class Project {
 	name: string;
-	sources: Array<string>;
-	defines: Array<string>;
-	parameters: Array<string>;
+	sources: string[];
+	defines: string[];
+	cdefines: string[];
+	parameters: string[];
 	scriptdir: string;
 	static scriptdir: string;
-	libraries: Array<Library>;
+	libraries: Library[];
 	localLibraryPath: string;
 	windowOptions: any;
 	targetOptions: any;
@@ -49,6 +50,7 @@ export class Project {
 		this.name = name;
 		this.sources = [];
 		this.defines = [];
+		this.cdefines = [];
 		this.parameters = [];
 		this.scriptdir = Project.scriptdir;
 		this.libraries = [];
@@ -106,6 +108,10 @@ export class Project {
 
 	addDefine(define) {
 		this.defines.push(define);
+	}
+
+	addCDefine(define: string) {
+		this.cdefines.push(define);
 	}
 	
 	addParameter(parameter) {

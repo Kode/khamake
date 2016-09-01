@@ -41,7 +41,7 @@ function fixName(name) {
     }
     return name;
 }
-function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines) {
+function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
     return __awaiter(this, void 0, Promise, function* () {
         if (options.haxe !== '') {
             let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
@@ -59,6 +59,9 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 let out = '';
                 out += "var solution = new Solution('" + name + "');\n";
                 out += "var project = new Project('" + name + "');\n";
+                for (let cdefine of cdefines) {
+                    out += "project.addDefine('" + cdefine + "');\n";
+                }
                 if (targetOptions) {
                     let koreTargetOptions = {};
                     for (let option in targetOptions) {
@@ -137,6 +140,9 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 let out = '';
                 out += "var solution = new Solution('" + name + "');\n";
                 out += "var project = new Project('" + name + "');\n";
+                for (let cdefine of cdefines) {
+                    out += "project.addDefine('" + cdefine + "');\n";
+                }
                 if (targetOptions) {
                     let koreTargetOptions = {};
                     for (let option in targetOptions) {
@@ -374,7 +380,7 @@ function exportKhaProject(options) {
         if (foundProjectFile) {
             fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
         }
-        return yield exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines);
+        return yield exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
     });
 }
 function isKhaProject(directory, projectfile) {

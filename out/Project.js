@@ -27,6 +27,7 @@ class Project {
         this.name = name;
         this.sources = [];
         this.defines = [];
+        this.cdefines = [];
         this.parameters = [];
         this.scriptdir = Project.scriptdir;
         this.libraries = [];
@@ -77,6 +78,9 @@ class Project {
     }
     addDefine(define) {
         this.defines.push(define);
+    }
+    addCDefine(define) {
+        this.cdefines.push(define);
     }
     addParameter(parameter) {
         this.parameters.push(parameter);

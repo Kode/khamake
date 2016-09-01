@@ -42,7 +42,7 @@ function fixName(name: string): string {
 	return name;
 }
 
-async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries, targetOptions, defines): Promise<string> {
+async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries, targetOptions, defines: string[], cdefines: string[]): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		//haxeOptions.defines.push('kha');
@@ -62,6 +62,10 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			let out = '';
 			out += "var solution = new Solution('" + name + "');\n";
 			out += "var project = new Project('" + name + "');\n";
+
+			for (let cdefine of cdefines) {
+				out += "project.addDefine('" + cdefine + "');\n";
+			}
 			
 			if (targetOptions) {
 				let koreTargetOptions = {};
@@ -149,6 +153,10 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			out += "var solution = new Solution('" + name + "');\n";
 			out += "var project = new Project('" + name + "');\n";
 			
+			for (let cdefine of cdefines) {
+				out += "project.addDefine('" + cdefine + "');\n";
+			}
+
 			if (targetOptions) {
 				let koreTargetOptions = {};
 				for (let option in targetOptions) {
@@ -409,7 +417,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
 	}
 
-	return await exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines);
+	return await exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
 }
 
 function isKhaProject(directory: string, projectfile: string) {
