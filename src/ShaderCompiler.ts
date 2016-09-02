@@ -166,7 +166,7 @@ export class ShaderCompiler {
 				for (let shader of shaders) {
 					let parsed = path.parse(shader);
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
-					let variables = new Variables();
+					let variables: Variables = null;
 					try {
 						variables = await this.compileShader(shader, options);
 					}
@@ -177,9 +177,9 @@ export class ShaderCompiler {
 					parsedShaders.push({
 						files: [parsed.name + '.' + this.type],
 						name: AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name,
-						inputs: variables.inputs,
-						outputs: variables.outputs,
-						uniforms: variables.uniforms
+						inputs: variables === null ? null : variables.inputs,
+						outputs: variables === null ? null : variables.outputs,
+						uniforms: variables === null ? null : variables.uniforms
 					});
 					++index;
 				}
@@ -215,7 +215,7 @@ export class ShaderCompiler {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
 					if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime())) {
 						if (fromErr) log.error('Shader compiler error: ' + fromErr);
-						resolve(new Variables()); // TODO
+						resolve(null);
 					}
 					else {
 						if (this.type === 'metal') {

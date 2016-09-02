@@ -344,6 +344,29 @@ function exportKhaProject(options) {
                 fs.writeFileSync(path.join(blobDir, exportedShaders[i].files[0] + '.bytes'), exportedShaders[i].name, 'utf8');
             }
         }
+        let oldResources = null;
+        try {
+            oldResources = JSON.parse(fs.readFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), 'utf8'));
+        }
+        catch (error) {
+        }
+        function findShader(name) {
+            let fallback = {};
+            fallback.inputs = [];
+            fallback.outputs = [];
+            fallback.uniforms = [];
+            try {
+                for (let file of oldResources.files) {
+                    if (file.type === 'shader' && file.name === fixName(name)) {
+                        return file;
+                    }
+                }
+            }
+            catch (error) {
+                return fallback;
+            }
+            return fallback;
+        }
         let files = [];
         for (let asset of assets) {
             let file = {
@@ -358,13 +381,14 @@ function exportKhaProject(options) {
             files.push(file);
         }
         for (let shader of exportedShaders) {
+            let oldShader = findShader(shader.name);
             files.push({
                 name: fixName(shader.name),
                 files: shader.files,
                 type: 'shader',
-                inputs: shader.inputs,
-                outputs: shader.outputs,
-                uniforms: shader.uniforms
+                inputs: shader.inputs === null ? oldShader.inputs : shader.inputs,
+                outputs: shader.outputs === null ? oldShader.outputs : shader.outputs,
+                uniforms: shader.uniforms === null ? oldShader.uniforms : shader.uniforms
             });
         }
         function secondPass() {
