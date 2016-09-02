@@ -359,7 +359,10 @@ function exportKhaProject(options) {
             files.push({
                 name: fixName(shader.name),
                 files: shader.files,
-                type: 'shader'
+                type: 'shader',
+                inputs: shader.inputs,
+                outputs: shader.outputs,
+                uniforms: shader.uniforms
             });
         }
         function secondPass() {

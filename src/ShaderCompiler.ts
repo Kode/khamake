@@ -9,6 +9,31 @@ import {Platform} from './Platform';
 import {AssetConverter} from './AssetConverter';
 import * as log from './log';
 
+interface Variable {
+	name: string;
+	type: string;
+}
+
+class Variables {
+	inputs: Variable[];
+	outputs: Variable[];
+	uniforms: Variable[];
+
+	constructor() {
+		this.inputs = [];
+		this.outputs = [];
+		this.uniforms = [];
+	}
+}
+
+interface ParsedShader {
+	files: string[];
+	name: string;
+	inputs: Variable[];
+	outputs: Variable[];
+	uniforms: Variable[];
+}
+
 export class ShaderCompiler {
 	exporter: KhaExporter;
 	platform: string;
@@ -108,7 +133,7 @@ export class ShaderCompiler {
 	}
 
 	watch(watch: boolean, match: string, options: any) {
-		return new Promise<Array<{ files: Array<string>, name: string }>>((resolve, reject) => {
+		return new Promise<ParsedShader[]>((resolve, reject) => {
 			let shaders: string[] = [];
 			let ready = false;
 			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
@@ -136,19 +161,26 @@ export class ShaderCompiler {
 			});
 			this.watcher.on('ready', async () => {
 				ready = true;
-				let parsedShaders: { files: string[], name: string }[] = [];
+				let parsedShaders: ParsedShader[] = [];
 				let index = 0;
 				for (let shader of shaders) {
 					let parsed = path.parse(shader);
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
+					let variables = new Variables();
 					try {
-						await this.compileShader(shader, options);
+						variables = await this.compileShader(shader, options);
 					}
 					catch (error) {
 						reject(error);
 						return;
 					}
-					parsedShaders.push({ files: [parsed.name + '.' + this.type], name: AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name});
+					parsedShaders.push({
+						files: [parsed.name + '.' + this.type],
+						name: AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name,
+						inputs: variables.inputs,
+						outputs: variables.outputs,
+						uniforms: variables.uniforms
+					});
 					++index;
 				}
 				resolve(parsedShaders);
@@ -157,20 +189,20 @@ export class ShaderCompiler {
 		});
 	}
 	
-	async run(watch: boolean): Promise<Array<{ files: Array<string>, name: string }>> {
-		let shaders: Array<{ files: Array<string>, name: string }> = [];
+	async run(watch: boolean): Promise<ParsedShader[]> {
+		let shaders: ParsedShader[] = [];
 		for (let matcher of this.shaderMatchers) {
 			shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options));
 		}
 		return shaders;
 	}
 	
-	compileShader(file: string, options: any): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
+	compileShader(file: string, options: any): Promise<Variables> {
+		return new Promise<Variables>((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
 
 			if (this.type === 'none') {
-				resolve();
+				resolve(new Variables());
 				return;
 			}
 
@@ -183,7 +215,7 @@ export class ShaderCompiler {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
 					if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime())) {
 						if (fromErr) log.error('Shader compiler error: ' + fromErr);
-						resolve();
+						resolve(new Variables()); // TODO
 					}
 					else {
 						if (this.type === 'metal') {
@@ -217,8 +249,21 @@ export class ShaderCompiler {
 						let newErrorLine = true;
 						let errorData = false;
 
-						function parseData(data: string) {
+						let variables = new Variables();
 
+						function parseData(data: string) {
+							let parts = data.split(':');
+							if (parts.length >= 3) {
+								if (parts[0] === 'uniform') {
+									variables.uniforms.push({name: parts[1], type: parts[2]});
+								}
+								else if (parts[0] === 'input') {
+									variables.inputs.push({name: parts[1], type: parts[2]});
+								}
+								else if (parts[0] === 'output') {
+									variables.outputs.push({name: parts[1], type: parts[2]});
+								}
+							}
 						}
 
 						child.stderr.on('data', (data: any) => {
@@ -258,7 +303,7 @@ export class ShaderCompiler {
 							
 							if (code === 0) {
 								fs.renameSync(temp, to);
-								resolve();
+								resolve(variables);
 							}
 							else {
 								process.exitCode = 1;

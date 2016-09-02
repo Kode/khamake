@@ -15,6 +15,13 @@ const GraphicsApi_1 = require('./GraphicsApi');
 const Platform_1 = require('./Platform');
 const AssetConverter_1 = require('./AssetConverter');
 const log = require('./log');
+class Variables {
+    constructor() {
+        this.inputs = [];
+        this.outputs = [];
+        this.uniforms = [];
+    }
+}
 class ShaderCompiler {
     constructor(exporter, platform, compiler, to, temp, builddir, options, shaderMatchers) {
         this.exporter = exporter;
@@ -135,14 +142,21 @@ class ShaderCompiler {
                 for (let shader of shaders) {
                     let parsed = path.parse(shader);
                     log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
+                    let variables = new Variables();
                     try {
-                        yield this.compileShader(shader, options);
+                        variables = yield this.compileShader(shader, options);
                     }
                     catch (error) {
                         reject(error);
                         return;
                     }
-                    parsedShaders.push({ files: [parsed.name + '.' + this.type], name: AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name });
+                    parsedShaders.push({
+                        files: [parsed.name + '.' + this.type],
+                        name: AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name,
+                        inputs: variables.inputs,
+                        outputs: variables.outputs,
+                        uniforms: variables.uniforms
+                    });
                     ++index;
                 }
                 resolve(parsedShaders);
@@ -164,7 +178,7 @@ class ShaderCompiler {
             if (!this.compiler)
                 reject('No shader compiler found.');
             if (this.type === 'none') {
-                resolve();
+                resolve(new Variables());
                 return;
             }
             let fileinfo = path.parse(file);
@@ -176,7 +190,7 @@ class ShaderCompiler {
                     if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime())) {
                         if (fromErr)
                             log.error('Shader compiler error: ' + fromErr);
-                        resolve();
+                        resolve(new Variables()); // TODO
                     }
                     else {
                         if (this.type === 'metal') {
@@ -205,7 +219,20 @@ class ShaderCompiler {
                         let errorLine = '';
                         let newErrorLine = true;
                         let errorData = false;
+                        let variables = new Variables();
                         function parseData(data) {
+                            let parts = data.split(':');
+                            if (parts.length >= 3) {
+                                if (parts[0] === 'uniform') {
+                                    variables.uniforms.push({ name: parts[1], type: parts[2] });
+                                }
+                                else if (parts[0] === 'input') {
+                                    variables.inputs.push({ name: parts[1], type: parts[2] });
+                                }
+                                else if (parts[0] === 'output') {
+                                    variables.outputs.push({ name: parts[1], type: parts[2] });
+                                }
+                            }
                         }
                         child.stderr.on('data', (data) => {
                             let str = data.toString();
@@ -242,7 +269,7 @@ class ShaderCompiler {
                             }
                             if (code === 0) {
                                 fs.renameSync(temp, to);
-                                resolve();
+                                resolve(variables);
                             }
                             else {
                                 process.exitCode = 1;

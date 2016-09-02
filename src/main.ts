@@ -377,7 +377,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		}
 	}
 
-	let files: {name: string, files: string[], type: string}[] = [];
+	let files: {name: string, files: string[], type: string, inputs: any[], outputs: any[], uniforms: any[]}[] = [];
 	for (let asset of assets) {
 		let file: any = {
 			name: fixName(asset.name),
@@ -394,7 +394,10 @@ async function exportKhaProject(options: Options): Promise<string> {
 		files.push({
 			name: fixName(shader.name),
 			files: shader.files,
-			type: 'shader'
+			type: 'shader',
+			inputs: shader.inputs,
+			outputs: shader.outputs,
+			uniforms: shader.uniforms
 		});
 	}
 
