@@ -58,6 +58,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
                 let out = '';
                 out += "let fs = require('fs');\n";
+                out += "let path = require('path');\n";
                 out += "let solution = new Solution('" + name + "');\n";
                 out += "let project = new Project('" + name + "');\n";
                 for (let cdefine of cdefines) {
@@ -140,6 +141,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
                 let out = '';
                 out += "let fs = require('fs');\n";
+                out += "let path = require('path');\n";
                 out += "let solution = new Solution('" + name + "');\n";
                 out += "let project = new Project('" + name + "');\n";
                 for (let cdefine of cdefines) {

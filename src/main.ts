@@ -61,6 +61,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 
 			let out = '';
 			out += "let fs = require('fs');\n";
+			out += "let path = require('path');\n";
 			out += "let solution = new Solution('" + name + "');\n";
 			out += "let project = new Project('" + name + "');\n";
 
@@ -152,6 +153,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 
 			let out = '';
 			out += "let fs = require('fs');\n";
+			out += "let path = require('path');\n";
 			out += "let solution = new Solution('" + name + "');\n";
 			out += "let project = new Project('" + name + "');\n";
 			
