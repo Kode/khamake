@@ -127,7 +127,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
             let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-            let mp4 = null;
+            let mp4 = false;
             if (!this.isDebugHtml5()) {
                 mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
             }
@@ -154,7 +154,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let mp4 = null;
+            let mp4 = false;
             if (!this.isDebugHtml5()) {
                 mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
             }

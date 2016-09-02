@@ -51,7 +51,7 @@ export class XnaExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	exportSLN(projectUuid) {
+	exportSLN(projectUuid: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
 		var solutionUuid = uuid.v4();
@@ -129,7 +129,7 @@ export class XnaExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	exportCsProj(projectUuid) {
+	exportCsProj(projectUuid: string) {
 		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), {width: 64, height: 64}, 'png', false);
 		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
 

@@ -74,15 +74,15 @@ export class HaxeCompiler {
 		
 		let haxe = child_process.spawn(exe, ['--wait', this.port], {env: env, cwd: path.normalize(this.from)});
 		
-		haxe.stdout.on('data', (data) => {
+		haxe.stdout.on('data', (data: any) => {
 			log.info(data.toString());
 		});
 
-		haxe.stderr.on('data', (data) => {
+		haxe.stderr.on('data', (data: any) => {
 			log.error(data.toString());
 		});
 		
-		haxe.on('close', (code) => {
+		haxe.on('close', (code: number) => {
 			log.error('Haxe compilation server stopped.');
 		});
 	}
@@ -104,15 +104,15 @@ export class HaxeCompiler {
 			//haxe --connect 6000 --cwd myproject.hxml
 			let haxe = child_process.spawn(exe, ['--connect', this.port, this.hxml], {env: env, cwd: path.normalize(this.from)});
 			
-			haxe.stdout.on('data', (data) => {
+			haxe.stdout.on('data', (data: any) => {
 				log.info(data.toString());
 			});
 
-			haxe.stderr.on('data', (data) => {
+			haxe.stderr.on('data', (data: any) => {
 				log.error(data.toString());
 			});
 			
-			haxe.on('close', (code) => {
+			haxe.on('close', (code: number) => {
 				if (this.to) {
 					fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
 				}
@@ -143,15 +143,15 @@ export class HaxeCompiler {
 			log.info('Compiling code.');
 			let haxe = child_process.spawn(exe, [this.hxml], {env: env, cwd: path.normalize(this.from)});
 			
-			haxe.stdout.on('data', (data) => {
+			haxe.stdout.on('data', (data: any) => {
 				log.info(data.toString());
 			});
 
-			haxe.stderr.on('data', (data) => {
+			haxe.stderr.on('data', (data: any) => {
 				log.error(data.toString());
 			});
 			
-			haxe.on('close', (code) => {
+			haxe.on('close', (code: number) => {
 				if (code === 0) {
 					if (this.to) {
 						fs.renameSync(path.join('build', this.temp), path.join('build', this.to));

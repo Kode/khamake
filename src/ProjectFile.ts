@@ -14,7 +14,7 @@ export async function loadProject(from: string, projectfile: string): Promise<Pr
 				resolve(project);
 			};
 
-			process.on('exit', (code) => {
+			process.on('exit', (code: number) => {
 				if (!resolved) {
 					console.error('Error: khafile.js did not call resolve, no project created.');
 				}

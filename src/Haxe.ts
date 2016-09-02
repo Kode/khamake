@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as log from './log';
 import {sys} from './exec';
 
-export function executeHaxe(from: string, haxeDirectory: string, options): Promise<{}> {
+export function executeHaxe(from: string, haxeDirectory: string, options: string[]): Promise<{}> {
 	return new Promise((resolve, reject) => {
 		let exe = 'haxe';
 		let env = process.env;
@@ -21,15 +21,15 @@ export function executeHaxe(from: string, haxeDirectory: string, options): Promi
 		}
 		let haxe = child_process.spawn(exe, options, {env: env, cwd: path.normalize(from)});
 		
-		haxe.stdout.on('data', (data) => {
+		haxe.stdout.on('data', (data: any) => {
 			log.info(data.toString());
 		});
 
-		haxe.stderr.on('data', (data) => {
+		haxe.stderr.on('data', (data: any) => {
 			log.error(data.toString());
 		});
 		
-		haxe.on('close', (code) => {
+		haxe.on('close', (code: number) => {
 			if (code === 0) resolve();
 			else reject('Haxe compiler error.')
 		});

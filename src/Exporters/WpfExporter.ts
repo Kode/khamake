@@ -185,7 +185,7 @@ export class WpfExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	exportCsProj(projectUuid) {
+	exportCsProj(projectUuid: string) {
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
 		this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 		this.p("<Project ToolsVersion=\"4.0\" DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");

@@ -18,15 +18,15 @@ function getWidthAndHeight(kha: string, from: string, to: string, options: any, 
 		let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
 		
 		let output = '';
-		process.stdout.on('data', (data) => {
+		process.stdout.on('data', (data: any) => {
 			output += data.toString();
 		});
 
-		process.stderr.on('data', (data) => {
+		process.stderr.on('data', (data: any) => {
 			
 		});
 
-		process.on('close', (code) => {
+		process.on('close', (code: number) => {
 			if (code !== 0) {
 				log.error('kraffiti process exited with code ' + code + ' when trying to get size of ' + path.parse(from).name);
 				resolve({w: 0, h: 0});
@@ -51,15 +51,15 @@ function convertImage(from: string, temp: string, to: string, kha: string, exe: 
 		let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
 		
 		let output = '';
-		process.stdout.on('data', (data) => {
+		process.stdout.on('data', (data: any) => {
 			output += data.toString();
 		});
 
-		process.stderr.on('data', (data) => {
+		process.stderr.on('data', (data: any) => {
 			
 		});
 
-		process.on('close', (code) => {
+		process.on('close', (code: number) => {
 			if (code !== 0) {
 				log.error('kraffiti process exited with code ' + code + ' when trying to convert ' + path.parse(from).name);
 				resolve();

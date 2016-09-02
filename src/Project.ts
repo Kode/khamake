@@ -20,7 +20,7 @@ export class Target {
 	}
 }
 
-function contains(main, sub) {
+function contains(main: string, sub: string) {
 	main = path.resolve(main);
 	sub = path.resolve(sub);
 	if (process.platform === 'win32') {
@@ -46,7 +46,7 @@ export class Project {
 	shaderMatchers: { match: string, options: any }[];
 	customTargets: Map<string, Target>;
 	
-	constructor(name) {
+	constructor(name: string) {
 		this.name = name;
 		this.sources = [];
 		this.defines = [];
@@ -86,7 +86,7 @@ export class Project {
 		this.assetMatchers.push({ match: match, options: options });
 	}
 
-	addSources(source) {
+	addSources(source: string) {
 		this.sources.push(source);
 	}
 
@@ -106,7 +106,7 @@ export class Project {
 		this.shaderMatchers.push({ match: match, options: options });
 	}
 
-	addDefine(define) {
+	addDefine(define: string) {
 		this.defines.push(define);
 	}
 
@@ -114,7 +114,7 @@ export class Project {
 		this.cdefines.push(define);
 	}
 	
-	addParameter(parameter) {
+	addParameter(parameter: string) {
 		this.parameters.push(parameter);
 	}
 	
@@ -122,7 +122,7 @@ export class Project {
 		this.customTargets.set(name, new Target(baseTarget, backends));
 	}
 
-	addLibrary(library) {
+	addLibrary(library: string) {
 		this.addDefine(library);
 		let self = this;
 		function findLibraryDirectory(name: string) {

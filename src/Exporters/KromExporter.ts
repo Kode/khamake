@@ -61,7 +61,7 @@ export class KromExporter extends KhaExporter {
 	async copySound(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-		var files = [];
+		var files: string[] = [];
 		if (ogg) files.push(to + '.ogg');
 		return files;
 	}
@@ -80,7 +80,7 @@ export class KromExporter extends KhaExporter {
 	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
-		let files = [];
+		let files: string[] = [];
 		if (webm) files.push(to + '.webm');
 		return files;
 	}

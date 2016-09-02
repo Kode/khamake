@@ -23,7 +23,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 		return "PSM";
 	}
 
-	exportSLN(projectUuid) {
+	exportSLN(projectUuid: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
 		const solutionUuid = uuid.v4();
@@ -80,7 +80,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 		}
 	}
 
-	exportCsProj(projectUuid) {
+	exportCsProj(projectUuid: string) {
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
 		this.p("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 		this.p("<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
@@ -151,7 +151,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 		return [];
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset) {
+	async copyImage(platform: string, from: string, to: string, asset: any) {
 		this.files.push(asset["file"]);
 		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
 		return [to + '.' + format];

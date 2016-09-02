@@ -21,7 +21,7 @@ if (version < 6) {
 	process.exit(1);
 }
 
-var defaultTarget;
+var defaultTarget: string;
 if (os.platform() === "linux") {
 	defaultTarget = Platform.Linux;
 }
@@ -175,7 +175,7 @@ var options: Array<any> = [
 	}
 ];
 
-let parsedOptions = new Options();
+let parsedOptions: any = new Options();
 
 function printHelp() {
 	console.log('khamake options:\n');
@@ -189,7 +189,7 @@ function printHelp() {
 	}
 }
 
-function isTarget(target) {
+function isTarget(target: string) {
 	if (target.trim().length < 1) return false;
 	return true;
 }
@@ -261,7 +261,7 @@ if (parsedOptions.run) {
 
 async function runKhamake() {
 	try {
-		await require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
+		await require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name: string) { });
 	}
 	catch (error) {
 		console.log(error);
@@ -277,12 +277,12 @@ else if (parsedOptions.server) {
 	console.log('Running server on ' + parsedOptions.port);
 	var nstatic = require('node-static');
 	var fileServer = new nstatic.Server(path.join(parsedOptions.from,'build', 'html5'), { cache: 0 });
-	var server = require('http').createServer(function (request, response) {
+	var server = require('http').createServer(function (request: any, response: any) {
 		request.addListener('end', function () {
 			fileServer.serve(request, response);
 		}).resume();
 	});
-	server.on('error', function (e) {
+	server.on('error', function (e: any) {
 		if (e.code == 'EADDRINUSE') {
 			console.log('Error: Port ' + parsedOptions.port + ' is already in use.');
 			console.log('Please close the competing program (maybe another instance of khamake?)');

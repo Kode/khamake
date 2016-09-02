@@ -140,11 +140,11 @@ export class Html5Exporter extends KhaExporter {
 	async copySound(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-		let mp4 = null;
+		let mp4 = false;
 		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
 		}
-		var files = [];
+		var files: string[] = [];
 		if (ogg) files.push(to + '.ogg');
 		if (mp4) files.push(to + '.mp4');
 		return files;
@@ -162,12 +162,12 @@ export class Html5Exporter extends KhaExporter {
 
 	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		let mp4 = null;
+		let mp4 = false;
 		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
 		}
 		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
-		let files = [];
+		let files: string[] = [];
 		if (mp4) files.push(to + '.mp4');
 		if (webm) files.push(to + '.webm');
 		return files;

@@ -63,13 +63,13 @@ export abstract class CSharpExporter extends KhaExporter {
 
 		fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
 
-		const projectUuid = uuid.v4();
+		const projectUuid: string = uuid.v4();
 		this.exportSLN(projectUuid);
 		this.exportCsProj(projectUuid);
 		this.exportResources();
 	}
 
-	exportSLN(projectUuid) {
+	exportSLN(projectUuid: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
 		const solutionUuid = uuid.v4();
@@ -104,9 +104,9 @@ export abstract class CSharpExporter extends KhaExporter {
 	
 	abstract backend(): string;
 	
-	abstract exportCsProj(projectUuid);
+	abstract exportCsProj(projectUuid: string): void;
 	
-	abstract exportResources();
+	abstract exportResources(): void;
 
 	async copySound(platform: string, from: string, to: string) {
 		return [to];

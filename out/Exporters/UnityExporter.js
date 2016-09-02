@@ -54,11 +54,11 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
                 HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
             }
             fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
-            var copyDirectory = (from, to) => {
+            let copyDirectory = (from, to) => {
                 let files = fs.readdirSync(path.join(__dirname, '..', '..', 'Data', 'unity', from));
                 fs.ensureDirSync(path.join(this.options.to, this.sysdir(), to));
                 for (let file of files) {
-                    var text = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'unity', from, file), 'utf8');
+                    let text = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'unity', from, file), 'utf8');
                     fs.writeFileSync(path.join(this.options.to, this.sysdir(), to, file), text);
                 }
             };

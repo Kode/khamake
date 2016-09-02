@@ -5,7 +5,7 @@ import * as path from 'path';
 import {writeXml} from './XmlWriter';
 import * as log from './log';
 
-function copyAndReplace(from, to, names, values) {
+function copyAndReplace(from: string, to: string, names: string[], values: string[]) {
 	let data = fs.readFileSync(from, { encoding: 'utf8' });
 	for (let i = 0; i < names.length; ++i) {
 		data = data.replace(new RegExp(names[i], 'g'), values[i]);
@@ -13,7 +13,7 @@ function copyAndReplace(from, to, names, values) {
 	fs.writeFileSync(to, data, { encoding: 'utf8' });
 }
 
-function IntelliJ(projectdir, options) {
+function IntelliJ(projectdir: string, options: any) {
     let indir = path.join(__dirname, '..', 'Data', 'intellij');
     let outdir = path.join(projectdir, 'project-' + options.system + '-intellij');
 
@@ -50,7 +50,7 @@ function IntelliJ(projectdir, options) {
 		defines += param + ',';
 	}
 
-	let target;
+	let target: string;
 	switch (options.language) {
 		case 'hl':
 		case 'cpp':
@@ -89,7 +89,7 @@ function IntelliJ(projectdir, options) {
 	fs.copySync(path.join(indir, 'idea', 'copyright', 'profiles_settings.xml'), path.join(outdir, '.idea', 'copyright', 'profiles_settings.xml'), { clobber: true });
 }
 
-export function hxml(projectdir, options) {
+export function hxml(projectdir: string, options: any) {
 	let data = '';
 	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
@@ -148,8 +148,8 @@ export function hxml(projectdir, options) {
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 }
 
-function FlashDevelop(projectdir, options) {
-	let platform;
+function FlashDevelop(projectdir: string, options: any) {
+	let platform: string;
 
 	switch (options.language) {
 		case 'hl':
@@ -229,7 +229,7 @@ function FlashDevelop(projectdir, options) {
 		});
 	}
 
-	var classpaths = [];
+	var classpaths: string[] = [];
 
 	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
@@ -403,7 +403,7 @@ function FlashDevelop(projectdir, options) {
 	writeXml(project, path.join(projectdir, 'project-' + options.system + '.hxproj'));
 }
 
-export function writeHaxeProject(projectdir, options) {
+export function writeHaxeProject(projectdir: string, options: any) {
 	FlashDevelop(projectdir, options);
 	IntelliJ(projectdir, options);
 }

@@ -10,7 +10,7 @@ import {GraphicsApi} from './GraphicsApi';
 import {VrApi} from './VrApi';
 import {Options} from './Options';
 import {Platform} from './Platform';
-import {Project, Target} from './Project';
+import {Project, Target, Library} from './Project';
 import {loadProject} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
@@ -42,7 +42,7 @@ function fixName(name: string): string {
 	return name;
 }
 
-async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries, targetOptions, defines: string[], cdefines: string[]): Promise<string> {
+async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries: Library[], targetOptions: any, defines: string[], cdefines: string[]): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		//haxeOptions.defines.push('kha');
@@ -68,7 +68,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			}
 			
 			if (targetOptions) {
-				let koreTargetOptions = {};
+				let koreTargetOptions: any = {};
 				for (let option in targetOptions) {
 					if (option.endsWith('_native')) continue;
 					koreTargetOptions[option] = targetOptions[option];
@@ -158,7 +158,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			}
 
 			if (targetOptions) {
-				let koreTargetOptions = {};
+				let koreTargetOptions: any = {};
 				for (let option in targetOptions) {
 					if (option.endsWith('_native')) continue;
 					koreTargetOptions[option] = targetOptions[option];
@@ -219,7 +219,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 	}
 }
 
-function koreplatform(platform) {
+function koreplatform(platform: string) {
 	if (platform.endsWith('-native')) return platform.substr(0, platform.length - '-native'.length);
 	else if (platform.endsWith('-hl')) return platform.substr(0, platform.length - '-hl'.length);
 	else return platform;
@@ -246,7 +246,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let temp = path.join(options.to, 'temp');
 	fs.ensureDirSync(temp);
 
-	let exporter = null;
+	let exporter: KhaExporter = null;
 	let kore = false;
 	let korehl = false;
 	
@@ -375,7 +375,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		}
 	}
 
-	let files = [];
+	let files: {name: string, files: string[], type: string}[] = [];
 	for (let asset of assets) {
 		let file: any = {
 			name: fixName(asset.name),
@@ -443,15 +443,15 @@ function runProject(options: any): Promise<void> {
 			[],
 			{ cwd: path.join(process.cwd(), options.to, 'linux') });
 
-		run.stdout.on('data', function (data) {
+		run.stdout.on('data', function (data: any) {
 			log.info(data.toString());
 		});
 
-		run.stderr.on('data', function (data) {
+		run.stderr.on('data', function (data: any) {
 			log.error(data.toString());
 		});
 
-		run.on('close', function (code) {
+		run.on('close', function (code: number) {
 			resolve();
 		});
 	});
@@ -459,7 +459,7 @@ function runProject(options: any): Promise<void> {
 
 export let api = 2;
 
-export async function run(options: Options, loglog): Promise<string> {
+export async function run(options: Options, loglog: any): Promise<string> {
 	if (options.silent) {
 		log.silent();
 	}

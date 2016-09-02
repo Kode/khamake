@@ -120,7 +120,7 @@ export class FlashExporter extends KhaExporter {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		var ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
 		var mp3 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
-		var files = [];
+		var files: string[] = [];
 		if (ogg) {
 			files.push(to + '.ogg');
 			if (this.options.embedflashassets) this.sounds.push(to + '.ogg');
@@ -150,7 +150,7 @@ export class FlashExporter extends KhaExporter {
 		return [to + '.mp4'];
 	}
 
-	addShader(shader) {
+	addShader(shader: string) {
 		if (this.options.embedflashassets) this.blobs.push(shader);
 	}
 }

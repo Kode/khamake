@@ -2,16 +2,18 @@ import * as path from 'path';
 import {convert} from '../Converter';
 import {Exporter} from './Exporter';
 import {Options} from '../Options';
+import {Library} from '../Project';
 
 export abstract class KhaExporter extends Exporter {
 	width: number;
 	height: number;
-	sources: Array<string>;
-	libraries: Array<string>;
+	sources: string[];
+	libraries: Library[];
 	name: string;
 	safename: string;
 	options: Options;
 	projectFiles: boolean;
+	parameters: string[];
 	
 	constructor(options: Options) {
 		super();
@@ -22,6 +24,7 @@ export abstract class KhaExporter extends Exporter {
 		this.libraries = [];
 		this.addSourceDirectory(path.join(options.kha, 'Sources'));
 		this.projectFiles = !options.noproject;
+		this.parameters = [];
 	}
 	
 	abstract sysdir(): string;
@@ -48,7 +51,7 @@ export abstract class KhaExporter extends Exporter {
 		this.sources.push(path);
 	}
 
-	addLibrary(library: string): void {
+	addLibrary(library: Library): void {
 		this.libraries.push(library);
 	}
 

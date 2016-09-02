@@ -208,15 +208,15 @@ export class ShaderCompiler {
 						}
 						let child = child_process.spawn(this.compiler, parameters);
 						
-						child.stdout.on('data', (data) => {
+						child.stdout.on('data', (data: any) => {
 							log.info(data.toString());
 						});
 
-						child.stderr.on('data', (data) => {
+						child.stderr.on('data', (data: any) => {
 							log.info(data.toString());
 						});
 
-						child.on('close', (code) => {
+						child.on('close', (code: number) => {
 							if (code === 0) {
 								fs.renameSync(temp, to);
 								resolve();
