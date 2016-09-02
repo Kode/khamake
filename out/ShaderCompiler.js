@@ -146,6 +146,7 @@ class ShaderCompiler {
                     ++index;
                 }
                 resolve(parsedShaders);
+                return;
             }));
         });
     }
