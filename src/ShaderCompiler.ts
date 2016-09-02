@@ -213,11 +213,49 @@ export class ShaderCompiler {
 							log.info(data.toString());
 						});
 
+						let errorLine = '';
+						let newErrorLine = true;
+						let errorData = false;
+
+						function parseData(data: string) {
+
+						}
+
 						child.stderr.on('data', (data: any) => {
-							log.info(data.toString());
+							let str: string = data.toString();
+							for (let char of str) {
+								if (char === '\n') {
+									if (errorData) {
+										parseData(errorLine.trim());
+									}
+									else {
+										log.error(errorLine.trim());
+									}
+									errorLine = '';
+									newErrorLine = true;
+									errorData = false;
+								}
+								else if (newErrorLine && char === '#') {
+									errorData = true;
+									newErrorLine = false;
+								}
+								else {
+									errorLine += char;
+									newErrorLine = false;
+								}
+							}
 						});
 
 						child.on('close', (code: number) => {
+							if (errorLine.trim().length > 0) {
+								if (errorData) {
+									parseData(errorLine.trim());
+								}
+								else {
+									log.error(errorLine.trim());
+								}
+							}
+							
 							if (code === 0) {
 								fs.renameSync(temp, to);
 								resolve();
