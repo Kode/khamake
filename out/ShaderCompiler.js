@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const child_process = require('child_process');
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const chokidar = require('chokidar');
 const GraphicsApi_1 = require('./GraphicsApi');
@@ -16,7 +16,7 @@ const Platform_1 = require('./Platform');
 const AssetConverter_1 = require('./AssetConverter');
 const log = require('./log');
 class ShaderCompiler {
-    constructor(exporter, platform, compiler, to, temp, options, shaderMatchers) {
+    constructor(exporter, platform, compiler, to, temp, builddir, options, shaderMatchers) {
         this.exporter = exporter;
         if (platform.endsWith('-native'))
             platform = platform.substr(0, platform.length - '-native'.length);
@@ -28,6 +28,7 @@ class ShaderCompiler {
         this.options = options;
         this.to = to;
         this.temp = temp;
+        this.builddir = builddir;
         this.shaderMatchers = shaderMatchers;
     }
     static findType(platform, options) {
@@ -49,23 +50,10 @@ class ShaderCompiler {
             case Platform_1.Platform.HTML5Worker:
             case Platform_1.Platform.Tizen:
             case Platform_1.Platform.Pi:
+                return 'essl';
             case Platform_1.Platform.tvOS:
             case Platform_1.Platform.iOS:
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
-                    /*let builddir = 'ios-build';
-                    if (platform === Platform.tvOS) {
-                        builddir = 'tvos-build';
-                    }
-                    if (!Files.isDirectory(to.resolve(Paths.get('..', builddir, 'Sources')))) {
-                        Files.createDirectories(to.resolve(Paths.get('..', builddir, 'Sources')));
-                    }
-                    let funcname = name;
-                    funcname = funcname.replace(/-/g, '_');
-                    funcname = funcname.replace(/\./g, '_');
-                    funcname += '_main';
-                    fs.writeFileSync(to.resolve(name + ".metal").toString(), funcname, { encoding: 'utf8' });
-                    compileShader2(compiler, "metal", shader.files[0], to.resolve(Paths.get('..', builddir, 'Sources', name + ".metal")), temp, platform);
-                    addShader(project, name, ".metal");*/
                     return 'metal';
                 }
                 else {
@@ -97,7 +85,12 @@ class ShaderCompiler {
                     return 'glsl';
                 }
             case Platform_1.Platform.OSX:
-                return 'glsl';
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
+                    return 'metal';
+                }
+                else {
+                    return 'glsl';
+                }
             case Platform_1.Platform.Unity:
                 return 'hlsl';
             default:
@@ -185,6 +178,16 @@ class ShaderCompiler {
                         resolve();
                     }
                     else {
+                        if (this.type === 'metal') {
+                            fs.ensureDirSync(path.join(this.builddir, 'Sources'));
+                            let funcname = fileinfo.name;
+                            funcname = funcname.replace(/-/g, '_');
+                            funcname = funcname.replace(/\./g, '_');
+                            funcname += '_main';
+                            fs.writeFileSync(to, funcname, 'utf8');
+                            to = path.join(this.builddir, 'Sources', fileinfo.name + '.' + this.type);
+                            temp = to + '.temp';
+                        }
                         let parameters = [this.type === 'hlsl' ? 'd3d9' : this.type, from, temp, this.temp, this.platform];
                         if (this.options.glsl2) {
                             parameters.push('--glsl2');

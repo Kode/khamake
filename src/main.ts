@@ -345,7 +345,8 @@ async function exportKhaProject(options: Options): Promise<string> {
 	}
 	
 	fs.ensureDirSync(shaderDir);
-	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, options, project.shaderMatchers);
+	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp,
+		path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
 	let exportedShaders = await shaderCompiler.run(options.watch);
 
 	if (target === Platform.Unity) {
