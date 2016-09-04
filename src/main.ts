@@ -62,7 +62,6 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			let out = '';
 			out += "let fs = require('fs');\n";
 			out += "let path = require('path');\n";
-			out += "let solution = new Solution('" + name + "');\n";
 			out += "let project = new Project('" + name + "');\n";
 
 			for (let cdefine of cdefines) {
@@ -87,10 +86,9 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 
 			let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
 			if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-			out += "project.addSubProject(Solution.createProject('" + buildpath.replace(/\\/g, '/') + "'));\n";
-			out += "project.addSubProject(Solution.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "'));\n";
-			out += "project.addSubProject(Solution.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "'));\n";
-			out += "solution.addProject(project);\n";
+			out += "project.addSubProject(Project.createProject('" + buildpath.replace(/\\/g, '/') + "'));\n";
+			out += "project.addSubProject(Project.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "'));\n";
+			out += "project.addSubProject(Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "'));\n";
 
 			/*out += "if (fs.existsSync('Libraries')) {\n";
 			out += "\tvar libraries = fs.readdirSync('Libraries');\n";
@@ -105,11 +103,11 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			for (let lib of libraries) {
 				let libPath: string = lib.libroot;
 				out += "if (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
+				out += "\tproject.addSubProject(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
 				out += "}\n";
 			}
 
-			out += 'return solution;\n';
+			out += 'return project;\n';
 			fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
 		}
 
@@ -154,7 +152,6 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			let out = '';
 			out += "let fs = require('fs');\n";
 			out += "let path = require('path');\n";
-			out += "let solution = new Solution('" + name + "');\n";
 			out += "let project = new Project('" + name + "');\n";
 			
 			for (let cdefine of cdefines) {
@@ -179,19 +176,18 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 
 			let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
 			if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-			out += "project.addSubProject(Solution.createProject('" + buildpath.replace(/\\/g, '/') + "'));\n";
-			out += "project.addSubProject(Solution.createProject('" + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + "'));\n";
-			out += "project.addSubProject(Solution.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "'));\n";
-			out += "solution.addProject(project);\n";
+			out += "project.addSubProject(Project.createProject('" + buildpath.replace(/\\/g, '/') + "'));\n";
+			out += "project.addSubProject(Project.createProject('" + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + "'));\n";
+			out += "project.addSubProject(Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "'));\n";
 
 			for (let lib of libraries) {
 				var libPath: string = lib.libroot;
 				out += "if (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-				out += "\tproject.addSubProject(Solution.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
+				out += "\tproject.addSubProject(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
 				out += "}\n";
 			}
 
-			out += 'return solution;\n';
+			out += 'return project;\n';
 			fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
 		}
 
