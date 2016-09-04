@@ -15,8 +15,9 @@ const GraphicsApi_1 = require('./GraphicsApi');
 const Platform_1 = require('./Platform');
 const AssetConverter_1 = require('./AssetConverter');
 const log = require('./log');
-class Variables {
+class CompiledShader {
     constructor() {
+        this.files = [];
         this.inputs = [];
         this.outputs = [];
         this.uniforms = [];
@@ -137,29 +138,35 @@ class ShaderCompiler {
             });
             this.watcher.on('ready', () => __awaiter(this, void 0, void 0, function* () {
                 ready = true;
-                let parsedShaders = [];
+                let compiledShaders = [];
                 let index = 0;
                 for (let shader of shaders) {
                     let parsed = path.parse(shader);
                     log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
-                    let variables = null;
+                    let compiledShader = null;
                     try {
-                        variables = yield this.compileShader(shader, options);
+                        compiledShader = yield this.compileShader(shader, options);
                     }
                     catch (error) {
                         reject(error);
                         return;
                     }
-                    parsedShaders.push({
-                        files: [parsed.name + '.' + this.type],
-                        name: AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name,
-                        inputs: variables === null ? null : variables.inputs,
-                        outputs: variables === null ? null : variables.outputs,
-                        uniforms: variables === null ? null : variables.uniforms
-                    });
+                    if (compiledShader === null) {
+                        compiledShader = new CompiledShader();
+                        // mark variables as invalid, so they are loaded from previous compilation
+                        compiledShader.inputs = null;
+                        compiledShader.outputs = null;
+                        compiledShader.uniforms = null;
+                    }
+                    if (compiledShader.files.length === 0) {
+                        // TODO: Remove when krafix has been recompiled everywhere
+                        compiledShader.files.push(parsed.name + '.' + this.type);
+                    }
+                    compiledShader.name = AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name;
+                    compiledShaders.push(compiledShader);
                     ++index;
                 }
-                resolve(parsedShaders);
+                resolve(compiledShaders);
                 return;
             }));
         });
@@ -178,7 +185,7 @@ class ShaderCompiler {
             if (!this.compiler)
                 reject('No shader compiler found.');
             if (this.type === 'none') {
-                resolve(new Variables());
+                resolve(new CompiledShader());
                 return;
             }
             let fileinfo = path.parse(file);
@@ -219,18 +226,23 @@ class ShaderCompiler {
                         let errorLine = '';
                         let newErrorLine = true;
                         let errorData = false;
-                        let variables = new Variables();
+                        let compiledShader = new CompiledShader();
                         function parseData(data) {
                             let parts = data.split(':');
                             if (parts.length >= 3) {
                                 if (parts[0] === 'uniform') {
-                                    variables.uniforms.push({ name: parts[1], type: parts[2] });
+                                    compiledShader.uniforms.push({ name: parts[1], type: parts[2] });
                                 }
                                 else if (parts[0] === 'input') {
-                                    variables.inputs.push({ name: parts[1], type: parts[2] });
+                                    compiledShader.inputs.push({ name: parts[1], type: parts[2] });
                                 }
                                 else if (parts[0] === 'output') {
-                                    variables.outputs.push({ name: parts[1], type: parts[2] });
+                                    compiledShader.outputs.push({ name: parts[1], type: parts[2] });
+                                }
+                            }
+                            else if (parts.length >= 2) {
+                                if (parts[0] === 'file') {
+                                    compiledShader.files.push(path.parse(parts[1]).name);
                                 }
                             }
                         }
@@ -269,7 +281,7 @@ class ShaderCompiler {
                             }
                             if (code === 0) {
                                 fs.renameSync(temp, to);
-                                resolve(variables);
+                                resolve(compiledShader);
                             }
                             else {
                                 process.exitCode = 1;
