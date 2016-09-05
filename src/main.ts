@@ -90,7 +90,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 				+ "Project.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "', __dirname), "
 				+ "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
 			out += "\tfor (let p of projects) project.addSubProject(p);\n";
-			out += "\tresolve(project);console.log('all resolved');\n";
+			out += "\tresolve(project);\n";
 			out += "});\n"
 
 			/*out += "if (fs.existsSync('Libraries')) {\n";

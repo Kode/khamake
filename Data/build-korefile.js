@@ -4,5 +4,4 @@ project.addFiles('Sources/src/__lib__.cpp', 'Sources/src/__boot__.cpp');
 project.addFiles('Sources/**.metal');
 project.addExcludes('Sources/src/__main__.cpp');
 project.addIncludeDirs('Sources/include');
-console.log('I want to resolve');
 resolve(project);
