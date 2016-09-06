@@ -90,25 +90,20 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 				+ "Project.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "', __dirname), "
 				+ "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
 			out += "\tfor (let p of projects) project.addSubProject(p);\n";
-			out += "\tresolve(project);\n";
-			out += "});\n"
-
-			/*out += "if (fs.existsSync('Libraries')) {\n";
-			out += "\tvar libraries = fs.readdirSync('Libraries');\n";
-			out += "\tfor (var l in libraries) {\n";
-			out += "\t\tvar lib = libraries[l];\n";
-			out += "\t\tif (fs.existsSync(path.join('Libraries', lib, 'korefile.js'))) {\n";
-			out += "\t\t\tproject.addSubProject(Solution.createProject('Libraries/' + lib));\n";
-			out += "\t\t}\n";
-			out += "\t}\n";
-			out += "}\n";*/
-
+			
+			out += "\tlet libs = [];\n";
 			for (let lib of libraries) {
 				let libPath: string = lib.libroot;
-				out += "if (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-				out += "\tproject.addSubProject(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
-				out += "}\n";
+				out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
+				out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
+				out += "\t}\n";
 			}
+			out += "\tPromise.all(libs).then((libprojects) => {\n";
+			out += "\t\tfor (let p of libprojects) project.addSubProject(p);\n";
+			out += "\t\tresolve(project);\n";
+			out += "\t});\n";
+		
+			out += "});\n"
 
 			fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
 		}
@@ -176,20 +171,27 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 
 			out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
 
-			let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
+			let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
 			if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-			out += "project.addSubProject(Project.createProject('" + buildpath.replace(/\\/g, '/') + "'));\n";
-			out += "project.addSubProject(Project.createProject('" + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + "'));\n";
-			out += "project.addSubProject(Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "'));\n";
-
+			out += "Promise.all([Project.createProject('" + buildpath.replace(/\\/g, '/') + "', __dirname), "
+				+ "Project.createProject('" + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + "', __dirname), "
+				+ "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
+			out += "\tfor (let p of projects) project.addSubProject(p);\n";
+			
+			out += "\tlet libs = [];\n";
 			for (let lib of libraries) {
-				var libPath: string = lib.libroot;
-				out += "if (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-				out += "\tproject.addSubProject(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
-				out += "}\n";
+				let libPath: string = lib.libroot;
+				out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
+				out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
+				out += "\t}\n";
 			}
+			out += "\tPromise.all(libs).then((libprojects) => {\n";
+			out += "\t\tfor (let p of libprojects) project.addSubProject(p);\n";
+			out += "\t\tresolve(project);\n";
+			out += "\t});\n";
+		
+			out += "});\n"
 
-			out += 'return project;\n';
 			fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
 		}
 
