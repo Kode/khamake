@@ -69,16 +69,16 @@ export class KoreExporter extends KhaExporter {
 		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 	}
 
-	/*copyMusic(platform, from, to, encoders, callback) {
-		Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-		Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (success) => {
-			callback([to + '.ogg']);
-		});
-	}*/
-
-	async copySound(platform: string, from: string, to: string) {
-		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
-		return [to + '.wav'];
+	async copySound(platform: string, from: string, to: string, options: any) {
+		if (options.quality < 1) {
+			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+			let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+			return [to + '.ogg'];
+		}
+		else {
+			fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
+			return [to + '.wav'];
+		}
 	}
 
 	async copyImage(platform: string, from: string, to: string, options: any) {

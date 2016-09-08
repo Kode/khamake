@@ -70,16 +70,17 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
             //Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
         });
     }
-    /*copyMusic(platform, from, to, encoders, callback) {
-        Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
-        Converter.convert(from, this.directory.resolve(this.sysdir()).resolve(to + '.ogg'), encoders.oggEncoder, (success) => {
-            callback([to + '.ogg']);
-        });
-    }*/
-    copySound(platform, from, to) {
+    copySound(platform, from, to, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
-            return [to + '.wav'];
+            if (options.quality < 1) {
+                fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+                let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+                return [to + '.ogg'];
+            }
+            else {
+                fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
+                return [to + '.wav'];
+            }
         });
     }
     copyImage(platform, from, to, options) {

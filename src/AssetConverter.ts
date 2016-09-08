@@ -101,13 +101,13 @@ export class AssetConverter {
 						}
 						case '.wav': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination);
+							let sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination, options);
 							parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width:undefined, original_height:undefined });
 							break;
 						}
 						case '.ttf': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let fonts = await this.exporter.copyFont(this.platform, file, exportInfo.destination);
+							let fonts = await this.exporter.copyFont(this.platform, file, exportInfo.destination, options);
 							parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts, original_width:undefined, original_height:undefined });
 							break;
 						}
@@ -116,13 +116,13 @@ export class AssetConverter {
 						case '.wmv':
 						case '.avi': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let videos = await this.exporter.copyVideo(this.platform, file, exportInfo.destination);
+							let videos = await this.exporter.copyVideo(this.platform, file, exportInfo.destination, options);
 							parsedFiles.push({ name: exportInfo.name, from: file, type: 'video', files: videos, original_width:undefined, original_height:undefined });
 							break;
 						}
 						default: {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, this.exporter.options.from);
-							let blobs = await this.exporter.copyBlob(this.platform, file, exportInfo.destination);
+							let blobs = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
 							parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs, original_width:undefined, original_height:undefined });
 							break;
 						}

@@ -64,23 +64,23 @@ export abstract class KhaExporter extends Exporter {
 		}
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset: any): Promise<Array<string>> {
+	async copyImage(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
 		return [];
 	}
 
-	async copySound(platform: string, from: string, to: string): Promise<Array<string>> {
+	async copySound(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
 		return [];
 	}
 
-	async copyVideo(platform: string, from: string, to: string): Promise<Array<string>> {
+	async copyVideo(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
 		return [];
 	}
 
-	async copyBlob(platform: string, from: string, to: string): Promise<Array<string>> {
+	async copyBlob(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
 		return [];
 	}
 
-	async copyFont(platform: string, from: string, to: string): Promise<Array<string>> {
-		return await this.copyBlob(platform, from, to + '.ttf');
+	async copyFont(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
+		return await this.copyBlob(platform, from, to + '.ttf', options);
 	}
 }
