@@ -66,7 +66,7 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
             swfVersion: 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion
         };
     }
-    exportSolution(name, targetOptions, haxeOptions) {
+    export(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
             HaxeProject_2.hxml(this.options.to, haxeOptions);
             if (this.projectFiles) {

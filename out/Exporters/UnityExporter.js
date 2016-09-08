@@ -47,7 +47,7 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
             name: name
         };
     }
-    exportSolution(name, targetOptions, haxeOptions) {
+    export(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
             HaxeProject_2.hxml(this.options.to, haxeOptions);
             if (this.projectFiles) {

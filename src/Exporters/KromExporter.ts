@@ -48,7 +48,7 @@ export class KromExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
 		hxml(this.options.to, haxeOptions);

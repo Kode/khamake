@@ -45,7 +45,7 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
             name: name
         };
     }
-    exportSolution(name, _targetOptions, haxeOptions) {
+    export(name, _targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
             HaxeProject_2.hxml(this.options.to, haxeOptions);

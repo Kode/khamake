@@ -47,7 +47,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
             let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
             //haxeOptions.defines.push('kha');
             //haxeOptions.defines.push('kha_version=1607');
-            yield exporter.exportSolution(name, targetOptions, haxeOptions);
+            yield exporter.export(name, targetOptions, haxeOptions);
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
             yield compiler.run(options.watch);
         }

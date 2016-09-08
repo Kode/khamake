@@ -42,7 +42,7 @@ export class JavaExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
 
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));

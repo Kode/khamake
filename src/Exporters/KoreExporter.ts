@@ -60,7 +60,7 @@ export class KoreExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		hxml(this.options.to, haxeOptions);
 
 		if (this.projectFiles) {

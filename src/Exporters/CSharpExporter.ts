@@ -52,7 +52,7 @@ export abstract class CSharpExporter extends KhaExporter {
 		};
 	}
 
-	async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
 		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
 		
 		hxml(this.options.to, haxeOptions);

@@ -48,7 +48,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 		//haxeOptions.defines.push('kha');
 		//haxeOptions.defines.push('kha_version=1607');
 
-		await exporter.exportSolution(name, targetOptions, haxeOptions);
+		await exporter.export(name, targetOptions, haxeOptions);
 
 		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
 		await compiler.run(options.watch);

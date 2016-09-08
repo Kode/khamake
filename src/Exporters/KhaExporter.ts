@@ -31,7 +31,7 @@ export abstract class KhaExporter extends Exporter {
 
 	abstract haxeOptions(name: string, targetOptions: any, defines: Array<string>): any;
 
-	abstract async exportSolution(name: string, targetOptions: any, haxeOptions: any): Promise<void>;
+	abstract async export(name: string, targetOptions: any, haxeOptions: any): Promise<void>;
 
 	setWidthAndHeight(width: number, height: number): void {
 		this.width = width;
