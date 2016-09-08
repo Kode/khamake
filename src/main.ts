@@ -45,8 +45,8 @@ function fixName(name: string): string {
 async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries: Library[], targetOptions: any, defines: string[], cdefines: string[]): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
-		//haxeOptions.defines.push('kha');
-		//haxeOptions.defines.push('kha_version=1607');
+		haxeOptions.defines.push('kha');
+		haxeOptions.defines.push('kha_version=1609');
 
 		await exporter.export(name, targetOptions, haxeOptions);
 
