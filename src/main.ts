@@ -95,7 +95,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			for (let lib of libraries) {
 				let libPath: string = lib.libroot;
 				out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-				out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
+				out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "', __dirname));\n";
 				out += "\t}\n";
 			}
 			out += "\tPromise.all(libs).then((libprojects) => {\n";
