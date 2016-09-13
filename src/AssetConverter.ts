@@ -89,7 +89,7 @@ export class AssetConverter {
 				for (let file of files) {
 					let fileinfo = path.parse(file);
 					log.info('Exporting asset ' + (index + 1) + ' of ' + files.length + ' (' + fileinfo.base + ').');
-					switch (fileinfo.ext) {
+					switch (fileinfo.ext.toLowerCase()) {
 						case '.png':
 						case '.jpg':
 						case '.jpeg':
