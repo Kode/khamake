@@ -41,7 +41,7 @@ function fixName(name) {
     }
     return name;
 }
-function createKorefile(exporter, options, targetOptions, libraries, cdefines) {
+function createKorefile(name, exporter, options, targetOptions, libraries, cdefines) {
     let out = '';
     out += "let fs = require('fs');\n";
     out += "let path = require('path');\n";
@@ -99,7 +99,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
             fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
-            fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(exporter, options, targetOptions, libraries, cdefines));
+            fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
             // Similar to khamake.js -> main.js -> run(...)
             // We now do koremake.js -> main.js -> run(...)
             // This will create additional project folders for the target,
@@ -130,7 +130,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
         else if (options.haxe !== '' && korehl && !options.noproject) {
             fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { clobber: true });
             fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
-            fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(exporter, options, targetOptions, libraries, cdefines));
+            fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
             try {
                 let name = yield require(path.join(korepath.get(), 'out', 'main.js')).run({
                     from: options.from,

@@ -42,7 +42,7 @@ function fixName(name: string): string {
 	return name;
 }
 
-function createKorefile(exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[]): string {
+function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[]): string {
 	let out = '';
 	out += "let fs = require('fs');\n";
 	out += "let path = require('path');\n";
@@ -107,7 +107,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
 		fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
-		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(exporter, options, targetOptions, libraries, cdefines));
+		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
 
 		// Similar to khamake.js -> main.js -> run(...)
 		// We now do koremake.js -> main.js -> run(...)
@@ -141,7 +141,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 	else if (options.haxe !== '' && korehl && !options.noproject) {
 		fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { clobber: true });
 		fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
-		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(exporter, options, targetOptions, libraries, cdefines));
+		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
 
 		try {
 			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
