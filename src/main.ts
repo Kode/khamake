@@ -42,6 +42,56 @@ function fixName(name: string): string {
 	return name;
 }
 
+function createKorefile(exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[]): string {
+	let out = '';
+	out += "let fs = require('fs');\n";
+	out += "let path = require('path');\n";
+	out += "let project = new Project('" + name + "', __dirname);\n";
+
+	for (let cdefine of cdefines) {
+		out += "project.addDefine('" + cdefine + "');\n";
+	}
+	
+	if (targetOptions) {
+		let koreTargetOptions: any = {};
+		for (let option in targetOptions) {
+			if (option.endsWith('_native')) continue;
+			koreTargetOptions[option] = targetOptions[option];
+		}
+		for (let option in targetOptions) {
+			if (option.endsWith('_native')) {
+				koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
+			}
+		}
+		out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
+	}
+
+	out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
+
+	let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
+	if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
+	out += "Promise.all([Project.createProject('" + buildpath.replace(/\\/g, '/') + "', __dirname), "
+		+ "Project.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "', __dirname), "
+		+ "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
+	out += "\tfor (let p of projects) project.addSubProject(p);\n";
+	
+	out += "\tlet libs = [];\n";
+	for (let lib of libraries) {
+		let libPath: string = lib.libroot;
+		out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
+		out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "', __dirname));\n";
+		out += "\t}\n";
+	}
+	out += "\tPromise.all(libs).then((libprojects) => {\n";
+	out += "\t\tfor (let p of libprojects) project.addSubProject(p);\n";
+	out += "\t\tresolve(project);\n";
+	out += "\t});\n";
+
+	out += "});\n"
+
+	return out;
+}
+
 async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries: Library[], targetOptions: any, defines: string[], cdefines: string[]): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
@@ -56,146 +106,14 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 	if (options.haxe !== '' && kore && !options.noproject) {
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
-		{
-			fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
+		fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
+		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(exporter, options, targetOptions, libraries, cdefines));
 
-			let out = '';
-			out += "let fs = require('fs');\n";
-			out += "let path = require('path');\n";
-			out += "let project = new Project('" + name + "', __dirname);\n";
-
-			for (let cdefine of cdefines) {
-				out += "project.addDefine('" + cdefine + "');\n";
-			}
-			
-			if (targetOptions) {
-				let koreTargetOptions: any = {};
-				for (let option in targetOptions) {
-					if (option.endsWith('_native')) continue;
-					koreTargetOptions[option] = targetOptions[option];
-				}
-				for (let option in targetOptions) {
-					if (option.endsWith('_native')) {
-						koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
-					}
-				}
-				out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
-			}
-
-			out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
-
-			let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
-			if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-			out += "Promise.all([Project.createProject('" + buildpath.replace(/\\/g, '/') + "', __dirname), "
-				+ "Project.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "', __dirname), "
-				+ "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
-			out += "\tfor (let p of projects) project.addSubProject(p);\n";
-			
-			out += "\tlet libs = [];\n";
-			for (let lib of libraries) {
-				let libPath: string = lib.libroot;
-				out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-				out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "', __dirname));\n";
-				out += "\t}\n";
-			}
-			out += "\tPromise.all(libs).then((libprojects) => {\n";
-			out += "\t\tfor (let p of libprojects) project.addSubProject(p);\n";
-			out += "\t\tresolve(project);\n";
-			out += "\t});\n";
-		
-			out += "});\n"
-
-			fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
-		}
-
-		{
-			// Similar to khamake.js -> main.js -> run(...)
-			// We now do koremake.js -> main.js -> run(...)
-			// This will create additional project folders for the target,
-			// e.g. 'build/android-native-build'
-			try {
-				let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
-				{
-					from: options.from,
-					to: path.join(options.to, exporter.sysdir() + '-build'),
-					target: koreplatform(options.target),
-					graphics: options.graphics,
-					vrApi: options.vr,
-					visualstudio: options.visualstudio,
-					compile: options.compile,
-					run: options.run,
-					debug: options.debug
-				},
-				{
-					info: log.info,
-					error: log.error
-				});
-				log.info('Done.');
-				return name;
-			}
-			catch (error) {
-				log.error(error);
-				return '';
-			}
-		}
-	}
-	else if (options.haxe !== '' && korehl && !options.noproject) {
-		// If target is a Kore project, generate additional project folders here.
-		// generate the korefile.js
-		{
-			fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { clobber: true });
-			fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
-
-			let out = '';
-			out += "let fs = require('fs');\n";
-			out += "let path = require('path');\n";
-			out += "let project = new Project('" + name + "');\n";
-			
-			for (let cdefine of cdefines) {
-				out += "project.addDefine('" + cdefine + "');\n";
-			}
-
-			if (targetOptions) {
-				let koreTargetOptions: any = {};
-				for (let option in targetOptions) {
-					if (option.endsWith('_native')) continue;
-					koreTargetOptions[option] = targetOptions[option];
-				}
-				for (let option in targetOptions) {
-					if (option.endsWith('_native')) {
-						koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
-					}
-				}
-				out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
-			}
-
-			out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
-
-			let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
-			if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-			out += "Promise.all([Project.createProject('" + buildpath.replace(/\\/g, '/') + "', __dirname), "
-				+ "Project.createProject('" + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + "', __dirname), "
-				+ "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
-			out += "\tfor (let p of projects) project.addSubProject(p);\n";
-			
-			out += "\tlet libs = [];\n";
-			for (let lib of libraries) {
-				let libPath: string = lib.libroot;
-				out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-				out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "'));\n";
-				out += "\t}\n";
-			}
-			out += "\tPromise.all(libs).then((libprojects) => {\n";
-			out += "\t\tfor (let p of libprojects) project.addSubProject(p);\n";
-			out += "\t\tresolve(project);\n";
-			out += "\t});\n";
-		
-			out += "});\n"
-
-			fs.writeFileSync(path.join(options.from, 'korefile.js'), out);
-		}
-
-		{
+		// Similar to khamake.js -> main.js -> run(...)
+		// We now do koremake.js -> main.js -> run(...)
+		// This will create additional project folders for the target,
+		// e.g. 'build/android-native-build'
+		try {
 			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
 			{
 				from: options.from,
@@ -214,6 +132,40 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			});
 			log.info('Done.');
 			return name;
+		}
+		catch (error) {
+			log.error(error);
+			return '';
+		}
+	}
+	else if (options.haxe !== '' && korehl && !options.noproject) {
+		fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { clobber: true });
+		fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { clobber: true });
+		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(exporter, options, targetOptions, libraries, cdefines));
+
+		try {
+			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
+			{
+				from: options.from,
+				to: path.join(options.to, exporter.sysdir() + '-build'),
+				target: koreplatform(options.target),
+				graphics: options.graphics,
+				vrApi: options.vr,
+				visualstudio: options.visualstudio,
+				compile: options.compile,
+				run: options.run,
+				debug: options.debug
+			},
+			{
+				info: log.info,
+				error: log.error
+			});
+			log.info('Done.');
+			return name;
+		}
+		catch (error) {
+			log.error(error);
+			return '';
 		}
 	}
 	else {
