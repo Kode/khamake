@@ -1,5 +1,3 @@
-"use strict";
-
 import * as fs from 'fs-extra'; 
 import * as path from 'path';
 import {writeXml} from './XmlWriter';
@@ -15,7 +13,7 @@ function copyAndReplace(from: string, to: string, names: string[], values: strin
 
 function IntelliJ(projectdir: string, options: any) {
     let indir = path.join(__dirname, '..', 'Data', 'intellij');
-    let outdir = path.join(projectdir, options.name + '-' + options.system + '-intellij');
+    let outdir = path.join(projectdir, options.safeName + '-' + options.system + '-intellij');
 
 	let sources = '';
 	for (let i = 0; i < options.sources.length; ++i) {
@@ -78,7 +76,7 @@ function IntelliJ(projectdir: string, options: any) {
 	}
 
 	fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), { clobber: true });
-	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{libraries}', '{target}', '{system}', '{args}'], [options.name, sources, libraries, target, options.system, args]);
+	copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{libraries}', '{target}', '{system}', '{args}'], [options.safeName, sources, libraries, target, options.system, args]);
 
 	fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'), { clobber: true });
 	copyAndReplace(path.join(indir, 'idea', 'haxe.xml'), path.join(outdir, '.idea', 'haxe.xml'), ['{defines}'], [defines]);
@@ -145,7 +143,7 @@ export function hxml(projectdir: string, options: any) {
 		data += param + '\n';
 	}
 	data += '-main Main' + '\n';
-	fs.outputFileSync(path.join(projectdir, options.name + '-' + options.system + '.hxml'), data);
+	fs.outputFileSync(path.join(projectdir, options.safeName + '-' + options.system + '.hxml'), data);
 }
 
 function FlashDevelop(projectdir: string, options: any) {
@@ -400,7 +398,7 @@ function FlashDevelop(projectdir: string, options: any) {
 		]
 	};
 
-	writeXml(project, path.join(projectdir, options.name + '-' + options.system + '.hxproj'));
+	writeXml(project, path.join(projectdir, options.safeName + '-' + options.system + '.hxproj'));
 }
 
 export function writeHaxeProject(projectdir: string, options: any) {

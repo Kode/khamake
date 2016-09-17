@@ -11,7 +11,7 @@ function copyAndReplace(from, to, names, values) {
 }
 function IntelliJ(projectdir, options) {
     let indir = path.join(__dirname, '..', 'Data', 'intellij');
-    let outdir = path.join(projectdir, options.name + '-' + options.system + '-intellij');
+    let outdir = path.join(projectdir, options.safeName + '-' + options.system + '-intellij');
     let sources = '';
     for (let i = 0; i < options.sources.length; ++i) {
         if (path.isAbsolute(options.sources[i])) {
@@ -70,7 +70,7 @@ function IntelliJ(projectdir, options) {
             break;
     }
     fs.copySync(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), { clobber: true });
-    copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{libraries}', '{target}', '{system}', '{args}'], [options.name, sources, libraries, target, options.system, args]);
+    copyAndReplace(path.join(indir, 'name.iml'), path.join(outdir, options.name + '.iml'), ['{name}', '{sources}', '{libraries}', '{target}', '{system}', '{args}'], [options.safeName, sources, libraries, target, options.system, args]);
     fs.copySync(path.join(indir, 'idea', 'compiler.xml'), path.join(outdir, '.idea', 'compiler.xml'), { clobber: true });
     copyAndReplace(path.join(indir, 'idea', 'haxe.xml'), path.join(outdir, '.idea', 'haxe.xml'), ['{defines}'], [defines]);
     fs.copySync(path.join(indir, 'idea', 'misc.xml'), path.join(outdir, '.idea', 'misc.xml'), { clobber: true });
@@ -135,7 +135,7 @@ function hxml(projectdir, options) {
         data += param + '\n';
     }
     data += '-main Main' + '\n';
-    fs.outputFileSync(path.join(projectdir, options.name + '-' + options.system + '.hxml'), data);
+    fs.outputFileSync(path.join(projectdir, options.safeName + '-' + options.system + '.hxml'), data);
 }
 exports.hxml = hxml;
 function FlashDevelop(projectdir, options) {
@@ -379,7 +379,7 @@ function FlashDevelop(projectdir, options) {
             }
         ]
     };
-    XmlWriter_1.writeXml(project, path.join(projectdir, options.name + '-' + options.system + '.hxproj'));
+    XmlWriter_1.writeXml(project, path.join(projectdir, options.safeName + '-' + options.system + '.hxproj'));
 }
 function writeHaxeProject(projectdir, options) {
     FlashDevelop(projectdir, options);

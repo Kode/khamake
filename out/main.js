@@ -41,6 +41,9 @@ function fixName(name) {
     }
     return name;
 }
+function safeName(name) {
+    return name.replace(/[\\\/]/g, '_');
+}
 function createKorefile(name, exporter, options, targetOptions, libraries, cdefines) {
     let out = '';
     out += "let fs = require('fs');\n";
@@ -91,8 +94,9 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
             let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
             haxeOptions.defines.push('kha');
             haxeOptions.defines.push('kha_version=1609');
+            haxeOptions.safeName = safeName(haxeOptions.name);
             yield exporter.export(name, targetOptions, haxeOptions);
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, name + '-' + exporter.sysdir() + '.hxml', ['Sources']);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', ['Sources']);
             yield compiler.run(options.watch);
         }
         if (options.haxe !== '' && kore && !options.noproject) {

@@ -42,6 +42,10 @@ function fixName(name: string): string {
 	return name;
 }
 
+function safeName(name: string): string {
+	return name.replace(/[\\\/]/g, '_');
+}
+
 function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[]): string {
 	let out = '';
 	out += "let fs = require('fs');\n";
@@ -97,10 +101,11 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		haxeOptions.defines.push('kha');
 		haxeOptions.defines.push('kha_version=1609');
+		haxeOptions.safeName = safeName(haxeOptions.name);
 
 		await exporter.export(name, targetOptions, haxeOptions);
 
-		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, name + '-' + exporter.sysdir() + '.hxml', ['Sources']);
+		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', ['Sources']);
 		await compiler.run(options.watch);
 	}
 	if (options.haxe !== '' && kore && !options.noproject) {
