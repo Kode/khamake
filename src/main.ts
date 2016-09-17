@@ -100,7 +100,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 
 		await exporter.export(name, targetOptions, haxeOptions);
 
-		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', ['Sources']);
+		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, name + '-project-' + exporter.sysdir() + '.hxml', ['Sources']);
 		await compiler.run(options.watch);
 	}
 	if (options.haxe !== '' && kore && !options.noproject) {
