@@ -15,7 +15,7 @@ function copyAndReplace(from: string, to: string, names: string[], values: strin
 
 function IntelliJ(projectdir: string, options: any) {
     let indir = path.join(__dirname, '..', 'Data', 'intellij');
-    let outdir = path.join(projectdir, options.name + '-project-' + options.system + '-intellij');
+    let outdir = path.join(projectdir, options.name + '-' + options.system + '-intellij');
 
 	let sources = '';
 	for (let i = 0; i < options.sources.length; ++i) {
@@ -145,7 +145,7 @@ export function hxml(projectdir: string, options: any) {
 		data += param + '\n';
 	}
 	data += '-main Main' + '\n';
-	fs.outputFileSync(path.join(projectdir, options.name + '-project-' + options.system + '.hxml'), data);
+	fs.outputFileSync(path.join(projectdir, options.name + '-' + options.system + '.hxml'), data);
 }
 
 function FlashDevelop(projectdir: string, options: any) {
@@ -400,7 +400,7 @@ function FlashDevelop(projectdir: string, options: any) {
 		]
 	};
 
-	writeXml(project, path.join(projectdir, options.name + '-project-' + options.system + '.hxproj'));
+	writeXml(project, path.join(projectdir, options.name + '-' + options.system + '.hxproj'));
 }
 
 export function writeHaxeProject(projectdir: string, options: any) {
