@@ -11,12 +11,12 @@ const fs = require('fs-extra');
 const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const ImageTool_1 = require('../ImageTool');
-const HaxeProject_1 = require('../HaxeProject');
-const HaxeProject_2 = require('../HaxeProject');
 const uuid = require('uuid');
 class CSharpExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
+        this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
+        fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
     }
     includeFiles(dir, baseDir) {
         if (!dir || !fs.existsSync(dir))
@@ -55,16 +55,12 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
     }
     export(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
-            this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
-            HaxeProject_2.hxml(this.options.to, haxeOptions);
             if (this.projectFiles) {
-                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
+                const projectUuid = uuid.v4();
+                this.exportSLN(projectUuid);
+                this.exportCsProj(projectUuid);
+                this.exportResources();
             }
-            fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
-            const projectUuid = uuid.v4();
-            this.exportSLN(projectUuid);
-            this.exportCsProj(projectUuid);
-            this.exportResources();
         });
     }
     exportSLN(projectUuid) {

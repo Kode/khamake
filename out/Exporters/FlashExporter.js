@@ -12,8 +12,6 @@ const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
 const ImageTool_1 = require('../ImageTool');
-const HaxeProject_1 = require('../HaxeProject');
-const HaxeProject_2 = require('../HaxeProject');
 function adjustFilename(filename) {
     filename = filename.replace(/\./g, '_');
     filename = filename.replace(/-/g, '_');
@@ -68,10 +66,6 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
     }
     export(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
-            HaxeProject_2.hxml(this.options.to, haxeOptions);
-            if (this.projectFiles) {
-                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
-            }
             if (this.options.embedflashassets) {
                 this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
                 this.p("package;");

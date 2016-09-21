@@ -12,8 +12,6 @@ const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
 const ImageTool_1 = require('../ImageTool');
-const HaxeProject_1 = require('../HaxeProject');
-const HaxeProject_2 = require('../HaxeProject');
 class Html5Exporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
@@ -69,10 +67,6 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     export(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            HaxeProject_2.hxml(this.options.to, haxeOptions);
-            if (this.projectFiles) {
-                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
-            }
             if (this.isDebugHtml5()) {
                 let index = path.join(this.options.to, this.sysdir(), 'index.html');
                 if (!fs.existsSync(index)) {

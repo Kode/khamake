@@ -5,8 +5,6 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
-import {writeHaxeProject} from '../HaxeProject';
-import {hxml} from '../HaxeProject';
 
 function findIcon(from: string, options: any) {
 	if (fs.existsSync(path.join(from, 'icon.png'))) return path.join(from, 'icon.png');
@@ -57,10 +55,7 @@ export class AndroidExporter extends KhaExporter {
 	}
 
 	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
-		hxml(this.options.to, haxeOptions);
-
 		if (this.projectFiles) {
-			writeHaxeProject(this.options.to, haxeOptions);
 			this.exportAndroidStudioProject(name, targetOptions, this.options.from);
 		}
 	}

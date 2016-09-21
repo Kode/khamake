@@ -6,8 +6,6 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
-import {writeHaxeProject} from '../HaxeProject';
-import {hxml} from '../HaxeProject';
 import * as log from '../log';
 
 export class EmptyExporter extends KhaExporter {
@@ -48,12 +46,6 @@ export class EmptyExporter extends KhaExporter {
 
 	async export(name: string, _targetOptions: any, haxeOptions: any): Promise<void> {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-
-		hxml(this.options.to, haxeOptions);
-
-		if (this.projectFiles) {
-			writeHaxeProject(this.options.to, haxeOptions);
-		}
 
 		let result = await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
 		if (result === 0) {

@@ -5,14 +5,14 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
-import {writeHaxeProject} from '../HaxeProject';
-import {hxml} from '../HaxeProject';
 
 export class JavaExporter extends KhaExporter {
 	parameters: Array<string>;
 	
 	constructor(options: Options) {
 		super(options);
+		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
+		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
 	}
 
 	sysdir() {
@@ -43,18 +43,7 @@ export class JavaExporter extends KhaExporter {
 	}
 
 	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
-		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
-
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-		
-		hxml(this.options.to, haxeOptions);
-
-		if (this.projectFiles) {
-			writeHaxeProject(this.options.to, haxeOptions);
-		}
-
-		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
-
 		this.exportEclipseProject();
 	}
 

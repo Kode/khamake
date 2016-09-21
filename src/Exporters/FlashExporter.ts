@@ -5,8 +5,6 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
-import {writeHaxeProject} from '../HaxeProject';
-import {hxml} from '../HaxeProject';
 
 function adjustFilename(filename: string): string {
 	filename = filename.replace(/\./g, '_');
@@ -73,12 +71,6 @@ export class FlashExporter extends KhaExporter {
 	}
 
 	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
-		hxml(this.options.to, haxeOptions);
-
-		if (this.projectFiles) {
-			writeHaxeProject(this.options.to, haxeOptions);
-		}
-
 		if (this.options.embedflashassets) {
 			this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
 

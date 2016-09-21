@@ -13,12 +13,11 @@ const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
 const Platform_1 = require('../Platform');
 const ImageTool_1 = require('../ImageTool');
-const HaxeProject_1 = require('../HaxeProject');
-const HaxeProject_2 = require('../HaxeProject');
 class KoreHLExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
         this.addSourceDirectory(path.join(options.kha, 'Backends', 'KoreHL'));
+        //Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
     }
     sysdir() {
         return this.options.target + '-hl';
@@ -58,11 +57,6 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     }
     export(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
-            HaxeProject_2.hxml(this.options.to, haxeOptions);
-            if (this.projectFiles) {
-                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
-            }
-            //Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
         });
     }
     /*copyMusic(platform, from, to, encoders, callback) {

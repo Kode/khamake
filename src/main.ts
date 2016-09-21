@@ -32,6 +32,7 @@ import {PlayStationMobileExporter} from './Exporters/PlayStationMobileExporter';
 import {WpfExporter} from './Exporters/WpfExporter';
 import {XnaExporter} from './Exporters/XnaExporter';
 import {UnityExporter} from './Exporters/UnityExporter';
+import {writeHaxeProject} from './HaxeProject';
 
 function fixName(name: string): string {
 	name = name.replace(/[-\ \.\/\\]/g, '_');
@@ -107,10 +108,12 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			haxeOptions.parameters.push('-debug');
 		}
 
-		await exporter.export(name, targetOptions, haxeOptions);
+		writeHaxeProject(options.to, haxeOptions);
 
 		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', ['Sources']);
 		await compiler.run(options.watch);
+
+		await exporter.export(name, targetOptions, haxeOptions);
 	}
 	if (options.haxe !== '' && kore && !options.noproject) {
 		// If target is a Kore project, generate additional project folders here.

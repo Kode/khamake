@@ -33,6 +33,7 @@ const PlayStationMobileExporter_1 = require('./Exporters/PlayStationMobileExport
 const WpfExporter_1 = require('./Exporters/WpfExporter');
 const XnaExporter_1 = require('./Exporters/XnaExporter');
 const UnityExporter_1 = require('./Exporters/UnityExporter');
+const HaxeProject_1 = require('./HaxeProject');
 function fixName(name) {
     name = name.replace(/[-\ \.\/\\]/g, '_');
     if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
@@ -98,9 +99,10 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
             if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
                 haxeOptions.parameters.push('-debug');
             }
-            yield exporter.export(name, targetOptions, haxeOptions);
+            HaxeProject_1.writeHaxeProject(options.to, haxeOptions);
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', ['Sources']);
             yield compiler.run(options.watch);
+            yield exporter.export(name, targetOptions, haxeOptions);
         }
         if (options.haxe !== '' && kore && !options.noproject) {
             // If target is a Kore project, generate additional project folders here.

@@ -12,13 +12,12 @@ const path = require('path');
 const KhaExporter_1 = require('./KhaExporter');
 const Converter_1 = require('../Converter');
 const ImageTool_1 = require('../ImageTool');
-const HaxeProject_1 = require('../HaxeProject');
-const HaxeProject_2 = require('../HaxeProject');
 const uuid = require('uuid');
 class UnityExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
         this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
+        fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
     }
     sysdir() {
         return 'unity';
@@ -49,11 +48,6 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
     }
     export(name, targetOptions, haxeOptions) {
         return __awaiter(this, void 0, Promise, function* () {
-            HaxeProject_2.hxml(this.options.to, haxeOptions);
-            if (this.projectFiles) {
-                HaxeProject_1.writeHaxeProject(this.options.to, haxeOptions);
-            }
-            fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
             let copyDirectory = (from, to) => {
                 let files = fs.readdirSync(path.join(__dirname, '..', '..', 'Data', 'unity', from));
                 fs.ensureDirSync(path.join(this.options.to, this.sysdir(), to));

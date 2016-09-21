@@ -137,7 +137,6 @@ function hxml(projectdir, options) {
     data += '-main Main' + '\n';
     fs.outputFileSync(path.join(projectdir, options.safeName + '-' + options.system + '.hxml'), data);
 }
-exports.hxml = hxml;
 function FlashDevelop(projectdir, options) {
     let platform;
     switch (options.language) {
@@ -382,6 +381,7 @@ function FlashDevelop(projectdir, options) {
     XmlWriter_1.writeXml(project, path.join(projectdir, options.safeName + '-' + options.system + '.hxproj'));
 }
 function writeHaxeProject(projectdir, options) {
+    hxml(projectdir, options);
     FlashDevelop(projectdir, options);
     IntelliJ(projectdir, options);
 }

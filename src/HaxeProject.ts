@@ -87,7 +87,7 @@ function IntelliJ(projectdir: string, options: any) {
 	fs.copySync(path.join(indir, 'idea', 'copyright', 'profiles_settings.xml'), path.join(outdir, '.idea', 'copyright', 'profiles_settings.xml'), { clobber: true });
 }
 
-export function hxml(projectdir: string, options: any) {
+function hxml(projectdir: string, options: any) {
 	let data = '';
 	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {
@@ -402,6 +402,7 @@ function FlashDevelop(projectdir: string, options: any) {
 }
 
 export function writeHaxeProject(projectdir: string, options: any) {
+	hxml(projectdir, options);
 	FlashDevelop(projectdir, options);
 	IntelliJ(projectdir, options);
 }
