@@ -88,6 +88,8 @@ export class HaxeCompiler {
 	}
 	
 	triggerCompilationServer() {
+		this.ready = false;
+		this.todo = false;
 		return new Promise((resolve, reject) => {
 			let exe = 'haxe';
 			let env = process.env;
