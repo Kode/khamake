@@ -119,12 +119,12 @@ export class HaxeCompiler {
 					fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
 				}
 				this.ready = true;
-				if (this.todo) {
-					this.scheduleCompile();
-				}
 				console.log('Haxe compile end.');
 				if (code === 0) resolve();
 				else reject('Haxe compiler error.')
+				if (this.todo) {
+					this.scheduleCompile();
+				}
 			});
 		});
 	}
