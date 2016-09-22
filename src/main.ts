@@ -110,7 +110,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 
 		writeHaxeProject(options.to, haxeOptions);
 
-		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', ['Sources']);
+		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
 		await compiler.run(options.watch);
 
 		await exporter.export(name, targetOptions, haxeOptions);

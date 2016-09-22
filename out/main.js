@@ -100,7 +100,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 haxeOptions.parameters.push('-debug');
             }
             HaxeProject_1.writeHaxeProject(options.to, haxeOptions);
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', ['Sources']);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
             yield compiler.run(options.watch);
             yield exporter.export(name, targetOptions, haxeOptions);
         }
