@@ -45,7 +45,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         };
     }
     export(name, targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
         });
     }

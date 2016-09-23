@@ -172,7 +172,7 @@ class ShaderCompiler {
         });
     }
     run(watch) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             let shaders = [];
             for (let matcher of this.shaderMatchers) {
                 shaders = shaders.concat(yield this.watch(watch, matcher.match, matcher.options));

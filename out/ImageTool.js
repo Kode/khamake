@@ -76,7 +76,7 @@ function convertImage(from, temp, to, kha, exe, params, options) {
     });
 }
 function exportImage(kha, from, to, options, format, prealpha, poweroftwo = false) {
-    return __awaiter(this, void 0, Promise, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         if (format === undefined) {
             if (from.toString().endsWith('.png'))
                 format = 'png';

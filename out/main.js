@@ -90,7 +90,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     return out;
 }
 function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
-    return __awaiter(this, void 0, Promise, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         if (options.haxe !== '') {
             let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
             haxeOptions.defines.push('kha');
@@ -100,7 +100,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 haxeOptions.parameters.push('-debug');
             }
             HaxeProject_1.writeHaxeProject(options.to, haxeOptions);
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, haxeOptions.safeName + '-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
             yield compiler.run(options.watch);
             yield exporter.export(name, targetOptions, haxeOptions);
         }
@@ -179,7 +179,7 @@ function koreplatform(platform) {
         return platform;
 }
 function exportKhaProject(options) {
-    return __awaiter(this, void 0, Promise, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         log.info('Creating Kha project.');
         let project = null;
         let foundProjectFile = false;
@@ -384,7 +384,7 @@ function isKhaProject(directory, projectfile) {
     return fs.existsSync(path.join(directory, 'Kha')) || fs.existsSync(path.join(directory, projectfile));
 }
 function exportProject(options) {
-    return __awaiter(this, void 0, Promise, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         if (isKhaProject(options.from, options.projectfile)) {
             return yield exportKhaProject(options);
         }
@@ -411,7 +411,7 @@ function runProject(options) {
 }
 exports.api = 2;
 function run(options, loglog) {
-    return __awaiter(this, void 0, Promise, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         if (options.silent) {
             log.silent();
         }

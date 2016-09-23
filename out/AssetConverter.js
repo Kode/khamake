@@ -124,7 +124,7 @@ class AssetConverter {
         });
     }
     run(watch) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             let files = [];
             for (let matcher of this.assetMatchers) {
                 files = files.concat(yield this.watch(watch, matcher.match, matcher.options));

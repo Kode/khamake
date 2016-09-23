@@ -47,7 +47,7 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
         };
     }
     export(name, targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             let copyDirectory = (from, to) => {
                 let files = fs.readdirSync(path.join(__dirname, '..', '..', 'Data', 'unity', from));
                 fs.ensureDirSync(path.join(this.options.to, this.sysdir(), to));

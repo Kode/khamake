@@ -46,27 +46,27 @@ class KhaExporter extends Exporter_1.Exporter {
         }
     }
     copyImage(platform, from, to, options) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             return [];
         });
     }
     copySound(platform, from, to, options) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             return [];
         });
     }
     copyVideo(platform, from, to, options) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             return [];
         });
     }
     copyBlob(platform, from, to, options) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             return [];
         });
     }
     copyFont(platform, from, to, options) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             return yield this.copyBlob(platform, from, to + '.ttf', options);
         });
     }

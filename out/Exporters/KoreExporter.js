@@ -61,7 +61,7 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
         };
     }
     export(name, targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
         });
     }
     copySound(platform, from, to, options) {

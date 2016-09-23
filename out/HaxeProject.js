@@ -135,7 +135,7 @@ function hxml(projectdir, options) {
         data += param + '\n';
     }
     data += '-main Main' + '\n';
-    fs.outputFileSync(path.join(projectdir, options.safeName + '-' + options.system + '.hxml'), data);
+    fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 }
 function FlashDevelop(projectdir, options) {
     let platform;

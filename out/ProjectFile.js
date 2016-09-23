@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const Project_1 = require('./Project');
 function loadProject(from, projectfile) {
-    return __awaiter(this, void 0, Promise, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
                 let resolved = false;

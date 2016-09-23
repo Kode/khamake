@@ -65,7 +65,7 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
         };
     }
     export(name, targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, Promise, function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             if (this.options.embedflashassets) {
                 this.writeFile(path.join(this.options.to, '..', 'Sources', 'Assets.hx'));
                 this.p("package;");
