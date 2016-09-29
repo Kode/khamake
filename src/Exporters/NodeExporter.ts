@@ -1,5 +1,3 @@
-"use strict";
-
 import * as path from 'path';
 import {Html5Exporter} from './Html5Exporter';
 import {Options} from '../Options';

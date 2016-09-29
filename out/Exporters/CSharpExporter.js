@@ -22,12 +22,12 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         if (!dir || !fs.existsSync(dir))
             return;
         let files = fs.readdirSync(dir);
-        for (var f in files) {
+        for (let f in files) {
             let file = path.join(dir, files[f]);
             if (fs.existsSync(file) && fs.statSync(file).isDirectory())
                 this.includeFiles(file, baseDir);
-            else if (file.endsWith(".cs")) {
-                this.p("<Compile Include=\"" + path.relative(baseDir, file).replace(/\//g, '\\') + "\" />", 2);
+            else if (file.endsWith('.cs')) {
+                this.p('<Compile Include="' + path.relative(baseDir, file).replace(/\//g, '\\') + '" />', 2);
             }
         }
     }
@@ -67,25 +67,25 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
         this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.sln'));
         const solutionUuid = uuid.v4();
-        this.p("Microsoft Visual Studio Solution File, Format Version 11.00");
-        this.p("# Visual Studio 2010");
-        this.p("Project(\"{" + solutionUuid.toString().toUpperCase() + "}\") = \"HaxeProject\", \"Project.csproj\", \"{" + projectUuid.toString().toUpperCase() + "}\"");
-        this.p("EndProject");
-        this.p("Global");
-        this.p("GlobalSection(SolutionConfigurationPlatforms) = preSolution", 1);
-        this.p("Debug|x86 = Debug|x86", 2);
-        this.p("Release|x86 = Release|x86", 2);
-        this.p("EndGlobalSection", 1);
-        this.p("GlobalSection(ProjectConfigurationPlatforms) = postSolution", 1);
-        this.p("{" + projectUuid.toString().toUpperCase() + "}.Debug|x86.ActiveCfg = Debug|x86", 2);
-        this.p("{" + projectUuid.toString().toUpperCase() + "}.Debug|x86.Build.0 = Debug|x86", 2);
-        this.p("{" + projectUuid.toString().toUpperCase() + "}.Release|x86.ActiveCfg = Release|x86", 2);
-        this.p("{" + projectUuid.toString().toUpperCase() + "}.Release|x86.Build.0 = Release|x86", 2);
-        this.p("EndGlobalSection", 1);
-        this.p("GlobalSection(SolutionProperties) = preSolution", 1);
-        this.p("HideSolutionNode = FALSE", 2);
-        this.p("EndGlobalSection", 1);
-        this.p("EndGlobal");
+        this.p('Microsoft Visual Studio Solution File, Format Version 11.00');
+        this.p('# Visual Studio 2010');
+        this.p('Project("{' + solutionUuid.toString().toUpperCase() + '}") = "HaxeProject", "Project.csproj", "{' + projectUuid.toString().toUpperCase() + '}"');
+        this.p('EndProject');
+        this.p('Global');
+        this.p('GlobalSection(SolutionConfigurationPlatforms) = preSolution', 1);
+        this.p('Debug|x86 = Debug|x86', 2);
+        this.p('Release|x86 = Release|x86', 2);
+        this.p('EndGlobalSection', 1);
+        this.p('GlobalSection(ProjectConfigurationPlatforms) = postSolution', 1);
+        this.p('{' + projectUuid.toString().toUpperCase() + '}.Debug|x86.ActiveCfg = Debug|x86', 2);
+        this.p('{' + projectUuid.toString().toUpperCase() + '}.Debug|x86.Build.0 = Debug|x86', 2);
+        this.p('{' + projectUuid.toString().toUpperCase() + '}.Release|x86.ActiveCfg = Release|x86', 2);
+        this.p('{' + projectUuid.toString().toUpperCase() + '}.Release|x86.Build.0 = Release|x86', 2);
+        this.p('EndGlobalSection', 1);
+        this.p('GlobalSection(SolutionProperties) = preSolution', 1);
+        this.p('HideSolutionNode = FALSE', 2);
+        this.p('EndGlobalSection', 1);
+        this.p('EndGlobal');
         this.closeFile();
     }
     copySound(platform, from, to) {

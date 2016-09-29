@@ -21,12 +21,12 @@ export class Html5Exporter extends KhaExporter {
 	}
 
 	isDebugHtml5() {
- 		return this.sysdir() === 'debug-html5';
- 	}
- 
- 	isNode() {
- 		return this.sysdir() === 'node';
- 	}
+		return this.sysdir() === 'debug-html5';
+	}
+
+	isNode() {
+		return this.sysdir() === 'node';
+	}
 	
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('sys_g1');
@@ -136,7 +136,7 @@ export class Html5Exporter extends KhaExporter {
 		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
 		}
-		var files: string[] = [];
+		let files: string[] = [];
 		if (ogg) files.push(to + '.ogg');
 		if (mp4) files.push(to + '.mp4');
 		return files;

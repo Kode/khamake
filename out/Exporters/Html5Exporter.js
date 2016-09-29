@@ -125,7 +125,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             if (!this.isDebugHtml5()) {
                 mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
             }
-            var files = [];
+            let files = [];
             if (ogg)
                 files.push(to + '.ogg');
             if (mp4)

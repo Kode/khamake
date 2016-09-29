@@ -27,7 +27,7 @@ export class KromExporter extends KhaExporter {
 		defines.push('sys_g3');
 		defines.push('sys_g4');
 		defines.push('sys_a1');
-		//defines.push('sys_a2');
+		// defines.push('sys_a2');
 
 		return {
 			from: this.options.from.toString(),
@@ -53,7 +53,7 @@ export class KromExporter extends KhaExporter {
 	async copySound(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-		var files: string[] = [];
+		let files: string[] = [];
 		if (ogg) files.push(to + '.ogg');
 		return files;
 	}

@@ -27,7 +27,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g3');
         defines.push('sys_g4');
         defines.push('sys_a1');
-        //defines.push('sys_a2');
+        // defines.push('sys_a2');
         return {
             from: this.options.from.toString(),
             to: path.join(this.sysdir(), 'krom.js.temp'),
@@ -53,7 +53,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
             let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-            var files = [];
+            let files = [];
             if (ogg)
                 files.push(to + '.ogg');
             return files;

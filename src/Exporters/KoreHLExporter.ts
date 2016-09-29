@@ -13,7 +13,7 @@ export class KoreHLExporter extends KhaExporter {
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'KoreHL'));
-		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
+		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 	}
 
 	sysdir() {

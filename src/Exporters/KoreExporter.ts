@@ -8,12 +8,12 @@ import {exportImage} from '../ImageTool';
 import {Options} from '../Options';
 
 export class KoreExporter extends KhaExporter {
-	parameters: Array<string>
+	parameters: Array<string>;
 	
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Kore'));
-		//Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
+		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 	}
 
 	sysdir() {

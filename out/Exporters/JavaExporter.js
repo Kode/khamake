@@ -52,31 +52,31 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
     }
     exportEclipseProject() {
         this.writeFile(path.join(this.options.to, this.sysdir(), '.classpath'));
-        this.p("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        this.p("<classpath>");
-        this.p("\t<classpathentry kind=\"src\" path=\"Sources/src\"/>");
-        this.p("\t<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>");
-        this.p("\t<classpathentry kind=\"output\" path=\"bin\"/>");
-        this.p("</classpath>");
+        this.p('<?xml version="1.0" encoding="UTF-8"?>');
+        this.p('<classpath>');
+        this.p('\t<classpathentry kind="src" path="Sources/src"/>');
+        this.p('\t<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>');
+        this.p('\t<classpathentry kind="output" path="bin"/>');
+        this.p('</classpath>');
         this.closeFile();
         this.writeFile(path.join(this.options.to, this.sysdir(), '.project'));
-        this.p("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        this.p("<projectDescription>");
-        this.p("\t<name>" + path.parse(this.options.to).name + "</name>");
-        this.p("\t<comment></comment>");
-        this.p("\t<projects>");
-        this.p("\t</projects>");
-        this.p("\t<buildSpec>");
-        this.p("\t\t<buildCommand>");
-        this.p("\t\t\t<name>org.eclipse.jdt.core.javabuilder</name>");
-        this.p("\t\t\t<arguments>");
-        this.p("\t\t\t</arguments>");
-        this.p("\t\t</buildCommand>");
-        this.p("\t</buildSpec>");
-        this.p("\t<natures>");
-        this.p("\t\t<nature>org.eclipse.jdt.core.javanature</nature>");
-        this.p("\t</natures>");
-        this.p("</projectDescription>");
+        this.p('<?xml version="1.0" encoding="UTF-8"?>');
+        this.p('<projectDescription>');
+        this.p('\t<name>' + path.parse(this.options.to).name + '</name>');
+        this.p('\t<comment></comment>');
+        this.p('\t<projects>');
+        this.p('\t</projects>');
+        this.p('\t<buildSpec>');
+        this.p('\t\t<buildCommand>');
+        this.p('\t\t\t<name>org.eclipse.jdt.core.javabuilder</name>');
+        this.p('\t\t\t<arguments>');
+        this.p('\t\t\t</arguments>');
+        this.p('\t\t</buildCommand>');
+        this.p('\t</buildSpec>');
+        this.p('\t<natures>');
+        this.p('\t\t<nature>org.eclipse.jdt.core.javanature</nature>');
+        this.p('\t</natures>');
+        this.p('</projectDescription>');
         this.closeFile();
     }
     /*copyMusic(platform, from, to, encoders) {
