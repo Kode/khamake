@@ -2,8 +2,6 @@
 // This is where options are processed:
 // e.g. '-t html5 --server'
 
-"use strict";
-
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -17,22 +15,22 @@ import {VisualStudioVersion} from './VisualStudioVersion';
 
 let version = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 if (version < 6) {
-	console.error('Requires Node.js version 6 or higher.')
+	console.error('Requires Node.js version 6 or higher.');
 	process.exit(1);
 }
 
-var defaultTarget: string;
-if (os.platform() === "linux") {
+let defaultTarget: string;
+if (os.platform() === 'linux') {
 	defaultTarget = Platform.Linux;
 }
-else if (os.platform() === "win32") {
+else if (os.platform() === 'win32') {
 	defaultTarget = Platform.Windows;
 }
 else {
 	defaultTarget = Platform.OSX;
 }
 
-var options: Array<any> = [
+let options: Array<any> = [
 	{
 		full: 'from',
 		value: true,
@@ -179,8 +177,7 @@ let parsedOptions: any = new Options();
 
 function printHelp() {
 	console.log('khamake options:\n');
-	for (var o in options) {
-		var option = options[o];
+	for (let option of options) {
 		if (option.hidden) continue;
 		if (option.short) console.log('-' + option.short + ' ' + '--' + option.full);
 		else console.log('--' + option.full);
@@ -194,8 +191,7 @@ function isTarget(target: string) {
 	return true;
 }
 
-for (var o in options) {
-	var option = options[o];
+for (let option of options) {
 	if (option.value) {
 		parsedOptions[option.full] = option.default;
 	}
@@ -204,18 +200,17 @@ for (var o in options) {
 	}
 }
 
-var args = process.argv;
-for (var i = 2; i < args.length; ++i) {
-	var arg = args[i];
+let args = process.argv;
+for (let i = 2; i < args.length; ++i) {
+	let arg = args[i];
 
-	if (arg[0] == '-') {
-		if (arg[1] == '-') {
+	if (arg[0] === '-') {
+		if (arg[1] === '-') {
 			if (arg.substr(2) === 'help') {
 				printHelp();
 				process.exit(0);
 			}
-			for (var o in options) {
-				var option = options[o];
+			for (let option of options) {
 				if (arg.substr(2) === option.full) {
 					if (option.value) {
 						++i;
@@ -232,8 +227,7 @@ for (var i = 2; i < args.length; ++i) {
 				printHelp();
 				process.exit(0);
 			}
-			for (var o in options) {
-				var option = options[o];
+			for (let option of options) {
 				if (option.short && arg[1] === option.short) {
 					if (option.value) {
 						++i;
@@ -275,15 +269,15 @@ if (parsedOptions.init) {
 }
 else if (parsedOptions.server) {
 	console.log('Running server on ' + parsedOptions.port);
-	var nstatic = require('node-static');
-	var fileServer = new nstatic.Server(path.join(parsedOptions.from,'build', 'html5'), { cache: 0 });
-	var server = require('http').createServer(function (request: any, response: any) {
+	let nstatic = require('node-static');
+	let fileServer = new nstatic.Server(path.join(parsedOptions.from, 'build', 'html5'), { cache: 0 });
+	let server = require('http').createServer(function (request: any, response: any) {
 		request.addListener('end', function () {
 			fileServer.serve(request, response);
 		}).resume();
 	});
 	server.on('error', function (e: any) {
-		if (e.code == 'EADDRINUSE') {
+		if (e.code === 'EADDRINUSE') {
 			console.log('Error: Port ' + parsedOptions.port + ' is already in use.');
 			console.log('Please close the competing program (maybe another instance of khamake?)');
 			console.log('or switch to a different port using the --port argument.');

@@ -1,5 +1,3 @@
-"use strict";
-
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -31,7 +29,7 @@ export function executeHaxe(from: string, haxeDirectory: string, options: string
 		
 		haxe.on('close', (code: number) => {
 			if (code === 0) resolve();
-			else reject('Haxe compiler error.')
+			else reject('Haxe compiler error.');
 		});
 	});
 }

@@ -1,5 +1,3 @@
-"use strict";
-
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -32,11 +30,10 @@ function getWidthAndHeight(kha: string, from: string, to: string, options: any, 
 				resolve({w: 0, h: 0});
 				return;	
 			}
-			var lines = output.split('\n');
-			for (var l in lines) {
-				var line = lines[l];
+			const lines = output.split('\n');
+			for (let line of lines) {
 				if (line.startsWith('#')) {
-					var numbers = line.substring(1).split('x');
+					let numbers = line.substring(1).split('x');
 					resolve({w: parseInt(numbers[0]), h: parseInt(numbers[1])});
 					return;
 				}
@@ -71,7 +68,7 @@ function convertImage(from: string, temp: string, to: string, kha: string, exe: 
 			const lines = output.split('\n');
 			for (let line of lines) {
 				if (line.startsWith('#')) {
-					var numbers = line.substring(1).split('x');
+					let numbers = line.substring(1).split('x');
 					options.original_width = parseInt(numbers[0]);
 					options.original_height = parseInt(numbers[1]);
 					resolve();

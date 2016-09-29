@@ -101,7 +101,7 @@ class HaxeCompiler {
                 }
             }
             console.log('Haxe compile start.');
-            //haxe --connect 6000 --cwd myproject.hxml
+            // haxe --connect 6000 --cwd myproject.hxml
             let haxe = child_process.spawn(exe, ['--connect', this.port, this.hxml], { env: env, cwd: path.normalize(this.from) });
             haxe.stdout.on('data', (data) => {
                 log.info(data.toString());

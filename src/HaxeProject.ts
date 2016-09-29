@@ -12,8 +12,8 @@ function copyAndReplace(from: string, to: string, names: string[], values: strin
 }
 
 function IntelliJ(projectdir: string, options: any) {
-    let indir = path.join(__dirname, '..', 'Data', 'intellij');
-    let outdir = path.join(projectdir, options.safeName + '-' + options.system + '-intellij');
+	let indir = path.join(__dirname, '..', 'Data', 'intellij');
+	let outdir = path.join(projectdir, options.safeName + '-' + options.system + '-intellij');
 
 	let sources = '';
 	for (let i = 0; i < options.sources.length; ++i) {
@@ -24,8 +24,8 @@ function IntelliJ(projectdir: string, options: any) {
 			sources += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(outdir, path.resolve(options.from, options.sources[i])).replace(/\\/g, '/') + '" isTestSource="false" />\n';
 		}
 	}
-    	let libraries = '';
-    	for (let i = 0; i < options.libraries.length; ++i) {
+		let libraries = '';
+		for (let i = 0; i < options.libraries.length; ++i) {
 		if (path.isAbsolute(options.libraries[i].libpath)) {
 			libraries += '    <content url="file://' + options.libraries[i].libroot + '">\n';
 			libraries += '      <sourceFolder url="file://' + options.libraries[i].libpath + '" isTestSource="false" />\n';
@@ -34,13 +34,13 @@ function IntelliJ(projectdir: string, options: any) {
 			libraries += '    <content url="file://$MODULE_DIR$/' + path.relative(outdir, path.resolve(options.from, options.libraries[i].libroot)).replace(/\\/g, '/') + '">\n';
 			libraries += '      <sourceFolder url="file://$MODULE_DIR$/' + path.relative(outdir, path.resolve(options.from, options.libraries[i].libpath)).replace(/\\/g, '/') + '" isTestSource="false" />\n';
 		}
-		libraries += '    </content>\n'
+		libraries += '    </content>\n';
 	}
 
 	let args = '';
 
-    let defines = '';
-    for (let i = 0; i < options.defines.length; ++i) {
+	let defines = '';
+	for (let i = 0; i < options.defines.length; ++i) {
 		defines += options.defines[i];
 		if (i < options.defines.length - 1) defines += ',';
 	}
@@ -130,11 +130,11 @@ function hxml(projectdir: string, options: any) {
 	else if (options.language === 'as') {
 		data += '-swf ' + path.normalize(options.to) + '\n';
 		data += '-swf-version ' + options.swfVersion + '\n';
-		data += '-swf-header ' + options.width + ':' + options.height + ':' + options.framerate + ':' + options.stageBackground + '\n'
+		data += '-swf-header ' + options.width + ':' + options.height + ':' + options.framerate + ':' + options.stageBackground + '\n';
 	}
 	else if (options.language === 'xml') {
 		data += '-xml ' + path.normalize(options.to) + '\n';
-		data += "--macro include('kha')\n";
+		data += '--macro include(\'kha\')\n';
 	}
 	else if (options.language === 'hl') {
 		data += '-hl ' + path.normalize(options.to) + '\n';
@@ -168,9 +168,9 @@ function FlashDevelop(projectdir: string, options: any) {
 			break;
 	}
 
-    options.swfVersion = 'swfVersion' in options ? options.swfVersion : 16.0;
-    options.stageBackground = 'stageBackground' in options ? options.stageBackground : 'ffffff';
-    options.framerate = 'framerate' in options ? options.framerate : 30;
+	options.swfVersion = 'swfVersion' in options ? options.swfVersion : 16.0;
+	options.stageBackground = 'stageBackground' in options ? options.stageBackground : 'ffffff';
+	options.framerate = 'framerate' in options ? options.framerate : 30;
     
 	let swfVersion = parseFloat(options.swfVersion).toFixed(1).split('.');
 	
@@ -227,7 +227,7 @@ function FlashDevelop(projectdir: string, options: any) {
 		});
 	}
 
-	var classpaths: string[] = [];
+	let classpaths: string[] = [];
 
 	for (let i = 0; i < options.sources.length; ++i) {
 		if (path.isAbsolute(options.sources[i])) {

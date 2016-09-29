@@ -21,13 +21,13 @@ class AssetConverter {
     static replacePattern(pattern, value, fileinfo, options, from) {
         let basePath = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
         let dirValue = path.relative(basePath, fileinfo.dir);
-        if (basePath.length > 0
-            && basePath[basePath.length - 1] == path.sep
-            && dirValue.length > 0
-            && dirValue[dirValue.length - 1] != path.sep)
+        if (basePath.length > 0 && basePath[basePath.length - 1] === path.sep
+            && dirValue.length > 0 && dirValue[dirValue.length - 1] !== path.sep) {
             dirValue += path.sep;
-        if (options.namePathSeparator)
+        }
+        if (options.namePathSeparator) {
             dirValue = dirValue.split(path.sep).join(options.namePathSeparator);
+        }
         return pattern.replace(/{name}/g, value).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, dirValue);
     }
     static createExportInfo(fileinfo, keepextension, options, from) {
@@ -35,16 +35,16 @@ class AssetConverter {
         let destination = fileinfo.name;
         if (options.md5sum) {
             let data = fs.readFileSync(path.join(fileinfo.dir, fileinfo.base));
-            let md5sum = crypto.createHash('md5').update(data).digest("hex"); //TODO yield generateMd5Sum(file);
-            destination += "_" + md5sum;
+            let md5sum = crypto.createHash('md5').update(data).digest('hex'); // TODO yield generateMd5Sum(file);
+            destination += '_' + md5sum;
         }
-        if (keepextension && (!options.destination || options.destination.indexOf("{ext}") < 0)) {
+        if (keepextension && (!options.destination || options.destination.indexOf('{ext}') < 0)) {
             destination += fileinfo.ext;
         }
         if (options.destination) {
             destination = AssetConverter.replacePattern(options.destination, destination, fileinfo, options, from);
         }
-        if (keepextension && (!options.name || options.name.indexOf("{ext}") < 0)) {
+        if (keepextension && (!options.name || options.name.indexOf('{ext}') < 0)) {
             nameValue += fileinfo.ext;
         }
         if (options.name) {

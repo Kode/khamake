@@ -1,5 +1,3 @@
-"use strict";
-
 let myInfo = function (text: string) {
 	console.log(text);
 };

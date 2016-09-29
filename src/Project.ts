@@ -1,5 +1,3 @@
-"use strict";
-
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -59,14 +57,14 @@ export class Project {
 		this.shaderMatchers = [];
 		this.customTargets = new Map();
 
-		this.windowOptions = {}		
+		this.windowOptions = {};
 		this.targetOptions = {
 			html5: {},
 			flash: {},
 			android: {},
 			android_native: {},
 			ios: {}
-		}
+		};
 	}
 
 	/**

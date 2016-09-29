@@ -49,12 +49,12 @@ function safeName(name: string): string {
 
 function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[]): string {
 	let out = '';
-	out += "let fs = require('fs');\n";
-	out += "let path = require('path');\n";
-	out += "let project = new Project('" + name + "', __dirname);\n";
+	out += 'let fs = require(\'fs\');\n';
+	out += 'let path = require(\'path\');\n';
+	out += 'let project = new Project(\'' + name + '\', __dirname);\n';
 
 	for (let cdefine of cdefines) {
-		out += "project.addDefine('" + cdefine + "');\n";
+		out += 'project.addDefine(\'' + cdefine + '\');\n';
 	}
 	
 	if (targetOptions) {
@@ -68,31 +68,31 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 				koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
 			}
 		}
-		out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
+		out += 'project.targetOptions = ' + JSON.stringify(koreTargetOptions) + ';\n';
 	}
 
-	out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
+	out += 'project.setDebugDir(\'' + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + '\');\n';
 
-	let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
+	let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
 	if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-	out += "Promise.all([Project.createProject('" + buildpath.replace(/\\/g, '/') + "', __dirname), "
-		+ "Project.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "', __dirname), "
-		+ "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
-	out += "\tfor (let p of projects) project.addSubProject(p);\n";
+	out += 'Promise.all([Project.createProject(\'' + buildpath.replace(/\\/g, '/') + '\', __dirname), '
+		+ 'Project.createProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\', __dirname), '
+		+ 'Project.createProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\', __dirname)]).then((projects) => {\n';
+	out += '\tfor (let p of projects) project.addSubProject(p);\n';
 	
-	out += "\tlet libs = [];\n";
+	out += '\tlet libs = [];\n';
 	for (let lib of libraries) {
 		let libPath: string = lib.libroot;
-		out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-		out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "', __dirname));\n";
-		out += "\t}\n";
+		out += '\tif (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
+		out += '\t\tlibs.push(Project.createProject(\'' + libPath.replace(/\\/g, '/') + '\', __dirname));\n';
+		out += '\t}\n';
 	}
-	out += "\tPromise.all(libs).then((libprojects) => {\n";
-	out += "\t\tfor (let p of libprojects) project.addSubProject(p);\n";
-	out += "\t\tresolve(project);\n";
-	out += "\t});\n";
+	out += '\tPromise.all(libs).then((libprojects) => {\n';
+	out += '\t\tfor (let p of libprojects) project.addSubProject(p);\n';
+	out += '\t\tresolve(project);\n';
+	out += '\t});\n';
 
-	out += "});\n"
+	out += '});\n';
 
 	return out;
 }
@@ -104,7 +104,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 		haxeOptions.defines.push('kha_version=1609');
 		haxeOptions.safeName = safeName(haxeOptions.name);
 
-		if(options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
+		if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
 			haxeOptions.parameters.push('-debug');
 		}
 
@@ -286,7 +286,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let defaultWindowOptions = {
 		width: 800,
 		height: 600
-	}
+	};
 	
 	let windowOptions = project.windowOptions ? project.windowOptions : defaultWindowOptions;
 	exporter.setName(project.name);
@@ -436,7 +436,7 @@ async function exportProject(options: Options): Promise<string> {
 function runProject(options: any): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		log.info('Running...');
-		var run = child_process.spawn(
+		let run = child_process.spawn(
 			path.join(process.cwd(), options.to, 'linux-build', name),
 			[],
 			{ cwd: path.join(process.cwd(), options.to, 'linux') });
@@ -490,17 +490,17 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		if (fs.existsSync(oggpath)) options.ogg = oggpath + ' {in} -o {out} --quiet';
 	}
 
-	//if (!options.kravur) {
-	//	let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
-	//	if (fs.existsSync(kravurpath)) options.kravur = kravurpath + ' {in} {size} {out}';
-	//}
+	// if (!options.kravur) {
+	//     let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
+	//     if (fs.existsSync(kravurpath)) options.kravur = kravurpath + ' {in} {size} {out}';
+	// }
 	
 	if (!options.aac && options.ffmpeg) {
 		options.aac = options.ffmpeg + ' -i {in} {out}';
 	}
 	
 	if (!options.mp3 && options.ffmpeg) {
-		options.mp3 = options.ffmpeg + ' -i {in} {out}'
+		options.mp3 = options.ffmpeg + ' -i {in} {out}';
 	}
 	
 	if (!options.h264 && options.ffmpeg) {

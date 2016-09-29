@@ -1,5 +1,3 @@
-"use strict";
-
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as log from './log';
@@ -43,5 +41,5 @@ export function convert(inFilename: string, outFilename: string, encoder: string
 		process.on('close', (code: number) => {
 			resolve(code === 0);
 		});
-	})
+	});
 };

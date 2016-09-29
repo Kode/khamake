@@ -4,22 +4,22 @@ import * as path from 'path';
 export function run(name: string, from: string, projectfile: string) {
 	if (!fs.existsSync(path.join(from, projectfile))) {
 		fs.writeFileSync(path.join(from, projectfile),
-			  "let project = new Project('New Project');\n"
-			+ "project.addAssets('Assets/**');\n"
-			+ "project.addSources('Sources');\n"
-			+ "resolve(project);\n",
+			'let project = new Project(\'New Project\');\n'
+			+ 'project.addAssets(\'Assets/**\');\n'
+			+ 'project.addSources(\'Sources\');\n'
+			+ 'resolve(project);\n',
 		{ encoding: 'utf8' });
 	}
 
 	if (!fs.existsSync(path.join(from, 'Assets'))) fs.mkdirSync(path.join(from, 'Assets'));
 	if (!fs.existsSync(path.join(from, 'Sources'))) fs.mkdirSync(path.join(from, 'Sources'));
 
-	var friendlyName = name;
+	let friendlyName = name;
 	friendlyName = friendlyName.replace(/ /g, '_');
 	friendlyName = friendlyName.replace(/-/g, '_');
 
 	if (!fs.existsSync(path.join(from, 'Sources', 'Main.hx'))) {
-		var mainsource = 'package;\n\nimport kha.System;\n\n'
+		let mainsource = 'package;\n\nimport kha.System;\n\n'
 			+ 'class Main {\n'
 			+ '\tpublic static function main() {\n'
 			+ '\t\tSystem.init({title: "' + name + '", width: 1024, height: 768}, function () {\n'
@@ -31,7 +31,7 @@ export function run(name: string, from: string, projectfile: string) {
 	}
 
 	if (!fs.existsSync(path.join(from, 'Sources', friendlyName + '.hx'))) {
-		var projectsource = 'package;\n\nimport kha.Framebuffer;\nimport kha.Scheduler;\nimport kha.System;\n\n'
+		let projectsource = 'package;\n\nimport kha.Framebuffer;\nimport kha.Scheduler;\nimport kha.System;\n\n'
 			+ 'class ' + friendlyName + ' {\n'
 			+ '\tpublic function new() {\n'
 			+ '\t\tSystem.notifyOnRender(render);\n'

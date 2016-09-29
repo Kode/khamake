@@ -47,11 +47,11 @@ function safeName(name) {
 }
 function createKorefile(name, exporter, options, targetOptions, libraries, cdefines) {
     let out = '';
-    out += "let fs = require('fs');\n";
-    out += "let path = require('path');\n";
-    out += "let project = new Project('" + name + "', __dirname);\n";
+    out += 'let fs = require(\'fs\');\n';
+    out += 'let path = require(\'path\');\n';
+    out += 'let project = new Project(\'' + name + '\', __dirname);\n';
     for (let cdefine of cdefines) {
-        out += "project.addDefine('" + cdefine + "');\n";
+        out += 'project.addDefine(\'' + cdefine + '\');\n';
     }
     if (targetOptions) {
         let koreTargetOptions = {};
@@ -65,28 +65,28 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
                 koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
             }
         }
-        out += "project.targetOptions = " + JSON.stringify(koreTargetOptions) + ";\n";
+        out += 'project.targetOptions = ' + JSON.stringify(koreTargetOptions) + ';\n';
     }
-    out += "project.setDebugDir('" + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + "');\n";
-    let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + "-build")).replace(/\\/g, '/');
+    out += 'project.setDebugDir(\'' + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + '\');\n';
+    let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-    out += "Promise.all([Project.createProject('" + buildpath.replace(/\\/g, '/') + "', __dirname), "
-        + "Project.createProject('" + path.normalize(options.kha).replace(/\\/g, '/') + "', __dirname), "
-        + "Project.createProject('" + path.join(options.kha, 'Kore').replace(/\\/g, '/') + "', __dirname)]).then((projects) => {\n";
-    out += "\tfor (let p of projects) project.addSubProject(p);\n";
-    out += "\tlet libs = [];\n";
+    out += 'Promise.all([Project.createProject(\'' + buildpath.replace(/\\/g, '/') + '\', __dirname), '
+        + 'Project.createProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\', __dirname), '
+        + 'Project.createProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\', __dirname)]).then((projects) => {\n';
+    out += '\tfor (let p of projects) project.addSubProject(p);\n';
+    out += '\tlet libs = [];\n';
     for (let lib of libraries) {
         let libPath = lib.libroot;
-        out += "\tif (fs.existsSync(path.join('" + libPath.replace(/\\/g, '/') + "', 'korefile.js'))) {\n";
-        out += "\t\tlibs.push(Project.createProject('" + libPath.replace(/\\/g, '/') + "', __dirname));\n";
-        out += "\t}\n";
+        out += '\tif (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
+        out += '\t\tlibs.push(Project.createProject(\'' + libPath.replace(/\\/g, '/') + '\', __dirname));\n';
+        out += '\t}\n';
     }
-    out += "\tPromise.all(libs).then((libprojects) => {\n";
-    out += "\t\tfor (let p of libprojects) project.addSubProject(p);\n";
-    out += "\t\tresolve(project);\n";
-    out += "\t});\n";
-    out += "});\n";
+    out += '\tPromise.all(libs).then((libprojects) => {\n';
+    out += '\t\tfor (let p of libprojects) project.addSubProject(p);\n';
+    out += '\t\tresolve(project);\n';
+    out += '\t});\n';
+    out += '});\n';
     return out;
 }
 function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
@@ -397,7 +397,7 @@ function exportProject(options) {
 function runProject(options) {
     return new Promise((resolve, reject) => {
         log.info('Running...');
-        var run = child_process.spawn(path.join(process.cwd(), options.to, 'linux-build', name), [], { cwd: path.join(process.cwd(), options.to, 'linux') });
+        let run = child_process.spawn(path.join(process.cwd(), options.to, 'linux-build', name), [], { cwd: path.join(process.cwd(), options.to, 'linux') });
         run.stdout.on('data', function (data) {
             log.info(data.toString());
         });
@@ -442,10 +442,10 @@ function run(options, loglog) {
             if (fs.existsSync(oggpath))
                 options.ogg = oggpath + ' {in} -o {out} --quiet';
         }
-        //if (!options.kravur) {
-        //	let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
-        //	if (fs.existsSync(kravurpath)) options.kravur = kravurpath + ' {in} {size} {out}';
-        //}
+        // if (!options.kravur) {
+        //     let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
+        //     if (fs.existsSync(kravurpath)) options.kravur = kravurpath + ' {in} {size} {out}';
+        // }
         if (!options.aac && options.ffmpeg) {
             options.aac = options.ffmpeg + ' -i {in} {out}';
         }

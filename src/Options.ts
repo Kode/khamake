@@ -1,5 +1,3 @@
-"use strict";
-
 import {GraphicsApi} from './GraphicsApi';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {VrApi} from './VrApi';
@@ -23,7 +21,7 @@ export class Options {
 	projectfile: string;
 	target: string;
 	vr: string;
-	//intermediate: string;
+	// intermediate: string;
 	graphics: string;
 	visualstudio: string;
 	kha: string;

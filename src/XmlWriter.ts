@@ -1,5 +1,3 @@
-"use strict";
-
 import * as fs from 'fs-extra';
 
 function printElement(elem: any, data: string, indents: number) {

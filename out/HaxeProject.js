@@ -126,7 +126,7 @@ function hxml(projectdir, options) {
     }
     else if (options.language === 'xml') {
         data += '-xml ' + path.normalize(options.to) + '\n';
-        data += "--macro include('kha')\n";
+        data += '--macro include(\'kha\')\n';
     }
     else if (options.language === 'hl') {
         data += '-hl ' + path.normalize(options.to) + '\n';
@@ -212,7 +212,7 @@ function FlashDevelop(projectdir, options) {
             preferredSDK: path.relative(projectdir, options.haxeDirectory)
         });
     }
-    var classpaths = [];
+    let classpaths = [];
     for (let i = 0; i < options.sources.length; ++i) {
         if (path.isAbsolute(options.sources[i])) {
             classpaths.push(options.sources[i]);

@@ -103,7 +103,7 @@ export class HaxeCompiler {
 				}
 			}
 			console.log('Haxe compile start.');
-			//haxe --connect 6000 --cwd myproject.hxml
+			// haxe --connect 6000 --cwd myproject.hxml
 			let haxe = child_process.spawn(exe, ['--connect', this.port, this.hxml], {env: env, cwd: path.normalize(this.from)});
 			
 			haxe.stdout.on('data', (data: any) => {
@@ -121,7 +121,7 @@ export class HaxeCompiler {
 				this.ready = true;
 				console.log('Haxe compile end.');
 				if (code === 0) resolve();
-				else reject('Haxe compiler error.')
+				else reject('Haxe compiler error.');
 				if (this.todo) {
 					this.scheduleCompile();
 				}
@@ -169,7 +169,7 @@ export class HaxeCompiler {
 	}
 	
 	private static spinRename(from: string, to: string): void {
-		for (;;) {
+		for (; ; ) {
 			if (fs.existsSync(from)) {
 				fs.renameSync(from, to);
 				return;

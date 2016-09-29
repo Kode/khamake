@@ -1,5 +1,3 @@
-"use strict";
-
 export var Platform = {
 	Krom: 'krom',
 	Windows: 'windows',
