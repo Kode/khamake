@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
-
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId "{package}"
-        minSdkVersion 8
-        targetSdkVersion 23
+        minSdkVersion 15
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
     }
@@ -17,11 +16,4 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-	sourceSets {
-		main.java.srcDirs += 'src/main/../../../src'
-	}
-}
-
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
