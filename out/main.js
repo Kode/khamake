@@ -187,7 +187,7 @@ function exportKhaProject(options) {
         // then create the project config object, which contains stuff
         // like project name, assets paths, sources path, library path...
         if (fs.existsSync(path.join(options.from, options.projectfile))) {
-            project = yield ProjectFile_1.loadProject(options.from, options.projectfile);
+            project = yield ProjectFile_1.loadProject(options.from, options.projectfile, options.target);
             foundProjectFile = true;
         }
         if (!foundProjectFile) {

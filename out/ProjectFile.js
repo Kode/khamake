@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const fs = require('fs');
 const path = require('path');
+const Platform_1 = require('./Platform');
 const Project_1 = require('./Project');
-function loadProject(from, projectfile) {
+function loadProject(from, projectfile, platform) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
@@ -26,7 +27,7 @@ function loadProject(from, projectfile) {
                 });
                 Project_1.Project.scriptdir = from;
                 try {
-                    new Function('Project', 'require', 'resolve', 'reject', data)(Project_1.Project, require, resolver, reject);
+                    new Function('Project', 'Platform', 'platform', 'require', 'resolve', 'reject', data)(Project_1.Project, Platform_1.Platform, platform, require, resolver, reject);
                 }
                 catch (error) {
                     reject(error);

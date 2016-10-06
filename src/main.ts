@@ -203,7 +203,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	// then create the project config object, which contains stuff
 	// like project name, assets paths, sources path, library path...
 	if (fs.existsSync(path.join(options.from, options.projectfile))) {
-		project = await loadProject(options.from, options.projectfile);
+		project = await loadProject(options.from, options.projectfile, options.target);
 		foundProjectFile = true;
 	}
 	
