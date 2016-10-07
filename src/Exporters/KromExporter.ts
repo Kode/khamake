@@ -60,7 +60,6 @@ export class KromExporter extends KhaExporter {
 
 	async copyImage(platform: string, from: string, to: string, options: any) {
 		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false);
-		console.log('Image format is ' + format);
 		return [to + '.' + format];
 	}
 
