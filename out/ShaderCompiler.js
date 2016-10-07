@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const child_process = require('child_process');
 const fs = require('fs-extra');
+const os = require('os');
 const path = require('path');
 const chokidar = require('chokidar');
 const GraphicsApi_1 = require('./GraphicsApi');
@@ -101,6 +102,13 @@ class ShaderCompiler {
                 }
             case Platform_1.Platform.Unity:
                 return 'hlsl';
+            case Platform_1.Platform.Krom:
+                if (os.platform() === 'win32') {
+                    return 'd3d11';
+                }
+                else {
+                    return 'glsl';
+                }
             default:
                 for (let p in Platform_1.Platform) {
                     if (platform === p) {

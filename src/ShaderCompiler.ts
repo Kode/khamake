@@ -1,5 +1,6 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
+import * as os from 'os';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 import {KhaExporter} from './Exporters/KhaExporter';
@@ -117,6 +118,13 @@ export class ShaderCompiler {
 			}
 		case Platform.Unity:
 			return 'hlsl';
+		case Platform.Krom:
+			if (os.platform() === 'win32') {
+				return 'd3d11';
+			}
+			else {
+				return 'glsl';
+			}
 		default:
 			for (let p in Platform) {
 				if (platform === p) {
