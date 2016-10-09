@@ -10,12 +10,12 @@ import {Platform} from './Platform';
 import {AssetConverter} from './AssetConverter';
 import * as log from './log';
 
-interface Variable {
+export interface Variable {
 	name: string;
 	type: string;
 }
 
-class CompiledShader {
+export class CompiledShader {
 	name: string;
 	files: string[];
 	inputs: Variable[];
@@ -41,7 +41,7 @@ export class ShaderCompiler {
 	options: Options;
 	shaderMatchers: Array<{ match: string, options: any }>;
 	watcher: fs.FSWatcher;
-	
+
 	constructor(exporter: KhaExporter, platform: string, compiler: string, to: string, temp: string, builddir: string, options: Options, shaderMatchers: Array<{ match: string, options: any }>) {
 		this.exporter = exporter;
 		if (platform.endsWith('-native')) platform = platform.substr(0, platform.length - '-native'.length);
@@ -59,7 +59,7 @@ export class ShaderCompiler {
 	static findType(platform: string, options: Options): string {
 		switch (platform) {
 		case Platform.Empty:
-		case Platform.Node: 
+		case Platform.Node:
 			return 'glsl';
 		case Platform.Flash:
 			return 'agal';
@@ -157,10 +157,10 @@ export class ShaderCompiler {
 					case '.glsl':
 						this.compileShader(file, options);
 						break;
-				}  
+				}
 			});
 			this.watcher.on('unlink', (file: string) => {
-				
+
 			});
 			this.watcher.on('ready', async () => {
 				ready = true;
@@ -197,7 +197,7 @@ export class ShaderCompiler {
 			});
 		});
 	}
-	
+
 	async run(watch: boolean): Promise<CompiledShader[]> {
 		let shaders: CompiledShader[] = [];
 		for (let matcher of this.shaderMatchers) {
@@ -205,7 +205,7 @@ export class ShaderCompiler {
 		}
 		return shaders;
 	}
-	
+
 	compileShader(file: string, options: any): Promise<CompiledShader> {
 		return new Promise<CompiledShader>((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
@@ -219,7 +219,7 @@ export class ShaderCompiler {
 			let from = file;
 			let to = path.join(this.to, fileinfo.name + '.' + this.type);
 			let temp = to + '.temp';
-			
+
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
 					if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime())) {
@@ -249,7 +249,7 @@ export class ShaderCompiler {
 							}
 						}
 						let child = child_process.spawn(this.compiler, parameters);
-						
+
 						child.stdout.on('data', (data: any) => {
 							log.info(data.toString());
 						});
@@ -314,7 +314,7 @@ export class ShaderCompiler {
 									log.error(errorLine.trim());
 								}
 							}
-							
+
 							if (code === 0) {
 								fs.renameSync(temp, to);
 								resolve(compiledShader);

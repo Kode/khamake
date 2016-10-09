@@ -5,12 +5,13 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
+import {Library} from '../Project';
 
 export class KromExporter extends KhaExporter {
 	parameters: Array<string>;
 	width: number;
 	height: number;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Krom'));
@@ -19,7 +20,7 @@ export class KromExporter extends KhaExporter {
 	sysdir() {
 		return 'krom';
 	}
-	
+
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('js-classic');
 		defines.push('sys_g1');

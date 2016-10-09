@@ -5,10 +5,11 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
+import {Library} from '../Project';
 
 export class JavaExporter extends KhaExporter {
 	parameters: Array<string>;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));

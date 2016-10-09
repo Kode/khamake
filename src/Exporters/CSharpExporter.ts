@@ -5,11 +5,12 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
+import {Library} from '../Project';
 const uuid = require('uuid');
 
 export abstract class CSharpExporter extends KhaExporter {
 	parameters: Array<string>;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
@@ -91,13 +92,13 @@ export abstract class CSharpExporter extends KhaExporter {
 	/*copyMusic(platform, from, to, encoders) {
 		return [to];
 	}*/
-	
+
 	abstract sysdir(): string;
-	
+
 	abstract backend(): string;
-	
+
 	abstract exportCsProj(projectUuid: string): void;
-	
+
 	abstract exportResources(): void;
 
 	async copySound(platform: string, from: string, to: string) {

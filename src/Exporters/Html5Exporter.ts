@@ -5,12 +5,13 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
+import {Library} from '../Project';
 
 export class Html5Exporter extends KhaExporter {
 	parameters: Array<string>;
 	width: number;
 	height: number;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5'));
@@ -27,7 +28,7 @@ export class Html5Exporter extends KhaExporter {
 	isNode() {
 		return this.sysdir() === 'node';
 	}
-	
+
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('sys_g1');
 		defines.push('sys_g2');
@@ -35,9 +36,9 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_g4');
 		defines.push('sys_a1');
 		defines.push('sys_a2');
-		
+
 		let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
-		
+
 		if (webgl) {
 			defines.push('webgl');
 		}
@@ -50,7 +51,7 @@ export class Html5Exporter extends KhaExporter {
 		else {
 			defines.push('sys_' + this.options.target);
 		}
-		
+
 		if (this.isDebugHtml5()) {
 			defines.push('sys_debug_html5');
 			this.parameters.push('-debug');
@@ -84,7 +85,7 @@ export class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
 				fs.writeFileSync(index.toString(), protoindex);
 			}
-			
+
 			let pack = path.join(this.options.to, this.sysdir(), 'package.json');
 			let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), {encoding: 'utf8'});
 			protopackage = protopackage.replace(/{Name}/g, name);
