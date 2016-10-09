@@ -343,6 +343,8 @@ function exportKhaProject(options) {
             if (file.type === 'image') {
                 file.original_width = asset.original_width;
                 file.original_height = asset.original_height;
+                if (asset.readable)
+                    file.readable = asset.readable;
             }
             files.push(file);
         }
