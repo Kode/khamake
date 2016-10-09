@@ -5,6 +5,7 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
+import {Library} from '../Project';
 
 function findIcon(from: string, options: any) {
 	if (fs.existsSync(path.join(from, 'icon.png'))) return path.join(from, 'icon.png');
@@ -13,7 +14,7 @@ function findIcon(from: string, options: any) {
 
 export class AndroidExporter extends KhaExporter {
 	parameters: Array<string>;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Android'));
@@ -29,7 +30,7 @@ export class AndroidExporter extends KhaExporter {
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		const safename = name.replace(/ /g, '-');
-		
+
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');

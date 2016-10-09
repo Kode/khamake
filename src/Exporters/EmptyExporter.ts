@@ -7,10 +7,11 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import * as log from '../log';
+import {Library} from '../Project';
 
 export class EmptyExporter extends KhaExporter {
 	parameters: Array<string>;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Empty'));
@@ -27,7 +28,7 @@ export class EmptyExporter extends KhaExporter {
 		defines.push('sys_g4');
 		defines.push('sys_a1');
 		defines.push('sys_a2');
-		
+
 		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'docs.xml'),

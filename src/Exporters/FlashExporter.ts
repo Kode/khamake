@@ -5,6 +5,7 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
+import {Library} from '../Project';
 
 function adjustFilename(filename: string): string {
 	filename = filename.replace(/\./g, '_');
@@ -18,7 +19,7 @@ export class FlashExporter extends KhaExporter {
 	sounds: Array<string>;
 	blobs: Array<string>;
 	parameters: Array<string>;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.images = [];
@@ -48,9 +49,9 @@ export class FlashExporter extends KhaExporter {
 			stageBackground : 'ffffff',
 			swfVersion : '16.0'
 		};
-		
+
 		let flashOptions = targetOptions ? (targetOptions.flash ? targetOptions.flash : defaultFlashOptions) : defaultFlashOptions;
-		
+
 		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'kha.swf'),

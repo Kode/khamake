@@ -6,10 +6,11 @@ import {executeHaxe} from '../Haxe';
 import {Platform} from '../Platform';
 import {exportImage} from '../ImageTool';
 import {Options} from '../Options';
+import {Library} from '../Project';
 
 export class KoreExporter extends KhaExporter {
 	parameters: Array<string>;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Kore'));
