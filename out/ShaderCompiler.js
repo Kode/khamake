@@ -24,6 +24,7 @@ class CompiledShader {
         this.uniforms = [];
     }
 }
+exports.CompiledShader = CompiledShader;
 class ShaderCompiler {
     constructor(exporter, platform, compiler, to, temp, builddir, options, shaderMatchers) {
         this.exporter = exporter;

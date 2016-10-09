@@ -123,7 +123,8 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                     visualstudio: options.visualstudio,
                     compile: options.compile,
                     run: options.run,
-                    debug: options.debug
+                    debug: options.debug,
+                    noshaders: true
                 }, {
                     info: log.info,
                     error: log.error
@@ -150,7 +151,8 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                     visualstudio: options.visualstudio,
                     compile: options.compile,
                     run: options.run,
-                    debug: options.debug
+                    debug: options.debug,
+                    noshaders: true
                 }, {
                     info: log.info,
                     error: log.error

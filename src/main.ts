@@ -136,7 +136,8 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 				visualstudio: options.visualstudio,
 				compile: options.compile,
 				run: options.run,
-				debug: options.debug
+				debug: options.debug,
+				noshaders: true
 			},
 			{
 				info: log.info,
@@ -166,7 +167,8 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 				visualstudio: options.visualstudio,
 				compile: options.compile,
 				run: options.run,
-				debug: options.debug
+				debug: options.debug,
+				noshaders: true
 			},
 			{
 				info: log.info,
