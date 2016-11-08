@@ -69,6 +69,7 @@ export class AssetConverter {
 					let fileinfo = path.parse(file);
 					switch (fileinfo.ext) {
 						case '.png':
+							log.info('Reexporting ' + fileinfo.name);
 							this.exporter.copyImage(this.platform, file, fileinfo.name, {});
 							break;
 					}
@@ -79,7 +80,15 @@ export class AssetConverter {
 			});
 			
 			this.watcher.on('change', (file: string) => {
-				
+				if (ready) {
+					let fileinfo = path.parse(file);
+					switch (fileinfo.ext) {
+						case '.png':
+							log.info('Reexporting ' + fileinfo.name);
+							this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+							break;
+					}
+				}
 			});
 			
 			this.watcher.on('ready', async () => {
