@@ -128,6 +128,7 @@ class ShaderCompiler {
                 if (ready) {
                     switch (path.parse(file).ext) {
                         case '.glsl':
+                            log.info('Recompiling ' + path.parse(file).name);
                             this.compileShader(file, options);
                             break;
                     }
@@ -139,6 +140,7 @@ class ShaderCompiler {
             this.watcher.on('change', (file) => {
                 switch (path.parse(file).ext) {
                     case '.glsl':
+                        log.info('Recompiling ' + path.parse(file).name);
                         this.compileShader(file, options);
                         break;
                 }
