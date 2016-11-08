@@ -60,7 +60,7 @@ class Project {
         this.assetMatchers.push({ match: match, options: options });
     }
     addSources(source) {
-        this.sources.push(source);
+        this.sources.push(path.join(this.scriptdir, source));
     }
     /**
      * Add all shaders matching the match regex relative to the directory containing the current khafile.

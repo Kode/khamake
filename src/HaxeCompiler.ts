@@ -32,6 +32,7 @@ export class HaxeCompiler {
 	
 	async run(watch: boolean) {
 		if (watch) {
+			await this.compile();
 			this.watcher = chokidar.watch(this.sourceMatchers, { ignored: /[\/\\]\./, persistent: true, ignoreInitial: true });
 			this.watcher.on('add', (file: string) => {
 				this.scheduleCompile();
@@ -43,9 +44,6 @@ export class HaxeCompiler {
 				this.scheduleCompile();
 			});
 			this.startCompilationServer();
-			setTimeout(() => {
-				this.scheduleCompile();
-			}, 500);
 		}
 		else await this.compile();
 	}
@@ -102,7 +100,7 @@ export class HaxeCompiler {
 					env.HAXE_STD_PATH = stddir;
 				}
 			}
-			console.log('Haxe compile start.');
+			log.info('Haxe compile start.');
 			// haxe --connect 6000 --cwd myproject.hxml
 			let haxe = child_process.spawn(exe, ['--connect', this.port, this.hxml], {env: env, cwd: path.normalize(this.from)});
 			
@@ -119,7 +117,7 @@ export class HaxeCompiler {
 					fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
 				}
 				this.ready = true;
-				console.log('Haxe compile end.');
+				log.info('Haxe compile end.');
 				if (code === 0) resolve();
 				else reject('Haxe compiler error.');
 				if (this.todo) {
