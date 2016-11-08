@@ -85,7 +85,7 @@ export class Project {
 	}
 
 	addSources(source: string) {
-		this.sources.push(path.join(this.scriptdir, source));
+		this.sources.push(path.resolve(path.join(this.scriptdir, source)));
 	}
 
 	/**
