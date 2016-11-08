@@ -111,7 +111,7 @@ class HaxeCompiler {
             });
             haxe.on('close', (code) => {
                 if (this.to) {
-                    fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
+                    fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
                 }
                 this.ready = true;
                 console.log('Haxe compile end.');
@@ -151,7 +151,7 @@ class HaxeCompiler {
             haxe.on('close', (code) => {
                 if (code === 0) {
                     if (this.to) {
-                        fs.renameSync(path.join('build', this.temp), path.join('build', this.to));
+                        fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
                     }
                     resolve();
                 }
