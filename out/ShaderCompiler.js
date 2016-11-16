@@ -124,24 +124,36 @@ class ShaderCompiler {
             let shaders = [];
             let ready = false;
             this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
-            this.watcher.on('add', (file) => {
+            this.watcher.on('add', (filepath) => {
+                let file = path.parse(filepath);
                 if (ready) {
-                    switch (path.parse(file).ext) {
+                    switch (file.ext) {
                         case '.glsl':
-                            log.info('Recompiling ' + path.parse(file).name);
-                            this.compileShader(file, options);
+                            if (!file.name.endsWith('.inc.glsl')) {
+                                log.info('Compiling ' + file.name);
+                                this.compileShader(filepath, options);
+                            }
                             break;
                     }
                 }
                 else {
-                    shaders.push(file);
+                    switch (file.ext) {
+                        case '.glsl':
+                            if (!file.name.endsWith('.inc.glsl')) {
+                                shaders.push(filepath);
+                            }
+                            break;
+                    }
                 }
             });
-            this.watcher.on('change', (file) => {
-                switch (path.parse(file).ext) {
+            this.watcher.on('change', (filepath) => {
+                let file = path.parse(filepath);
+                switch (file.ext) {
                     case '.glsl':
-                        log.info('Recompiling ' + path.parse(file).name);
-                        this.compileShader(file, options);
+                        if (!file.name.endsWith('.inc.glsl')) {
+                            log.info('Recompiling ' + file.name);
+                            this.compileShader(filepath, options);
+                        }
                         break;
                 }
             });
