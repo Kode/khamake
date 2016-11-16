@@ -129,7 +129,7 @@ class ShaderCompiler {
                 if (ready) {
                     switch (file.ext) {
                         case '.glsl':
-                            if (!file.name.endsWith('.inc.glsl')) {
+                            if (!file.name.endsWith('.inc')) {
                                 log.info('Compiling ' + file.name);
                                 this.compileShader(filepath, options);
                             }
@@ -139,7 +139,7 @@ class ShaderCompiler {
                 else {
                     switch (file.ext) {
                         case '.glsl':
-                            if (!file.name.endsWith('.inc.glsl')) {
+                            if (!file.name.endsWith('.inc')) {
                                 shaders.push(filepath);
                             }
                             break;
@@ -150,7 +150,7 @@ class ShaderCompiler {
                 let file = path.parse(filepath);
                 switch (file.ext) {
                     case '.glsl':
-                        if (!file.name.endsWith('.inc.glsl')) {
+                        if (!file.name.endsWith('.inc')) {
                             log.info('Recompiling ' + file.name);
                             this.compileShader(filepath, options);
                         }
