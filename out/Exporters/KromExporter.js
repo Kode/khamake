@@ -22,6 +22,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('js-classic');
+        defines.push('sys_' + this.options.target);
         defines.push('sys_g1');
         defines.push('sys_g2');
         defines.push('sys_g3');
