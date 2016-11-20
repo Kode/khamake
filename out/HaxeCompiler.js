@@ -88,7 +88,7 @@ class HaxeCompiler {
     }
     startCompilationServer() {
         this.compilationServer = this.runHaxe(['--wait', this.port], (code) => {
-            log.error('Haxe compilation server stopped.');
+            log.info('Haxe compilation server stopped.');
         });
     }
     triggerCompilationServer() {
