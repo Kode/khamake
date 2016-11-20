@@ -34,6 +34,10 @@ import {XnaExporter} from './Exporters/XnaExporter';
 import {UnityExporter} from './Exporters/UnityExporter';
 import {writeHaxeProject} from './HaxeProject';
 
+let lastAssetConverter: AssetConverter;
+let lastShaderCompiler: ShaderCompiler;
+let lastHaxeCompiler: HaxeCompiler;
+
 function fixName(name: string): string {
 	name = name.replace(/[-\ \.\/\\]/g, '_');
 	if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
@@ -111,6 +115,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 		writeHaxeProject(options.to, haxeOptions);
 
 		let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
+		lastHaxeCompiler = compiler;
 		await compiler.run(options.watch);
 
 		await exporter.export(name, targetOptions, haxeOptions);
@@ -308,6 +313,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	project.addShaders('Sources/Shaders/**', {});
 
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
+	lastAssetConverter = assetConverter;
 	let assets = await assetConverter.run(options.watch);
 	let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
 	if (target === Platform.Unity) {
@@ -317,6 +323,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	fs.ensureDirSync(shaderDir);
 	let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp,
 		path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
+	lastShaderCompiler = shaderCompiler;
 	let exportedShaders = await shaderCompiler.run(options.watch);
 
 	if (target === Platform.Unity) {
@@ -529,4 +536,10 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	return name;
+}
+
+export function close() {
+	if (lastAssetConverter) lastAssetConverter.close();
+	if (lastShaderCompiler) lastShaderCompiler.close();
+	if (lastHaxeCompiler) lastHaxeCompiler.close();
 }

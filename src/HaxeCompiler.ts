@@ -16,6 +16,7 @@ export class HaxeCompiler {
 	port: string = '7000';
 	temp: string;
 	to: string;
+	compilationServer: child_process.ChildProcess;
 		
 	constructor(from: string, temp: string, to: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>) {
 		this.from = from;
@@ -28,6 +29,11 @@ export class HaxeCompiler {
 		for (let dir of sourceDirectories) {
 			this.sourceMatchers.push(path.join(dir, '**'));
 		}
+	}
+
+	close(): void {
+		if (this.watcher) this.watcher.close();
+		if (this.compilationServer) this.compilationServer.kill();
 	}
 	
 	async run(watch: boolean) {
@@ -56,8 +62,8 @@ export class HaxeCompiler {
 			this.todo = true;
 		}
 	}
-	
-	startCompilationServer() {
+
+	runHaxe(parameters: string[], onClose: Function): child_process.ChildProcess {
 		let exe = 'haxe';
 		let env = process.env;
 		if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {
@@ -70,7 +76,7 @@ export class HaxeCompiler {
 			}
 		}
 		
-		let haxe = child_process.spawn(exe, ['--wait', this.port], {env: env, cwd: path.normalize(this.from)});
+		let haxe = child_process.spawn(exe, parameters, {env: env, cwd: path.normalize(this.from)});
 		
 		haxe.stdout.on('data', (data: any) => {
 			log.info(data.toString());
@@ -80,7 +86,13 @@ export class HaxeCompiler {
 			log.error(data.toString());
 		});
 		
-		haxe.on('close', (code: number) => {
+		haxe.on('close', onClose);
+
+		return haxe;
+	}
+	
+	startCompilationServer() {
+		this.compilationServer = this.runHaxe(['--wait', this.port], (code: number) => {
 			log.error('Haxe compilation server stopped.');
 		});
 	}
@@ -89,30 +101,7 @@ export class HaxeCompiler {
 		this.ready = false;
 		this.todo = false;
 		return new Promise((resolve, reject) => {
-			let exe = 'haxe';
-			let env = process.env;
-			if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {
-				let localexe = path.resolve(this.haxeDirectory, 'haxe' + sys());
-				if (!fs.existsSync(localexe)) localexe = path.resolve(this.haxeDirectory, 'haxe');
-				if (fs.existsSync(localexe)) exe = localexe;
-				const stddir = path.resolve(this.haxeDirectory, 'std');
-				if (fs.existsSync(stddir) && fs.statSync(stddir).isDirectory()) {
-					env.HAXE_STD_PATH = stddir;
-				}
-			}
-			log.info('Haxe compile start.');
-			// haxe --connect 6000 --cwd myproject.hxml
-			let haxe = child_process.spawn(exe, ['--connect', this.port, this.hxml], {env: env, cwd: path.normalize(this.from)});
-			
-			haxe.stdout.on('data', (data: any) => {
-				log.info(data.toString());
-			});
-
-			haxe.stderr.on('data', (data: any) => {
-				log.error(data.toString());
-			});
-			
-			haxe.on('close', (code: number) => {
+			this.runHaxe(['--connect', this.port, this.hxml], (code: number) => {
 				if (this.to) {
 					fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
 				}
@@ -129,29 +118,7 @@ export class HaxeCompiler {
 	
 	compile(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			let exe = 'haxe';
-			let env = process.env;
-			if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {
-				let localexe = path.resolve(this.haxeDirectory, 'haxe' + sys());
-				if (!fs.existsSync(localexe)) localexe = path.resolve(this.haxeDirectory, 'haxe');
-				if (fs.existsSync(localexe)) exe = localexe;
-				const stddir = path.resolve(this.haxeDirectory, 'std');
-				if (fs.existsSync(stddir) && fs.statSync(stddir).isDirectory()) {
-					env.HAXE_STD_PATH = stddir;
-				}
-			}
-			log.info('Compiling code.');
-			let haxe = child_process.spawn(exe, [this.hxml], {env: env, cwd: path.normalize(this.from)});
-			
-			haxe.stdout.on('data', (data: any) => {
-				log.info(data.toString());
-			});
-
-			haxe.stderr.on('data', (data: any) => {
-				log.error(data.toString());
-			});
-			
-			haxe.on('close', (code: number) => {
+			this.runHaxe([this.hxml], (code: number) => {
 				if (code === 0) {
 					if (this.to) {
 						fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));

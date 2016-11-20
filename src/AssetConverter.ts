@@ -17,6 +17,10 @@ export class AssetConverter {
 		this.assetMatchers = assetMatchers;
 	}
 
+	close(): void {
+		if (this.watcher) this.watcher.close();
+	}
+
 	static replacePattern(pattern: string, value: string, fileinfo: path.ParsedPath, options: any, from: string) {		
 		let basePath: string = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
 		let dirValue: string = path.relative(basePath, fileinfo.dir);

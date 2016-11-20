@@ -34,6 +34,9 @@ const WpfExporter_1 = require('./Exporters/WpfExporter');
 const XnaExporter_1 = require('./Exporters/XnaExporter');
 const UnityExporter_1 = require('./Exporters/UnityExporter');
 const HaxeProject_1 = require('./HaxeProject');
+let lastAssetConverter;
+let lastShaderCompiler;
+let lastHaxeCompiler;
 function fixName(name) {
     name = name.replace(/[-\ \.\/\\]/g, '_');
     if (name[0] === '0' || name[0] === '1' || name[0] === '2' || name[0] === '3' || name[0] === '4'
@@ -101,6 +104,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
             }
             HaxeProject_1.writeHaxeProject(options.to, haxeOptions);
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
+            lastHaxeCompiler = compiler;
             yield compiler.run(options.watch);
             yield exporter.export(name, targetOptions, haxeOptions);
         }
@@ -279,6 +283,7 @@ function exportKhaProject(options) {
         project.scriptdir = options.kha;
         project.addShaders('Sources/Shaders/**', {});
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
+        lastAssetConverter = assetConverter;
         let assets = yield assetConverter.run(options.watch);
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
         if (target === Platform_1.Platform.Unity) {
@@ -286,6 +291,7 @@ function exportKhaProject(options) {
         }
         fs.ensureDirSync(shaderDir);
         let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
+        lastShaderCompiler = shaderCompiler;
         let exportedShaders = yield shaderCompiler.run(options.watch);
         if (target === Platform_1.Platform.Unity) {
             fs.ensureDirSync(path.join(options.to, exporter.sysdir() + '-resources'));
@@ -476,4 +482,13 @@ function run(options, loglog) {
     });
 }
 exports.run = run;
+function close() {
+    if (lastAssetConverter)
+        lastAssetConverter.close();
+    if (lastShaderCompiler)
+        lastShaderCompiler.close();
+    if (lastHaxeCompiler)
+        lastHaxeCompiler.close();
+}
+exports.close = close;
 //# sourceMappingURL=main.js.map

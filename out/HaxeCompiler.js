@@ -28,6 +28,12 @@ class HaxeCompiler {
             this.sourceMatchers.push(path.join(dir, '**'));
         }
     }
+    close() {
+        if (this.watcher)
+            this.watcher.close();
+        if (this.compilationServer)
+            this.compilationServer.kill();
+    }
     run(watch) {
         return __awaiter(this, void 0, void 0, function* () {
             if (watch) {
@@ -56,7 +62,7 @@ class HaxeCompiler {
             this.todo = true;
         }
     }
-    startCompilationServer() {
+    runHaxe(parameters, onClose) {
         let exe = 'haxe';
         let env = process.env;
         if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {
@@ -70,14 +76,18 @@ class HaxeCompiler {
                 env.HAXE_STD_PATH = stddir;
             }
         }
-        let haxe = child_process.spawn(exe, ['--wait', this.port], { env: env, cwd: path.normalize(this.from) });
+        let haxe = child_process.spawn(exe, parameters, { env: env, cwd: path.normalize(this.from) });
         haxe.stdout.on('data', (data) => {
             log.info(data.toString());
         });
         haxe.stderr.on('data', (data) => {
             log.error(data.toString());
         });
-        haxe.on('close', (code) => {
+        haxe.on('close', onClose);
+        return haxe;
+    }
+    startCompilationServer() {
+        this.compilationServer = this.runHaxe(['--wait', this.port], (code) => {
             log.error('Haxe compilation server stopped.');
         });
     }
@@ -85,29 +95,7 @@ class HaxeCompiler {
         this.ready = false;
         this.todo = false;
         return new Promise((resolve, reject) => {
-            let exe = 'haxe';
-            let env = process.env;
-            if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {
-                let localexe = path.resolve(this.haxeDirectory, 'haxe' + exec_1.sys());
-                if (!fs.existsSync(localexe))
-                    localexe = path.resolve(this.haxeDirectory, 'haxe');
-                if (fs.existsSync(localexe))
-                    exe = localexe;
-                const stddir = path.resolve(this.haxeDirectory, 'std');
-                if (fs.existsSync(stddir) && fs.statSync(stddir).isDirectory()) {
-                    env.HAXE_STD_PATH = stddir;
-                }
-            }
-            log.info('Haxe compile start.');
-            // haxe --connect 6000 --cwd myproject.hxml
-            let haxe = child_process.spawn(exe, ['--connect', this.port, this.hxml], { env: env, cwd: path.normalize(this.from) });
-            haxe.stdout.on('data', (data) => {
-                log.info(data.toString());
-            });
-            haxe.stderr.on('data', (data) => {
-                log.error(data.toString());
-            });
-            haxe.on('close', (code) => {
+            this.runHaxe(['--connect', this.port, this.hxml], (code) => {
                 if (this.to) {
                     fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
                 }
@@ -125,28 +113,7 @@ class HaxeCompiler {
     }
     compile() {
         return new Promise((resolve, reject) => {
-            let exe = 'haxe';
-            let env = process.env;
-            if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {
-                let localexe = path.resolve(this.haxeDirectory, 'haxe' + exec_1.sys());
-                if (!fs.existsSync(localexe))
-                    localexe = path.resolve(this.haxeDirectory, 'haxe');
-                if (fs.existsSync(localexe))
-                    exe = localexe;
-                const stddir = path.resolve(this.haxeDirectory, 'std');
-                if (fs.existsSync(stddir) && fs.statSync(stddir).isDirectory()) {
-                    env.HAXE_STD_PATH = stddir;
-                }
-            }
-            log.info('Compiling code.');
-            let haxe = child_process.spawn(exe, [this.hxml], { env: env, cwd: path.normalize(this.from) });
-            haxe.stdout.on('data', (data) => {
-                log.info(data.toString());
-            });
-            haxe.stderr.on('data', (data) => {
-                log.error(data.toString());
-            });
-            haxe.on('close', (code) => {
+            this.runHaxe([this.hxml], (code) => {
                 if (code === 0) {
                     if (this.to) {
                         fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));

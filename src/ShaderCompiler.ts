@@ -56,6 +56,10 @@ export class ShaderCompiler {
 		this.shaderMatchers = shaderMatchers;
 	}
 
+	close(): void {
+		if (this.watcher) this.watcher.close();
+	}
+
 	static findType(platform: string, options: Options): string {
 		switch (platform) {
 		case Platform.Empty:

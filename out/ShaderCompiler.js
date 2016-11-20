@@ -41,6 +41,10 @@ class ShaderCompiler {
         this.builddir = builddir;
         this.shaderMatchers = shaderMatchers;
     }
+    close() {
+        if (this.watcher)
+            this.watcher.close();
+    }
     static findType(platform, options) {
         switch (platform) {
             case Platform_1.Platform.Empty:
