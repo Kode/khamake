@@ -41,6 +41,7 @@ export class Options {
 	silent: boolean;
 	watch: boolean;
 	glsl2: boolean;
+	shaderversion: string;
 	
 	ogg: string;
 	aac: string;

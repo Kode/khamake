@@ -258,7 +258,11 @@ export class ShaderCompiler {
 							temp = to + '.temp';
 						}
 						let parameters = [this.type === 'hlsl' ? 'd3d9' : this.type, from, temp, this.temp, this.platform];
-						if (this.platform === Platform.Krom && os.platform() === 'linux') {
+						if (this.options.shaderversion) {
+							parameters.push('--version');
+							parameters.push(this.options.shaderversion);
+						}
+						else if (this.platform === Platform.Krom && os.platform() === 'linux') {
 							parameters.push('--version');
 							parameters.push('110');
 						}
