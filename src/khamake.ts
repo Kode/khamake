@@ -170,7 +170,13 @@ let options: Array<any> = [
 		full: 'glsl2',
 		description: 'Use experimental SPIRV-Cross glsl mode.',
 		value: false
-	}
+	},
+	{
+		full: 'shaderversion',
+		description: 'Set target shader version manually.',
+		value: true,
+		default: 0
+	},
 ];
 
 let parsedOptions: any = new Options();
