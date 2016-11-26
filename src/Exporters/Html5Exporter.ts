@@ -37,6 +37,9 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 
+		let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
+		defines.push('canvasId="' + canvasId + '"');
+
 		let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
 
 		if (webgl) {
@@ -73,7 +76,16 @@ export class Html5Exporter extends KhaExporter {
 		};
 	}
 
-	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+	async export(name: string, _targetOptions: any, haxeOptions: any): Promise<void> {
+		let targetOptions = {
+			canvasId: 'khanvas'
+		};
+
+		if (_targetOptions != null && _targetOptions.html5 != null) {
+			let userOptions = _targetOptions.html5;
+			if (userOptions.canvasId != null) targetOptions.canvasId = userOptions.canvasId;
+		}
+
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
 		if (this.isDebugHtml5()) {
@@ -83,6 +95,7 @@ export class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replace(/{Name}/g, name);
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
+				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 
@@ -113,6 +126,7 @@ export class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replace(/{Name}/g, name);
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
+				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 		}
