@@ -38,7 +38,8 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_a2');
 
 		let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
-		defines.push('canvasId="' + canvasId + '"');
+		
+		defines.push('canvasId=' + canvasId);
 
 		let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
 
