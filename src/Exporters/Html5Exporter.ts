@@ -37,9 +37,9 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 
-		let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
+		let canvas_id = targetOptions.html5.canvas_id == null ? 'khanvas' : targetOptions.html5.canvas_id;
 		
-		defines.push('canvasId=' + canvasId);
+		defines.push('canvas_id=' + canvas_id);
 
 		let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
 
@@ -79,12 +79,12 @@ export class Html5Exporter extends KhaExporter {
 
 	async export(name: string, _targetOptions: any, haxeOptions: any): Promise<void> {
 		let targetOptions = {
-			canvasId: 'khanvas'
+			canvas_id: 'khanvas'
 		};
 
 		if (_targetOptions != null && _targetOptions.html5 != null) {
 			let userOptions = _targetOptions.html5;
-			if (userOptions.canvasId != null) targetOptions.canvasId = userOptions.canvasId;
+			if (userOptions.canvas_id != null) targetOptions.canvas_id = userOptions.canvas_id;
 		}
 
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
@@ -96,7 +96,7 @@ export class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replace(/{Name}/g, name);
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
-				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
+				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvas_id);
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 
@@ -127,7 +127,7 @@ export class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replace(/{Name}/g, name);
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
-				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
+				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvas_id);
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 		}
