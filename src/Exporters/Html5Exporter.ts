@@ -41,6 +41,13 @@ export class Html5Exporter extends KhaExporter {
 		
 		defines.push('canvas_id=' + canvas_id);
 
+		let scriptName = 'kha';
+		if (targetOptions.html5.scriptName != null && !(this.isNode() || this.isDebugHtml5())) {
+			scriptName = targetOptions.html5.scriptName;
+		}
+
+		defines.push('script_name=' + scriptName);
+
 		let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
 
 		if (webgl) {
@@ -63,7 +70,7 @@ export class Html5Exporter extends KhaExporter {
 
 		return {
 			from: this.options.from.toString(),
-			to: path.join(this.sysdir(), 'kha.js'),
+			to: path.join(this.sysdir(), scriptName + '.js'),
 			sources: this.sources,
 			libraries: this.libraries,
 			defines: defines,
@@ -79,12 +86,14 @@ export class Html5Exporter extends KhaExporter {
 
 	async export(name: string, _targetOptions: any, haxeOptions: any): Promise<void> {
 		let targetOptions = {
-			canvas_id: 'khanvas'
+			canvas_id: 'khanvas',
+			scriptName: 'kha'
 		};
 
 		if (_targetOptions != null && _targetOptions.html5 != null) {
 			let userOptions = _targetOptions.html5;
 			if (userOptions.canvas_id != null) targetOptions.canvas_id = userOptions.canvas_id;
+			if (userOptions.scriptName != null) targetOptions.scriptName = userOptions.scriptName;
 		}
 
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
@@ -97,6 +106,7 @@ export class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
 				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvas_id);
+				protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 
@@ -128,6 +138,7 @@ export class Html5Exporter extends KhaExporter {
 				protoindex = protoindex.replace(/{Width}/g, '' + this.width);
 				protoindex = protoindex.replace(/{Height}/g, '' + this.height);
 				protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvas_id);
+				protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
 				fs.writeFileSync(index.toString(), protoindex);
 			}
 		}
