@@ -33,8 +33,13 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g4');
         defines.push('sys_a1');
         defines.push('sys_a2');
-        let canvas_id = targetOptions.html5.canvas_id == null ? 'khanvas' : targetOptions.html5.canvas_id;
-        defines.push('canvas_id=' + canvas_id);
+        let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
+        defines.push('canvas_id=' + canvasId);
+        let scriptName = 'kha';
+        if (targetOptions.html5.scriptName != null && !(this.isNode() || this.isDebugHtml5())) {
+            scriptName = targetOptions.html5.scriptName;
+        }
+        defines.push('script_name=' + scriptName);
         let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
         if (webgl) {
             defines.push('webgl');
@@ -53,7 +58,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         }
         return {
             from: this.options.from.toString(),
-            to: path.join(this.sysdir(), 'kha.js'),
+            to: path.join(this.sysdir(), scriptName + '.js'),
             sources: this.sources,
             libraries: this.libraries,
             defines: defines,
@@ -69,12 +74,15 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     export(name, _targetOptions, haxeOptions) {
         return __awaiter(this, void 0, void 0, function* () {
             let targetOptions = {
-                canvas_id: 'khanvas'
+                canvasId: 'khanvas',
+                scriptName: 'kha'
             };
             if (_targetOptions != null && _targetOptions.html5 != null) {
                 let userOptions = _targetOptions.html5;
-                if (userOptions.canvas_id != null)
-                    targetOptions.canvas_id = userOptions.canvas_id;
+                if (userOptions.canvasId != null)
+                    targetOptions.canvasId = userOptions.canvasId;
+                if (userOptions.scriptName != null)
+                    targetOptions.scriptName = userOptions.scriptName;
             }
             fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
             if (this.isDebugHtml5()) {
@@ -84,7 +92,8 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
                     protoindex = protoindex.replace(/{Name}/g, name);
                     protoindex = protoindex.replace(/{Width}/g, '' + this.width);
                     protoindex = protoindex.replace(/{Height}/g, '' + this.height);
-                    protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvas_id);
+                    protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
+                    protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
                     fs.writeFileSync(index.toString(), protoindex);
                 }
                 let pack = path.join(this.options.to, this.sysdir(), 'package.json');
@@ -112,7 +121,8 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
                     protoindex = protoindex.replace(/{Name}/g, name);
                     protoindex = protoindex.replace(/{Width}/g, '' + this.width);
                     protoindex = protoindex.replace(/{Height}/g, '' + this.height);
-                    protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvas_id);
+                    protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
+                    protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
                     fs.writeFileSync(index.toString(), protoindex);
                 }
             }
