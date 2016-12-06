@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra'; 
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import {writeXml} from './XmlWriter';
 import * as log from './log';
@@ -171,9 +171,9 @@ function FlashDevelop(projectdir: string, options: any) {
 	options.swfVersion = 'swfVersion' in options ? options.swfVersion : 16.0;
 	options.stageBackground = 'stageBackground' in options ? options.stageBackground : 'ffffff';
 	options.framerate = 'framerate' in options ? options.framerate : 30;
-    
+
 	let swfVersion = parseFloat(options.swfVersion).toFixed(1).split('.');
-	
+
 	let output: any = {
 		n: 'output',
 		e: [
@@ -230,20 +230,11 @@ function FlashDevelop(projectdir: string, options: any) {
 	let classpaths: string[] = [];
 
 	for (let i = 0; i < options.sources.length; ++i) {
-		if (path.isAbsolute(options.sources[i])) {
-			classpaths.push(options.sources[i]);
-		}
-		else {
-			classpaths.push(path.relative(projectdir, path.resolve(options.from, options.sources[i])));
-		}
+		classpaths.push(path.relative(projectdir, path.resolve(options.from, options.sources[i])));
 	}
+
 	for (let i = 0; i < options.libraries.length; ++i) {
-		if (path.isAbsolute(options.libraries[i].libpath)) {
-			classpaths.push(options.libraries[i].libpath);
-		}
-		else {
-			classpaths.push(path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)));
-		}
+		classpaths.push(path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)));
 	}
 
 	let otheroptions: any = [
