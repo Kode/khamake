@@ -214,20 +214,10 @@ function FlashDevelop(projectdir, options) {
     }
     let classpaths = [];
     for (let i = 0; i < options.sources.length; ++i) {
-        if (path.isAbsolute(options.sources[i])) {
-            classpaths.push(options.sources[i]);
-        }
-        else {
-            classpaths.push(path.relative(projectdir, path.resolve(options.from, options.sources[i])));
-        }
+        classpaths.push(path.relative(projectdir, path.resolve(options.from, options.sources[i])));
     }
     for (let i = 0; i < options.libraries.length; ++i) {
-        if (path.isAbsolute(options.libraries[i].libpath)) {
-            classpaths.push(options.libraries[i].libpath);
-        }
-        else {
-            classpaths.push(path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)));
-        }
+        classpaths.push(path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)));
     }
     let otheroptions = [
         {
