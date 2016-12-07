@@ -50,12 +50,8 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     }
     copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-            let files = [];
-            if (ogg)
-                files.push(to + '.ogg');
-            return files;
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
+            return [to + '.wav'];
         });
     }
     copyImage(platform, from, to, options) {

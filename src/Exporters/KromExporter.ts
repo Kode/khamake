@@ -51,11 +51,8 @@ export class KromExporter extends KhaExporter {
 	}
 
 	async copySound(platform: string, from: string, to: string) {
-		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-		let files: string[] = [];
-		if (ogg) files.push(to + '.ogg');
-		return files;
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
+		return [to + '.wav'];
 	}
 
 	async copyImage(platform: string, from: string, to: string, options: any) {
