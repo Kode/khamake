@@ -18,9 +18,6 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
         super(options);
         this.addSourceDirectory(path.join(options.kha, 'Backends', 'Empty'));
     }
-    sysdir() {
-        return 'empty';
-    }
     haxeOptions(name, targetOptions, defines) {
         defines.push('sys_g1');
         defines.push('sys_g2');

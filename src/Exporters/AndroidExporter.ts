@@ -20,10 +20,6 @@ export class AndroidExporter extends KhaExporter {
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Android'));
 	}
 
-	sysdir() {
-		return 'android';
-	}
-
 	backend() {
 		return 'Android';
 	}

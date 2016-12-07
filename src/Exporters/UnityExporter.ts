@@ -17,10 +17,6 @@ export class UnityExporter extends KhaExporter {
 		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
 	}
 
-	sysdir() {
-		return 'unity';
-	}
-
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-root');
 		defines.push('no-compilation');

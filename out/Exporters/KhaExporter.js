@@ -21,6 +21,9 @@ class KhaExporter extends Exporter_1.Exporter {
         this.projectFiles = !options.noproject;
         this.parameters = [];
     }
+    sysdir() {
+        return this.systemDirectory;
+    }
     setWidthAndHeight(width, height) {
         this.width = width;
         this.height = height;
@@ -28,6 +31,9 @@ class KhaExporter extends Exporter_1.Exporter {
     setName(name) {
         this.name = name;
         this.safename = name.replace(/ /g, '-');
+    }
+    setSystemDirectory(systemDirectory) {
+        this.systemDirectory = systemDirectory;
     }
     addShader(shader) {
     }

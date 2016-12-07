@@ -17,12 +17,6 @@ export class KoreExporter extends KhaExporter {
 		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 	}
 
-	sysdir() {
-		if (this.options.target === 'android') return 'android-native';
-		else if (this.options.target === 'html5') return 'html5-native';
-		return this.options.target;
-	}
-
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);

@@ -28,10 +28,6 @@ export class FlashExporter extends KhaExporter {
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Flash'));
 	}
 
-	sysdir() {
-		return 'flash';
-	}
-
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('swf-script-timeout=60');
 		defines.push('sys_' + this.options.target);

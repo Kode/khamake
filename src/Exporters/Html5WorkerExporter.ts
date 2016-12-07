@@ -8,8 +8,4 @@ export class Html5WorkerExporter extends Html5Exporter {
 		this.sources.pop();
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5-Worker'));
 	}
-
-	sysdir() {
-		return 'html5-worker';
-	}
 }

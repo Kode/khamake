@@ -17,9 +17,6 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
         super(options);
         this.files = [];
     }
-    sysdir() {
-        return 'psm';
-    }
     backend() {
         return 'PSM';
     }

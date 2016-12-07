@@ -7,9 +7,6 @@ class NodeExporter extends Html5Exporter_1.Html5Exporter {
         this.removeSourceDirectory(path.join(options.kha, 'Backends', 'HTML5'));
         this.addSourceDirectory(path.join(options.kha, 'Backends', 'Node'));
     }
-    sysdir() {
-        return 'node';
-    }
 }
 exports.NodeExporter = NodeExporter;
 //# sourceMappingURL=NodeExporter.js.map

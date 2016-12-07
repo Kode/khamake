@@ -14,7 +14,8 @@ export abstract class KhaExporter extends Exporter {
 	options: Options;
 	projectFiles: boolean;
 	parameters: string[];
-	
+	systemDirectory: string;
+
 	constructor(options: Options) {
 		super();
 		this.options = options;
@@ -27,7 +28,9 @@ export abstract class KhaExporter extends Exporter {
 		this.parameters = [];
 	}
 	
-	abstract sysdir(): string;
+	sysdir(): string {
+		return this.systemDirectory;
+	}
 
 	abstract haxeOptions(name: string, targetOptions: any, defines: Array<string>): any;
 
@@ -41,6 +44,10 @@ export abstract class KhaExporter extends Exporter {
 	setName(name: string): void {
 		this.name = name;
 		this.safename = name.replace(/ /g, '-');
+	}
+
+	setSystemDirectory(systemDirectory: string): void {
+		this.systemDirectory = systemDirectory;
 	}
 
 	addShader(shader: string): void {

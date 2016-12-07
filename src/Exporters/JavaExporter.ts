@@ -16,10 +16,6 @@ export class JavaExporter extends KhaExporter {
 		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
 	}
 
-	sysdir() {
-		return 'java';
-	}
-
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);

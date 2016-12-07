@@ -17,9 +17,6 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         super(options);
         this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5'));
     }
-    sysdir() {
-        return 'html5';
-    }
     isDebugHtml5() {
         return this.sysdir() === 'debug-html5';
     }

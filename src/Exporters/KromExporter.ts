@@ -17,10 +17,6 @@ export class KromExporter extends KhaExporter {
 		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Krom'));
 	}
 
-	sysdir() {
-		return 'krom';
-	}
-
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('js-classic');
 		defines.push('sys_' + this.options.target);

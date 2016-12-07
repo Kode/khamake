@@ -17,10 +17,6 @@ export class KoreHLExporter extends KhaExporter {
 		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 	}
 
-	sysdir() {
-		return this.options.target + '-hl';
-	}
-
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
 		defines.push('sys_' + this.options.target);

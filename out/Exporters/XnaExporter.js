@@ -23,9 +23,6 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         super(options);
         this.images = [];
     }
-    sysdir() {
-        return 'xna';
-    }
     backend() {
         return 'XNA';
     }

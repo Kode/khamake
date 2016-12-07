@@ -204,13 +204,14 @@ function exportKhaProject(options) {
         let exporter = null;
         let kore = false;
         let korehl = false;
-        let target = options.target;
+        let target = options.target.toLowerCase();
+        let baseTarget = target;
         let customTarget = null;
         if (project.customTargets.get(options.target)) {
             customTarget = project.customTargets.get(options.target);
-            target = customTarget.baseTarget;
+            baseTarget = customTarget.baseTarget;
         }
-        switch (target) {
+        switch (baseTarget) {
             case Platform_1.Platform.Krom:
                 exporter = new KromExporter_1.KromExporter(options);
                 break;
@@ -263,6 +264,7 @@ function exportKhaProject(options) {
                 }
                 break;
         }
+        exporter.setSystemDirectory(target);
         // Create the target build folder
         // e.g. 'build/android-native'
         fs.ensureDirSync(path.join(options.to, exporter.sysdir()));

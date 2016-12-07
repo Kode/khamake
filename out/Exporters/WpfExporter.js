@@ -16,9 +16,6 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
     constructor(options) {
         super(options);
     }
-    sysdir() {
-        return 'wpf';
-    }
     backend() {
         return 'WPF';
     }

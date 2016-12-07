@@ -89,12 +89,6 @@ export abstract class CSharpExporter extends KhaExporter {
 		this.closeFile();
 	}
 
-	/*copyMusic(platform, from, to, encoders) {
-		return [to];
-	}*/
-
-	abstract sysdir(): string;
-
 	abstract backend(): string;
 
 	abstract exportCsProj(projectUuid: string): void;
