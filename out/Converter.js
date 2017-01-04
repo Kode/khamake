@@ -1,6 +1,6 @@
 "use strict";
-const child_process = require('child_process');
-const fs = require('fs');
+const child_process = require("child_process");
+const fs = require("fs");
 function convert(inFilename, outFilename, encoder, args = null) {
     return new Promise((resolve, reject) => {
         if (fs.existsSync(outFilename.toString()) && fs.statSync(outFilename.toString()).mtime.getTime() > fs.statSync(inFilename.toString()).mtime.getTime()) {

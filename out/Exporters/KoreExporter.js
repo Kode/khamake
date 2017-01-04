@@ -2,17 +2,17 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-const fs = require('fs-extra');
-const path = require('path');
-const KhaExporter_1 = require('./KhaExporter');
-const Converter_1 = require('../Converter');
-const Platform_1 = require('../Platform');
-const ImageTool_1 = require('../ImageTool');
+const fs = require("fs-extra");
+const path = require("path");
+const KhaExporter_1 = require("./KhaExporter");
+const Converter_1 = require("../Converter");
+const Platform_1 = require("../Platform");
+const ImageTool_1 = require("../ImageTool");
 class KoreExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
@@ -77,7 +77,7 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
                 return [to + '.' + format];
             }
             else {
-                let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined /*'snappy'*/, true);
+                let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true);
                 return [to + '.' + format];
             }
         });

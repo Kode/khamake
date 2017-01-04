@@ -2,17 +2,17 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-const child_process = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const chokidar = require('chokidar');
-const log = require('./log');
-const exec_1 = require('./exec');
+const child_process = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const chokidar = require("chokidar");
+const log = require("./log");
+const exec_1 = require("./exec");
 class HaxeCompiler {
     constructor(from, temp, to, haxeDirectory, hxml, sourceDirectories) {
         this.ready = true;

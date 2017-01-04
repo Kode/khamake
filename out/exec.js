@@ -1,5 +1,5 @@
 "use strict";
-const os = require('os');
+const os = require("os");
 function sys() {
     if (os.platform() === 'linux') {
         if (os.arch() === 'arm')

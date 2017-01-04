@@ -2,15 +2,15 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-const fs = require('fs-extra');
-const path = require('path');
-const CSharpExporter_1 = require('./CSharpExporter');
-const ImageTool_1 = require('../ImageTool');
+const fs = require("fs-extra");
+const path = require("path");
+const CSharpExporter_1 = require("./CSharpExporter");
+const ImageTool_1 = require("../ImageTool");
 const uuid = require('uuid');
 function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))

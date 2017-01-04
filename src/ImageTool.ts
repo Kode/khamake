@@ -96,6 +96,9 @@ export async function exportImage(kha: string, from: string, to: string, options
 	else if (format === 'hdr') {
 		to = to + '.hdr';
 	}
+	else if (format === 'lz4') {
+		to += '.k';
+	}
 	else {
 		format = 'png';
 		if (prealpha) to = to + '.kng';
@@ -107,6 +110,9 @@ export async function exportImage(kha: string, from: string, to: string, options
 	let outputformat = format;
 	if (format === 'png' && prealpha) {
 		outputformat = 'kng';
+	}
+	if (format === 'lz4') {
+		outputformat = 'k';
 	}
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {

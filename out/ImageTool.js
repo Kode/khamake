@@ -2,16 +2,16 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-const child_process = require('child_process');
-const fs = require('fs-extra');
-const path = require('path');
-const log = require('./log');
-const exec_1 = require('./exec');
+const child_process = require("child_process");
+const fs = require("fs-extra");
+const path = require("path");
+const log = require("./log");
+const exec_1 = require("./exec");
 function getWidthAndHeight(kha, from, to, options, format, prealpha) {
     return new Promise((resolve, reject) => {
         const exe = 'kraffiti' + exec_1.sys();
@@ -93,6 +93,9 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
         else if (format === 'hdr') {
             to = to + '.hdr';
         }
+        else if (format === 'lz4') {
+            to += '.k';
+        }
         else {
             format = 'png';
             if (prealpha)
@@ -104,6 +107,9 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
         let outputformat = format;
         if (format === 'png' && prealpha) {
             outputformat = 'kng';
+        }
+        if (format === 'lz4') {
+            outputformat = 'k';
         }
         if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
             let wh = yield getWidthAndHeight(kha, from, to, options, format, prealpha);

@@ -1,8 +1,8 @@
 "use strict";
-const child_process = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const log = require('./log');
+const child_process = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const log = require("./log");
 class Library {
 }
 exports.Library = Library;
