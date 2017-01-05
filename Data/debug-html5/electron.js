@@ -8,6 +8,7 @@ var mainWindow = null;
 
 electron.ipcMain.on('asynchronous-message', (event, arg) => {
 	if (arg.width && arg.height) mainWindow.setContentSize(arg.width, arg.height);
+	if (arg.title) mainWindow.setTitle(arg.title);
 	mainWindow.center();
 	mainWindow.show();
 });
