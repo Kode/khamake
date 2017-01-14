@@ -4,7 +4,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 const fs = require("fs-extra");
@@ -61,7 +61,8 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         this.safename = safename;
         let targetOptions = {
             package: 'com.ktxsoftware.kha',
-            screenOrientation: 'sensor'
+            screenOrientation: 'sensor',
+            permissions: new Array()
         };
         if (_targetOptions != null && _targetOptions.android != null) {
             let userOptions = _targetOptions.android;
@@ -69,6 +70,8 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
                 targetOptions.package = userOptions.package;
             if (userOptions.screenOrientation != null)
                 targetOptions.screenOrientation = userOptions.screenOrientation;
+            if (userOptions.permissions != null)
+                targetOptions.permissions = userOptions.permissions;
         }
         let indir = path.join(__dirname, '..', '..', 'Data', 'android');
         let outdir = path.join(this.options.to, this.sysdir(), safename);
@@ -88,6 +91,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         let manifest = fs.readFileSync(path.join(indir, 'main', 'AndroidManifest.xml'), { encoding: 'utf8' });
         manifest = manifest.replace(/{package}/g, targetOptions.package);
         manifest = manifest.replace(/{screenOrientation}/g, targetOptions.screenOrientation);
+        manifest = manifest.replace(/{permissions}/g, targetOptions.permissions.map((p) => { return '\n\t<uses-permission android:name="' + p + '"/>'; }).join(''));
         fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main'));
         fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'), manifest, { encoding: 'utf8' });
         fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main', 'res', 'values'));
