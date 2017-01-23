@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 const os = require("os");
@@ -99,6 +99,11 @@ let options = [
         default: ''
     },
     {
+        full: 'nohaxe',
+        description: 'Do not compile Haxe sources',
+        value: false,
+    },
+    {
         full: 'ffmpeg',
         description: 'Location of ffmpeg executable',
         value: true,
@@ -109,6 +114,11 @@ let options = [
         description: 'Location of krafix shader compiler',
         value: true,
         default: ''
+    },
+    {
+        full: 'noshaders',
+        description: 'Do not compile shaders',
+        value: false
     },
     {
         full: 'noproject',

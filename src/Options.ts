@@ -26,8 +26,10 @@ export class Options {
 	visualstudio: string;
 	kha: string;
 	haxe: string;
+	nohaxe: boolean;
 	ffmpeg: string;
 	krafix: string;
+	noshaders: boolean;
 	
 	noproject: boolean;
 	embedflashassets: boolean;
