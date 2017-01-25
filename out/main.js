@@ -4,7 +4,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 const child_process = require("child_process");
@@ -103,9 +103,11 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 haxeOptions.parameters.push('-debug');
             }
             HaxeProject_1.writeHaxeProject(options.to, haxeOptions);
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
-            lastHaxeCompiler = compiler;
-            yield compiler.run(options.watch);
+            if (!options.nohaxe) {
+                let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
+                lastHaxeCompiler = compiler;
+                yield compiler.run(options.watch);
+            }
             yield exporter.export(name, targetOptions, haxeOptions);
         }
         if (options.haxe !== '' && kore && !options.noproject) {
@@ -292,9 +294,12 @@ function exportKhaProject(options) {
             shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
         }
         fs.ensureDirSync(shaderDir);
-        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
-        lastShaderCompiler = shaderCompiler;
-        let exportedShaders = yield shaderCompiler.run(options.watch);
+        let exportedShaders = [];
+        if (!options.noshaders) {
+            let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
+            lastShaderCompiler = shaderCompiler;
+            exportedShaders = yield shaderCompiler.run(options.watch);
+        }
         if (target === Platform_1.Platform.Unity) {
             fs.ensureDirSync(path.join(options.to, exporter.sysdir() + '-resources'));
             for (let shader of exportedShaders) {
