@@ -1,8 +1,8 @@
 "use strict";
-const child_process = require("child_process");
-const fs = require("fs");
-const path = require("path");
-const log = require("./log");
+const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const log = require('./log');
 class Library {
 }
 exports.Library = Library;
@@ -93,7 +93,7 @@ class Project {
         let self = this;
         function findLibraryDirectory(name) {
             if (path.isAbsolute(name)) {
-                var dirs = name.split('/');
+                const dirs = name.split('/');
                 return { libpath: name, libroot: dirs[dirs.length - 1] };
             }
             // Tries to load the default library from inside the kha project.

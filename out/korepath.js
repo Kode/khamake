@@ -1,5 +1,5 @@
 "use strict";
-const path = require("path");
+const path = require('path');
 let korepath = path.join(__dirname, '..', '..', '..', 'Kore', 'Tools', 'koremake');
 function init(options) {
     korepath = path.join(options.kha, 'Kore', 'Tools', 'koremake');

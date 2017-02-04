@@ -1,7 +1,7 @@
 "use strict";
-const fs = require("fs-extra");
-const path = require("path");
-const XmlWriter_1 = require("./XmlWriter");
+const fs = require('fs-extra');
+const path = require('path');
+const XmlWriter_1 = require('./XmlWriter');
 function copyAndReplace(from, to, names, values) {
     let data = fs.readFileSync(from, { encoding: 'utf8' });
     for (let i = 0; i < names.length; ++i) {

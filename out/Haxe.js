@@ -1,9 +1,9 @@
 "use strict";
-const child_process = require("child_process");
-const fs = require("fs");
-const path = require("path");
-const log = require("./log");
-const exec_1 = require("./exec");
+const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const log = require('./log');
+const exec_1 = require('./exec');
 function executeHaxe(from, haxeDirectory, options) {
     return new Promise((resolve, reject) => {
         let exe = 'haxe';

@@ -1,5 +1,5 @@
 "use strict";
-const fs = require("fs-extra");
+const fs = require('fs-extra');
 function printElement(elem, data, indents) {
     for (let i = 0; i < indents; ++i)
         data += '\t';

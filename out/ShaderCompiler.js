@@ -2,20 +2,20 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+        step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-const child_process = require("child_process");
-const fs = require("fs-extra");
-const os = require("os");
-const path = require("path");
-const chokidar = require("chokidar");
-const GraphicsApi_1 = require("./GraphicsApi");
-const Platform_1 = require("./Platform");
-const AssetConverter_1 = require("./AssetConverter");
-const log = require("./log");
+const child_process = require('child_process');
+const fs = require('fs-extra');
+const os = require('os');
+const path = require('path');
+const chokidar = require('chokidar');
+const GraphicsApi_1 = require('./GraphicsApi');
+const Platform_1 = require('./Platform');
+const AssetConverter_1 = require('./AssetConverter');
+const log = require('./log');
 class CompiledShader {
     constructor() {
         this.files = [];
