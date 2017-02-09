@@ -30,6 +30,9 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g4');
         defines.push('sys_a1');
         defines.push('sys_a2');
+        if (targetOptions.html5.noKeyboard) {
+            defines.push('no_keyboard');
+        }
         let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
         defines.push('canvas_id=' + canvasId);
         let scriptName = 'kha';
