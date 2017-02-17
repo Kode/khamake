@@ -33,7 +33,7 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 
-		if(targetOptions.html5.noKeyboard) {
+		if (targetOptions.html5.noKeyboard) {
 			defines.push('no_keyboard');
 		}
 

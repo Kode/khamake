@@ -38,7 +38,7 @@ function run(name, from, projectfile) {
             + '\t\t\n'
             + '\t}\n'
             + '\n'
-            + '\tfunction render(framebuffer: Framebuffer): Void {'
+            + '\tfunction render(framebuffer: Framebuffer): Void {\n'
             + '\t\t\n'
             + '\t}\n'
             + '}\n';

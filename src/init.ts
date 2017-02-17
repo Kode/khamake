@@ -42,7 +42,7 @@ export function run(name: string, from: string, projectfile: string) {
 			+ '\t\t\n'
 			+ '\t}\n'
 			+ '\n'
-			+ '\tfunction render(framebuffer: Framebuffer): Void {'
+			+ '\tfunction render(framebuffer: Framebuffer): Void {\n'
 			+ '\t\t\n'
 			+ '\t}\n'
 			+ '}\n';
