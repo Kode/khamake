@@ -1,6 +1,7 @@
 "use strict";
-const path = require('path');
-const Html5Exporter_1 = require('./Html5Exporter');
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
+const Html5Exporter_1 = require("./Html5Exporter");
 class Html5WorkerExporter extends Html5Exporter_1.Html5Exporter {
     constructor(options) {
         super(options);

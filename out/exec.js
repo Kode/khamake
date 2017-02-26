@@ -1,5 +1,6 @@
 "use strict";
-const os = require('os');
+Object.defineProperty(exports, "__esModule", { value: true });
+const os = require("os");
 function sys() {
     if (os.platform() === 'linux') {
         if (os.arch() === 'arm')
