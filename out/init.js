@@ -1,6 +1,7 @@
 "use strict";
-const fs = require('fs');
-const path = require('path');
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs = require("fs");
+const path = require("path");
 function run(name, from, projectfile) {
     if (!fs.existsSync(path.join(from, projectfile))) {
         fs.writeFileSync(path.join(from, projectfile), 'let project = new Project(\'New Project\');\n'

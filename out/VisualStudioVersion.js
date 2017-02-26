@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.VisualStudioVersion = {
     VS2010: 'vs2010',
     VS2012: 'vs2012',

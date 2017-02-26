@@ -1,8 +1,9 @@
 "use strict";
-const child_process = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const log = require('./log');
+Object.defineProperty(exports, "__esModule", { value: true });
+const child_process = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const log = require("./log");
 class Library {
 }
 exports.Library = Library;
@@ -93,8 +94,7 @@ class Project {
         let self = this;
         function findLibraryDirectory(name) {
             if (path.isAbsolute(name)) {
-                const dirs = name.split('/');
-                return { libpath: name, libroot: dirs[dirs.length - 1] };
+                return { libpath: name, libroot: name };
             }
             // Tries to load the default library from inside the kha project.
             // e.g. 'Libraries/wyngine'

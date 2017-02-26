@@ -2,38 +2,39 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const child_process = require('child_process');
-const fs = require('fs-extra');
-const path = require('path');
-const exec_1 = require('./exec');
-const korepath = require('./korepath');
-const log = require('./log');
-const Platform_1 = require('./Platform');
-const ProjectFile_1 = require('./ProjectFile');
-const AssetConverter_1 = require('./AssetConverter');
-const HaxeCompiler_1 = require('./HaxeCompiler');
-const ShaderCompiler_1 = require('./ShaderCompiler');
-const AndroidExporter_1 = require('./Exporters/AndroidExporter');
-const DebugHtml5Exporter_1 = require('./Exporters/DebugHtml5Exporter');
-const EmptyExporter_1 = require('./Exporters/EmptyExporter');
-const FlashExporter_1 = require('./Exporters/FlashExporter');
-const Html5Exporter_1 = require('./Exporters/Html5Exporter');
-const Html5WorkerExporter_1 = require('./Exporters/Html5WorkerExporter');
-const JavaExporter_1 = require('./Exporters/JavaExporter');
-const KoreExporter_1 = require('./Exporters/KoreExporter');
-const KoreHLExporter_1 = require('./Exporters/KoreHLExporter');
-const KromExporter_1 = require('./Exporters/KromExporter');
-const NodeExporter_1 = require('./Exporters/NodeExporter');
-const PlayStationMobileExporter_1 = require('./Exporters/PlayStationMobileExporter');
-const WpfExporter_1 = require('./Exporters/WpfExporter');
-const XnaExporter_1 = require('./Exporters/XnaExporter');
-const UnityExporter_1 = require('./Exporters/UnityExporter');
-const HaxeProject_1 = require('./HaxeProject');
+Object.defineProperty(exports, "__esModule", { value: true });
+const child_process = require("child_process");
+const fs = require("fs-extra");
+const path = require("path");
+const exec_1 = require("./exec");
+const korepath = require("./korepath");
+const log = require("./log");
+const Platform_1 = require("./Platform");
+const ProjectFile_1 = require("./ProjectFile");
+const AssetConverter_1 = require("./AssetConverter");
+const HaxeCompiler_1 = require("./HaxeCompiler");
+const ShaderCompiler_1 = require("./ShaderCompiler");
+const AndroidExporter_1 = require("./Exporters/AndroidExporter");
+const DebugHtml5Exporter_1 = require("./Exporters/DebugHtml5Exporter");
+const EmptyExporter_1 = require("./Exporters/EmptyExporter");
+const FlashExporter_1 = require("./Exporters/FlashExporter");
+const Html5Exporter_1 = require("./Exporters/Html5Exporter");
+const Html5WorkerExporter_1 = require("./Exporters/Html5WorkerExporter");
+const JavaExporter_1 = require("./Exporters/JavaExporter");
+const KoreExporter_1 = require("./Exporters/KoreExporter");
+const KoreHLExporter_1 = require("./Exporters/KoreHLExporter");
+const KromExporter_1 = require("./Exporters/KromExporter");
+const NodeExporter_1 = require("./Exporters/NodeExporter");
+const PlayStationMobileExporter_1 = require("./Exporters/PlayStationMobileExporter");
+const WpfExporter_1 = require("./Exporters/WpfExporter");
+const XnaExporter_1 = require("./Exporters/XnaExporter");
+const UnityExporter_1 = require("./Exporters/UnityExporter");
+const HaxeProject_1 = require("./HaxeProject");
 let lastAssetConverter;
 let lastShaderCompiler;
 let lastHaxeCompiler;
