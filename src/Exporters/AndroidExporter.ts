@@ -97,7 +97,7 @@ export class AndroidExporter extends KhaExporter {
 		let manifest = fs.readFileSync(path.join(indir, 'main', 'AndroidManifest.xml'), {encoding: 'utf8'});
 		manifest = manifest.replace(/{package}/g, targetOptions.package);
 		manifest = manifest.replace(/{screenOrientation}/g, targetOptions.screenOrientation);
-		manifest = manifest.replace(/{permissions}/g, targetOptions.permissions.map(function(p) {return '\n\t<uses-permission android:name="' + p + '"/>'}).join(''));
+		manifest = manifest.replace(/{permissions}/g, targetOptions.permissions.map(function(p) { return '\n\t<uses-permission android:name="' + p + '"/>'; }).join(''));
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main'));
 		fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'), manifest, {encoding: 'utf8'});
 
