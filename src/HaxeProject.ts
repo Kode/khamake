@@ -244,7 +244,7 @@ function FlashDevelop(projectdir: string, options: any) {
 		}
 	];
 
-	if (options.language === 'cpp') {
+	if (options.language === 'cpp' || options.system === 'krom') {
 		otheroptions.push({
 			n: 'option',
 			testMovie: 'Custom'

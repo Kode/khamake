@@ -226,7 +226,7 @@ function FlashDevelop(projectdir, options) {
             showHiddenPaths: 'False'
         }
     ];
-    if (options.language === 'cpp') {
+    if (options.language === 'cpp' || options.system === 'krom') {
         otheroptions.push({
             n: 'option',
             testMovie: 'Custom'
