@@ -12,14 +12,27 @@ const fs = require("fs");
 const path = require("path");
 const Platform_1 = require("./Platform");
 const Project_1 = require("./Project");
+class ProjectData {
+}
+exports.ProjectData = ProjectData;
 function loadProject(from, projectfile, platform) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
                 let resolved = false;
+                let callbacks = {
+                    preAssetConversion: () => { },
+                    preShaderCompilation: () => { },
+                    preHaxeCompilation: () => { }
+                };
                 let resolver = (project) => {
                     resolved = true;
-                    resolve(project);
+                    resolve({
+                        preAssetConversion: callbacks.preAssetConversion,
+                        preShaderCompilation: callbacks.preShaderCompilation,
+                        preHaxeCompilation: callbacks.preHaxeCompilation,
+                        project: project
+                    });
                 };
                 process.on('exit', (code) => {
                     if (!resolved) {
@@ -28,7 +41,7 @@ function loadProject(from, projectfile, platform) {
                 });
                 Project_1.Project.scriptdir = from;
                 try {
-                    new Function('Project', 'Platform', 'platform', 'require', 'resolve', 'reject', data)(Project_1.Project, Platform_1.Platform, platform, require, resolver, reject);
+                    new Function('Project', 'Platform', 'platform', 'require', 'resolve', 'reject', 'callbacks', data)(Project_1.Project, Platform_1.Platform, platform, require, resolver, reject, callbacks);
                 }
                 catch (error) {
                     reject(error);

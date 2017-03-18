@@ -11,7 +11,7 @@ import {VrApi} from './VrApi';
 import {Options} from './Options';
 import {Platform} from './Platform';
 import {Project, Target, Library} from './Project';
-import {loadProject} from './ProjectFile';
+import {loadProject, ProjectData} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
 import {HaxeCompiler} from './HaxeCompiler';
@@ -206,13 +206,15 @@ async function exportKhaProject(options: Options): Promise<string> {
 	log.info('Creating Kha project.');
 		
 	let project: Project = null;
+	let projectData: ProjectData;
 	let foundProjectFile = false;
 
 	// get the khafile.js and load the config code,
 	// then create the project config object, which contains stuff
 	// like project name, assets paths, sources path, library path...
 	if (fs.existsSync(path.join(options.from, options.projectfile))) {
-		project = await loadProject(options.from, options.projectfile, options.target);
+		projectData = await loadProject(options.from, options.projectfile, options.target);
+		project = projectData.project;
 		foundProjectFile = true;
 	}
 	
@@ -317,6 +319,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	project.scriptdir = options.kha;
 	project.addShaders('Sources/Shaders/**', {});
 
+	projectData.preAssetConversion();
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
 	lastAssetConverter = assetConverter;
 	let assets = await assetConverter.run(options.watch);
@@ -326,6 +329,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
 	}
 	
+	projectData.preShaderCompilation();
 	fs.ensureDirSync(shaderDir);
 	let exportedShaders: CompiledShader[] = [];
 	if (!options.noshaders) {
@@ -435,6 +439,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
 	}
 
+	projectData.preHaxeCompilation();
 	return await exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
 }
 

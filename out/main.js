@@ -191,12 +191,14 @@ function exportKhaProject(options) {
     return __awaiter(this, void 0, void 0, function* () {
         log.info('Creating Kha project.');
         let project = null;
+        let projectData;
         let foundProjectFile = false;
         // get the khafile.js and load the config code,
         // then create the project config object, which contains stuff
         // like project name, assets paths, sources path, library path...
         if (fs.existsSync(path.join(options.from, options.projectfile))) {
-            project = yield ProjectFile_1.loadProject(options.from, options.projectfile, options.target);
+            projectData = yield ProjectFile_1.loadProject(options.from, options.projectfile, options.target);
+            project = projectData.project;
             foundProjectFile = true;
         }
         if (!foundProjectFile) {
@@ -287,6 +289,7 @@ function exportKhaProject(options) {
         exporter.parameters = project.parameters;
         project.scriptdir = options.kha;
         project.addShaders('Sources/Shaders/**', {});
+        projectData.preAssetConversion();
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
         lastAssetConverter = assetConverter;
         let assets = yield assetConverter.run(options.watch);
@@ -294,6 +297,7 @@ function exportKhaProject(options) {
         if (target === Platform_1.Platform.Unity) {
             shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
         }
+        projectData.preShaderCompilation();
         fs.ensureDirSync(shaderDir);
         let exportedShaders = [];
         if (!options.noshaders) {
@@ -395,6 +399,7 @@ function exportKhaProject(options) {
         if (foundProjectFile) {
             fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
         }
+        projectData.preHaxeCompilation();
         return yield exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
     });
 }
