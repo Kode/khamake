@@ -101,7 +101,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 	return out;
 }
 
-async function exportProjectFiles(name: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries: Library[], targetOptions: any, defines: string[], cdefines: string[]): Promise<string> {
+async function exportProjectFiles(name: string, projectData: ProjectData, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries: Library[], targetOptions: any, defines: string[], cdefines: string[]): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		haxeOptions.defines.push('kha');
@@ -119,6 +119,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 			lastHaxeCompiler = compiler;
 			await compiler.run(options.watch);
 		}
+		projectData.postHaxeCompilation();
 
 		await exporter.export(name, targetOptions, haxeOptions);
 	}
@@ -150,6 +151,7 @@ async function exportProjectFiles(name: string, options: Options, exporter: KhaE
 				info: log.info,
 				error: log.error
 			});
+			projectData.postCppCompilation();
 			log.info('Done.');
 			return name;
 		}
@@ -440,7 +442,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	}
 
 	projectData.preHaxeCompilation();
-	return await exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+	return await exportProjectFiles(project.name, projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
 }
 
 function isKhaProject(directory: string, projectfile: string) {

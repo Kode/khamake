@@ -23,7 +23,9 @@ function loadProject(from, projectfile, platform) {
                 let callbacks = {
                     preAssetConversion: () => { },
                     preShaderCompilation: () => { },
-                    preHaxeCompilation: () => { }
+                    preHaxeCompilation: () => { },
+                    postHaxeCompilation: () => { },
+                    postCppCompilation: () => { }
                 };
                 let resolver = (project) => {
                     resolved = true;
@@ -31,6 +33,8 @@ function loadProject(from, projectfile, platform) {
                         preAssetConversion: callbacks.preAssetConversion,
                         preShaderCompilation: callbacks.preShaderCompilation,
                         preHaxeCompilation: callbacks.preHaxeCompilation,
+                        postHaxeCompilation: callbacks.postHaxeCompilation,
+                        postCppCompilation: callbacks.postCppCompilation,
                         project: project
                     });
                 };

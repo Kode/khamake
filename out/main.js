@@ -93,7 +93,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     out += '});\n';
     return out;
 }
-function exportProjectFiles(name, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
+function exportProjectFiles(name, projectData, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
     return __awaiter(this, void 0, void 0, function* () {
         if (options.haxe !== '') {
             let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
@@ -109,6 +109,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                 lastHaxeCompiler = compiler;
                 yield compiler.run(options.watch);
             }
+            projectData.postHaxeCompilation();
             yield exporter.export(name, targetOptions, haxeOptions);
         }
         if (options.haxe !== '' && kore && !options.noproject) {
@@ -136,6 +137,7 @@ function exportProjectFiles(name, options, exporter, kore, korehl, libraries, ta
                     info: log.info,
                     error: log.error
                 });
+                projectData.postCppCompilation();
                 log.info('Done.');
                 return name;
             }
@@ -400,7 +402,7 @@ function exportKhaProject(options) {
             fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
         }
         projectData.preHaxeCompilation();
-        return yield exportProjectFiles(project.name, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+        return yield exportProjectFiles(project.name, projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
     });
 }
 function isKhaProject(directory, projectfile) {

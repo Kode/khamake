@@ -9,6 +9,8 @@ export class ProjectData {
 	preAssetConversion: () => void;
 	preShaderCompilation: () => void;
 	preHaxeCompilation: () => void;
+	postHaxeCompilation: () => void;
+	postCppCompilation: () => void;
 }
 
 export async function loadProject(from: string, projectfile: string, platform: string): Promise<ProjectData> {
@@ -18,7 +20,9 @@ export async function loadProject(from: string, projectfile: string, platform: s
 			let callbacks = {
 				preAssetConversion: () => {},
 				preShaderCompilation: () => {},
-				preHaxeCompilation: () => {}
+				preHaxeCompilation: () => {},
+				postHaxeCompilation: () => {},
+				postCppCompilation: () => {}
 			};
 			let resolver = (project: Project) => {
 				resolved = true;
@@ -26,6 +30,8 @@ export async function loadProject(from: string, projectfile: string, platform: s
 					preAssetConversion: callbacks.preAssetConversion,
 					preShaderCompilation: callbacks.preShaderCompilation,
 					preHaxeCompilation: callbacks.preHaxeCompilation,
+					postHaxeCompilation: callbacks.postHaxeCompilation,
+					postCppCompilation: callbacks.postCppCompilation,
 					project: project
 				});
 			};
