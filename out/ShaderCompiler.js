@@ -78,7 +78,7 @@ class ShaderCompiler {
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
                     return 'spirv';
                 }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.OpenGL2) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
                     return 'glsl';
                 }
                 else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12) {

@@ -261,10 +261,6 @@ for (let i = 2; i < args.length; ++i) {
 	}
 }
 
-if (parsedOptions.graphics === GraphicsApi.OpenGL) {
-	parsedOptions.graphics = GraphicsApi.OpenGL2;
-}
-
 if (parsedOptions.run) {
 	parsedOptions.compile = true;
 }

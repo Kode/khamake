@@ -18,7 +18,7 @@ exports.ProjectData = ProjectData;
 function loadProject(from, projectfile, platform) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
-            fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
+            fs.readFile(path.join(from, projectfile), 'utf8', (err, data) => {
                 let resolved = false;
                 let callbacks = {
                     preAssetConversion: () => { },

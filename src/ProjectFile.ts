@@ -15,7 +15,7 @@ export class ProjectData {
 
 export async function loadProject(from: string, projectfile: string, platform: string): Promise<ProjectData> {
 	return new Promise<ProjectData>((resolve, reject) => {
-		fs.readFile(path.join(from, projectfile), { encoding: 'utf8' }, (err, data) => {
+		fs.readFile(path.join(from, projectfile), 'utf8', (err, data) => {
 			let resolved = false;
 			let callbacks = {
 				preAssetConversion: () => {},
