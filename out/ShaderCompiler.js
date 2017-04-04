@@ -182,11 +182,12 @@ class ShaderCompiler {
                     if (compiledShader === null) {
                         compiledShader = new CompiledShader();
                         // mark variables as invalid, so they are loaded from previous compilation
+                        compiledShader.files = null;
                         compiledShader.inputs = null;
                         compiledShader.outputs = null;
                         compiledShader.uniforms = null;
                     }
-                    if (compiledShader.files.length === 0) {
+                    if (compiledShader.files != null && compiledShader.files.length === 0) {
                         // TODO: Remove when krafix has been recompiled everywhere
                         compiledShader.files.push(parsed.name + '.' + this.type);
                     }
@@ -255,6 +256,9 @@ class ShaderCompiler {
                                 parameters.push('-D' + define);
                             }
                         }
+                        if (this.platform === Platform_1.Platform.HTML5 || this.platform === Platform_1.Platform.Android) {
+                            parameters.push('--relax');
+                        }
                         let child = child_process.spawn(this.compiler, parameters);
                         child.stdout.on('data', (data) => {
                             log.info(data.toString());
@@ -316,7 +320,9 @@ class ShaderCompiler {
                                 }
                             }
                             if (code === 0) {
-                                fs.renameSync(temp, to);
+                                for (let file of compiledShader.files) {
+                                    fs.renameSync(path.join(this.to, file + '.temp'), path.join(this.to, file));
+                                }
                                 resolve(compiledShader);
                             }
                             else {

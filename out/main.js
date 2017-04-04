@@ -340,6 +340,7 @@ function exportKhaProject(options) {
         }
         function findShader(name) {
             let fallback = {};
+            fallback.files = [];
             fallback.inputs = [];
             fallback.outputs = [];
             fallback.uniforms = [];
@@ -374,7 +375,7 @@ function exportKhaProject(options) {
             let oldShader = findShader(shader.name);
             files.push({
                 name: fixName(shader.name),
-                files: shader.files,
+                files: shader.files === null ? oldShader.files : shader.files,
                 type: 'shader',
                 inputs: shader.inputs === null ? oldShader.inputs : shader.inputs,
                 outputs: shader.outputs === null ? oldShader.outputs : shader.outputs,
