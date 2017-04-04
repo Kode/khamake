@@ -320,6 +320,9 @@ class ShaderCompiler {
                                 }
                             }
                             if (code === 0) {
+                                if (compiledShader.files === null || compiledShader.files.length === 0) {
+                                    fs.renameSync(temp, to);
+                                }
                                 for (let file of compiledShader.files) {
                                     fs.renameSync(path.join(this.to, file + '.temp'), path.join(this.to, file));
                                 }
