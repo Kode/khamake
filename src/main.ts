@@ -552,6 +552,30 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		await runProject(options);
 	}
 
+	if (options.compile && options.target === Platform.Android) {
+		let gradlew = 'gradlew';
+		if (process.platform === 'win32') gradlew += '.bat';
+		let make = child_process.spawn(gradlew, ['assemble'], { cwd: path.join(options.to, 'android', name) });
+
+		make.stdout.on('data', function (data: any) {
+			log.info(data.toString());
+		});
+
+		make.stderr.on('data', function (data: any) {
+			log.error(data.toString());
+		});
+
+		make.on('close', function (code: number) {
+			if (code === 0) {
+				
+			}
+			else {
+				log.error('Compilation failed.');
+				process.exit(code);
+			}
+		});
+	}
+
 	return name;
 }
 

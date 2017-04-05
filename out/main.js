@@ -494,6 +494,26 @@ function run(options, loglog) {
         if (options.target === Platform_1.Platform.Linux && options.run) {
             yield runProject(options);
         }
+        if (options.compile && options.target === Platform_1.Platform.Android) {
+            let gradlew = 'gradlew';
+            if (process.platform === 'win32')
+                gradlew += '.bat';
+            let make = child_process.spawn(gradlew, ['assemble'], { cwd: path.join(options.to, 'android', name) });
+            make.stdout.on('data', function (data) {
+                log.info(data.toString());
+            });
+            make.stderr.on('data', function (data) {
+                log.error(data.toString());
+            });
+            make.on('close', function (code) {
+                if (code === 0) {
+                }
+                else {
+                    log.error('Compilation failed.');
+                    process.exit(code);
+                }
+            });
+        }
         return name;
     });
 }
