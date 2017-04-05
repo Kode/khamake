@@ -553,9 +553,10 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (options.compile && options.target === Platform.Android) {
-		let gradlew = 'gradlew';
-		if (process.platform === 'win32') gradlew += '.bat';
-		let make = child_process.spawn(gradlew, ['assemble'], { cwd: path.join(options.to, 'android', name) });
+		let gradlew = (process.platform === 'win32') ? 'gradlew.bat' : 'bash';
+		let args = (process.platform === 'win32') ? [] : ['gradlew'];
+		args.push('assemble');
+		let make = child_process.spawn(gradlew, args, { cwd: path.join(options.to, 'android', name) });
 
 		make.stdout.on('data', function (data: any) {
 			log.info(data.toString());
