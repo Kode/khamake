@@ -268,7 +268,23 @@ if (parsedOptions.run) {
 function runKhamake() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name) { });
+            let logInfo = function (text, newline) {
+                if (newline) {
+                    console.log(text);
+                }
+                else {
+                    process.stdout.write(text);
+                }
+            };
+            let logError = function (text, newline) {
+                if (newline) {
+                    console.error(text);
+                }
+                else {
+                    process.stderr.write(text);
+                }
+            };
+            yield require('./main.js').run(parsedOptions, { info: logInfo, error: logError }, (name) => { });
         }
         catch (error) {
             console.log(error);

@@ -267,7 +267,24 @@ if (parsedOptions.run) {
 
 async function runKhamake() {
 	try {
-		await require('./main.js').run(parsedOptions, { info: console.log, error: console.log }, function (name: string) { });
+		let logInfo = function (text: string, newline: boolean) {
+			if (newline) {
+				console.log(text);
+			}
+			else {
+				process.stdout.write(text);
+			}
+		};
+
+		let logError = function (text: string, newline: boolean) {
+			if (newline) {
+				console.error(text);
+			}
+			else {
+				process.stderr.write(text);
+			}
+		};
+		await require('./main.js').run(parsedOptions, { info: logInfo, error: logError }, (name: string) => { });
 	}
 	catch (error) {
 		console.log(error);
