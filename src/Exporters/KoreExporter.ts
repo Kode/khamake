@@ -94,7 +94,11 @@ export class KoreExporter extends KhaExporter {
 
 	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-		if (platform === Platform.iOS) {
+		if (platform === Platform.Windows) {
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.avi'), this.options.h264);
+			return [to + '.avi'];
+		}
+		else if (platform === Platform.iOS) {
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
 			return [to + '.mp4'];
 		}

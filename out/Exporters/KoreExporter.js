@@ -92,7 +92,11 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
     copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            if (platform === Platform_1.Platform.iOS) {
+            if (platform === Platform_1.Platform.Windows) {
+                yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.avi'), this.options.h264);
+                return [to + '.avi'];
+            }
+            else if (platform === Platform_1.Platform.iOS) {
                 yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
                 return [to + '.mp4'];
             }

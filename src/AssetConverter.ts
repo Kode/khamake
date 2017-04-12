@@ -126,6 +126,7 @@ export class AssetConverter {
 						}
 						case '.mp4':
 						case '.webm':
+						case '.mov':
 						case '.wmv':
 						case '.avi': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
