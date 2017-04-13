@@ -25,6 +25,13 @@ export class EmptyExporter extends KhaExporter {
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 
+		defines.push('kha_g1');
+		defines.push('kha_g2');
+		defines.push('kha_g3');
+		defines.push('kha_g4');
+		defines.push('kha_a1');
+		defines.push('kha_a2');
+
 		return {
 			from: this.options.from,
 			to: path.join(this.sysdir(), 'docs.xml'),

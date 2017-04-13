@@ -29,6 +29,15 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g4');
         defines.push('sys_a1');
         defines.push('sys_a2');
+        defines.push('kha_hl');
+        defines.push('kha_' + this.options.target);
+        defines.push('kha_' + this.options.target + '_hl');
+        defines.push('kha_g1');
+        defines.push('kha_g2');
+        defines.push('kha_g3');
+        defines.push('kha_g4');
+        defines.push('kha_a1');
+        defines.push('kha_a2');
         if (this.options.vr === 'gearvr') {
             defines.push('vr_gearvr');
         }

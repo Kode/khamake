@@ -31,8 +31,15 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g4');
         defines.push('sys_a1');
         defines.push('sys_a2');
+        defines.push('kha_js');
+        defines.push('kha_g1');
+        defines.push('kha_g2');
+        defines.push('kha_g3');
+        defines.push('kha_g4');
+        defines.push('kha_a1');
+        defines.push('kha_a2');
         if (targetOptions.html5.noKeyboard) {
-            defines.push('no_keyboard');
+            defines.push('kha_no_keyboard');
         }
         let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
         defines.push('canvas_id=' + canvasId);
@@ -43,19 +50,24 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         defines.push('script_name=' + scriptName);
         let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
         if (webgl) {
-            defines.push('webgl');
+            defines.push('kha_webgl');
         }
         if (this.isNode()) {
+            defines.push('nodejs');
             defines.push('sys_node');
             defines.push('sys_server');
-            defines.push('nodejs');
+            defines.push('kha_node');
+            defines.push('kha_server');
         }
         else {
             defines.push('sys_' + this.options.target);
+            defines.push('kha_' + this.options.target);
+            defines.push('kha_' + this.options.target + '_js');
         }
         if (this.isDebugHtml5()) {
-            defines.push('sys_debug_html5');
             this.parameters.push('-debug');
+            defines.push('sys_debug_html5');
+            defines.push('kha_debug_html5');
         }
         return {
             from: this.options.from.toString(),

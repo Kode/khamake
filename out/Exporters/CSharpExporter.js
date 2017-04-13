@@ -39,6 +39,12 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g1');
         defines.push('sys_g2');
         defines.push('sys_a1');
+        defines.push('kha_cs');
+        defines.push('kha_' + this.options.target);
+        defines.push('kha_' + this.options.target + '_cs');
+        defines.push('kha_g1');
+        defines.push('kha_g2');
+        defines.push('kha_a1');
         return {
             from: this.options.from,
             to: path.join(this.sysdir() + '-build', 'Sources'),

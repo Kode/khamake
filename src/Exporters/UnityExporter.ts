@@ -20,12 +20,22 @@ export class UnityExporter extends KhaExporter {
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-root');
 		defines.push('no-compilation');
+
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
 		defines.push('sys_g4');
 		defines.push('sys_a1');
+
+		defines.push('kha_cs');
+		defines.push('kha_' + this.options.target);
+		defines.push('kha_' + this.options.target + '_cs');
+		defines.push('kha_g1');
+		defines.push('kha_g2');
+		defines.push('kha_g3');
+		defines.push('kha_g4');
+		defines.push('kha_a1');
 
 		return {
 			from: this.options.from,

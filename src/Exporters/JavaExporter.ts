@@ -18,10 +18,20 @@ export class JavaExporter extends KhaExporter {
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
+
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_a1');
+
+		defines.push('kha_' + this.options.target);
+		if (this.options.target !== 'java') {
+			defines.push('kha_java');
+			defines.push('kha_' + this.options.target + '_java');
+		}
+		defines.push('kha_g1');
+		defines.push('kha_g2');
+		defines.push('kha_a1');
 
 		return {
 			from: this.options.from,

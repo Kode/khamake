@@ -19,6 +19,7 @@ export class KoreExporter extends KhaExporter {
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
+
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_kore');
 		defines.push('sys_g1');
@@ -27,6 +28,17 @@ export class KoreExporter extends KhaExporter {
 		defines.push('sys_g4');
 		defines.push('sys_a1');
 		defines.push('sys_a2');
+
+		defines.push('kha_cpp');
+		defines.push('kha_' + this.options.target);
+		defines.push('kha_' + this.options.target + '_cpp');
+		defines.push('kha_kore');
+		defines.push('kha_g1');
+		defines.push('kha_g2');
+		defines.push('kha_g3');
+		defines.push('kha_g4');
+		defines.push('kha_a1');
+		defines.push('kha_a2');
 
 		if (this.options.vr === 'gearvr') {
 			defines.push('vr_gearvr');

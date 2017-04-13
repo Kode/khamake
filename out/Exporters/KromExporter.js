@@ -26,7 +26,16 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         defines.push('sys_g3');
         defines.push('sys_g4');
         defines.push('sys_a1');
-        // defines.push('sys_a2');
+        defines.push('sys_a2');
+        defines.push('kha_js');
+        defines.push('kha_' + this.options.target);
+        defines.push('kha_' + this.options.target + '_js');
+        defines.push('kha_g1');
+        defines.push('kha_g2');
+        defines.push('kha_g3');
+        defines.push('kha_g4');
+        defines.push('kha_a1');
+        defines.push('kha_a2');
         this.parameters.push('-debug');
         return {
             from: this.options.from.toString(),
