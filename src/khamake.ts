@@ -74,7 +74,7 @@ let options: Array<any> = [
 		short: 'g',
 		description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal and opengl.',
 		value: true,
-		default: GraphicsApi.Direct3D9
+		default: GraphicsApi.Direct3D11
 	},
 	{
 		full: 'visualstudio',
