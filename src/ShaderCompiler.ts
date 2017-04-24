@@ -253,7 +253,7 @@ export class ShaderCompiler {
 							funcname = funcname.replace(/\./g, '_');
 							funcname += '_main';
 
-							fs.writeFileSync(to, funcname, 'utf8');
+							fs.writeFileSync(temp, funcname, 'utf8');
 
 							to = path.join(this.builddir, 'Sources', fileinfo.name + '.' + this.type);
 							temp = to + '.temp';
