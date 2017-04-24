@@ -253,10 +253,10 @@ export class ShaderCompiler {
 							funcname = funcname.replace(/\./g, '_');
 							funcname += '_main';
 
-							fs.writeFileSync(temp, funcname, 'utf8');
+							fs.writeFileSync(to, funcname, 'utf8');
 
 							to = path.join(this.builddir, 'Sources', fileinfo.name + '.' + this.type);
-							temp = to + '.temp';
+							temp = to;
 						}
 						let parameters = [this.type === 'hlsl' ? 'd3d9' : this.type, from, temp, this.temp, this.platform];
 						if (this.options.shaderversion) {
@@ -278,6 +278,7 @@ export class ShaderCompiler {
 						if (this.platform === Platform.HTML5 || this.platform === Platform.Android) {
 							parameters.push('--relax');
 						}
+
 						let child = child_process.spawn(this.compiler, parameters);
 
 						child.stdout.on('data', (data: any) => {
@@ -305,7 +306,10 @@ export class ShaderCompiler {
 							}
 							else if (parts.length >= 2) {
 								if (parts[0] === 'file') {
-									compiledShader.files.push(path.parse(parts[1]).name);
+									const parsed = path.parse(parts[1]);
+									let name = parsed.name;
+									if (parsed.ext !== '.temp') name += parsed.ext;
+									compiledShader.files.push(name);
 								}
 							}
 						}
@@ -346,11 +350,13 @@ export class ShaderCompiler {
 							}
 
 							if (code === 0) {
-								if (compiledShader.files === null || compiledShader.files.length === 0) {
-									fs.renameSync(temp, to);
-								}
-								for (let file of compiledShader.files) {
-									fs.renameSync(path.join(this.to, file + '.temp'), path.join(this.to, file));
+								if (this.type !== 'metal') {
+									if (compiledShader.files === null || compiledShader.files.length === 0) {
+										fs.renameSync(temp, to);
+									}
+									for (let file of compiledShader.files) {
+										fs.renameSync(path.join(this.to, file + '.temp'), path.join(this.to, file));
+									}
 								}
 								resolve(compiledShader);
 							}
