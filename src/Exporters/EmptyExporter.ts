@@ -65,18 +65,18 @@ export class EmptyExporter extends KhaExporter {
 	}
 
 	async copySound(platform: string, from: string, to: string) {
-		return [];
+		return [''];
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
-		return [];
+		return [''];
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		return [];
+		return [''];
 	}
 
 	async copyVideo(platform: string, from: string, to: string) {
-		return [];
+		return [''];
 	}
 }
