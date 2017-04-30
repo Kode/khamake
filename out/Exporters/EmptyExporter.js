@@ -64,22 +64,22 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
     }
     copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            return [];
+            return [''];
         });
     }
     copyImage(platform, from, to, asset) {
         return __awaiter(this, void 0, void 0, function* () {
-            return [];
+            return [''];
         });
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            return [];
+            return [''];
         });
     }
     copyVideo(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            return [];
+            return [''];
         });
     }
 }
