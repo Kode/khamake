@@ -144,7 +144,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 	}*/
 
 	async copySound(platform: string, from: string, to: string) {
-		return [];
+		return [''];
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
@@ -160,6 +160,6 @@ export class PlayStationMobileExporter extends CSharpExporter {
 	}
 
 	async copyVideo(platform: string, from: string, to: string) {
-		return [];
+		return [''];
 	}
 }

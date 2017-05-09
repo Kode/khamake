@@ -40,6 +40,7 @@ export class FlashExporter extends KhaExporter {
 		defines.push('sys_a2');
 
 		defines.push('kha_' + this.options.target);
+		defines.push('kha_stage3d');
 		defines.push('kha_g1');
 		defines.push('kha_g2');
 		defines.push('kha_g3');
