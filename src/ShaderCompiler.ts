@@ -21,12 +21,14 @@ export class CompiledShader {
 	inputs: Variable[];
 	outputs: Variable[];
 	uniforms: Variable[];
+	types: any[];
 
 	constructor() {
 		this.files = [];
 		this.inputs = [];
 		this.outputs = [];
 		this.uniforms = [];
+		this.types = [];
 	}
 }
 
@@ -202,6 +204,7 @@ export class ShaderCompiler {
 						compiledShader.inputs = null;
 						compiledShader.outputs = null;
 						compiledShader.uniforms = null;
+						compiledShader.types = null;
 					}
 					if (compiledShader.files != null && compiledShader.files.length === 0) {
 						// TODO: Remove when krafix has been recompiled everywhere
@@ -302,6 +305,19 @@ export class ShaderCompiler {
 								}
 								else if (parts[0] === 'output') {
 									compiledShader.outputs.push({name: parts[1], type: parts[2]});
+								}
+								else if (parts[0] === 'type') {
+									let type = data.substring(data.indexOf(':') + 1);
+									let name = type.substring(0, type.indexOf(':'));
+									let typedata = type.substring(type.indexOf(':') + 2);
+									typedata = typedata.substr(0, typedata.length - 1);
+									let members = typedata.split(',');
+									let memberdecls = [];
+									for (let member of members) {
+										let memberparts = member.split(':');
+										memberdecls.push({type: memberparts[1], name: memberparts[0]});
+									}
+									compiledShader.types.push({name: name, members: memberdecls});
 								}
 							}
 							else if (parts.length >= 2) {

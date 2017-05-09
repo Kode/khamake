@@ -381,6 +381,8 @@ async function exportKhaProject(options: Options): Promise<string> {
 		fallback.inputs = [];
 		fallback.outputs = [];
 		fallback.uniforms = [];
+		fallback.types = [];
+
 		try {
 			for (let file of oldResources.files) {
 				if (file.type === 'shader' && file.name === fixName(name)) {
@@ -394,7 +396,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		return fallback;
 	}
 
-	let files: {name: string, files: string[], type: string, inputs: any[], outputs: any[], uniforms: any[]}[] = [];
+	let files: {name: string, files: string[], type: string, inputs: any[], outputs: any[], uniforms: any[], types: any[]}[] = [];
 	for (let asset of assets) {
 		let file: any = {
 			name: fixName(asset.name),
@@ -416,7 +418,8 @@ async function exportKhaProject(options: Options): Promise<string> {
 			type: 'shader',
 			inputs: shader.inputs === null ? oldShader.inputs : shader.inputs,
 			outputs: shader.outputs === null ? oldShader.outputs : shader.outputs,
-			uniforms: shader.uniforms === null ? oldShader.uniforms : shader.uniforms
+			uniforms: shader.uniforms === null ? oldShader.uniforms : shader.uniforms,
+			types: shader.types === null ? oldShader.types : shader.types
 		});
 	}
 

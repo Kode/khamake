@@ -344,6 +344,7 @@ function exportKhaProject(options) {
             fallback.inputs = [];
             fallback.outputs = [];
             fallback.uniforms = [];
+            fallback.types = [];
             try {
                 for (let file of oldResources.files) {
                     if (file.type === 'shader' && file.name === fixName(name)) {
@@ -379,7 +380,8 @@ function exportKhaProject(options) {
                 type: 'shader',
                 inputs: shader.inputs === null ? oldShader.inputs : shader.inputs,
                 outputs: shader.outputs === null ? oldShader.outputs : shader.outputs,
-                uniforms: shader.uniforms === null ? oldShader.uniforms : shader.uniforms
+                uniforms: shader.uniforms === null ? oldShader.uniforms : shader.uniforms,
+                types: shader.types === null ? oldShader.types : shader.types
             });
         }
         function secondPass() {
