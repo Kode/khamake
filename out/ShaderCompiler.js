@@ -110,8 +110,17 @@ class ShaderCompiler {
             case Platform_1.Platform.Unity:
                 return 'hlsl';
             case Platform_1.Platform.Krom:
-                if (os.platform() === 'win32') {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12) {
                     return 'd3d11';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D9) {
+                    return 'd3d9';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
+                    return 'spirv';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
+                    return 'metal';
                 }
                 else {
                     return 'glsl';

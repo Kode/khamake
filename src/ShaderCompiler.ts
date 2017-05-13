@@ -125,8 +125,17 @@ export class ShaderCompiler {
 		case Platform.Unity:
 			return 'hlsl';
 		case Platform.Krom:
-			if (os.platform() === 'win32') {
+			if (options.graphics === GraphicsApi.Direct3D11 || options.graphics === GraphicsApi.Direct3D12) {
 				return 'd3d11';
+			}
+			else if (options.graphics === GraphicsApi.Direct3D9) {
+				return 'd3d9';
+			}
+			else if (options.graphics === GraphicsApi.Vulkan) {
+				return 'spirv';
+			}
+			else if (options.graphics === GraphicsApi.Metal) {
+				return 'metal';
 			}
 			else {
 				return 'glsl';
