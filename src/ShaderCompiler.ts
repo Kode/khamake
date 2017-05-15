@@ -253,144 +253,146 @@ export class ShaderCompiler {
 
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
-					if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime())) {
-						if (fromErr) log.error('Shader compiler error: ' + fromErr);
-						resolve(null);
-					}
-					else {
-						if (this.type === 'metal') {
-							fs.ensureDirSync(path.join(this.builddir, 'Sources'));
-							let funcname = fileinfo.name;
-							funcname = funcname.replace(/-/g, '_');
-							funcname = funcname.replace(/\./g, '_');
-							funcname += '_main';
+					fs.stat(this.compiler, (compErr: NodeJS.ErrnoException, compStats: fs.Stats) => {
+						if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime()) || (!compErr && compStats.mtime.getTime() > fromStats.mtime.getTime())) {
+							if (fromErr) log.error('Shader compiler error: ' + fromErr);
+							resolve(null);
+						}
+						else {
+							if (this.type === 'metal') {
+								fs.ensureDirSync(path.join(this.builddir, 'Sources'));
+								let funcname = fileinfo.name;
+								funcname = funcname.replace(/-/g, '_');
+								funcname = funcname.replace(/\./g, '_');
+								funcname += '_main';
 
-							fs.writeFileSync(to, funcname, 'utf8');
+								fs.writeFileSync(to, funcname, 'utf8');
 
-							to = path.join(this.builddir, 'Sources', fileinfo.name + '.' + this.type);
-							temp = to;
-						}
-						let parameters = [this.type === 'hlsl' ? 'd3d9' : this.type, from, temp, this.temp, this.platform];
-						if (this.options.shaderversion) {
-							parameters.push('--version');
-							parameters.push(this.options.shaderversion);
-						}
-						else if (this.platform === Platform.Krom && os.platform() === 'linux') {
-							parameters.push('--version');
-							parameters.push('110');
-						}
-						if (this.options.glsl2) {
-							parameters.push('--glsl2');
-						}
-						if (options.defines) {
-							for (let define of options.defines) {
-								parameters.push('-D' + define);
+								to = path.join(this.builddir, 'Sources', fileinfo.name + '.' + this.type);
+								temp = to;
 							}
-						}
-						if (this.platform === Platform.HTML5 || this.platform === Platform.Android) {
-							parameters.push('--relax');
-						}
-
-						let child = child_process.spawn(this.compiler, parameters);
-
-						child.stdout.on('data', (data: any) => {
-							log.info(data.toString());
-						});
-
-						let errorLine = '';
-						let newErrorLine = true;
-						let errorData = false;
-
-						let compiledShader = new CompiledShader();
-
-						function parseData(data: string) {
-							let parts = data.split(':');
-							if (parts.length >= 3) {
-								if (parts[0] === 'uniform') {
-									compiledShader.uniforms.push({name: parts[1], type: parts[2]});
+							let parameters = [this.type === 'hlsl' ? 'd3d9' : this.type, from, temp, this.temp, this.platform];
+							if (this.options.shaderversion) {
+								parameters.push('--version');
+								parameters.push(this.options.shaderversion);
+							}
+							else if (this.platform === Platform.Krom && os.platform() === 'linux') {
+								parameters.push('--version');
+								parameters.push('110');
+							}
+							if (this.options.glsl2) {
+								parameters.push('--glsl2');
+							}
+							if (options.defines) {
+								for (let define of options.defines) {
+									parameters.push('-D' + define);
 								}
-								else if (parts[0] === 'input') {
-									compiledShader.inputs.push({name: parts[1], type: parts[2]});
-								}
-								else if (parts[0] === 'output') {
-									compiledShader.outputs.push({name: parts[1], type: parts[2]});
-								}
-								else if (parts[0] === 'type') {
-									let type = data.substring(data.indexOf(':') + 1);
-									let name = type.substring(0, type.indexOf(':'));
-									let typedata = type.substring(type.indexOf(':') + 2);
-									typedata = typedata.substr(0, typedata.length - 1);
-									let members = typedata.split(',');
-									let memberdecls = [];
-									for (let member of members) {
-										let memberparts = member.split(':');
-										memberdecls.push({type: memberparts[1], name: memberparts[0]});
+							}
+							if (this.platform === Platform.HTML5 || this.platform === Platform.Android) {
+								parameters.push('--relax');
+							}
+
+							let child = child_process.spawn(this.compiler, parameters);
+
+							child.stdout.on('data', (data: any) => {
+								log.info(data.toString());
+							});
+
+							let errorLine = '';
+							let newErrorLine = true;
+							let errorData = false;
+
+							let compiledShader = new CompiledShader();
+
+							function parseData(data: string) {
+								let parts = data.split(':');
+								if (parts.length >= 3) {
+									if (parts[0] === 'uniform') {
+										compiledShader.uniforms.push({name: parts[1], type: parts[2]});
 									}
-									compiledShader.types.push({name: name, members: memberdecls});
+									else if (parts[0] === 'input') {
+										compiledShader.inputs.push({name: parts[1], type: parts[2]});
+									}
+									else if (parts[0] === 'output') {
+										compiledShader.outputs.push({name: parts[1], type: parts[2]});
+									}
+									else if (parts[0] === 'type') {
+										let type = data.substring(data.indexOf(':') + 1);
+										let name = type.substring(0, type.indexOf(':'));
+										let typedata = type.substring(type.indexOf(':') + 2);
+										typedata = typedata.substr(0, typedata.length - 1);
+										let members = typedata.split(',');
+										let memberdecls = [];
+										for (let member of members) {
+											let memberparts = member.split(':');
+											memberdecls.push({type: memberparts[1], name: memberparts[0]});
+										}
+										compiledShader.types.push({name: name, members: memberdecls});
+									}
+								}
+								else if (parts.length >= 2) {
+									if (parts[0] === 'file') {
+										const parsed = path.parse(parts[1]);
+										let name = parsed.name;
+										if (parsed.ext !== '.temp') name += parsed.ext;
+										compiledShader.files.push(name);
+									}
 								}
 							}
-							else if (parts.length >= 2) {
-								if (parts[0] === 'file') {
-									const parsed = path.parse(parts[1]);
-									let name = parsed.name;
-									if (parsed.ext !== '.temp') name += parsed.ext;
-									compiledShader.files.push(name);
-								}
-							}
-						}
 
-						child.stderr.on('data', (data: any) => {
-							let str: string = data.toString();
-							for (let char of str) {
-								if (char === '\n') {
+							child.stderr.on('data', (data: any) => {
+								let str: string = data.toString();
+								for (let char of str) {
+									if (char === '\n') {
+										if (errorData) {
+											parseData(errorLine.trim());
+										}
+										else {
+											log.error(errorLine.trim());
+										}
+										errorLine = '';
+										newErrorLine = true;
+										errorData = false;
+									}
+									else if (newErrorLine && char === '#') {
+										errorData = true;
+										newErrorLine = false;
+									}
+									else {
+										errorLine += char;
+										newErrorLine = false;
+									}
+								}
+							});
+
+							child.on('close', (code: number) => {
+								if (errorLine.trim().length > 0) {
 									if (errorData) {
 										parseData(errorLine.trim());
 									}
 									else {
 										log.error(errorLine.trim());
 									}
-									errorLine = '';
-									newErrorLine = true;
-									errorData = false;
 								}
-								else if (newErrorLine && char === '#') {
-									errorData = true;
-									newErrorLine = false;
+
+								if (code === 0) {
+									if (this.type !== 'metal') {
+										if (compiledShader.files === null || compiledShader.files.length === 0) {
+											fs.renameSync(temp, to);
+										}
+										for (let file of compiledShader.files) {
+											fs.renameSync(path.join(this.to, file + '.temp'), path.join(this.to, file));
+										}
+									}
+									resolve(compiledShader);
 								}
 								else {
-									errorLine += char;
-									newErrorLine = false;
+									process.exitCode = 1;
+									reject('Shader compiler error.');
 								}
-							}
-						});
-
-						child.on('close', (code: number) => {
-							if (errorLine.trim().length > 0) {
-								if (errorData) {
-									parseData(errorLine.trim());
-								}
-								else {
-									log.error(errorLine.trim());
-								}
-							}
-
-							if (code === 0) {
-								if (this.type !== 'metal') {
-									if (compiledShader.files === null || compiledShader.files.length === 0) {
-										fs.renameSync(temp, to);
-									}
-									for (let file of compiledShader.files) {
-										fs.renameSync(path.join(this.to, file + '.temp'), path.join(this.to, file));
-									}
-								}
-								resolve(compiledShader);
-							}
-							else {
-								process.exitCode = 1;
-								reject('Shader compiler error.');
-							}
-						});
-					}
+							});
+						}
+					});
 				});
 			});
 		});
