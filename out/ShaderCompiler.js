@@ -235,7 +235,7 @@ class ShaderCompiler {
             fs.stat(from, (fromErr, fromStats) => {
                 fs.stat(to, (toErr, toStats) => {
                     fs.stat(this.compiler, (compErr, compStats) => {
-                        if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime()) || (!compErr && compStats.mtime.getTime() > fromStats.mtime.getTime())) {
+                        if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime())) {
                             if (fromErr)
                                 log.error('Shader compiler error: ' + fromErr);
                             resolve(null);

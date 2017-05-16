@@ -254,7 +254,7 @@ export class ShaderCompiler {
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
 					fs.stat(this.compiler, (compErr: NodeJS.ErrnoException, compStats: fs.Stats) => {
-						if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime()) || (!compErr && compStats.mtime.getTime() > fromStats.mtime.getTime())) {
+						if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime())) {
 							if (fromErr) log.error('Shader compiler error: ' + fromErr);
 							resolve(null);
 						}
