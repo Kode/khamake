@@ -32,6 +32,7 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
         defines.push('kha_hl');
         defines.push('kha_' + this.options.target);
         defines.push('kha_' + this.options.target + '_hl');
+        defines.push('kha_' + this.options.graphics);
         defines.push('kha_g1');
         defines.push('kha_g2');
         defines.push('kha_g3');

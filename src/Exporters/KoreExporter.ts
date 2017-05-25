@@ -32,6 +32,7 @@ export class KoreExporter extends KhaExporter {
 		defines.push('kha_cpp');
 		defines.push('kha_' + this.options.target);
 		defines.push('kha_' + this.options.target + '_cpp');
+		defines.push('kha_' + this.options.graphics);
 		defines.push('kha_kore');
 		defines.push('kha_g1');
 		defines.push('kha_g2');

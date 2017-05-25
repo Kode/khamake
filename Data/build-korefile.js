@@ -1,5 +1,10 @@
 let project = new Project('HaxeCrossCode', __dirname);
-project.addFiles('Sources/**.h', 'Sources/**.cpp', { pch: 'hxcpp.h' });
+if (platform === Platform.WindowsApp) {
+	project.addFiles('Sources/**.h', 'Sources/**.cpp');
+}
+else {
+	project.addFiles('Sources/**.h', 'Sources/**.cpp', { pch: 'hxcpp.h' });
+}
 project.addFiles('Sources/src/resources/**.cpp');
 project.addFiles('Sources/src/__lib__.cpp', 'Sources/src/__boot__.cpp');
 project.addFiles('Sources/**.metal');

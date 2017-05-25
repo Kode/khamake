@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
+const os = require("os");
 const KhaExporter_1 = require("./KhaExporter");
 const Converter_1 = require("../Converter");
 const ImageTool_1 = require("../ImageTool");
@@ -30,6 +31,12 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         defines.push('kha_js');
         defines.push('kha_' + this.options.target);
         defines.push('kha_' + this.options.target + '_js');
+        if (os.platform() === 'win32') {
+            defines.push('kha_direct3d11');
+        }
+        else {
+            defines.push('kha_opengl');
+        }
         defines.push('kha_g1');
         defines.push('kha_g2');
         defines.push('kha_g3');

@@ -20,14 +20,18 @@ if (version < 6) {
 }
 
 let defaultTarget: string;
+let defaultGraphics: string;
 if (os.platform() === 'linux') {
 	defaultTarget = Platform.Linux;
+	defaultGraphics = GraphicsApi.OpenGL;
 }
 else if (os.platform() === 'win32') {
 	defaultTarget = Platform.Windows;
+	defaultGraphics = GraphicsApi.Direct3D11;
 }
 else {
 	defaultTarget = Platform.OSX;
+	defaultGraphics = GraphicsApi.OpenGL;
 }
 
 let options: Array<any> = [
@@ -74,7 +78,7 @@ let options: Array<any> = [
 		short: 'g',
 		description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal and opengl.',
 		value: true,
-		default: GraphicsApi.Direct3D9
+		default: defaultGraphics
 	},
 	{
 		full: 'visualstudio',

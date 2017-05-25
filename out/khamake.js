@@ -24,14 +24,18 @@ if (version < 6) {
     process.exit(1);
 }
 let defaultTarget;
+let defaultGraphics;
 if (os.platform() === 'linux') {
     defaultTarget = Platform_1.Platform.Linux;
+    defaultGraphics = GraphicsApi_1.GraphicsApi.OpenGL;
 }
 else if (os.platform() === 'win32') {
     defaultTarget = Platform_1.Platform.Windows;
+    defaultGraphics = GraphicsApi_1.GraphicsApi.Direct3D11;
 }
 else {
     defaultTarget = Platform_1.Platform.OSX;
+    defaultGraphics = GraphicsApi_1.GraphicsApi.OpenGL;
 }
 let options = [
     {
@@ -77,7 +81,7 @@ let options = [
         short: 'g',
         description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal and opengl.',
         value: true,
-        default: GraphicsApi_1.GraphicsApi.Direct3D9
+        default: defaultGraphics
     },
     {
         full: 'visualstudio',
