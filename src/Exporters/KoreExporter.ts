@@ -110,7 +110,7 @@ export class KoreExporter extends KhaExporter {
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.avi'), this.options.h264);
 			return [to + '.avi'];
 		}
-		else if (platform === Platform.iOS) {
+		else if (platform === Platform.iOS || platform === Platform.OSX) {
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
 			return [to + '.mp4'];
 		}

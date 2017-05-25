@@ -106,7 +106,7 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
                 yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.avi'), this.options.h264);
                 return [to + '.avi'];
             }
-            else if (platform === Platform_1.Platform.iOS) {
+            else if (platform === Platform_1.Platform.iOS || platform === Platform_1.Platform.OSX) {
                 yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
                 return [to + '.mp4'];
             }
