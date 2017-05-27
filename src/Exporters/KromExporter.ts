@@ -32,12 +32,7 @@ export class KromExporter extends KhaExporter {
 		defines.push('kha_js');
 		defines.push('kha_' + this.options.target);
 		defines.push('kha_' + this.options.target + '_js');
-		if (os.platform() === 'win32') {
-			defines.push('kha_direct3d11');
-		}
-		else {
-			defines.push('kha_opengl');
-		}
+		defines.push('kha_' + this.options.graphics);
 		defines.push('kha_g1');
 		defines.push('kha_g2');
 		defines.push('kha_g3');
