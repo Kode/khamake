@@ -90,7 +90,8 @@ export class KoreExporter extends KhaExporter {
 			return [to + '.' + format];
 		}
 		else if (platform === Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi.OpenGL || this.options.graphics === GraphicsApi.Vulkan)) {
-			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'astc', true);
+			//let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true);
+			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true);
 			return [to + '.' + format];
 		}
 		else {

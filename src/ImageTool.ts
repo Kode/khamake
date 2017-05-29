@@ -93,8 +93,11 @@ export async function exportImage(kha: string, from: string, to: string, options
 	else if (format === 'pvr') {
 		to = to + '.pvr';
 	}
-	else if (format === 'astc') {
+	else if (format === 'ASTC') {
 		to = to + '.astc.k';
+	}
+	else if (format === 'DXT5') {
+		to = to + '.dxt5.k';
 	}
 	else if (format === 'hdr') {
 		to = to + '.hdr';
@@ -117,8 +120,11 @@ export async function exportImage(kha: string, from: string, to: string, options
 	if (format === 'lz4') {
 		outputformat = 'k';
 	}
-	if (format === 'astc') {
+	if (format === 'ASTC') {
 		outputformat = 'astc.k';
+	}
+	if (format === 'DXT5') {
+		outputformat = 'dxt5.k';
 	}
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
