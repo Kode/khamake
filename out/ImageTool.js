@@ -92,7 +92,7 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
             to = to + '.pvr';
         }
         else if (format === 'astc') {
-            to = to + '.astc';
+            to = to + '.astc.k';
         }
         else if (format === 'hdr') {
             to = to + '.hdr';
@@ -114,6 +114,9 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
         }
         if (format === 'lz4') {
             outputformat = 'k';
+        }
+        if (format === 'astc') {
+            outputformat = 'astc.k';
         }
         if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
             let wh = yield getWidthAndHeight(kha, from, to, options, format, prealpha);
