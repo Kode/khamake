@@ -91,6 +91,9 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
         else if (format === 'pvr') {
             to = to + '.pvr';
         }
+        else if (format === 'astc') {
+            to = to + '.astc';
+        }
         else if (format === 'hdr') {
             to = to + '.hdr';
         }

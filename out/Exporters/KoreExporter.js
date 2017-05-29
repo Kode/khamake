@@ -12,6 +12,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const KhaExporter_1 = require("./KhaExporter");
 const Converter_1 = require("../Converter");
+const GraphicsApi_1 = require("../GraphicsApi");
 const Platform_1 = require("../Platform");
 const ImageTool_1 = require("../ImageTool");
 class KoreExporter extends KhaExporter_1.KhaExporter {
@@ -86,6 +87,10 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
         return __awaiter(this, void 0, void 0, function* () {
             if (platform === Platform_1.Platform.iOS && options.quality < 1) {
                 let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true);
+                return [to + '.' + format];
+            }
+            else if (platform === Platform_1.Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || this.options.graphics === GraphicsApi_1.GraphicsApi.Vulkan)) {
+                let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'astc', true);
                 return [to + '.' + format];
             }
             else {

@@ -93,6 +93,9 @@ export async function exportImage(kha: string, from: string, to: string, options
 	else if (format === 'pvr') {
 		to = to + '.pvr';
 	}
+	else if (format === 'astc') {
+		to = to + '.astc';
+	}
 	else if (format === 'hdr') {
 		to = to + '.hdr';
 	}

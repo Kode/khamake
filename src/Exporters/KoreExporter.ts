@@ -3,6 +3,7 @@ import * as path from 'path';
 import {KhaExporter} from './KhaExporter';
 import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
+import {GraphicsApi} from '../GraphicsApi';
 import {Platform} from '../Platform';
 import {exportImage} from '../ImageTool';
 import {Options} from '../Options';
@@ -88,12 +89,10 @@ export class KoreExporter extends KhaExporter {
 			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true);
 			return [to + '.' + format];
 		}
-		/*else if (platform === Platform.Android && asset.compressed) {
-		 var index = to.toString().lastIndexOf('.');
-		 to = to.toString().substr(0, index) + '.astc';
-		 asset.file = to.toString().replace(/\\/g, '/');
-		 exportImage(from, this.directory.resolve(this.sysdir()).resolve(to), asset, 'astc', true, callback);
-		 }*/
+		else if (platform === Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi.OpenGL || this.options.graphics === GraphicsApi.Vulkan)) {
+			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'astc', true);
+			return [to + '.' + format];
+		}
 		else {
 			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true);
 			return [to + '.' + format];
