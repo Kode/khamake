@@ -114,7 +114,7 @@ class ShaderCompiler {
                     return 'd3d11';
                 }
                 else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D9) {
-                    return 'd3d9';
+                    return 'd3d11'; // return 'd3d9'; // TODO: Change when Kode Studio stops to set D3D9
                 }
                 else if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
                     return 'spirv';
