@@ -5,7 +5,9 @@ import {Options} from '../Options';
 export class Html5WorkerExporter extends Html5Exporter {
 	constructor(options: Options) {
 		super(options);
-		this.sources.pop();
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5-Worker'));
+	}
+
+	backend(): string {
+		return 'HTML5-Worker';
 	}
 }

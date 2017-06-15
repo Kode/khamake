@@ -13,11 +13,8 @@ function findIcon(from: string, options: any) {
 }
 
 export class AndroidExporter extends KhaExporter {
-	parameters: Array<string>;
-
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Android'));
 	}
 
 	backend() {

@@ -18,14 +18,16 @@ export class FlashExporter extends KhaExporter {
 	images: Array<string>;
 	sounds: Array<string>;
 	blobs: Array<string>;
-	parameters: Array<string>;
 
 	constructor(options: Options) {
 		super(options);
 		this.images = [];
 		this.sounds = [];
 		this.blobs = [];
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Flash'));
+	}
+
+	backend(): string {
+		return 'Flash';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

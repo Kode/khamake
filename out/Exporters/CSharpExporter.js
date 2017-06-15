@@ -16,7 +16,6 @@ const uuid = require('uuid');
 class CSharpExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
         fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
     }
     includeFiles(dir, baseDir) {

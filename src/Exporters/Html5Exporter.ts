@@ -8,13 +8,15 @@ import {exportImage} from '../ImageTool';
 import {Library} from '../Project';
 
 export class Html5Exporter extends KhaExporter {
-	parameters: Array<string>;
 	width: number;
 	height: number;
 
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5'));
+	}
+
+	backend(): string {
+		return 'HTML5';
 	}
 
 	isDebugHtml5() {

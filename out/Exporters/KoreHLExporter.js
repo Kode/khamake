@@ -17,8 +17,10 @@ const ImageTool_1 = require("../ImageTool");
 class KoreHLExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(options.kha, 'Backends', 'KoreHL'));
         // Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
+    }
+    backend() {
+        return 'KoreHL';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('no-compilation');

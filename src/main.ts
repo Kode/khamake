@@ -317,7 +317,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	for (let library of project.libraries) {
 		exporter.addLibrary(library);
 	}
-	exporter.parameters = project.parameters;
+	exporter.parameters = exporter.parameters.concat(project.parameters);
 	project.scriptdir = options.kha;
 	project.addShaders('Sources/Shaders/**', {});
 

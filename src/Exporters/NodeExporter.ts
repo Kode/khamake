@@ -5,7 +5,9 @@ import {Options} from '../Options';
 export class NodeExporter extends Html5Exporter {
 	constructor(options: Options) {
 		super(options);
-		this.removeSourceDirectory(path.join(options.kha, 'Backends', 'HTML5'));
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Node'));
+	}
+
+	backend(): string {
+		return 'Node';
 	}
 }

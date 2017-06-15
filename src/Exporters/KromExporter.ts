@@ -8,13 +8,15 @@ import {exportImage} from '../ImageTool';
 import {Library} from '../Project';
 
 export class KromExporter extends KhaExporter {
-	parameters: Array<string>;
 	width: number;
 	height: number;
 
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Krom'));
+	}
+
+	backend(): string {
+		return 'Krom';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

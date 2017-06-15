@@ -25,7 +25,9 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
         this.images = [];
         this.sounds = [];
         this.blobs = [];
-        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Flash'));
+    }
+    backend() {
+        return 'Flash';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('swf-script-timeout=60');

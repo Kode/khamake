@@ -16,7 +16,9 @@ const ImageTool_1 = require("../ImageTool");
 class Html5Exporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(options.kha, 'Backends', 'HTML5'));
+    }
+    backend() {
+        return 'HTML5';
     }
     isDebugHtml5() {
         return this.sysdir() === 'debug-html5';

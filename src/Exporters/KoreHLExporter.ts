@@ -9,12 +9,13 @@ import {Options} from '../Options';
 import {Library} from '../Project';
 
 export class KoreHLExporter extends KhaExporter {
-	parameters: Array<string>;
-
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'KoreHL'));
 		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
+	}
+
+	backend(): string {
+		return 'KoreHL';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

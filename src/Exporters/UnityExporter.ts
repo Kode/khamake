@@ -9,12 +9,13 @@ import {Library} from '../Project';
 const uuid = require('uuid');
 
 export class UnityExporter extends KhaExporter {
-	parameters: Array<string>;
-
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(this.options.kha, 'Backends', 'Unity'));
 		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
+	}
+
+	backend(): string {
+		return 'Unity';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

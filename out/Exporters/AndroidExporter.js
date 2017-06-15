@@ -21,7 +21,6 @@ function findIcon(from, options) {
 class AndroidExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Android'));
     }
     backend() {
         return 'Android';

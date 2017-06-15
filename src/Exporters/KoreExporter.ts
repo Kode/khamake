@@ -10,12 +10,13 @@ import {Options} from '../Options';
 import {Library} from '../Project';
 
 export class KoreExporter extends KhaExporter {
-	parameters: Array<string>;
-
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Kore'));
 		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
+	}
+
+	backend(): string {
+		return 'Kore';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
@@ -90,7 +91,7 @@ export class KoreExporter extends KhaExporter {
 			return [to + '.' + format];
 		}
 		else if (platform === Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi.OpenGL || this.options.graphics === GraphicsApi.Vulkan)) {
-			//let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true);
+			// let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true);
 			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true);
 			return [to + '.' + format];
 		}

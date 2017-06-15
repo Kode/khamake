@@ -18,8 +18,10 @@ const ImageTool_1 = require("../ImageTool");
 class KoreExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Kore'));
         // Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
+    }
+    backend() {
+        return 'Kore';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('no-compilation');
@@ -90,7 +92,7 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
                 return [to + '.' + format];
             }
             else if (platform === Platform_1.Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || this.options.graphics === GraphicsApi_1.GraphicsApi.Vulkan)) {
-                //let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true);
+                // let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true);
                 let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true);
                 return [to + '.' + format];
             }

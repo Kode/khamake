@@ -16,7 +16,9 @@ const ImageTool_1 = require("../ImageTool");
 class KromExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Krom'));
+    }
+    backend() {
+        return 'Krom';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('js-classic');

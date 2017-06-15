@@ -21,6 +21,8 @@ class KhaExporter extends Exporter_1.Exporter {
         this.addSourceDirectory(path.join(options.kha, 'Sources'));
         this.projectFiles = !options.noproject;
         this.parameters = [];
+        // this.parameters = ['--macro kha.internal.GraphicsBuilder.build("' + this.backend().toLowerCase() + '")'];
+        this.addSourceDirectory(path.join(options.kha, 'Backends', this.backend()));
     }
     sysdir() {
         return this.systemDirectory;

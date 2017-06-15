@@ -17,7 +17,9 @@ const log = require("../log");
 class EmptyExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.addSourceDirectory(path.join(options.kha, 'Backends', 'Empty'));
+    }
+    backend() {
+        return 'Empty';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('sys_g1');

@@ -10,11 +10,12 @@ import * as log from '../log';
 import {Library} from '../Project';
 
 export class EmptyExporter extends KhaExporter {
-	parameters: Array<string>;
-
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(options.kha, 'Backends', 'Empty'));
+	}
+
+	backend(): string {
+		return 'Empty';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

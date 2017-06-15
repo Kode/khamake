@@ -9,11 +9,8 @@ import {Library} from '../Project';
 const uuid = require('uuid');
 
 export abstract class CSharpExporter extends KhaExporter {
-	parameters: Array<string>;
-
 	constructor(options: Options) {
 		super(options);
-		this.addSourceDirectory(path.join(this.options.kha, 'Backends', this.backend()));
 		fs.removeSync(path.join(this.options.to, this.sysdir() + '-build', 'Sources'));
 	}
 
