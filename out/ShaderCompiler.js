@@ -222,6 +222,7 @@ class ShaderCompiler {
     }
     compileShader(file, options) {
         return new Promise((resolve, reject) => {
+            log.info('It is ' + file);
             if (!this.compiler)
                 reject('No shader compiler found.');
             if (this.type === 'none') {
@@ -280,6 +281,7 @@ class ShaderCompiler {
                             let errorData = false;
                             let compiledShader = new CompiledShader();
                             function parseData(data) {
+                                data = data.replace(':\\', '#\\'); // Filter out absolute paths on Windows
                                 let parts = data.split(':');
                                 if (parts.length >= 3) {
                                     if (parts[0] === 'uniform') {
@@ -307,7 +309,7 @@ class ShaderCompiler {
                                 }
                                 else if (parts.length >= 2) {
                                     if (parts[0] === 'file') {
-                                        const parsed = path.parse(parts[1]);
+                                        const parsed = path.parse(parts[1].replace('#\\', ':\\'));
                                         let name = parsed.name;
                                         if (parsed.ext !== '.temp')
                                             name += parsed.ext;
