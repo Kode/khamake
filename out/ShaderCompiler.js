@@ -222,7 +222,6 @@ class ShaderCompiler {
     }
     compileShader(file, options) {
         return new Promise((resolve, reject) => {
-            log.info('It is ' + file);
             if (!this.compiler)
                 reject('No shader compiler found.');
             if (this.type === 'none') {
