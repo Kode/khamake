@@ -45,7 +45,7 @@ function getWidthAndHeight(kha, from, to, options, format, prealpha) {
         });
     });
 }
-function convertImage(from, temp, to, kha, exe, params, options) {
+function convertImage(from, temp, to, kha, exe, params, options, cache) {
     return new Promise((resolve, reject) => {
         let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
         let output = '';
@@ -65,8 +65,9 @@ function convertImage(from, temp, to, kha, exe, params, options) {
             for (let line of lines) {
                 if (line.startsWith('#')) {
                     let numbers = line.substring(1).split('x');
-                    options.original_width = parseInt(numbers[0]);
-                    options.original_height = parseInt(numbers[1]);
+                    cache[to] = {};
+                    cache[to].original_width = options.original_width = parseInt(numbers[0]);
+                    cache[to].original_height = options.original_height = parseInt(numbers[1]);
                     resolve();
                     return;
                 }
@@ -75,7 +76,7 @@ function convertImage(from, temp, to, kha, exe, params, options) {
         });
     });
 }
-function exportImage(kha, from, to, options, format, prealpha, poweroftwo = false) {
+function exportImage(kha, from, to, options, format, prealpha, poweroftwo, cache) {
     return __awaiter(this, void 0, void 0, function* () {
         if (format === undefined) {
             if (from.toString().endsWith('.png'))
@@ -125,9 +126,16 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
             outputformat = 'dxt5.k';
         }
         if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
+            if (cache[to] !== undefined) {
+                const cachedOptions = cache[to];
+                options.original_width = cachedOptions.original_width;
+                options.original_height = cachedOptions.original_height;
+                return outputformat;
+            }
             let wh = yield getWidthAndHeight(kha, from, to, options, format, prealpha);
-            options.original_width = wh.w;
-            options.original_height = wh.h;
+            cache[to] = {};
+            cache[to].original_width = options.original_width = wh.w;
+            cache[to].original_height = options.original_height = wh.h;
             return outputformat;
         }
         fs.ensureDirSync(path.dirname(to));
@@ -155,7 +163,7 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo = fals
         if (poweroftwo) {
             params.push('poweroftwo');
         }
-        yield convertImage(from, temp, to, kha, exe, params, options);
+        yield convertImage(from, temp, to, kha, exe, params, options, cache);
         return outputformat;
     });
 }

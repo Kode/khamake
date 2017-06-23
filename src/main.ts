@@ -324,7 +324,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	projectData.preAssetConversion();
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
 	lastAssetConverter = assetConverter;
-	let assets = await assetConverter.run(options.watch);
+	let assets = await assetConverter.run(options.watch, temp);
 
 	let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
 	if (target === Platform.Unity) {

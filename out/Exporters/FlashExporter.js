@@ -122,9 +122,9 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
             return files;
         });
     }
-    copyImage(platform, from, to, asset) {
+    copyImage(platform, from, to, asset, cache) {
         return __awaiter(this, void 0, void 0, function* () {
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
             if (this.options.embedflashassets)
                 this.images.push(to + '.' + format);
             return [to + '.' + format];

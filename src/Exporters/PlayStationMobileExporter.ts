@@ -147,9 +147,9 @@ export class PlayStationMobileExporter extends CSharpExporter {
 		return [''];
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset: any) {
+	async copyImage(platform: string, from: string, to: string, asset: any, cache: any) {
 		this.files.push(asset['file']);
-		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
 		return [to + '.' + format];
 	}
 

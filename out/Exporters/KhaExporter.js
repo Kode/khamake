@@ -54,7 +54,7 @@ class KhaExporter extends Exporter_1.Exporter {
             }
         }
     }
-    copyImage(platform, from, to, options) {
+    copyImage(platform, from, to, options, cache) {
         return __awaiter(this, void 0, void 0, function* () {
             return [];
         });

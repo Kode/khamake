@@ -125,8 +125,8 @@ export class XnaExporter extends CSharpExporter {
 	}
 
 	exportCsProj(projectUuid: string) {
-		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), {width: 64, height: 64}, 'png', false);
-		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
+		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), {width: 64, height: 64}, 'png', false, false, {});
+		exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false, false, {});
 
 		this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
 		this.p('<?xml version="1.0" encoding="utf-8"?>');
@@ -251,9 +251,9 @@ export class XnaExporter extends CSharpExporter {
 		this.closeFile();
 	}
 
-	async copyImage(platform: string, from: string, to: string, asset: any) {
+	async copyImage(platform: string, from: string, to: string, asset: any, cache: any) {
 		this.images.push(asset['file']);
-		let format = await exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false);
+		let format = await exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false, false, cache);
 		return [to + '.' + format];
 	}
 }

@@ -8,7 +8,7 @@ import {sys} from './exec';
 function getWidthAndHeight(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
 	return new Promise((resolve, reject) => {
 		const exe = 'kraffiti' + sys();
-		
+
 		let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
 		if (options.scale !== undefined && options.scale !== 1) {
 			params.push('scale=' + options.scale);	
@@ -43,7 +43,7 @@ function getWidthAndHeight(kha: string, from: string, to: string, options: any, 
 	});
 }
 
-function convertImage(from: string, temp: string, to: string, kha: string, exe: string, params: string[], options: any): Promise<void> {
+function convertImage(from: string, temp: string, to: string, kha: string, exe: string, params: string[], options: any, cache: any): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
 		
@@ -69,8 +69,9 @@ function convertImage(from: string, temp: string, to: string, kha: string, exe: 
 			for (let line of lines) {
 				if (line.startsWith('#')) {
 					let numbers = line.substring(1).split('x');
-					options.original_width = parseInt(numbers[0]);
-					options.original_height = parseInt(numbers[1]);
+					cache[to] = {};
+					cache[to].original_width = options.original_width = parseInt(numbers[0]);
+					cache[to].original_height = options.original_height = parseInt(numbers[1]);
 					resolve();
 					return;
 				}
@@ -80,7 +81,7 @@ function convertImage(from: string, temp: string, to: string, kha: string, exe: 
 	});
 }
 
-export async function exportImage(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean = false): Promise<string> {
+export async function exportImage(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean, cache: any): Promise<string> {
 	if (format === undefined) {
 		if (from.toString().endsWith('.png')) format = 'png';
 		else if (from.toString().endsWith('.hdr')) format = 'hdr'; 
@@ -128,9 +129,16 @@ export async function exportImage(kha: string, from: string, to: string, options
 	}
 
 	if (fs.existsSync(to) && fs.statSync(to).mtime.getTime() > fs.statSync(from.toString()).mtime.getTime()) {
+		if (cache[to] !== undefined) {
+			const cachedOptions = cache[to];
+			options.original_width = cachedOptions.original_width;
+			options.original_height = cachedOptions.original_height;
+			return outputformat;
+		}
 		let wh = await getWidthAndHeight(kha, from, to, options, format, prealpha);
-		options.original_width = wh.w;
-		options.original_height = wh.h;
+		cache[to] = {};
+		cache[to].original_width = options.original_width = wh.w;
+		cache[to].original_height = options.original_height = wh.h;
 		return outputformat;
 	}
 
@@ -162,6 +170,6 @@ export async function exportImage(kha: string, from: string, to: string, options
 		params.push('poweroftwo');
 	}
 	
-	await convertImage(from, temp, to, kha, exe, params, options);
+	await convertImage(from, temp, to, kha, exe, params, options, cache);
 	return outputformat;
 }

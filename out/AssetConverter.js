@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
 const log = require("./log");
 const chokidar = require("chokidar");
@@ -57,7 +57,7 @@ class AssetConverter {
         }
         return { name: nameValue, destination: destination };
     }
-    watch(watch, match, options) {
+    watch(watch, match, temp, options) {
         return new Promise((resolve, reject) => {
             let ready = false;
             let files = [];
@@ -68,7 +68,7 @@ class AssetConverter {
                     switch (fileinfo.ext) {
                         case '.png':
                             log.info('Reexporting ' + fileinfo.name);
-                            this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+                            this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
                             break;
                     }
                 }
@@ -82,7 +82,7 @@ class AssetConverter {
                     switch (fileinfo.ext) {
                         case '.png':
                             log.info('Reexporting ' + fileinfo.name);
-                            this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+                            this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
                             break;
                     }
                 }
@@ -91,6 +91,11 @@ class AssetConverter {
                 ready = true;
                 let parsedFiles = [];
                 let index = 0;
+                let cache = {};
+                let cachePath = path.join(temp, 'cache.json');
+                if (fs.existsSync(cachePath)) {
+                    cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+                }
                 for (let file of files) {
                     let fileinfo = path.parse(file);
                     log.info('Exporting asset ' + (index + 1) + ' of ' + files.length + ' (' + fileinfo.base + ').');
@@ -100,7 +105,7 @@ class AssetConverter {
                         case '.jpeg':
                         case '.hdr': {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-                            let images = yield this.exporter.copyImage(this.platform, file, exportInfo.destination, options);
+                            let images = yield this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
                             break;
                         }
@@ -135,15 +140,17 @@ class AssetConverter {
                     }
                     ++index;
                 }
+                fs.ensureDirSync(temp);
+                fs.writeFileSync(cachePath, JSON.stringify(cache), { encoding: 'utf8' });
                 resolve(parsedFiles);
             }));
         });
     }
-    run(watch) {
+    run(watch, temp) {
         return __awaiter(this, void 0, void 0, function* () {
             let files = [];
             for (let matcher of this.assetMatchers) {
-                files = files.concat(yield this.watch(watch, matcher.match, matcher.options));
+                files = files.concat(yield this.watch(watch, matcher.match, temp, matcher.options));
             }
             return files;
         });

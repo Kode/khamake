@@ -75,7 +75,7 @@ export abstract class KhaExporter extends Exporter {
 		}
 	}
 
-	async copyImage(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
+	async copyImage(platform: string, from: string, to: string, options: any, cache: any): Promise<Array<string>> {
 		return [];
 	}
 

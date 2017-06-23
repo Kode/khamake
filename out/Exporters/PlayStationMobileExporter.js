@@ -137,10 +137,10 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
             return [''];
         });
     }
-    copyImage(platform, from, to, asset) {
+    copyImage(platform, from, to, asset, cache) {
         return __awaiter(this, void 0, void 0, function* () {
             this.files.push(asset['file']);
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
             return [to + '.' + format];
         });
     }

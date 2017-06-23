@@ -294,7 +294,7 @@ function exportKhaProject(options) {
         projectData.preAssetConversion();
         let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
         lastAssetConverter = assetConverter;
-        let assets = yield assetConverter.run(options.watch);
+        let assets = yield assetConverter.run(options.watch, temp);
         let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
         if (target === Platform_1.Platform.Unity) {
             shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');

@@ -69,8 +69,8 @@ export class KromExporter extends KhaExporter {
 		return [to + '.wav'];
 	}
 
-	async copyImage(platform: string, from: string, to: string, options: any) {
-		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false);
+	async copyImage(platform: string, from: string, to: string, options: any, cache: any) {
+		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
 		return [to + '.' + format];
 	}
 

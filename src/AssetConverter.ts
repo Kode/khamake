@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import {KhaExporter} from './Exporters/KhaExporter';
 import * as log from './log';
@@ -63,7 +63,7 @@ export class AssetConverter {
 		return {name: nameValue, destination: destination};
 	}
 	
-	watch(watch: boolean, match: string, options: any): Promise<{ name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[]> {
+	watch(watch: boolean, match: string, temp: string, options: any): Promise<{ name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[]> {
 		return new Promise<{ from: string, type: string, files: string[] }[]>((resolve, reject) => {
 			let ready = false;
 			let files: string[] = [];
@@ -74,7 +74,7 @@ export class AssetConverter {
 					switch (fileinfo.ext) {
 						case '.png':
 							log.info('Reexporting ' + fileinfo.name);
-							this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+							this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
 							break;
 					}
 				}
@@ -89,7 +89,7 @@ export class AssetConverter {
 					switch (fileinfo.ext) {
 						case '.png':
 							log.info('Reexporting ' + fileinfo.name);
-							this.exporter.copyImage(this.platform, file, fileinfo.name, {});
+							this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
 							break;
 					}
 				}
@@ -99,6 +99,12 @@ export class AssetConverter {
 				ready = true;
 				let parsedFiles: { name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[] = [];
 				let index = 0;
+				let cache: any = {};
+				let cachePath = path.join(temp, 'cache.json');
+				if (fs.existsSync(cachePath)) {
+					cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+				}
+
 				for (let file of files) {
 					let fileinfo = path.parse(file);
 					log.info('Exporting asset ' + (index + 1) + ' of ' + files.length + ' (' + fileinfo.base + ').');
@@ -108,7 +114,7 @@ export class AssetConverter {
 						case '.jpeg':
 						case '.hdr': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let images = await this.exporter.copyImage(this.platform, file, exportInfo.destination, options);
+							let images = await this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
 							parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
 							break;
 						}
@@ -143,15 +149,17 @@ export class AssetConverter {
 					}
 					++index;
 				}
+				fs.ensureDirSync(temp);
+				fs.writeFileSync(cachePath, JSON.stringify(cache), { encoding: 'utf8'});
 				resolve(parsedFiles);
 			});
 		});
 	}
 	
-	async run(watch: boolean): Promise<{ name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[]> {
+	async run(watch: boolean, temp: string): Promise<{ name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[]> {
 		let files: { name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[] = [];
 		for (let matcher of this.assetMatchers) {
-			files = files.concat(await this.watch(watch, matcher.match, matcher.options));
+			files = files.concat(await this.watch(watch, matcher.match, temp, matcher.options));
 		}
 		return files;
 	}

@@ -124,8 +124,8 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.closeFile();
     }
     exportCsProj(projectUuid) {
-        ImageTool_1.exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), { width: 64, height: 64 }, 'png', false);
-        ImageTool_1.exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false);
+        ImageTool_1.exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'GameThumbnail.png'), { width: 64, height: 64 }, 'png', false, false, {});
+        ImageTool_1.exportImage(this.options.kha, findIcon(this.options.to, this.options), path.join(this.options.to, this.sysdir() + '-build', 'Game.ico'), null, 'ico', false, false, {});
         this.writeFile(path.join(this.options.to, this.sysdir() + '-build', 'Project.csproj'));
         this.p('<?xml version="1.0" encoding="utf-8"?>');
         this.p('<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">');
@@ -248,10 +248,10 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.p('</Project>');
         this.closeFile();
     }
-    copyImage(platform, from, to, asset) {
+    copyImage(platform, from, to, asset, cache) {
         return __awaiter(this, void 0, void 0, function* () {
             this.images.push(asset['file']);
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false);
+            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false, false, cache);
             return [to + '.' + format];
         });
     }
