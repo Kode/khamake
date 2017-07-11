@@ -8,7 +8,7 @@ export class Options {
 	projectfile: string;
 	target: string;
 	vr: string;
-	entrypoint: string;
+	main: string;
 	// intermediate: string;
 	graphics: string;
 	visualstudio: string;

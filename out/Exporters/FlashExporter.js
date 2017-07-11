@@ -67,7 +67,7 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
             width: this.width,
             height: this.height,
             name: name,
-            entrypoint: this.options.entrypoint,
+            main: this.options.main,
             framerate: 'framerate' in flashOptions ? flashOptions.framerate : defaultFlashOptions.framerate,
             stageBackground: 'stageBackground' in flashOptions ? flashOptions.stageBackground : defaultFlashOptions.stageBackground,
             swfVersion: 'swfVersion' in flashOptions ? flashOptions.swfVersion : defaultFlashOptions.swfVersion,

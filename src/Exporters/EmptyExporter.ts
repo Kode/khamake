@@ -46,7 +46,7 @@ export class EmptyExporter extends KhaExporter {
 			width: this.width,
 			height: this.height,
 			name: name,
-			entrypoint: this.options.entrypoint,
+			main: this.options.main,
 		};
 	}
 

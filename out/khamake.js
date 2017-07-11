@@ -70,7 +70,7 @@ let options = [
         default: VrApi_1.VrApi.None
     },
     {
-        full: 'entrypoint',
+        full: 'main',
         value: true,
         description: 'Entrypoint for the haxe code (-main argument), defaults to "Main".',
         default: 'Main'

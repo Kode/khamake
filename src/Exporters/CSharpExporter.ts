@@ -55,7 +55,7 @@ export abstract class CSharpExporter extends KhaExporter {
 			width: this.width,
 			height: this.height,
 			name: name,
-			entrypoint: this.options.entrypoint,
+			main: this.options.main,
 		};
 	}
 
