@@ -51,7 +51,8 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
             language: 'cs',
             width: this.width,
             height: this.height,
-            name: name
+            name: name,
+            entrypoint: this.options.entrypoint,
         };
     }
     export(name, targetOptions, haxeOptions) {

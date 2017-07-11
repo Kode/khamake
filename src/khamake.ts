@@ -67,6 +67,12 @@ let options: Array<any> = [
 		default: VrApi.None
 	},
 	{
+		full: 'entrypoint',
+		value: true,
+		description: 'Entrypoint for the haxe code (-main argument), defaults to "Main".',
+		default: 'Main'
+	},
+	{
 		full: 'intermediate',
 		description: 'Intermediate location for object files.',
 		value: true,
