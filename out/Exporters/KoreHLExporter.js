@@ -62,7 +62,8 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
             language: 'hl',
             width: this.width,
             height: this.height,
-            name: name
+            name: name,
+            main: this.options.main,
         };
     }
     export(name, targetOptions, haxeOptions) {

@@ -45,7 +45,8 @@ export class EmptyExporter extends KhaExporter {
 			language: 'xml',
 			width: this.width,
 			height: this.height,
-			name: name
+			name: name,
+			main: this.options.main,
 		};
 	}
 

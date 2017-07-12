@@ -50,7 +50,8 @@ export class UnityExporter extends KhaExporter {
 			language: 'cs',
 			width: this.width,
 			height: this.height,
-			name: name
+			name: name,
+			main: this.options.main,
 		};
 	}
 

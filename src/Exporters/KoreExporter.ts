@@ -65,7 +65,8 @@ export class KoreExporter extends KhaExporter {
 			language: 'cpp',
 			width: this.width,
 			height: this.height,
-			name: name
+			name: name,
+			main: this.options.main,
 		};
 	}
 
