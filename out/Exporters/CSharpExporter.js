@@ -56,7 +56,8 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
             language: 'cs',
             width: this.width,
             height: this.height,
-            name: name
+            name: name,
+            main: this.options.main,
         };
     }
     export(name, targetOptions, haxeOptions) {

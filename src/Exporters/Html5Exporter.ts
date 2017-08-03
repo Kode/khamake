@@ -100,7 +100,8 @@ export class Html5Exporter extends KhaExporter {
 			language: 'js',
 			width: this.width,
 			height: this.height,
-			name: name
+			name: name,
+			main: this.options.main,
 		};
 	}
 

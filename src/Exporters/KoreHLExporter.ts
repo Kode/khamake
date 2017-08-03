@@ -62,7 +62,8 @@ export class KoreHLExporter extends KhaExporter {
 			language: 'hl',
 			width: this.width,
 			height: this.height,
-			name: name
+			name: name,
+			main: this.options.main,
 		};
 	}
 

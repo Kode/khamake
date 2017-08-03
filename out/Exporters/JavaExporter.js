@@ -43,7 +43,8 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
             language: 'java',
             width: this.width,
             height: this.height,
-            name: name
+            name: name,
+            main: this.options.main,
         };
     }
     export(name, targetOptions, haxeOptions) {
