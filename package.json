@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ktxsoftware/khamake.git"
+    "url": "git+https://github.com/Kode/khamake.git"
   },
   "keywords": [
     "kha"
@@ -16,9 +16,9 @@
   "author": "Robert Konrad",
   "license": "Zlib",
   "bugs": {
-    "url": "https://github.com/ktxsoftware/khamake/issues"
+    "url": "https://github.com/Kode/khamake/issues"
   },
-  "homepage": "https://github.com/ktxsoftware/khamake#readme",
+  "homepage": "https://github.com/Kode/khamake#readme",
   "dependencies": {
     "@types/chokidar": "^1.7.1",
     "@types/fs-extra": "^4.0.0",
