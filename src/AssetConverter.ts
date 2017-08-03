@@ -64,7 +64,7 @@ export class AssetConverter {
 	}
 	
 	watch(watch: boolean, match: string, temp: string, options: any): Promise<{ name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[]> {
-		return new Promise<{ from: string, type: string, files: string[] }[]>((resolve, reject) => {
+		return new Promise<{ name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[]>((resolve, reject) => {
 			let ready = false;
 			let files: string[] = [];
 			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
