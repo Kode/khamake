@@ -140,7 +140,7 @@ function exportImage(kha, from, to, options, format, prealpha, poweroftwo, cache
         }
         fs.ensureDirSync(path.dirname(to));
         if (format === 'jpg' || format === 'hdr') {
-            fs.copySync(from, temp, { clobber: true });
+            fs.copySync(from, temp, { overwrite: true });
             fs.renameSync(temp, to);
             let wh = yield getWidthAndHeight(kha, from, to, options, format, prealpha);
             options.original_width = wh.w;

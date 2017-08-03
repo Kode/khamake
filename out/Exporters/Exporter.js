@@ -18,10 +18,10 @@ class Exporter {
         fs.writeSync(this.out, data, 0, data.length, null);
     }
     copyFile(from, to) {
-        fs.copySync(from, to, { clobber: true });
+        fs.copySync(from, to, { overwrite: true });
     }
     copyDirectory(from, to) {
-        fs.copySync(from, to, { clobber: true });
+        fs.copySync(from, to, { overwrite: true });
     }
     createDirectory(dir) {
         fs.ensureDirSync(dir);

@@ -154,7 +154,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
 		this.files.push(to);
 		return [to];
 	}

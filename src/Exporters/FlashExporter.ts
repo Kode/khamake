@@ -141,7 +141,7 @@ export class FlashExporter extends KhaExporter {
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
 		if (this.options.embedflashassets) this.blobs.push(to);
 		return [to];
 	}

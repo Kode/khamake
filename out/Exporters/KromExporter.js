@@ -64,7 +64,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     }
     copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
             return [to + '.wav'];
         });
     }
@@ -76,7 +76,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
             return [to];
         });
     }

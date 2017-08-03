@@ -111,7 +111,7 @@ export abstract class CSharpExporter extends KhaExporter {
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		fs.copySync(from, path.join(this.options.to, this.sysdir(), to), { clobber: true });
+		fs.copySync(from, path.join(this.options.to, this.sysdir(), to), { overwrite: true });
 		return [to];
 	}
 

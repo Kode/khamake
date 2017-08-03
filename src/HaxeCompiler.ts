@@ -63,7 +63,7 @@ export class HaxeCompiler {
 		}
 	}
 
-	runHaxe(parameters: string[], onClose: Function): child_process.ChildProcess {
+	runHaxe(parameters: string[], onClose: (code: number, signal: string) => void): child_process.ChildProcess {
 		let exe = 'haxe';
 		let env = process.env;
 		if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {

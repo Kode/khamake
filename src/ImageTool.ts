@@ -145,7 +145,7 @@ export async function exportImage(kha: string, from: string, to: string, options
 	fs.ensureDirSync(path.dirname(to));
 
 	if (format === 'jpg' || format === 'hdr') {
-		fs.copySync(from, temp, { clobber: true });
+		fs.copySync(from, temp, { overwrite: true });
 		fs.renameSync(temp, to);
 		let wh = await getWidthAndHeight(kha, from, to, options, format, prealpha);
 		options.original_width = wh.w;

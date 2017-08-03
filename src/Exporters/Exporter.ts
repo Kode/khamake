@@ -24,11 +24,11 @@ export class Exporter {
 	}
 
 	copyFile(from: string, to: string) {
-		fs.copySync(from, to, { clobber: true });
+		fs.copySync(from, to, { overwrite: true });
 	}
 
 	copyDirectory(from: string, to: string) {
-		fs.copySync(from, to, { clobber: true });
+		fs.copySync(from, to, { overwrite: true });
 	}
 
 	createDirectory(dir: string) {

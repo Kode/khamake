@@ -78,7 +78,7 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     }*/
     copySound(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
             return [to + '.wav'];
         });
     }
@@ -96,7 +96,7 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to).toString(), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to).toString(), { overwrite: true });
             return [to];
         });
     }

@@ -179,7 +179,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { clobber: true });
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
             return [to];
         });
     }

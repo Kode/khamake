@@ -10,10 +10,12 @@
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true
 	},
+	"include": [
+		"src/**/*.ts",
+		"node_modules/@types/**/*.ts"
+	],
 	"exclude": [
-		"Data",
-		"node_modules",
-		"out"
+		"src/@types/**/*.ts"
 	],
 	"compileOnSave": true
 }

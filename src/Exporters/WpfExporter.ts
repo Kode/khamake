@@ -275,7 +275,7 @@ export class WpfExporter extends CSharpExporter {
 	}*/
 
 	async copySound(platform: string, from: string, to: string) {
-		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { clobber: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
 		return [to + '.wav'];
 	}
 
