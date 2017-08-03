@@ -20,9 +20,12 @@
   },
   "homepage": "https://github.com/ktxsoftware/khamake#readme",
   "dependencies": {
-    "chokidar": "^1.6.0",
-    "fs-extra": "^0.20.0",
-    "node-static": "^0.7.6",
-    "uuid": "^2.0.2"
+    "@types/chokidar": "^1.7.1",
+    "@types/fs-extra": "^4.0.0",
+    "@types/node": "^8.0.19",
+    "chokidar": "^1.7.0",
+    "fs-extra": "^0.20.1",
+    "node-static": "^0.7.9",
+    "uuid": "^2.0.3"
   }
 }
