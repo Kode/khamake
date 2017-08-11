@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
 const KhaExporter_1 = require("./KhaExporter");
+const Converter_1 = require("../Converter");
 const ImageTool_1 = require("../ImageTool");
 function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
@@ -132,10 +133,17 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
             callback([to + '.ogg']);
         });
     }*/
-    copySound(platform, from, to) {
+    copySound(platform, from, to, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav'), { overwrite: true });
-            return [to + '.wav'];
+            if (options.quality < 1) {
+                fs.ensureDirSync(path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', path.dirname(to)));
+                let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.ogg'), this.options.ogg);
+                return [to + '.ogg'];
+            }
+            else {
+                fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav'), { overwrite: true });
+                return [to + '.wav'];
+            }
         });
     }
     copyImage(platform, from, to, asset, cache) {

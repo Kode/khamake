@@ -144,9 +144,16 @@ export class AndroidExporter extends KhaExporter {
 		});
 	}*/
 
-	async copySound(platform: string, from: string, to: string) {
-		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav'), { overwrite: true });
-		return [to + '.wav'];
+	async copySound(platform: string, from: string, to: string, options: any) {
+		if (options.quality < 1) {
+			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', path.dirname(to)));
+			let ogg = await convert(from, path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.ogg'), this.options.ogg);
+			return [to + '.ogg'];
+		}
+		else {
+			fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav'), { overwrite: true });
+			return [to + '.wav'];
+		}
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any, cache: any) {
