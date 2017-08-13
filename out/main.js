@@ -455,6 +455,7 @@ function run(options, loglog) {
         else {
             options.kha = path.resolve(options.kha);
         }
+        log.info('Using Kha from ' + options.kha);
         if (!options.haxe) {
             let haxepath = path.join(options.kha, 'Tools', 'haxe');
             if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory())

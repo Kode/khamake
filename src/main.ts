@@ -504,6 +504,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	else {
 		options.kha = path.resolve(options.kha);
 	}
+	log.info('Using Kha from ' + options.kha);
 
 	if (!options.haxe) {
 		let haxepath = path.join(options.kha, 'Tools', 'haxe');

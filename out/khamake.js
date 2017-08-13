@@ -1,7 +1,7 @@
-"use strict";
 // Called from entry point, e.g. Kha/make.js
 // This is where options are processed:
 // e.g. '-t html5 --server'
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
