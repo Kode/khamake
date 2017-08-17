@@ -271,6 +271,19 @@ class ShaderCompiler {
                             if (this.platform === Platform_1.Platform.HTML5 || this.platform === Platform_1.Platform.Android) {
                                 parameters.push('--relax');
                             }
+                            function makeAbsolutePath(inPath) {
+                                var outPath;
+                                if (path.isAbsolute(inPath)) {
+                                    outPath = inPath;
+                                }
+                                else {
+                                    outPath = path.join(process.cwd(), inPath);
+                                }
+                                return outPath;
+                            }
+                            parameters[2] = makeAbsolutePath(parameters[2]);
+                            parameters[3] = makeAbsolutePath(parameters[3]);
+                            parameters[4] = makeAbsolutePath(parameters[4]);
                             let child = child_process.spawn(this.compiler, parameters);
                             child.stdout.on('data', (data) => {
                                 log.info(data.toString());
