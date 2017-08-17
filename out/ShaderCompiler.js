@@ -271,6 +271,9 @@ class ShaderCompiler {
                             if (this.platform === Platform_1.Platform.HTML5 || this.platform === Platform_1.Platform.Android) {
                                 parameters.push('--relax');
                             }
+                            parameters[2] = path.resolve(parameters[2]);
+                            parameters[3] = path.resolve(parameters[3]);
+                            parameters[4] = path.resolve(parameters[4]);
                             let child = child_process.spawn(this.compiler, parameters);
                             child.stdout.on('data', (data) => {
                                 log.info(data.toString());
