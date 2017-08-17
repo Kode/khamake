@@ -292,20 +292,10 @@ export class ShaderCompiler {
 								parameters.push('--relax');
 							}
 
-							function makeAbsolutePath(inPath: string): string {
-								var outPath: string;
-								if(path.isAbsolute(inPath)) {
-									outPath = inPath;
-								}
-								else {
-									outPath = path.join(process.cwd(), inPath);
-								}
-								return outPath;
-							}
-
-							parameters[2] = makeAbsolutePath(parameters[2]);
-							parameters[3] = makeAbsolutePath(parameters[3]);
-							parameters[4] = makeAbsolutePath(parameters[4]);
+							parameters[2] = path.resolve(parameters[2]);
+							parameters[3] = path.resolve(parameters[3]);
+							parameters[4] = path.resolve(parameters[4]);
+							
 							let child = child_process.spawn(this.compiler, parameters);
 							
 							child.stdout.on('data', (data: any) => {
