@@ -292,8 +292,12 @@ export class ShaderCompiler {
 								parameters.push('--relax');
 							}
 
+							parameters[1] = path.resolve(parameters[1]);
+							parameters[2] = path.resolve(parameters[2]);
+							parameters[3] = path.resolve(parameters[3]);
+							
 							let child = child_process.spawn(this.compiler, parameters);
-
+							
 							child.stdout.on('data', (data: any) => {
 								log.info(data.toString());
 							});

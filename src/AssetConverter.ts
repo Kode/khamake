@@ -31,7 +31,12 @@ export class AssetConverter {
 		if (options.namePathSeparator) {
 			dirValue = dirValue.split(path.sep).join(options.namePathSeparator);
 		}
-		return pattern.replace(/{name}/g, value).replace(/{ext}/g, fileinfo.ext).replace(/{dir}/g, dirValue);
+
+		const dirRegex = dirValue === ''
+			? /{dir}\//g
+			: /{dir}/g;
+
+		return pattern.replace(/{name}/g, value).replace(/{ext}/g, fileinfo.ext).replace(dirRegex, dirValue);
 	}
 	
 	static createExportInfo(fileinfo: path.ParsedPath, keepextension: boolean, options: any, from: string): {name: string, destination: string} {
