@@ -27,6 +27,10 @@ export class Html5Exporter extends KhaExporter {
 		return this.sysdir() === 'node';
 	}
 
+	isHtml5Worker() {
+		return this.sysdir() === 'html5worker';
+	}
+
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('sys_g1');
 		defines.push('sys_g2');
@@ -51,7 +55,7 @@ export class Html5Exporter extends KhaExporter {
 		
 		defines.push('canvas_id=' + canvasId);
 
-		let scriptName = 'kha';
+		let scriptName = this.isHtml5Worker() ? 'khaworker' : 'kha';
 		if (targetOptions.html5.scriptName != null && !(this.isNode() || this.isDebugHtml5())) {
 			scriptName = targetOptions.html5.scriptName;
 		}
@@ -108,7 +112,7 @@ export class Html5Exporter extends KhaExporter {
 	async export(name: string, _targetOptions: any, haxeOptions: any): Promise<void> {
 		let targetOptions = {
 			canvasId: 'khanvas',
-			scriptName: 'kha'
+			scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha'
 		};
 
 		if (_targetOptions != null && _targetOptions.html5 != null) {
@@ -151,7 +155,7 @@ export class Html5Exporter extends KhaExporter {
 			let protoserver = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'server.js'), 'utf8');
 			fs.writeFileSync(path.join(this.options.to, this.sysdir(), 'server.js'), protoserver);
 		}
-		else {
+		else if (!this.isHtml5Worker()) {
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 			if (!fs.existsSync(index)) {
 				let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'html5', 'index.html'), {encoding: 'utf8'});
