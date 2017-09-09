@@ -268,7 +268,7 @@ class ShaderCompiler {
                                     parameters.push('-D' + define);
                                 }
                             }
-                            if (this.platform === Platform_1.Platform.HTML5 || this.platform === Platform_1.Platform.Android) {
+                            if (this.platform === Platform_1.Platform.HTML5 || this.platform === Platform_1.Platform.HTML5Worker || this.platform === Platform_1.Platform.Android) {
                                 parameters.push('--relax');
                             }
                             parameters[1] = path.resolve(parameters[1]);
