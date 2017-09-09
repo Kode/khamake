@@ -268,9 +268,12 @@ class ShaderCompiler {
                                     parameters.push('-D' + define);
                                 }
                             }
-                            if (this.platform === Platform_1.Platform.HTML5 || this.platform === Platform_1.Platform.Android) {
+                            if (this.platform === Platform_1.Platform.HTML5 || this.platform === Platform_1.Platform.HTML5Worker || this.platform === Platform_1.Platform.Android) {
                                 parameters.push('--relax');
                             }
+                            parameters[1] = path.resolve(parameters[1]);
+                            parameters[2] = path.resolve(parameters[2]);
+                            parameters[3] = path.resolve(parameters[3]);
                             let child = child_process.spawn(this.compiler, parameters);
                             child.stdout.on('data', (data) => {
                                 log.info(data.toString());
