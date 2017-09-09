@@ -93,7 +93,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     out += '});\n';
     return out;
 }
-function exportProjectFiles(name, projectData, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
+function exportProjectFiles(name, resourceDir, projectData, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
     return __awaiter(this, void 0, void 0, function* () {
         if (options.haxe !== '') {
             let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
@@ -105,7 +105,7 @@ function exportProjectFiles(name, projectData, options, exporter, kore, korehl, 
             }
             HaxeProject_1.writeHaxeProject(options.to, haxeOptions);
             if (!options.nohaxe) {
-                let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
+                let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
                 lastHaxeCompiler = compiler;
                 yield compiler.run(options.watch);
             }
@@ -405,7 +405,7 @@ function exportKhaProject(options) {
             fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
         }
         projectData.preHaxeCompilation();
-        return yield exportProjectFiles(project.name, projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+        return yield exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
     });
 }
 function isKhaProject(directory, projectfile) {
