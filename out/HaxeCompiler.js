@@ -100,6 +100,9 @@ class HaxeCompiler {
         return params.join('\n');
     }
     runHaxe(parameters, onClose) {
+        if (fs.existsSync(path.join(this.resourceDir, 'workers.txt'))) {
+            fs.unlinkSync(path.join(this.resourceDir, 'workers.txt'));
+        }
         let haxe = this.runHaxeAgain(parameters, (code, signal) => {
             if (fs.existsSync(path.join(this.resourceDir, 'workers.txt'))) {
                 let hxml = fs.readFileSync(path.join(this.from, parameters[0]), { encoding: 'utf8' });
@@ -111,6 +114,7 @@ class HaxeCompiler {
                     let newhxml = HaxeCompiler.cleanHxml(hxml);
                     newhxml += '-main ' + line.trim() + '\n';
                     newhxml += '-js ' + path.join('html5', line.trim()) + '.js\n';
+                    newhxml += '-D kha_in_worker\n';
                     fs.writeFileSync(path.join(this.from, 'temp.hxml'), newhxml, { encoding: 'utf8' });
                     this.runHaxeAgain(['temp.hxml'], (code2, signal2) => {
                     });
