@@ -232,7 +232,12 @@ export class ShaderCompiler {
 	async run(watch: boolean): Promise<CompiledShader[]> {
 		let shaders: CompiledShader[] = [];
 		for (let matcher of this.shaderMatchers) {
-			shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options));
+			try {
+				shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options));
+			}
+			catch (error) {
+
+			}
 		}
 		return shaders;
 	}
