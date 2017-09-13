@@ -53,7 +53,14 @@ export class HaxeCompiler {
 			});
 			this.startCompilationServer();
 		}
-		else await this.compile();
+		else {
+			try {
+				await this.compile();
+			}
+			catch (error) {
+
+			}
+		}
 	}
 	
 	scheduleCompile() {

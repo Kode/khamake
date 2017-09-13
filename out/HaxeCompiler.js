@@ -52,8 +52,13 @@ class HaxeCompiler {
                 });
                 this.startCompilationServer();
             }
-            else
-                yield this.compile();
+            else {
+                try {
+                    yield this.compile();
+                }
+                catch (error) {
+                }
+            }
         });
     }
     scheduleCompile() {
