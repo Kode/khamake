@@ -74,6 +74,9 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             defines.push('sys_debug_html5');
             defines.push('kha_debug_html5');
         }
+        if (this.isHtml5Worker()) {
+            defines.push('js-classic');
+        }
         return {
             from: this.options.from.toString(),
             to: path.join(this.sysdir(), scriptName + '.js'),
