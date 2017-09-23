@@ -110,17 +110,8 @@ class ShaderCompiler {
             case Platform_1.Platform.Unity:
                 return 'hlsl';
             case Platform_1.Platform.Krom:
-                if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12) {
+                if (process.platform === 'win32') {
                     return 'd3d11';
-                }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D9) {
-                    return 'd3d11'; // return 'd3d9'; // TODO: Change when Kode Studio stops to set D3D9
-                }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
-                    return 'spirv';
-                }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
-                    return 'metal';
                 }
                 else {
                     return 'glsl';
@@ -134,7 +125,7 @@ class ShaderCompiler {
                 return 'glsl';
         }
     }
-    watch(watch, match, options) {
+    watch(watch, match, options, recompileAll) {
         return new Promise((resolve, reject) => {
             let shaders = [];
             let ready = false;
@@ -146,7 +137,7 @@ class ShaderCompiler {
                         case '.glsl':
                             if (!file.name.endsWith('.inc')) {
                                 log.info('Compiling ' + file.name);
-                                this.compileShader(filepath, options);
+                                this.compileShader(filepath, options, recompileAll);
                             }
                             break;
                     }
@@ -167,7 +158,7 @@ class ShaderCompiler {
                     case '.glsl':
                         if (!file.name.endsWith('.inc')) {
                             log.info('Recompiling ' + file.name);
-                            this.compileShader(filepath, options);
+                            this.compileShader(filepath, options, recompileAll);
                         }
                         break;
                 }
@@ -183,7 +174,7 @@ class ShaderCompiler {
                     log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
                     let compiledShader = null;
                     try {
-                        compiledShader = yield this.compileShader(shader, options);
+                        compiledShader = yield this.compileShader(shader, options, recompileAll);
                     }
                     catch (error) {
                         reject(error);
@@ -211,12 +202,12 @@ class ShaderCompiler {
             }));
         });
     }
-    run(watch) {
+    run(watch, recompileAll) {
         return __awaiter(this, void 0, void 0, function* () {
             let shaders = [];
             for (let matcher of this.shaderMatchers) {
                 try {
-                    shaders = shaders.concat(yield this.watch(watch, matcher.match, matcher.options));
+                    shaders = shaders.concat(yield this.watch(watch, matcher.match, matcher.options, recompileAll));
                 }
                 catch (error) {
                 }
@@ -224,7 +215,7 @@ class ShaderCompiler {
             return shaders;
         });
     }
-    compileShader(file, options) {
+    compileShader(file, options, recompile) {
         return new Promise((resolve, reject) => {
             if (!this.compiler)
                 reject('No shader compiler found.');
@@ -239,7 +230,7 @@ class ShaderCompiler {
             fs.stat(from, (fromErr, fromStats) => {
                 fs.stat(to, (toErr, toStats) => {
                     fs.stat(this.compiler, (compErr, compStats) => {
-                        if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime())) {
+                        if (!recompile && (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime()))) {
                             if (fromErr)
                                 log.error('Shader compiler error: ' + fromErr);
                             resolve(null);

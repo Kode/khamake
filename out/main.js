@@ -301,11 +301,26 @@ function exportKhaProject(options) {
         }
         projectData.preShaderCompilation();
         fs.ensureDirSync(shaderDir);
+        let oldResources = null;
+        let recompileAllShaders = false;
+        try {
+            oldResources = JSON.parse(fs.readFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), 'utf8'));
+            for (let file of oldResources.files) {
+                if (file.type === 'shader') {
+                    if (!file.files || file.files.length === 0) {
+                        recompileAllShaders = true;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (error) {
+        }
         let exportedShaders = [];
         if (!options.noshaders) {
             let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
             lastShaderCompiler = shaderCompiler;
-            exportedShaders = yield shaderCompiler.run(options.watch);
+            exportedShaders = yield shaderCompiler.run(options.watch, recompileAllShaders);
         }
         if (target === Platform_1.Platform.Unity) {
             fs.ensureDirSync(path.join(options.to, exporter.sysdir() + '-resources'));
@@ -331,12 +346,6 @@ function exportKhaProject(options) {
             for (let i = 0; i < exportedShaders.length; ++i) {
                 fs.writeFileSync(path.join(blobDir, exportedShaders[i].files[0] + '.bytes'), exportedShaders[i].name, 'utf8');
             }
-        }
-        let oldResources = null;
-        try {
-            oldResources = JSON.parse(fs.readFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), 'utf8'));
-        }
-        catch (error) {
         }
         function findShader(name) {
             let fallback = {};

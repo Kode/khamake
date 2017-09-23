@@ -125,17 +125,8 @@ export class ShaderCompiler {
 		case Platform.Unity:
 			return 'hlsl';
 		case Platform.Krom:
-			if (options.graphics === GraphicsApi.Direct3D11 || options.graphics === GraphicsApi.Direct3D12) {
+			if (process.platform === 'win32') {
 				return 'd3d11';
-			}
-			else if (options.graphics === GraphicsApi.Direct3D9) {
-				return 'd3d11'; // return 'd3d9'; // TODO: Change when Kode Studio stops to set D3D9
-			}
-			else if (options.graphics === GraphicsApi.Vulkan) {
-				return 'spirv';
-			}
-			else if (options.graphics === GraphicsApi.Metal) {
-				return 'metal';
 			}
 			else {
 				return 'glsl';
@@ -150,7 +141,7 @@ export class ShaderCompiler {
 		}
 	}
 
-	watch(watch: boolean, match: string, options: any) {
+	watch(watch: boolean, match: string, options: any, recompileAll: boolean) {
 		return new Promise<CompiledShader[]>((resolve, reject) => {
 			let shaders: string[] = [];
 			let ready = false;
@@ -162,7 +153,7 @@ export class ShaderCompiler {
 						case '.glsl':
 							if (!file.name.endsWith('.inc')) {
 								log.info('Compiling ' + file.name);
-								this.compileShader(filepath, options);
+								this.compileShader(filepath, options, recompileAll);
 							}
 							break;
 					}
@@ -183,7 +174,7 @@ export class ShaderCompiler {
 					case '.glsl':
 						if (!file.name.endsWith('.inc')) {
 							log.info('Recompiling ' + file.name);
-							this.compileShader(filepath, options);
+							this.compileShader(filepath, options, recompileAll);
 						}
 						break;
 				}
@@ -200,7 +191,7 @@ export class ShaderCompiler {
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
 					let compiledShader: CompiledShader = null;
 					try {
-						compiledShader = await this.compileShader(shader, options);
+						compiledShader = await this.compileShader(shader, options, recompileAll);
 					}
 					catch (error) {
 						reject(error);
@@ -229,11 +220,11 @@ export class ShaderCompiler {
 		});
 	}
 
-	async run(watch: boolean): Promise<CompiledShader[]> {
+	async run(watch: boolean, recompileAll: boolean): Promise<CompiledShader[]> {
 		let shaders: CompiledShader[] = [];
 		for (let matcher of this.shaderMatchers) {
 			try {
-				shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options));
+				shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options, recompileAll));
 			}
 			catch (error) {
 
@@ -242,7 +233,7 @@ export class ShaderCompiler {
 		return shaders;
 	}
 
-	compileShader(file: string, options: any): Promise<CompiledShader> {
+	compileShader(file: string, options: any, recompile: boolean): Promise<CompiledShader> {
 		return new Promise<CompiledShader>((resolve, reject) => {
 			if (!this.compiler) reject('No shader compiler found.');
 
@@ -259,7 +250,7 @@ export class ShaderCompiler {
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
 					fs.stat(this.compiler, (compErr: NodeJS.ErrnoException, compStats: fs.Stats) => {
-						if (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime())) {
+						if (!recompile && (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime()))) {
 							if (fromErr) log.error('Shader compiler error: ' + fromErr);
 							resolve(null);
 						}
