@@ -112,6 +112,7 @@ class AssetConverter {
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
                             break;
                         }
+                        case '.flac':
                         case '.wav': {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
                             let sounds = yield this.exporter.copySound(this.platform, file, exportInfo.destination, options);
