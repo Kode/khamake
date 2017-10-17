@@ -1,4 +1,4 @@
-﻿// Called from entry point, e.g. Kha/make.js
+// Called from entry point, e.g. Kha/make.js
 // This is where options are processed:
 // e.g. '-t html5 --server'
 
@@ -131,6 +131,11 @@ let options: Array<any> = [
 	{
 		full: 'noproject',
 		description: 'Only source files. Don\'t generate project files.',
+		value: false,
+	},
+	{
+		full: 'onlydata',
+		description: 'Only assets/data. Don\'t generate project files.',
 		value: false,
 	},
 	{

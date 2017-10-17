@@ -137,6 +137,11 @@ let options = [
         value: false,
     },
     {
+        full: 'onlydata',
+        description: 'Only assets/data. Don\'t generate project files.',
+        value: false,
+    },
+    {
         full: 'embedflashassets',
         description: 'Embed assets in swf for flash target',
         value: false

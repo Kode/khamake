@@ -420,7 +420,12 @@ function exportKhaProject(options) {
             fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
         }
         projectData.preHaxeCompilation();
-        return yield exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+        if (options.onlydata) {
+            return project.name;
+        }
+        else {
+            return yield exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+        }
     });
 }
 function isKhaProject(directory, projectfile) {

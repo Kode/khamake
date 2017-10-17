@@ -462,7 +462,12 @@ async function exportKhaProject(options: Options): Promise<string> {
 	}
 
 	projectData.preHaxeCompilation();
-	return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+	if (options.onlydata) {
+		return project.name;
+	}
+	else {
+		return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+	}
 }
 
 function isKhaProject(directory: string, projectfile: string) {
