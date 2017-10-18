@@ -121,6 +121,12 @@ let options = [
         default: ''
     },
     {
+        full: 'ogg',
+        description: 'Commandline for running the ogg encoder',
+        value: true,
+        default: ''
+    },
+    {
         full: 'krafix',
         description: 'Location of krafix shader compiler',
         value: true,
