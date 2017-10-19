@@ -199,6 +199,7 @@ async function exportProjectFiles(name: string, resourceDir: string, projectData
 }
 
 function koreplatform(platform: string) {
+	// 'android-native' becomes 'android'
 	if (platform.endsWith('-native')) return platform.substr(0, platform.length - '-native'.length);
 	else if (platform.endsWith('-hl')) return platform.substr(0, platform.length - '-hl'.length);
 	else return platform;
@@ -241,9 +242,11 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let target = options.target.toLowerCase();
 	let baseTarget = target;
 	let customTarget: Target = null;
+	log.info('Custom targets: ' + JSON.stringify(project.customTargets));
 	if (project.customTargets.get(options.target)) {
 		customTarget = project.customTargets.get(options.target);
 		baseTarget = customTarget.baseTarget;
+		log.info('Base target: ' + baseTarget);
 	}
 	
 	switch (baseTarget) {
@@ -275,6 +278,8 @@ async function exportKhaProject(options: Options): Promise<string> {
 			exporter = new PlayStationMobileExporter(options);
 			break;
 		case Platform.Android:
+		//case Platform.AndroidNative:
+			// 'android-native' bypasses this option
 			exporter = new AndroidExporter(options);
 			break;
 		case Platform.Node:
@@ -294,12 +299,12 @@ async function exportKhaProject(options: Options): Promise<string> {
 			}
 			else {
 				kore = true;
+				// If target is 'android-native' then options.target becomes 'android'
 				options.target = koreplatform(target);
 				exporter = new KoreExporter(options);
 			}
 			break;
 	}
-
 	exporter.setSystemDirectory(target);
 
 	// Create the target build folder

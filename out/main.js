@@ -221,9 +221,11 @@ function exportKhaProject(options) {
         let target = options.target.toLowerCase();
         let baseTarget = target;
         let customTarget = null;
+        log.info('Custom targets: ' + JSON.stringify(project.customTargets));
         if (project.customTargets.get(options.target)) {
             customTarget = project.customTargets.get(options.target);
             baseTarget = customTarget.baseTarget;
+            log.info('Base target: ' + baseTarget);
         }
         switch (baseTarget) {
             case Platform_1.Platform.Krom:
@@ -254,6 +256,7 @@ function exportKhaProject(options) {
                 exporter = new PlayStationMobileExporter_1.PlayStationMobileExporter(options);
                 break;
             case Platform_1.Platform.Android:
+                //case Platform.AndroidNative:
                 exporter = new AndroidExporter_1.AndroidExporter(options);
                 break;
             case Platform_1.Platform.Node:

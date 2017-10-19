@@ -6,6 +6,7 @@ export var Platform = {
 	iOS: 'ios',
 	OSX: 'osx',
 	Android: 'android',
+	AndroidNative: 'android-native',
 	Xbox360: 'xbox360',
 	Linux: 'linux',
 	HTML5: 'html5',
