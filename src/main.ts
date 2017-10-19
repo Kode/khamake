@@ -206,7 +206,8 @@ function koreplatform(platform: string) {
 
 async function exportKhaProject(options: Options): Promise<string> {
 	log.info('Creating Kha project.');
-		
+	log.info('options: ' + JSON.stringify(options));
+	
 	let project: Project = null;
 	let projectData: ProjectData;
 	let foundProjectFile = false;
@@ -463,6 +464,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 
 	projectData.preHaxeCompilation();
 	if (options.onlydata) {
+		log.info("Exporting only data.");
 		return project.name;
 	}
 	else {

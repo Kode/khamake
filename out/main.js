@@ -192,6 +192,7 @@ function koreplatform(platform) {
 function exportKhaProject(options) {
     return __awaiter(this, void 0, void 0, function* () {
         log.info('Creating Kha project.');
+        log.info('options: ' + JSON.stringify(options));
         let project = null;
         let projectData;
         let foundProjectFile = false;
@@ -421,6 +422,7 @@ function exportKhaProject(options) {
         }
         projectData.preHaxeCompilation();
         if (options.onlydata) {
+            log.info("Exporting only data.");
             return project.name;
         }
         else {
