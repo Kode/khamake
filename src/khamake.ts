@@ -124,6 +124,12 @@ let options: Array<any> = [
 		default: ''
 	},
 	{
+		full: 'aac',
+		description: 'Commandline for running the ffmpeg executable',
+		value: true,
+		default: ''
+	},
+	{
 		full: 'krafix',
 		description: 'Location of krafix shader compiler',
 		value: true,
