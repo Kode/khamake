@@ -137,11 +137,7 @@ class AssetConverter {
                         }
                         default: {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, this.exporter.options.from);
-                            log.info(JSON.stringify(exportInfo));
-                            log.info(JSON.stringify(options));
-                            log.info(JSON.stringify(this.exporter.backend()));
                             let blobs = yield this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
-                            log.info('Copying blob: ' + file);
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs, original_width: undefined, original_height: undefined, readable: undefined });
                             break;
                         }
