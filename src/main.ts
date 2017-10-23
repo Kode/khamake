@@ -210,7 +210,6 @@ function koreplatform(platform: string) {
 
 async function exportKhaProject(options: Options): Promise<string> {
 	log.info('Creating Kha project.');
-	log.info('options: ' + JSON.stringify(options));
 	
 	let project: Project = null;
 	let projectData: ProjectData;
@@ -245,11 +244,9 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let target = options.target.toLowerCase();
 	let baseTarget = target;
 	let customTarget: Target = null;
-	log.info('Custom targets: ' + JSON.stringify(project.customTargets));
 	if (project.customTargets.get(options.target)) {
 		customTarget = project.customTargets.get(options.target);
 		baseTarget = customTarget.baseTarget;
-		log.info('Base target: ' + baseTarget);
 	}
 	
 	switch (baseTarget) {
@@ -281,7 +278,6 @@ async function exportKhaProject(options: Options): Promise<string> {
 			exporter = new PlayStationMobileExporter(options);
 			break;
 		case Platform.Android:
-		//case Platform.AndroidNative:
 			// 'android-native' bypasses this option
 			exporter = new AndroidExporter(options);
 			break;
@@ -309,6 +305,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 			break;
 	}
 	exporter.setSystemDirectory(target);
+	let buildDir = path.join(options.to, exporter.sysdir() + '-build');
 
 	// Create the target build folder
 	// e.g. 'build/android-native'
@@ -369,7 +366,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let exportedShaders: CompiledShader[] = [];
 	if (!options.noshaders) {
 		let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp,
-		path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
+		buildDir, options, project.shaderMatchers);
 		lastShaderCompiler = shaderCompiler;
 		exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
 	}
@@ -473,15 +470,18 @@ async function exportKhaProject(options: Options): Promise<string> {
 	projectData.preHaxeCompilation();
 	if (options.onlydata) {
 		log.info("Exporting only data.");
-		// Location of preprocessed assets
-		let dataDir = path.join(options.to, exporter.sysdir());
-		// Use the same 'safename' as koremake
-		let safename = project.name.replace(/ /g, '-');
-		let assetsDir = path.resolve(options.to, safename, 'app', 'src', 'main', 'assets');
-		// Create path if it does not exist (although it should)
-		fs.ensureDirSync(assetsDir);
-		log.info(assetsDir);
-		fs.copySync(path.resolve(dataDir), assetsDir);
+		// We need to copy assets into project folder for Android native
+		if (exporter.sysdir() == 'android-native') {
+			// Location of preprocessed assets
+			let dataDir = path.join(options.to, exporter.sysdir());
+			// Use the same 'safename' as koremake
+			let safename = project.name.replace(/ /g, '-');
+			let assetsDir = path.resolve(buildDir, safename, 'app', 'src', 'main', 'assets');
+			// Create path if it does not exist (although it should)
+			fs.ensureDirSync(assetsDir);
+			log.info(assetsDir);
+			fs.copySync(path.resolve(dataDir), assetsDir);
+		}
 		return project.name;
 	}
 	else {

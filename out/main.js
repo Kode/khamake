@@ -194,7 +194,6 @@ function koreplatform(platform) {
 function exportKhaProject(options) {
     return __awaiter(this, void 0, void 0, function* () {
         log.info('Creating Kha project.');
-        log.info('options: ' + JSON.stringify(options));
         let project = null;
         let projectData;
         let foundProjectFile = false;
@@ -223,11 +222,9 @@ function exportKhaProject(options) {
         let target = options.target.toLowerCase();
         let baseTarget = target;
         let customTarget = null;
-        log.info('Custom targets: ' + JSON.stringify(project.customTargets));
         if (project.customTargets.get(options.target)) {
             customTarget = project.customTargets.get(options.target);
             baseTarget = customTarget.baseTarget;
-            log.info('Base target: ' + baseTarget);
         }
         switch (baseTarget) {
             case Platform_1.Platform.Krom:
@@ -258,7 +255,6 @@ function exportKhaProject(options) {
                 exporter = new PlayStationMobileExporter_1.PlayStationMobileExporter(options);
                 break;
             case Platform_1.Platform.Android:
-                //case Platform.AndroidNative:
                 // 'android-native' bypasses this option
                 exporter = new AndroidExporter_1.AndroidExporter(options);
                 break;
@@ -286,6 +282,7 @@ function exportKhaProject(options) {
                 break;
         }
         exporter.setSystemDirectory(target);
+        let buildDir = path.join(options.to, exporter.sysdir() + '-build');
         // Create the target build folder
         // e.g. 'build/android-native'
         fs.ensureDirSync(path.join(options.to, exporter.sysdir()));
@@ -332,7 +329,7 @@ function exportKhaProject(options) {
         }
         let exportedShaders = [];
         if (!options.noshaders) {
-            let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
+            let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, buildDir, options, project.shaderMatchers);
             lastShaderCompiler = shaderCompiler;
             exportedShaders = yield shaderCompiler.run(options.watch, recompileAllShaders);
         }
@@ -430,15 +427,18 @@ function exportKhaProject(options) {
         projectData.preHaxeCompilation();
         if (options.onlydata) {
             log.info("Exporting only data.");
-            // Location of preprocessed assets
-            let dataDir = path.join(options.to, exporter.sysdir());
-            // Use the same 'safename' as koremake
-            let safename = project.name.replace(/ /g, '-');
-            let assetsDir = path.resolve(options.to, safename, 'app', 'src', 'main', 'assets');
-            // Create path if it does not exist (although it should)
-            fs.ensureDirSync(assetsDir);
-            log.info(assetsDir);
-            fs.copySync(path.resolve(dataDir), assetsDir);
+            // We need to copy assets into project folder for Android native
+            if (exporter.sysdir() == 'android-native') {
+                // Location of preprocessed assets
+                let dataDir = path.join(options.to, exporter.sysdir());
+                // Use the same 'safename' as koremake
+                let safename = project.name.replace(/ /g, '-');
+                let assetsDir = path.resolve(buildDir, safename, 'app', 'src', 'main', 'assets');
+                // Create path if it does not exist (although it should)
+                fs.ensureDirSync(assetsDir);
+                log.info(assetsDir);
+                fs.copySync(path.resolve(dataDir), assetsDir);
+            }
             return project.name;
         }
         else {

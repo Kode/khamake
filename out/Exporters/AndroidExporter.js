@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
-const log = require("./../log");
 const KhaExporter_1 = require("./KhaExporter");
 const Converter_1 = require("../Converter");
 const ImageTool_1 = require("../ImageTool");
@@ -155,7 +154,6 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
     }
     copyBlob(platform, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
-            log.info('Copying: ' + from + ' to: ' + to);
             fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), { overwrite: true });
             return [to];
         });

@@ -163,7 +163,6 @@ export class AndroidExporter extends KhaExporter {
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		log.info('Copying: ' + from + ' to: ' + to);
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), { overwrite: true });
 		return [to];
 	}
