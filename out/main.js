@@ -112,10 +112,11 @@ function exportProjectFiles(name, resourceDir, projectData, options, exporter, k
             projectData.postHaxeCompilation();
             yield exporter.export(name, targetOptions, haxeOptions);
         }
+        let buildDir = path.join(options.to, exporter.sysdir() + '-build');
         if (options.haxe !== '' && kore && !options.noproject) {
             // If target is a Kore project, generate additional project folders here.
             // generate the korefile.js
-            fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { overwrite: true });
+            fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
             fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
             // Similar to khamake.js -> main.js -> run(...)
             // We now do koremake.js -> main.js -> run(...)
@@ -124,7 +125,7 @@ function exportProjectFiles(name, resourceDir, projectData, options, exporter, k
             try {
                 let name = yield require(path.join(korepath.get(), 'out', 'main.js')).run({
                     from: options.from,
-                    to: path.join(options.to, exporter.sysdir() + '-build'),
+                    to: buildDir,
                     target: koreplatform(options.target),
                     graphics: options.graphics,
                     vrApi: options.vr,
@@ -147,13 +148,13 @@ function exportProjectFiles(name, resourceDir, projectData, options, exporter, k
             }
         }
         else if (options.haxe !== '' && korehl && !options.noproject) {
-            fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { overwrite: true });
-            fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { overwrite: true });
+            fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
+            fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
             fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
             try {
                 let name = yield require(path.join(korepath.get(), 'out', 'main.js')).run({
                     from: options.from,
-                    to: path.join(options.to, exporter.sysdir() + '-build'),
+                    to: buildDir,
                     target: koreplatform(options.target),
                     graphics: options.graphics,
                     vrApi: options.vr,
@@ -182,6 +183,7 @@ function exportProjectFiles(name, resourceDir, projectData, options, exporter, k
     });
 }
 function koreplatform(platform) {
+    // 'android-native' becomes 'android'
     if (platform.endsWith('-native'))
         return platform.substr(0, platform.length - '-native'.length);
     else if (platform.endsWith('-hl'))
@@ -257,6 +259,7 @@ function exportKhaProject(options) {
                 break;
             case Platform_1.Platform.Android:
                 //case Platform.AndroidNative:
+                // 'android-native' bypasses this option
                 exporter = new AndroidExporter_1.AndroidExporter(options);
                 break;
             case Platform_1.Platform.Node:
@@ -276,6 +279,7 @@ function exportKhaProject(options) {
                 }
                 else {
                     kore = true;
+                    // If target is 'android-native' then options.target becomes 'android'
                     options.target = koreplatform(target);
                     exporter = new KoreExporter_1.KoreExporter(options);
                 }
@@ -426,6 +430,15 @@ function exportKhaProject(options) {
         projectData.preHaxeCompilation();
         if (options.onlydata) {
             log.info("Exporting only data.");
+            // Location of preprocessed assets
+            let dataDir = path.join(options.to, exporter.sysdir());
+            // Use the same 'safename' as koremake
+            let safename = project.name.replace(/ /g, '-');
+            let assetsDir = path.resolve(options.to, safename, 'app', 'src', 'main', 'assets');
+            // Create path if it does not exist (although it should)
+            fs.ensureDirSync(assetsDir);
+            log.info(assetsDir);
+            fs.copySync(path.resolve(dataDir), assetsDir);
             return project.name;
         }
         else {
