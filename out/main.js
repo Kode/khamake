@@ -318,6 +318,18 @@ function exportKhaProject(options) {
         }
         let exportedShaders = [];
         if (!options.noshaders) {
+            if (fs.existsSync(path.join(options.from, 'Backends'))) {
+                let libdirs = fs.readdirSync(path.join(options.from, 'Backends'));
+                for (let ld in libdirs) {
+                    let libdir = path.join(options.from, 'Backends', libdirs[ld]);
+                    if (fs.statSync(libdir).isDirectory()) {
+                        let exe = path.join(libdir, 'krafix', 'krafix-' + options.target + '.exe');
+                        if (fs.existsSync(exe)) {
+                            options.krafix = exe;
+                        }
+                    }
+                }
+            }
             let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, path.join(options.to, exporter.sysdir() + '-build'), options, project.shaderMatchers);
             lastShaderCompiler = shaderCompiler;
             exportedShaders = yield shaderCompiler.run(options.watch, recompileAllShaders);

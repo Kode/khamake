@@ -117,12 +117,7 @@ class ShaderCompiler {
                     return 'glsl';
                 }
             default:
-                for (let p in Platform_1.Platform) {
-                    if (platform === p) {
-                        return 'none';
-                    }
-                }
-                return 'glsl';
+                return platform;
         }
     }
     watch(watch, match, options, recompileAll) {
