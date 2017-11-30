@@ -1,3 +1,3 @@
-var project = new Project('HaxeCrossCode');
+let project = new Project('HaxeCrossCode', __dirname);
 project.addFiles('kore_sources.c');
-return project;
+resolve(project);

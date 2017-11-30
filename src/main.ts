@@ -51,7 +51,7 @@ function safeName(name: string): string {
 	return name.replace(/[\\\/]/g, '_');
 }
 
-function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[]): string {
+function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[], korehl: boolean): string {
 	let out = '';
 	out += 'let fs = require(\'fs\');\n';
 	out += 'let path = require(\'path\');\n';
@@ -79,9 +79,10 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 
 	let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
 	if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-	out += 'Promise.all([Project.createProject(\'' + buildpath.replace(/\\/g, '/') + '\', __dirname), '
-		+ 'Project.createProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\', __dirname), '
-		+ 'Project.createProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\', __dirname)]).then((projects) => {\n';
+	out += 'Promise.all([Project.createProject(\'' + buildpath.replace(/\\/g, '/') + '\', __dirname), ';
+	if (korehl) out += 'Project.createProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\', __dirname), ';
+	else out += 'Project.createProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\', __dirname), ';
+	out += 'Project.createProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\', __dirname)]).then((projects) => {\n';
 	out += '\tfor (let p of projects) project.addSubProject(p);\n';
 	
 	out += '\tlet libs = [];\n';
@@ -127,7 +128,7 @@ async function exportProjectFiles(name: string, resourceDir: string, projectData
 		// If target is a Kore project, generate additional project folders here.
 		// generate the korefile.js
 		fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
+		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, false));
 
 		// Similar to khamake.js -> main.js -> run(...)
 		// We now do koremake.js -> main.js -> run(...)
@@ -161,9 +162,9 @@ async function exportProjectFiles(name: string, resourceDir: string, projectData
 		}
 	}
 	else if (options.haxe !== '' && korehl && !options.noproject) {
-		fs.copySync(path.join(__dirname, 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { overwrite: true });
-		fs.copySync(path.join(__dirname, 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines));
+		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(options.to, exporter.sysdir() + '-build', 'kore_sources.c'), { overwrite: true });
+		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'korefile.js'), path.join(options.to, exporter.sysdir() + '-build', 'korefile.js'), { overwrite: true });
+		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, korehl));
 
 		try {
 			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
