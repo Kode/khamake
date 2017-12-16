@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const os = require("os");
 const path = require("path");
 const GraphicsApi_1 = require("./GraphicsApi");
+const AudioApi_1 = require("./AudioApi");
 const VrApi_1 = require("./VrApi");
 const Options_1 = require("./Options");
 const Platform_1 = require("./Platform");
@@ -24,18 +25,14 @@ if (version < 6) {
     process.exit(1);
 }
 let defaultTarget;
-let defaultGraphics;
 if (os.platform() === 'linux') {
     defaultTarget = Platform_1.Platform.Linux;
-    defaultGraphics = GraphicsApi_1.GraphicsApi.OpenGL;
 }
 else if (os.platform() === 'win32') {
     defaultTarget = Platform_1.Platform.Windows;
-    defaultGraphics = GraphicsApi_1.GraphicsApi.Direct3D11;
 }
 else {
     defaultTarget = Platform_1.Platform.OSX;
-    defaultGraphics = GraphicsApi_1.GraphicsApi.OpenGL;
 }
 let options = [
     {
@@ -85,9 +82,16 @@ let options = [
     {
         full: 'graphics',
         short: 'g',
-        description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal and opengl.',
+        description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal, vulkan and opengl.',
         value: true,
-        default: defaultGraphics
+        default: GraphicsApi_1.GraphicsApi.Default
+    },
+    {
+        full: 'audio',
+        short: 'a',
+        description: 'Audio api to use. Possible parameters are directsound and wasapi.',
+        value: true,
+        default: AudioApi_1.AudioApi.Default
     },
     {
         full: 'visualstudio',

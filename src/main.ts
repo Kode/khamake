@@ -6,8 +6,6 @@ import * as path from 'path';
 import {sys} from './exec';
 import * as korepath from './korepath';
 import * as log from './log';
-import {GraphicsApi} from './GraphicsApi';
-import {VrApi} from './VrApi';
 import {Options} from './Options';
 import {Platform} from './Platform';
 import {Project, Target, Library} from './Project';
@@ -141,6 +139,7 @@ async function exportProjectFiles(name: string, resourceDir: string, projectData
 				to: path.join(options.to, exporter.sysdir() + '-build'),
 				target: koreplatform(options.target),
 				graphics: options.graphics,
+				audio: options.audio,
 				vrApi: options.vr,
 				visualstudio: options.visualstudio,
 				compile: options.compile,

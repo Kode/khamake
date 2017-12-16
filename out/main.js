@@ -130,6 +130,7 @@ function exportProjectFiles(name, resourceDir, projectData, options, exporter, k
                     to: path.join(options.to, exporter.sysdir() + '-build'),
                     target: koreplatform(options.target),
                     graphics: options.graphics,
+                    audio: options.audio,
                     vrApi: options.vr,
                     visualstudio: options.visualstudio,
                     compile: options.compile,

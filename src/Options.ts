@@ -1,7 +1,3 @@
-import {GraphicsApi} from './GraphicsApi';
-import {VisualStudioVersion} from './VisualStudioVersion';
-import {VrApi} from './VrApi';
-
 export class Options {
 	from: string;
 	to: string;
@@ -11,6 +7,7 @@ export class Options {
 	main: string;
 	// intermediate: string;
 	graphics: string;
+	audio: string;
 	visualstudio: string;
 	kha: string;
 	haxe: string;

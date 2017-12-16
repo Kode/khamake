@@ -58,8 +58,11 @@ class ShaderCompiler {
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
                     return 'spirv';
                 }
-                else {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'essl';
+                }
+                else {
+                    throw new Error('Unsupported shader language.');
                 }
             case Platform_1.Platform.HTML5:
             case Platform_1.Platform.DebugHTML5:
@@ -72,8 +75,11 @@ class ShaderCompiler {
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
                     return 'metal';
                 }
-                else {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'essl';
+                }
+                else {
+                    throw new Error('Unsupported shader language.');
                 }
             case Platform_1.Platform.Windows:
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
@@ -82,11 +88,14 @@ class ShaderCompiler {
                 else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
                     return 'glsl';
                 }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12 || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'd3d11';
                 }
-                else {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D9) {
                     return 'd3d9';
+                }
+                else {
+                    throw new Error('Unsupported shader language.');
                 }
             case Platform_1.Platform.WindowsApp:
                 return 'd3d11';
@@ -97,24 +106,50 @@ class ShaderCompiler {
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
                     return 'spirv';
                 }
-                else {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'glsl';
+                }
+                else {
+                    throw new Error('Unsupported shader language.');
                 }
             case Platform_1.Platform.OSX:
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
                     return 'metal';
                 }
-                else {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'glsl';
+                }
+                else {
+                    throw new Error('Unsupported shader language.');
                 }
             case Platform_1.Platform.Unity:
                 return 'hlsl';
             case Platform_1.Platform.Krom:
-                if (process.platform === 'win32') {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Default) {
+                    if (process.platform === 'win32') {
+                        return 'd3d11';
+                    }
+                    else {
+                        return 'glsl';
+                    }
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
+                    return 'spirv';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
+                    return 'metal';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
+                    return 'glsl';
+                }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D11 || options.graphics === GraphicsApi_1.GraphicsApi.Direct3D12) {
                     return 'd3d11';
                 }
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.Direct3D9) {
+                    return 'd3d9';
+                }
                 else {
-                    return 'glsl';
+                    throw new Error('Unsupported shader language.');
                 }
             default:
                 return platform;

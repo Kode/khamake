@@ -8,6 +8,7 @@ import * as path from 'path';
 import {sys} from './exec';
 import * as korepath from './korepath';
 import {GraphicsApi} from './GraphicsApi';
+import {AudioApi} from './AudioApi';
 import {VrApi} from './VrApi';
 import {Options} from './Options';
 import {Platform} from './Platform';
@@ -20,18 +21,14 @@ if (version < 6) {
 }
 
 let defaultTarget: string;
-let defaultGraphics: string;
 if (os.platform() === 'linux') {
 	defaultTarget = Platform.Linux;
-	defaultGraphics = GraphicsApi.OpenGL;
 }
 else if (os.platform() === 'win32') {
 	defaultTarget = Platform.Windows;
-	defaultGraphics = GraphicsApi.Direct3D11;
 }
 else {
 	defaultTarget = Platform.OSX;
-	defaultGraphics = GraphicsApi.OpenGL;
 }
 
 let options: Array<any> = [
@@ -82,9 +79,16 @@ let options: Array<any> = [
 	{
 		full: 'graphics',
 		short: 'g',
-		description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal and opengl.',
+		description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal, vulkan and opengl.',
 		value: true,
-		default: defaultGraphics
+		default: GraphicsApi.Default
+	},
+	{
+		full: 'audio',
+		short: 'a',
+		description: 'Audio api to use. Possible parameters are directsound and wasapi.',
+		value: true,
+		default: AudioApi.Default
 	},
 	{
 		full: 'visualstudio',
