@@ -6,6 +6,7 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {Library} from '../Project';
+import {VrApi} from '../VrApi';
 
 export class Html5Exporter extends KhaExporter {
 	width: number;
@@ -49,6 +50,10 @@ export class Html5Exporter extends KhaExporter {
 
 		if (targetOptions.html5.noKeyboard) {
 			defines.push('kha_no_keyboard');
+		}
+
+		if (this.options.vr === VrApi.WebVR) {
+			defines.push('kha_webvr');
 		}
 
 		let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;

@@ -4,6 +4,7 @@ exports.VrApi = {
     GearVr: 'gearvr',
     Cardboard: 'cardboard',
     Oculus: 'oculus',
+    WebVR: 'webvr',
     None: 'none'
 };
 //# sourceMappingURL=VrApi.js.map

@@ -13,6 +13,7 @@ const path = require("path");
 const KhaExporter_1 = require("./KhaExporter");
 const Converter_1 = require("../Converter");
 const ImageTool_1 = require("../ImageTool");
+const VrApi_1 = require("../VrApi");
 class Html5Exporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
@@ -45,6 +46,9 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         defines.push('kha_a2');
         if (targetOptions.html5.noKeyboard) {
             defines.push('kha_no_keyboard');
+        }
+        if (this.options.vr === VrApi_1.VrApi.WebVR) {
+            defines.push('kha_webvr');
         }
         let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
         defines.push('canvas_id=' + canvasId);
