@@ -135,8 +135,11 @@ function hxml(projectdir, options) {
     for (let param of options.parameters) {
         data += param + '\n';
     }
-    const entrypoint = options ? options.main ? options.main : 'Main' : 'Main';
-    data += '-main ' + entrypoint + '\n';
+    const hasMainParameter = options.parameters.filter((p) => p.indexOf('-main ')).length > 0;
+    if (!hasMainParameter) {
+        const entrypoint = options ? options.main ? options.main : 'Main' : 'Main';
+        data += '-main ' + entrypoint + '\n';
+    }
     fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 }
 function FlashDevelop(projectdir, options) {
