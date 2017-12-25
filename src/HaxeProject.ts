@@ -142,8 +142,14 @@ function hxml(projectdir: string, options: any) {
 	for (let param of options.parameters) {
 		data += param + '\n';
 	}
-	const entrypoint = options ? options.main ? options.main : 'Main' : 'Main';
-	data += '-main ' + entrypoint + '\n';
+
+	const hasMainParameter = options.parameters.filter((p: any) => p.indexOf('-main ')).length > 0;
+
+	if (!hasMainParameter) {
+		const entrypoint = options ? options.main ? options.main : 'Main' : 'Main';
+		data += '-main ' + entrypoint + '\n';	
+	}
+
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 }
 
