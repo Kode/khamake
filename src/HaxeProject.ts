@@ -143,7 +143,7 @@ function hxml(projectdir: string, options: any) {
 		data += param + '\n';
 	}
 
-	const hasMainParameter = options.parameters.filter((p: any) => p.indexOf('-main ')).length > 0;
+	const hasMainParameter = options.parameters.filter((p: any) => p.indexOf('-main ') >= 0).length > 0;
 
 	if (!hasMainParameter) {
 		const entrypoint = options ? options.main ? options.main : 'Main' : 'Main';
