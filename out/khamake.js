@@ -20,8 +20,8 @@ const Options_1 = require("./Options");
 const Platform_1 = require("./Platform");
 const VisualStudioVersion_1 = require("./VisualStudioVersion");
 let version = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
-if (version < 6) {
-    console.error('Requires Node.js version 6 or higher.');
+if (version < 8.9) {
+    console.error('Requires Node.js version 8.9 or higher.');
     process.exit(1);
 }
 let defaultTarget;

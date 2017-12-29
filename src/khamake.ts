@@ -15,8 +15,8 @@ import {Platform} from './Platform';
 import {VisualStudioVersion} from './VisualStudioVersion';
 
 let version = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
-if (version < 6) {
-	console.error('Requires Node.js version 6 or higher.');
+if (version < 8.9) {
+	console.error('Requires Node.js version 8.9 or higher.');
 	process.exit(1);
 }
 
