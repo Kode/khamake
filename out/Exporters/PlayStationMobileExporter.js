@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -132,29 +124,21 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
     /*copyMusic(platform, from, to, encoders, callback) {
         callback();
     }*/
-    copySound(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [''];
-        });
+    async copySound(platform, from, to) {
+        return [''];
     }
-    copyImage(platform, from, to, asset, cache) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.files.push(asset['file']);
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
-            return [to + '.' + format];
-        });
+    async copyImage(platform, from, to, asset, cache) {
+        this.files.push(asset['file']);
+        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+        return [to + '.' + format];
     }
-    copyBlob(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-            this.files.push(to);
-            return [to];
-        });
+    async copyBlob(platform, from, to) {
+        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
+        this.files.push(to);
+        return [to];
     }
-    copyVideo(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [''];
-        });
+    async copyVideo(platform, from, to) {
+        return [''];
     }
 }
 exports.PlayStationMobileExporter = PlayStationMobileExporter;

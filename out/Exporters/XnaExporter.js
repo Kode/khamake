@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -248,12 +240,10 @@ class XnaExporter extends CSharpExporter_1.CSharpExporter {
         this.p('</Project>');
         this.closeFile();
     }
-    copyImage(platform, from, to, asset, cache) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.images.push(asset['file']);
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false, false, cache);
-            return [to + '.' + format];
-        });
+    async copyImage(platform, from, to, asset, cache) {
+        this.images.push(asset['file']);
+        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, 'xna', to), asset, undefined, false, false, cache);
+        return [to + '.' + format];
     }
 }
 exports.XnaExporter = XnaExporter;

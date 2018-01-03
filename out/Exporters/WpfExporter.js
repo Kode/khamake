@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -270,18 +262,14 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
             callback([to + '.mp4']);
         });
     }*/
-    copySound(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
-            return [to + '.wav'];
-        });
+    async copySound(platform, from, to) {
+        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+        return [to + '.wav'];
     }
-    copyVideo(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), this.options.wmv);
-            return [to + '.wmv'];
-        });
+    async copyVideo(platform, from, to) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+        await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), this.options.wmv);
+        return [to + '.wmv'];
     }
 }
 exports.WpfExporter = WpfExporter;

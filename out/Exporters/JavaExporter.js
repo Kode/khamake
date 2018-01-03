@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -47,11 +39,9 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
             main: this.options.main,
         };
     }
-    export(name, targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            this.exportEclipseProject();
-        });
+    async export(name, targetOptions, haxeOptions) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
+        this.exportEclipseProject();
     }
     backend() {
         return 'Java';
@@ -89,28 +79,20 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
         this.copyFile(from, this.directory.resolve(this.sysdir()).resolve(to + '.wav'));
         callback([to + '.wav']);
     }*/
-    copySound(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
-            return [to + '.wav'];
-        });
+    async copySound(platform, from, to) {
+        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+        return [to + '.wav'];
     }
-    copyImage(platform, from, to, asset, cache) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
-            return [to + '.' + format];
-        });
+    async copyImage(platform, from, to, asset, cache) {
+        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+        return [to + '.' + format];
     }
-    copyBlob(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-            return [to];
-        });
+    async copyBlob(platform, from, to) {
+        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
+        return [to];
     }
-    copyVideo(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [to];
-        });
+    async copyVideo(platform, from, to) {
+        return [to];
     }
 }
 exports.JavaExporter = JavaExporter;

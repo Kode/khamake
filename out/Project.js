@@ -4,6 +4,7 @@ const child_process = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const log = require("./log");
+const ProjectFile_1 = require("./ProjectFile");
 class Library {
 }
 exports.Library = Library;
@@ -44,6 +45,19 @@ class Project {
             android_native: {},
             ios: {}
         };
+    }
+    async addProject(projectDir) {
+        let project = (await ProjectFile_1.loadProject(projectDir, 'khafile.js', Project.platform)).project; // subproject callbacks are ignored
+        this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
+        this.sources = this.sources.concat(project.sources);
+        this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
+        this.defines = this.defines.concat(project.defines);
+        this.cdefines = this.cdefines.concat(project.cdefines);
+        this.parameters = this.parameters.concat(project.parameters);
+        for (let customTarget of project.customTargets.keys()) {
+            this.customTargets.set(customTarget, project.customTargets.get(customTarget));
+        }
+        // windowOptions and targetOptions are ignored
     }
     /**
      * Add all assets matching the match regex relative to the directory containing the current khafile.

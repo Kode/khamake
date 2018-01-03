@@ -2,6 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as log from './log';
+import {loadProject} from './ProjectFile';
 
 export class Library {
 	libpath: string;
@@ -29,13 +30,14 @@ function contains(main: string, sub: string) {
 }
 
 export class Project {
+	static platform: string;
+	static scriptdir: string;
 	name: string;
 	sources: string[];
 	defines: string[];
 	cdefines: string[];
 	parameters: string[];
 	scriptdir: string;
-	static scriptdir: string;
 	libraries: Library[];
 	localLibraryPath: string;
 	windowOptions: any;
@@ -65,6 +67,20 @@ export class Project {
 			android_native: {},
 			ios: {}
 		};
+	}
+
+	async addProject(projectDir: string) {
+		let project = (await loadProject(projectDir, 'khafile.js', Project.platform)).project; // subproject callbacks are ignored
+		this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
+		this.sources = this.sources.concat(project.sources);
+		this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
+		this.defines = this.defines.concat(project.defines);
+		this.cdefines = this.cdefines.concat(project.cdefines);
+		this.parameters = this.parameters.concat(project.parameters);
+		for (let customTarget of project.customTargets.keys()) {
+			this.customTargets.set(customTarget, project.customTargets.get(customTarget));
+		}
+		// windowOptions and targetOptions are ignored
 	}
 
 	/**

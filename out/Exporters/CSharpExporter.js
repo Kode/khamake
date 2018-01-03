@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -60,15 +52,13 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
             main: this.options.main,
         };
     }
-    export(name, targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.projectFiles) {
-                const projectUuid = uuid.v4();
-                this.exportSLN(projectUuid);
-                this.exportCsProj(projectUuid);
-                this.exportResources();
-            }
-        });
+    async export(name, targetOptions, haxeOptions) {
+        if (this.projectFiles) {
+            const projectUuid = uuid.v4();
+            this.exportSLN(projectUuid);
+            this.exportCsProj(projectUuid);
+            this.exportResources();
+        }
     }
     exportSLN(projectUuid) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir() + '-build'));
@@ -95,27 +85,19 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         this.p('EndGlobal');
         this.closeFile();
     }
-    copySound(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [to];
-        });
+    async copySound(platform, from, to) {
+        return [to];
     }
-    copyImage(platform, from, to, asset, cache) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
-            return [to + '.' + format];
-        });
+    async copyImage(platform, from, to, asset, cache) {
+        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+        return [to + '.' + format];
     }
-    copyBlob(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from, path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-            return [to];
-        });
+    async copyBlob(platform, from, to) {
+        fs.copySync(from, path.join(this.options.to, this.sysdir(), to), { overwrite: true });
+        return [to];
     }
-    copyVideo(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [to];
-        });
+    async copyVideo(platform, from, to) {
+        return [to];
     }
 }
 exports.CSharpExporter = CSharpExporter;

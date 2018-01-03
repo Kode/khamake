@@ -6,23 +6,27 @@ import {Project} from './Project';
 
 export class ProjectData {
 	project: Project;
-	preAssetConversion: () => void;
+	preAssetConversion:   () => void;
 	preShaderCompilation: () => void;
-	preHaxeCompilation: () => void;
-	postHaxeCompilation: () => void;
-	postCppCompilation: () => void;
+	preHaxeCompilation:   () => void;
+	postHaxeCompilation:  () => void;
+	postCppCompilation:   () => void;
 }
 
 export async function loadProject(from: string, projectfile: string, platform: string): Promise<ProjectData> {
 	return new Promise<ProjectData>((resolve, reject) => {
 		fs.readFile(path.join(from, projectfile), 'utf8', (err, data) => {
+			if (err) {
+				throw new Error('Error reading ' + projectfile + ' from ' + from + '.');
+			}
+
 			let resolved = false;
 			let callbacks = {
-				preAssetConversion: () => {},
+				preAssetConversion:   () => {},
 				preShaderCompilation: () => {},
-				preHaxeCompilation: () => {},
-				postHaxeCompilation: () => {},
-				postCppCompilation: () => {}
+				preHaxeCompilation:   () => {},
+				postHaxeCompilation:  () => {},
+				postCppCompilation:   () => {}
 			};
 			let resolver = (project: Project) => {
 				resolved = true;
@@ -42,9 +46,11 @@ export async function loadProject(from: string, projectfile: string, platform: s
 				}
 			});
 	
+			Project.platform = platform;
 			Project.scriptdir = from;
 			try {
-				new Function('Project', 'Platform', 'platform', 'require', 'resolve', 'reject', 'callbacks', data)
+				let AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
+				new AsyncFunction('Project', 'Platform', 'platform', 'require', 'resolve', 'reject', 'callbacks', data)
 					(Project, Platform, platform, require, resolver, reject, callbacks);
 			}
 			catch (error) {

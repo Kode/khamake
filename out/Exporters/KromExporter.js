@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -57,45 +49,35 @@ class KromExporter extends KhaExporter_1.KhaExporter {
             main: this.options.main,
         };
     }
-    export(name, targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-        });
+    async export(name, targetOptions, haxeOptions) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
     }
-    copySound(platform, from, to, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (options.quality < 1) {
-                fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-                let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-                return [to + '.ogg'];
-            }
-            else {
-                fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
-                return [to + '.wav'];
-            }
-        });
-    }
-    copyImage(platform, from, to, options, cache) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
-            return [to + '.' + format];
-        });
-    }
-    copyBlob(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-            return [to];
-        });
-    }
-    copyVideo(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
+    async copySound(platform, from, to, options) {
+        if (options.quality < 1) {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let webm = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
-            let files = [];
-            if (webm)
-                files.push(to + '.webm');
-            return files;
-        });
+            let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+            return [to + '.ogg'];
+        }
+        else {
+            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+            return [to + '.wav'];
+        }
+    }
+    async copyImage(platform, from, to, options, cache) {
+        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
+        return [to + '.' + format];
+    }
+    async copyBlob(platform, from, to) {
+        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
+        return [to];
+    }
+    async copyVideo(platform, from, to) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+        let webm = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
+        let files = [];
+        if (webm)
+            files.push(to + '.webm');
+        return files;
     }
 }
 exports.KromExporter = KromExporter;

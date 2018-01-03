@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process = require("child_process");
 const fs = require("fs-extra");
@@ -50,40 +42,30 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
             main: this.options.main,
         };
     }
-    export(name, _targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            let result = yield Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
-            if (result === 0) {
-                let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.from) });
-                if (doxresult.stdout.toString() !== '') {
-                    log.info(doxresult.stdout.toString());
-                }
-                if (doxresult.stderr.toString() !== '') {
-                    log.error(doxresult.stderr.toString());
-                }
+    async export(name, _targetOptions, haxeOptions) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
+        let result = await Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
+        if (result === 0) {
+            let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.from) });
+            if (doxresult.stdout.toString() !== '') {
+                log.info(doxresult.stdout.toString());
             }
-        });
+            if (doxresult.stderr.toString() !== '') {
+                log.error(doxresult.stderr.toString());
+            }
+        }
     }
-    copySound(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [''];
-        });
+    async copySound(platform, from, to) {
+        return [''];
     }
-    copyImage(platform, from, to, asset) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [''];
-        });
+    async copyImage(platform, from, to, asset) {
+        return [''];
     }
-    copyBlob(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [''];
-        });
+    async copyBlob(platform, from, to) {
+        return [''];
     }
-    copyVideo(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [''];
-        });
+    async copyVideo(platform, from, to) {
+        return [''];
     }
 }
 exports.EmptyExporter = EmptyExporter;

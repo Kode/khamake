@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -97,62 +89,60 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             main: this.options.main,
         };
     }
-    export(name, _targetOptions, haxeOptions) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let targetOptions = {
-                canvasId: 'khanvas',
-                scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha'
-            };
-            if (_targetOptions != null && _targetOptions.html5 != null) {
-                let userOptions = _targetOptions.html5;
-                if (userOptions.canvasId != null)
-                    targetOptions.canvasId = userOptions.canvasId;
-                if (userOptions.scriptName != null)
-                    targetOptions.scriptName = userOptions.scriptName;
+    async export(name, _targetOptions, haxeOptions) {
+        let targetOptions = {
+            canvasId: 'khanvas',
+            scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha'
+        };
+        if (_targetOptions != null && _targetOptions.html5 != null) {
+            let userOptions = _targetOptions.html5;
+            if (userOptions.canvasId != null)
+                targetOptions.canvasId = userOptions.canvasId;
+            if (userOptions.scriptName != null)
+                targetOptions.scriptName = userOptions.scriptName;
+        }
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
+        if (this.isDebugHtml5()) {
+            let index = path.join(this.options.to, this.sysdir(), 'index.html');
+            if (!fs.existsSync(index)) {
+                let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), { encoding: 'utf8' });
+                protoindex = protoindex.replace(/{Name}/g, name);
+                protoindex = protoindex.replace(/{Width}/g, '' + this.width);
+                protoindex = protoindex.replace(/{Height}/g, '' + this.height);
+                protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
+                protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
+                fs.writeFileSync(index.toString(), protoindex);
             }
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-            if (this.isDebugHtml5()) {
-                let index = path.join(this.options.to, this.sysdir(), 'index.html');
-                if (!fs.existsSync(index)) {
-                    let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), { encoding: 'utf8' });
-                    protoindex = protoindex.replace(/{Name}/g, name);
-                    protoindex = protoindex.replace(/{Width}/g, '' + this.width);
-                    protoindex = protoindex.replace(/{Height}/g, '' + this.height);
-                    protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
-                    protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
-                    fs.writeFileSync(index.toString(), protoindex);
-                }
-                let pack = path.join(this.options.to, this.sysdir(), 'package.json');
-                let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), { encoding: 'utf8' });
-                protopackage = protopackage.replace(/{Name}/g, name);
-                fs.writeFileSync(pack.toString(), protopackage);
-                let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
-                let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), { encoding: 'utf8' });
-                protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
-                protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
-                fs.writeFileSync(electron.toString(), protoelectron);
+            let pack = path.join(this.options.to, this.sysdir(), 'package.json');
+            let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), { encoding: 'utf8' });
+            protopackage = protopackage.replace(/{Name}/g, name);
+            fs.writeFileSync(pack.toString(), protopackage);
+            let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
+            let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), { encoding: 'utf8' });
+            protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
+            protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
+            fs.writeFileSync(electron.toString(), protoelectron);
+        }
+        else if (this.isNode()) {
+            let pack = path.join(this.options.to, this.sysdir(), 'package.json');
+            let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'package.json'), 'utf8');
+            protopackage = protopackage.replace(/{Name}/g, name);
+            fs.writeFileSync(pack, protopackage);
+            let protoserver = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'server.js'), 'utf8');
+            fs.writeFileSync(path.join(this.options.to, this.sysdir(), 'server.js'), protoserver);
+        }
+        else if (!this.isHtml5Worker()) {
+            let index = path.join(this.options.to, this.sysdir(), 'index.html');
+            if (!fs.existsSync(index)) {
+                let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'html5', 'index.html'), { encoding: 'utf8' });
+                protoindex = protoindex.replace(/{Name}/g, name);
+                protoindex = protoindex.replace(/{Width}/g, '' + this.width);
+                protoindex = protoindex.replace(/{Height}/g, '' + this.height);
+                protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
+                protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
+                fs.writeFileSync(index.toString(), protoindex);
             }
-            else if (this.isNode()) {
-                let pack = path.join(this.options.to, this.sysdir(), 'package.json');
-                let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'package.json'), 'utf8');
-                protopackage = protopackage.replace(/{Name}/g, name);
-                fs.writeFileSync(pack, protopackage);
-                let protoserver = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'node', 'server.js'), 'utf8');
-                fs.writeFileSync(path.join(this.options.to, this.sysdir(), 'server.js'), protoserver);
-            }
-            else if (!this.isHtml5Worker()) {
-                let index = path.join(this.options.to, this.sysdir(), 'index.html');
-                if (!fs.existsSync(index)) {
-                    let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'html5', 'index.html'), { encoding: 'utf8' });
-                    protoindex = protoindex.replace(/{Name}/g, name);
-                    protoindex = protoindex.replace(/{Width}/g, '' + this.width);
-                    protoindex = protoindex.replace(/{Height}/g, '' + this.height);
-                    protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
-                    protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
-                    fs.writeFileSync(index.toString(), protoindex);
-                }
-            }
-        });
+        }
     }
     /*copyMusic(platform, from, to, encoders, callback) {
         Files.createDirectories(this.directory.resolve(this.sysdir()).resolve(to).parent());
@@ -165,49 +155,41 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             });
         });
     }*/
-    copySound(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let ogg = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-            let mp4 = false;
-            if (!this.isDebugHtml5()) {
-                mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
-            }
-            let files = [];
-            if (ogg)
-                files.push(to + '.ogg');
-            if (mp4)
-                files.push(to + '.mp4');
-            return files;
-        });
+    async copySound(platform, from, to) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+        let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+        let mp4 = false;
+        if (!this.isDebugHtml5()) {
+            mp4 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+        }
+        let files = [];
+        if (ogg)
+            files.push(to + '.ogg');
+        if (mp4)
+            files.push(to + '.mp4');
+        return files;
     }
-    copyImage(platform, from, to, options, cache) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let format = yield ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
-            return [to + '.' + format];
-        });
+    async copyImage(platform, from, to, options, cache) {
+        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
+        return [to + '.' + format];
     }
-    copyBlob(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-            return [to];
-        });
+    async copyBlob(platform, from, to) {
+        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
+        return [to];
     }
-    copyVideo(platform, from, to) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let mp4 = false;
-            if (!this.isDebugHtml5()) {
-                mp4 = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
-            }
-            let webm = yield Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
-            let files = [];
-            if (mp4)
-                files.push(to + '.mp4');
-            if (webm)
-                files.push(to + '.webm');
-            return files;
-        });
+    async copyVideo(platform, from, to) {
+        fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
+        let mp4 = false;
+        if (!this.isDebugHtml5()) {
+            mp4 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+        }
+        let webm = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
+        let files = [];
+        if (mp4)
+            files.push(to + '.mp4');
+        if (webm)
+            files.push(to + '.webm');
+        return files;
     }
 }
 exports.Html5Exporter = Html5Exporter;

@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
@@ -90,7 +82,7 @@ class AssetConverter {
                     }
                 }
             });
-            this.watcher.on('ready', () => __awaiter(this, void 0, void 0, function* () {
+            this.watcher.on('ready', async () => {
                 ready = true;
                 let parsedFiles = [];
                 let index = 0;
@@ -108,20 +100,20 @@ class AssetConverter {
                         case '.jpeg':
                         case '.hdr': {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-                            let images = yield this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
+                            let images = await this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
                             break;
                         }
                         case '.flac':
                         case '.wav': {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-                            let sounds = yield this.exporter.copySound(this.platform, file, exportInfo.destination, options);
+                            let sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination, options);
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
                             break;
                         }
                         case '.ttf': {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-                            let fonts = yield this.exporter.copyFont(this.platform, file, exportInfo.destination, options);
+                            let fonts = await this.exporter.copyFont(this.platform, file, exportInfo.destination, options);
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts, original_width: undefined, original_height: undefined, readable: undefined });
                             break;
                         }
@@ -131,13 +123,13 @@ class AssetConverter {
                         case '.wmv':
                         case '.avi': {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-                            let videos = yield this.exporter.copyVideo(this.platform, file, exportInfo.destination, options);
+                            let videos = await this.exporter.copyVideo(this.platform, file, exportInfo.destination, options);
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'video', files: videos, original_width: undefined, original_height: undefined, readable: undefined });
                             break;
                         }
                         default: {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, this.exporter.options.from);
-                            let blobs = yield this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
+                            let blobs = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
                             parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs, original_width: undefined, original_height: undefined, readable: undefined });
                             break;
                         }
@@ -147,17 +139,15 @@ class AssetConverter {
                 fs.ensureDirSync(temp);
                 fs.writeFileSync(cachePath, JSON.stringify(cache), { encoding: 'utf8' });
                 resolve(parsedFiles);
-            }));
+            });
         });
     }
-    run(watch, temp) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let files = [];
-            for (let matcher of this.assetMatchers) {
-                files = files.concat(yield this.watch(watch, matcher.match, temp, matcher.options));
-            }
-            return files;
-        });
+    async run(watch, temp) {
+        let files = [];
+        for (let matcher of this.assetMatchers) {
+            files = files.concat(await this.watch(watch, matcher.match, temp, matcher.options));
+        }
+        return files;
     }
 }
 exports.AssetConverter = AssetConverter;

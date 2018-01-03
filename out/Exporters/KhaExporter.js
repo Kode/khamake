@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const Exporter_1 = require("./Exporter");
@@ -54,30 +46,20 @@ class KhaExporter extends Exporter_1.Exporter {
             }
         }
     }
-    copyImage(platform, from, to, options, cache) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [];
-        });
+    async copyImage(platform, from, to, options, cache) {
+        return [];
     }
-    copySound(platform, from, to, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [];
-        });
+    async copySound(platform, from, to, options) {
+        return [];
     }
-    copyVideo(platform, from, to, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [];
-        });
+    async copyVideo(platform, from, to, options) {
+        return [];
     }
-    copyBlob(platform, from, to, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [];
-        });
+    async copyBlob(platform, from, to, options) {
+        return [];
     }
-    copyFont(platform, from, to, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.copyBlob(platform, from, to + '.ttf', options);
-        });
+    async copyFont(platform, from, to, options) {
+        return await this.copyBlob(platform, from, to + '.ttf', options);
     }
 }
 exports.KhaExporter = KhaExporter;

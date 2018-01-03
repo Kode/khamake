@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process = require("child_process");
 const fs = require("fs-extra");
@@ -195,7 +187,7 @@ class ShaderCompiler {
             });
             this.watcher.on('unlink', (file) => {
             });
-            this.watcher.on('ready', () => __awaiter(this, void 0, void 0, function* () {
+            this.watcher.on('ready', async () => {
                 ready = true;
                 let compiledShaders = [];
                 let index = 0;
@@ -204,7 +196,7 @@ class ShaderCompiler {
                     log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
                     let compiledShader = null;
                     try {
-                        compiledShader = yield this.compileShader(shader, options, recompileAll);
+                        compiledShader = await this.compileShader(shader, options, recompileAll);
                     }
                     catch (error) {
                         reject(error);
@@ -229,21 +221,19 @@ class ShaderCompiler {
                 }
                 resolve(compiledShaders);
                 return;
-            }));
+            });
         });
     }
-    run(watch, recompileAll) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let shaders = [];
-            for (let matcher of this.shaderMatchers) {
-                try {
-                    shaders = shaders.concat(yield this.watch(watch, matcher.match, matcher.options, recompileAll));
-                }
-                catch (error) {
-                }
+    async run(watch, recompileAll) {
+        let shaders = [];
+        for (let matcher of this.shaderMatchers) {
+            try {
+                shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options, recompileAll));
             }
-            return shaders;
-        });
+            catch (error) {
+            }
+        }
+        return shaders;
     }
     compileShader(file, options, recompile) {
         return new Promise((resolve, reject) => {

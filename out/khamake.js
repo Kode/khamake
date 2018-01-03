@@ -2,14 +2,6 @@
 // Called from entry point, e.g. Kha/make.js
 // This is where options are processed:
 // e.g. '-t html5 --server'
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = require("os");
 const path = require("path");
@@ -291,32 +283,30 @@ for (let i = 2; i < args.length; ++i) {
 if (parsedOptions.run) {
     parsedOptions.compile = true;
 }
-function runKhamake() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            let logInfo = function (text, newline) {
-                if (newline) {
-                    console.log(text);
-                }
-                else {
-                    process.stdout.write(text);
-                }
-            };
-            let logError = function (text, newline) {
-                if (newline) {
-                    console.error(text);
-                }
-                else {
-                    process.stderr.write(text);
-                }
-            };
-            yield require('./main.js').run(parsedOptions, { info: logInfo, error: logError }, (name) => { });
-        }
-        catch (error) {
-            console.log(error);
-            process.exit(1);
-        }
-    });
+async function runKhamake() {
+    try {
+        let logInfo = function (text, newline) {
+            if (newline) {
+                console.log(text);
+            }
+            else {
+                process.stdout.write(text);
+            }
+        };
+        let logError = function (text, newline) {
+            if (newline) {
+                console.error(text);
+            }
+            else {
+                process.stderr.write(text);
+            }
+        };
+        await require('./main.js').run(parsedOptions, { info: logInfo, error: logError }, (name) => { });
+    }
+    catch (error) {
+        console.log(error);
+        process.exit(1);
+    }
 }
 if (parsedOptions.init) {
     console.log('Initializing Kha project.\n');
