@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as log from './../log';
 import {KhaExporter} from './KhaExporter';
 import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';

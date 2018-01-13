@@ -17,6 +17,7 @@ export class Options {
 	noshaders: boolean;
 	
 	noproject: boolean;
+	onlydata: boolean;
 	embedflashassets: boolean;
 	compile: boolean;
 	run: boolean;
