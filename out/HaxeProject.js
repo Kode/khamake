@@ -374,10 +374,12 @@ function FlashDevelop(projectdir, options) {
     };
     XmlWriter_1.writeXml(project, path.join(projectdir, options.safeName + '-' + options.system + '.hxproj'));
 }
-function writeHaxeProject(projectdir, options) {
+function writeHaxeProject(projectdir, projectFiles, options) {
     hxml(projectdir, options);
-    FlashDevelop(projectdir, options);
-    IntelliJ(projectdir, options);
+    if (projectFiles) {
+        FlashDevelop(projectdir, options);
+        IntelliJ(projectdir, options);
+    }
 }
 exports.writeHaxeProject = writeHaxeProject;
 //# sourceMappingURL=HaxeProject.js.map

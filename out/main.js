@@ -97,7 +97,7 @@ async function exportProjectFiles(name, resourceDir, projectData, options, expor
         if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
             haxeOptions.parameters.push('-debug');
         }
-        HaxeProject_1.writeHaxeProject(options.to, haxeOptions);
+        HaxeProject_1.writeHaxeProject(options.to, !options.noproject, haxeOptions);
         if (!options.nohaxe) {
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
             lastHaxeCompiler = compiler;

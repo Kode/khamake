@@ -397,8 +397,10 @@ function FlashDevelop(projectdir: string, options: any) {
 	writeXml(project, path.join(projectdir, options.safeName + '-' + options.system + '.hxproj'));
 }
 
-export function writeHaxeProject(projectdir: string, options: any) {
+export function writeHaxeProject(projectdir: string, projectFiles: boolean, options: any) {
 	hxml(projectdir, options);
-	FlashDevelop(projectdir, options);
-	IntelliJ(projectdir, options);
+	if (projectFiles) {
+		FlashDevelop(projectdir, options);
+		IntelliJ(projectdir, options);
+	}
 }
