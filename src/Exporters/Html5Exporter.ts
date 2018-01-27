@@ -36,7 +36,6 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('sys_g1');
 		defines.push('sys_g2');
 		defines.push('sys_g3');
-		defines.push('sys_g4');
 		defines.push('sys_a1');
 		defines.push('sys_a2');
 
@@ -44,7 +43,6 @@ export class Html5Exporter extends KhaExporter {
 		defines.push('kha_g1');
 		defines.push('kha_g2');
 		defines.push('kha_g3');
-		defines.push('kha_g4');
 		defines.push('kha_a1');
 		defines.push('kha_a2');
 
@@ -70,7 +68,11 @@ export class Html5Exporter extends KhaExporter {
 		let webgl = targetOptions.html5.webgl == null ? true : targetOptions.html5.webgl;
 
 		if (webgl) {
+			defines.push('sys_g4');
+			defines.push('kha_g4');
 			defines.push('kha_webgl');
+		} else {
+			defines.push('kha_html5_canvas');
 		}
 
 		if (this.isNode()) {
