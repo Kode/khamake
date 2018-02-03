@@ -122,6 +122,12 @@ let options: Array<any> = [
 		default: ''
 	},
 	{
+		full: 'mp3',
+		description: 'Commandline for running the mp3 encoder',
+		value: true,
+		default: ''
+	},
+	{
 		full: 'aac',
 		description: 'Commandline for running the ffmpeg executable',
 		value: true,

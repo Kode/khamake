@@ -96,20 +96,8 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
     }
     async copySound(platform, from, to) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-        let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-        let mp3 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
-        let files = [];
-        if (ogg) {
-            files.push(to + '.ogg');
-            if (this.options.embedflashassets)
-                this.sounds.push(to + '.ogg');
-        }
-        if (mp3) {
-            files.push(to + '.mp3');
-            if (this.options.embedflashassets)
-                this.sounds.push(to + '.mp3');
-        }
-        return files;
+        await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
+        return [to + '.mp3'];
     }
     async copyImage(platform, from, to, asset, cache) {
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);

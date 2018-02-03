@@ -574,6 +574,11 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		if (fs.existsSync(oggpath)) options.ogg = oggpath + ' {in} -o {out} --quiet';
 	}
 
+	if (!options.mp3) {
+		let lamepath = path.join(options.kha, 'Tools', 'lame', 'lame' + sys());
+		if (fs.existsSync(lamepath)) options.mp3 = lamepath + ' {in} {out}';
+	}
+
 	// if (!options.kravur) {
 	//     let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
 	//     if (fs.existsSync(kravurpath)) options.kravur = kravurpath + ' {in} {size} {out}';
@@ -581,10 +586,6 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	
 	if (!options.aac && options.ffmpeg) {
 		options.aac = options.ffmpeg + ' -i {in} {out}';
-	}
-	
-	if (!options.mp3 && options.ffmpeg) {
-		options.mp3 = options.ffmpeg + ' -i {in} {out}';
 	}
 	
 	if (!options.h264 && options.ffmpeg) {
