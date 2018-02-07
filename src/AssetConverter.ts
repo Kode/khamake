@@ -143,6 +143,9 @@ export class AssetConverter {
 						case '.avi': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
 							let videos = await this.exporter.copyVideo(this.platform, file, exportInfo.destination, options);
+							if (videos.length === 0) {
+								log.error('Video file ' + file + ' could not be exported, you have to specify a path to ffmpeg.');
+							}
 							parsedFiles.push({ name: exportInfo.name, from: file, type: 'video', files: videos, original_width: undefined, original_height: undefined, readable: undefined });
 							break;
 						}
