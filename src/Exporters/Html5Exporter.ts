@@ -196,12 +196,17 @@ export class Html5Exporter extends KhaExporter {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
 		let mp4 = false;
+		let mp3 = false;
 		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+			if (!mp4) {
+				mp3 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
+			}
 		}
 		let files: string[] = [];
 		if (ogg) files.push(to + '.ogg');
 		if (mp4) files.push(to + '.mp4');
+		if (mp3) files.push(to + '.mp3');
 		return files;
 	}
 

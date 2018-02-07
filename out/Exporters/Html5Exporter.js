@@ -162,14 +162,20 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
         let mp4 = false;
+        let mp3 = false;
         if (!this.isDebugHtml5()) {
             mp4 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+            if (!mp4) {
+                mp3 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
+            }
         }
         let files = [];
         if (ogg)
             files.push(to + '.ogg');
         if (mp4)
             files.push(to + '.mp4');
+        if (mp3)
+            files.push(to + '.mp3');
         return files;
     }
     async copyImage(platform, from, to, options, cache) {
