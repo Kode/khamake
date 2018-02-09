@@ -67,25 +67,19 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-    out += 'Promise.all([Project.createProject(\'' + buildpath.replace(/\\/g, '/') + '\', __dirname), ';
+    out += 'project.addSubProject(await Project.createProject(\'' + buildpath.replace(/\\/g, '/') + '\', __dirname));\n';
     if (korehl)
-        out += 'Project.createProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\', __dirname), ';
+        out += 'project.addSubProject(await Project.createProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\', __dirname));\n';
     else
-        out += 'Project.createProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\', __dirname), ';
-    out += 'Project.createProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\', __dirname)]).then((projects) => {\n';
-    out += '\tfor (let p of projects) project.addSubProject(p);\n';
-    out += '\tlet libs = [];\n';
+        out += 'project.addSubProject(await Project.createProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\', __dirname));\n';
+    out += 'project.addSubProject(await Project.createProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\', __dirname));\n';
     for (let lib of libraries) {
         let libPath = lib.libroot;
-        out += '\tif (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
-        out += '\t\tlibs.push(Project.createProject(\'' + libPath.replace(/\\/g, '/') + '\', __dirname));\n';
-        out += '\t}\n';
+        out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
+        out += '\tproject.addSubProject(await Project.createProject(\'' + libPath.replace(/\\/g, '/') + '\', __dirname));\n';
+        out += '}\n';
     }
-    out += '\tPromise.all(libs).then((libprojects) => {\n';
-    out += '\t\tfor (let p of libprojects) project.addSubProject(p);\n';
-    out += '\t\tresolve(project);\n';
-    out += '\t});\n';
-    out += '});\n';
+    out += 'resolve(project);\n';
     return out;
 }
 async function exportProjectFiles(name, resourceDir, projectData, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
