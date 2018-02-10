@@ -45,7 +45,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     let out = '';
     out += 'let fs = require(\'fs\');\n';
     out += 'let path = require(\'path\');\n';
-    out += 'let project = new Project(\'' + name + '\', __dirname);\n';
+    out += 'let project = new Project(\'' + name + '\');\n';
     for (let cdefine of cdefines) {
         out += 'project.addDefine(\'' + cdefine + '\');\n';
     }
@@ -67,16 +67,15 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-    out += 'project.addSubProject(await Project.createProject(\'' + buildpath.replace(/\\/g, '/') + '\', __dirname));\n';
+    out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
     if (korehl)
-        out += 'project.addSubProject(await Project.createProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\', __dirname));\n';
+        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\');\n';
     else
-        out += 'project.addSubProject(await Project.createProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\', __dirname));\n';
-    out += 'project.addSubProject(await Project.createProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\', __dirname));\n';
+        out += 'await project.addProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\');\n';
     for (let lib of libraries) {
         let libPath = lib.libroot;
         out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
-        out += '\tproject.addSubProject(await Project.createProject(\'' + libPath.replace(/\\/g, '/') + '\', __dirname));\n';
+        out += '\tawait project.addProject(\'' + libPath.replace(/\\/g, '/') + '\');\n';
         out += '}\n';
     }
     out += 'resolve(project);\n';
