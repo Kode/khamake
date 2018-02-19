@@ -153,7 +153,7 @@ export class Project {
 			// looking in the haxelib folders.
 			// e.g. addLibrary('hxcpp') => '/usr/lib/haxelib/hxcpp/3,2,193'
 			try {
-				libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replace(/\./g, ',').toLowerCase());
+				libpath = path.join(child_process.execSync('haxelib config', { encoding: 'utf8' }).trim(), name.replace(/\./g, ','));
 			}
 			catch (error) {
 				if (process.env.HAXEPATH) {
