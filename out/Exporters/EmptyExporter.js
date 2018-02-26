@@ -44,8 +44,9 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
     }
     async export(name, _targetOptions, haxeOptions) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-        let result = await Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
-        if (result === 0) {
+        try {
+            // Remove any @:export first
+            await Haxe_1.executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
             let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.from) });
             if (doxresult.stdout.toString() !== '') {
                 log.info(doxresult.stdout.toString());
@@ -53,6 +54,8 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
             if (doxresult.stderr.toString() !== '') {
                 log.error(doxresult.stderr.toString());
             }
+        }
+        catch (error) {
         }
     }
     async copySound(platform, from, to) {
