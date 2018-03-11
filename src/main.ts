@@ -156,7 +156,7 @@ async function exportProjectFiles(name: string, resourceDir: string, projectData
 		}
 	}
 	else if (options.haxe !== '' && korehl && !options.noproject) {
-		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir + '-build', 'kore_sources.c'), { overwrite: true });
+		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
 		fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, korehl));
 
