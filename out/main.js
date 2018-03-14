@@ -81,7 +81,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     out += 'resolve(project);\n';
     return out;
 }
-async function exportProjectFiles(name, resourceDir, projectData, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
+async function exportProjectFiles(name, resourceDir, options, exporter, kore, korehl, libraries, targetOptions, defines, cdefines) {
     if (options.haxe !== '') {
         let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
         haxeOptions.defines.push('kha');
@@ -96,7 +96,9 @@ async function exportProjectFiles(name, resourceDir, projectData, options, expor
             lastHaxeCompiler = compiler;
             await compiler.run(options.watch);
         }
-        projectData.postHaxeCompilation();
+        for (let callback of ProjectFile_1.Callbacks.postHaxeCompilation) {
+            callback();
+        }
         await exporter.export(name, targetOptions, haxeOptions);
     }
     let buildDir = path.join(options.to, exporter.sysdir() + '-build');
@@ -126,7 +128,9 @@ async function exportProjectFiles(name, resourceDir, projectData, options, expor
                 info: log.info,
                 error: log.error
             });
-            projectData.postCppCompilation();
+            for (let callback of ProjectFile_1.Callbacks.postCppCompilation) {
+                callback();
+            }
             log.info('Done.');
             return name;
         }
@@ -181,20 +185,18 @@ function koreplatform(platform) {
 async function exportKhaProject(options) {
     log.info('Creating Kha project.');
     let project = null;
-    let projectData;
     let foundProjectFile = false;
     // get the khafile.js and load the config code,
     // then create the project config object, which contains stuff
     // like project name, assets paths, sources path, library path...
     if (fs.existsSync(path.join(options.from, options.projectfile))) {
         try {
-            projectData = await ProjectFile_1.loadProject(options.from, options.projectfile, options.target);
+            project = await ProjectFile_1.loadProject(options.from, options.projectfile, options.target);
         }
         catch (x) {
             log.error(x);
             throw 'Loading the projectfile failed.';
         }
-        project = projectData.project;
         foundProjectFile = true;
     }
     if (!foundProjectFile) {
@@ -288,7 +290,9 @@ async function exportKhaProject(options) {
     exporter.parameters = exporter.parameters.concat(project.parameters);
     project.scriptdir = options.kha;
     project.addShaders('Sources/Shaders/**', {});
-    projectData.preAssetConversion();
+    for (let callback of ProjectFile_1.Callbacks.preAssetConversion) {
+        callback();
+    }
     let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
     lastAssetConverter = assetConverter;
     let assets = await assetConverter.run(options.watch, temp);
@@ -296,7 +300,9 @@ async function exportKhaProject(options) {
     if (target === Platform_1.Platform.Unity) {
         shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
     }
-    projectData.preShaderCompilation();
+    for (let callback of ProjectFile_1.Callbacks.preShaderCompilation) {
+        callback();
+    }
     fs.ensureDirSync(shaderDir);
     let oldResources = null;
     let recompileAllShaders = false;
@@ -422,7 +428,9 @@ async function exportKhaProject(options) {
     if (foundProjectFile) {
         fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
     }
-    projectData.preHaxeCompilation();
+    for (let callback of ProjectFile_1.Callbacks.preHaxeCompilation) {
+        callback();
+    }
     if (options.onlydata) {
         log.info('Exporting only data.');
         // We need to copy assets into project folder for Android native
@@ -440,7 +448,7 @@ async function exportKhaProject(options) {
         return project.name;
     }
     else {
-        return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+        return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
     }
 }
 function isKhaProject(directory, projectfile) {

@@ -4,17 +4,16 @@ import * as log from './log';
 import {Platform} from './Platform';
 import {Project} from './Project';
 
-export class ProjectData {
-	project: Project;
-	preAssetConversion:   () => void;
-	preShaderCompilation: () => void;
-	preHaxeCompilation:   () => void;
-	postHaxeCompilation:  () => void;
-	postCppCompilation:   () => void;
-}
+export let Callbacks = {
+	preAssetConversion:   [() => {}],
+	preShaderCompilation: [() => {}],
+	preHaxeCompilation:   [() => {}],
+	postHaxeCompilation:  [() => {}],
+	postCppCompilation:   [() => {}]
+};
 
-export async function loadProject(from: string, projectfile: string, platform: string): Promise<ProjectData> {
-	return new Promise<ProjectData>((resolve, reject) => {
+export async function loadProject(from: string, projectfile: string, platform: string): Promise<Project> {
+	return new Promise<Project>((resolve, reject) => {
 		fs.readFile(path.join(from, projectfile), 'utf8', (err, data) => {
 			if (err) {
 				throw new Error('Error reading ' + projectfile + ' from ' + from + '.');
@@ -30,14 +29,12 @@ export async function loadProject(from: string, projectfile: string, platform: s
 			};
 			let resolver = (project: Project) => {
 				resolved = true;
-				resolve({
-					preAssetConversion: callbacks.preAssetConversion,
-					preShaderCompilation: callbacks.preShaderCompilation,
-					preHaxeCompilation: callbacks.preHaxeCompilation,
-					postHaxeCompilation: callbacks.postHaxeCompilation,
-					postCppCompilation: callbacks.postCppCompilation,
-					project: project
-				});
+				Callbacks.preAssetConversion.push(callbacks.preAssetConversion);
+				Callbacks.preShaderCompilation.push(callbacks.preShaderCompilation);
+				Callbacks.preHaxeCompilation.push(callbacks.preHaxeCompilation);
+				Callbacks.postHaxeCompilation.push(callbacks.postHaxeCompilation);
+				Callbacks.postCppCompilation.push(callbacks.postCppCompilation);
+				resolve(project);
 			};
 
 			process.on('exit', (code: number) => {

@@ -70,7 +70,7 @@ export class Project {
 	}
 
 	async addProject(projectDir: string) {
-		let project = (await loadProject(projectDir, 'khafile.js', Project.platform)).project; // subproject callbacks are ignored
+		let project = await loadProject(projectDir, 'khafile.js', Project.platform);
 		this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
 		this.sources = this.sources.concat(project.sources);
 		this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);

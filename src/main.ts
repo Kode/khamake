@@ -9,7 +9,7 @@ import * as log from './log';
 import {Options} from './Options';
 import {Platform} from './Platform';
 import {Project, Target, Library} from './Project';
-import {loadProject, ProjectData} from './ProjectFile';
+import {loadProject, Callbacks} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
 import {HaxeCompiler} from './HaxeCompiler';
@@ -92,7 +92,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 	return out;
 }
 
-async function exportProjectFiles(name: string, resourceDir: string, projectData: ProjectData, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries: Library[], targetOptions: any, defines: string[], cdefines: string[]): Promise<string> {
+async function exportProjectFiles(name: string, resourceDir: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, libraries: Library[], targetOptions: any, defines: string[], cdefines: string[]): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		haxeOptions.defines.push('kha');
@@ -110,7 +110,9 @@ async function exportProjectFiles(name: string, resourceDir: string, projectData
 			lastHaxeCompiler = compiler;
 			await compiler.run(options.watch);
 		}
-		projectData.postHaxeCompilation();
+		for (let callback of Callbacks.postHaxeCompilation) {
+			callback();
+		}
 
 		await exporter.export(name, targetOptions, haxeOptions);
 	}
@@ -146,7 +148,9 @@ async function exportProjectFiles(name: string, resourceDir: string, projectData
 				info: log.info,
 				error: log.error
 			});
-			projectData.postCppCompilation();
+			for (let callback of Callbacks.postCppCompilation) {
+				callback();
+			}
 			log.info('Done.');
 			return name;
 		}
@@ -204,7 +208,6 @@ async function exportKhaProject(options: Options): Promise<string> {
 	log.info('Creating Kha project.');
 	
 	let project: Project = null;
-	let projectData: ProjectData;
 	let foundProjectFile = false;
 
 	// get the khafile.js and load the config code,
@@ -212,13 +215,13 @@ async function exportKhaProject(options: Options): Promise<string> {
 	// like project name, assets paths, sources path, library path...
 	if (fs.existsSync(path.join(options.from, options.projectfile))) {
 		try {
-			projectData = await loadProject(options.from, options.projectfile, options.target);
-		} catch (x) {
+			project = await loadProject(options.from, options.projectfile, options.target);
+		}
+		catch (x) {
 			log.error(x);
 			throw 'Loading the projectfile failed.';
 		}
 		
-		project = projectData.project;
 		foundProjectFile = true;
 	}
 	
@@ -325,7 +328,9 @@ async function exportKhaProject(options: Options): Promise<string> {
 	project.scriptdir = options.kha;
 	project.addShaders('Sources/Shaders/**', {});
 
-	projectData.preAssetConversion();
+	for (let callback of Callbacks.preAssetConversion) {
+		callback();
+	}
 	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
 	lastAssetConverter = assetConverter;
 	let assets = await assetConverter.run(options.watch, temp);
@@ -335,7 +340,9 @@ async function exportKhaProject(options: Options): Promise<string> {
 		shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
 	}
 	
-	projectData.preShaderCompilation();
+	for (let callback of Callbacks.preShaderCompilation) {
+		callback();
+	}
 	fs.ensureDirSync(shaderDir);
 
 	let oldResources: any = null;
@@ -472,7 +479,9 @@ async function exportKhaProject(options: Options): Promise<string> {
 		fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
 	}
 
-	projectData.preHaxeCompilation();
+	for (let callback of Callbacks.preHaxeCompilation) {
+		callback();
+	}
 	if (options.onlydata) {
 		log.info('Exporting only data.');
 		// We need to copy assets into project folder for Android native
@@ -490,7 +499,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		return project.name;
 	}
 	else {
-		return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), projectData, options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
+		return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.libraries, project.targetOptions, project.defines, project.cdefines);
 	}
 }
 
