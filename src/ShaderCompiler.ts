@@ -224,8 +224,8 @@ export class ShaderCompiler {
 						compiledShader = await this.compileShader(shader, options, recompileAll);
 					}
 					catch (error) {
-						reject(error);
-						return;
+						log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
+						log.error(error);
 					}
 					if (compiledShader === null) {
 						compiledShader = new CompiledShader();
