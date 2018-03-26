@@ -24,7 +24,6 @@ const KromExporter_1 = require("./Exporters/KromExporter");
 const NodeExporter_1 = require("./Exporters/NodeExporter");
 const PlayStationMobileExporter_1 = require("./Exporters/PlayStationMobileExporter");
 const WpfExporter_1 = require("./Exporters/WpfExporter");
-const XnaExporter_1 = require("./Exporters/XnaExporter");
 const UnityExporter_1 = require("./Exporters/UnityExporter");
 const HaxeProject_1 = require("./HaxeProject");
 let lastAssetConverter;
@@ -232,9 +231,6 @@ async function exportKhaProject(options) {
             break;
         case Platform_1.Platform.WPF:
             exporter = new WpfExporter_1.WpfExporter(options);
-            break;
-        case Platform_1.Platform.XNA:
-            exporter = new XnaExporter_1.XnaExporter(options);
             break;
         case Platform_1.Platform.Java:
             exporter = new JavaExporter_1.JavaExporter(options);
