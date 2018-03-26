@@ -28,7 +28,6 @@ import {KromExporter} from './Exporters/KromExporter';
 import {NodeExporter} from './Exporters/NodeExporter';
 import {PlayStationMobileExporter} from './Exporters/PlayStationMobileExporter';
 import {WpfExporter} from './Exporters/WpfExporter';
-import {XnaExporter} from './Exporters/XnaExporter';
 import {UnityExporter} from './Exporters/UnityExporter';
 import {writeHaxeProject} from './HaxeProject';
 
@@ -262,9 +261,6 @@ async function exportKhaProject(options: Options): Promise<string> {
 			break;
 		case Platform.WPF:
 			exporter = new WpfExporter(options);
-			break;
-		case Platform.XNA:
-			exporter = new XnaExporter(options);
 			break;
 		case Platform.Java:
 			exporter = new JavaExporter(options);

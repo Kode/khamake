@@ -12,7 +12,6 @@ export var Platform = {
 	HTML5Worker: 'html5worker',
 	Flash: 'flash',
 	WPF: 'wpf',
-	XNA: 'xna',
 	Java: 'java',
 	PlayStationMobile: 'psm',
 	Tizen: 'tizen',
