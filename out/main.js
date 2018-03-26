@@ -92,7 +92,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         }
         HaxeProject_1.writeHaxeProject(options.to, !options.noproject, haxeOptions);
         if (!options.nohaxe) {
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir());
             lastHaxeCompiler = compiler;
             await compiler.run(options.watch);
         }

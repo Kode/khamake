@@ -7,7 +7,7 @@ const chokidar = require("chokidar");
 const log = require("./log");
 const exec_1 = require("./exec");
 class HaxeCompiler {
-    constructor(from, temp, to, resourceDir, haxeDirectory, hxml, sourceDirectories) {
+    constructor(from, temp, to, resourceDir, haxeDirectory, hxml, sourceDirectories, sysdir) {
         this.ready = true;
         this.todo = false;
         this.port = '7000';
@@ -17,6 +17,7 @@ class HaxeCompiler {
         this.resourceDir = resourceDir;
         this.haxeDirectory = haxeDirectory;
         this.hxml = hxml;
+        this.sysdir = sysdir;
         this.sourceMatchers = [];
         for (let dir of sourceDirectories) {
             this.sourceMatchers.push(path.join(dir, '**'));
@@ -106,9 +107,10 @@ class HaxeCompiler {
                 for (let line of lines) {
                     if (line.trim() === '')
                         continue;
+                    log.info('Creating ' + line + ' worker.');
                     let newhxml = HaxeCompiler.cleanHxml(hxml);
                     newhxml += '-main ' + line.trim() + '\n';
-                    newhxml += '-js ' + path.join('html5', line.trim()) + '.js\n';
+                    newhxml += '-js ' + path.join(this.sysdir, line.trim()) + '.js\n';
                     newhxml += '-D kha_in_worker\n';
                     fs.writeFileSync(path.join(this.from, 'temp.hxml'), newhxml, { encoding: 'utf8' });
                     this.runHaxeAgain(['temp.hxml'], (code2, signal2) => {

@@ -18,14 +18,16 @@ export class HaxeCompiler {
 	to: string;
 	resourceDir: string;
 	compilationServer: child_process.ChildProcess;
+	sysdir: string;
 		
-	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>) {
+	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>, sysdir: string) {
 		this.from = from;
 		this.temp = temp;
 		this.to = to;
 		this.resourceDir = resourceDir;
 		this.haxeDirectory = haxeDirectory;
 		this.hxml = hxml;
+		this.sysdir = sysdir;
 		
 		this.sourceMatchers = [];
 		for (let dir of sourceDirectories) {
@@ -123,13 +125,14 @@ export class HaxeCompiler {
 				let lines = workers.split('\n');
 				for (let line of lines) {
 					if (line.trim() === '') continue;
+					log.info('Creating ' + line + ' worker.');
 					let newhxml = HaxeCompiler.cleanHxml(hxml);
 					newhxml += '-main ' + line.trim() + '\n';
-					newhxml += '-js ' + path.join('html5', line.trim()) + '.js\n';
+					newhxml += '-js ' + path.join(this.sysdir, line.trim()) + '.js\n';
 					newhxml += '-D kha_in_worker\n';
 					fs.writeFileSync(path.join(this.from, 'temp.hxml'), newhxml, {encoding: 'utf8'});
 					this.runHaxeAgain(['temp.hxml'], (code2: number, signal2: string) => {
-
+						
 					});
 				}
 			}
