@@ -120,20 +120,26 @@ export class AssetConverter {
 						case '.hdr': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
 							let images = await this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
-							parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
+							if (!options.notinlist) {
+								parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
+							}
 							break;
 						}
 						case '.flac':
 						case '.wav': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
 							let sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination, options);
-							parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
+							if (!options.notinlist) {
+								parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
+							}
 							break;
 						}
 						case '.ttf': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
 							let fonts = await this.exporter.copyFont(this.platform, file, exportInfo.destination, options);
-							parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts, original_width: undefined, original_height: undefined, readable: undefined });
+							if (!options.notinlist) {
+								parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts, original_width: undefined, original_height: undefined, readable: undefined });
+							}
 							break;
 						}
 						case '.mp4':
@@ -146,13 +152,17 @@ export class AssetConverter {
 							if (videos.length === 0) {
 								log.error('Video file ' + file + ' could not be exported, you have to specify a path to ffmpeg.');
 							}
-							parsedFiles.push({ name: exportInfo.name, from: file, type: 'video', files: videos, original_width: undefined, original_height: undefined, readable: undefined });
+							if (!options.notinlist) {
+								parsedFiles.push({ name: exportInfo.name, from: file, type: 'video', files: videos, original_width: undefined, original_height: undefined, readable: undefined });
+							}
 							break;
 						}
 						default: {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, this.exporter.options.from);
 							let blobs = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
-							parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs, original_width: undefined, original_height: undefined, readable: undefined });
+							if (!options.notinlist) {
+								parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs, original_width: undefined, original_height: undefined, readable: undefined });
+							}
 							break;
 						}
 					}
