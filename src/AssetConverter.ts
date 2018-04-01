@@ -49,7 +49,7 @@ export class AssetConverter {
 			let md5sum = crypto.createHash('md5').update(data).digest('hex'); // TODO yield generateMd5Sum(file);
 			destination += '_' + md5sum;
 		}
-		if (keepextension && (!options.destination || options.destination.indexOf('{ext}') < 0)) {
+		if ((keepextension || options.noprocessing) && (!options.destination || options.destination.indexOf('{ext}') < 0)) {
 			destination += fileinfo.ext;
 		}
 
@@ -119,7 +119,13 @@ export class AssetConverter {
 						case '.jpeg':
 						case '.hdr': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let images = await this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
+							let images: string[];
+							if (options.noprocessing) {
+								images = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
+							}
+							else {
+								images = await this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
+							}
 							if (!options.notinlist) {
 								parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
 							}
@@ -128,7 +134,13 @@ export class AssetConverter {
 						case '.flac':
 						case '.wav': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination, options);
+							let sounds: string[];
+							if (options.noprocessing) {
+								sounds = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
+							}
+							else {
+								sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination, options);
+							}
 							if (!options.notinlist) {
 								parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
 							}
@@ -136,7 +148,13 @@ export class AssetConverter {
 						}
 						case '.ttf': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let fonts = await this.exporter.copyFont(this.platform, file, exportInfo.destination, options);
+							let fonts: string[];
+							if (options.noprocessing) {
+								fonts = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
+							}
+							else {
+								fonts = await this.exporter.copyFont(this.platform, file, exportInfo.destination, options);
+							}
 							if (!options.notinlist) {
 								parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts, original_width: undefined, original_height: undefined, readable: undefined });
 							}
@@ -148,7 +166,13 @@ export class AssetConverter {
 						case '.wmv':
 						case '.avi': {
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
-							let videos = await this.exporter.copyVideo(this.platform, file, exportInfo.destination, options);
+							let videos: string[];
+							if (options.noprocessing) {
+								videos = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
+							}
+							else {
+								videos = await this.exporter.copyVideo(this.platform, file, exportInfo.destination, options);
+							}
 							if (videos.length === 0) {
 								log.error('Video file ' + file + ' could not be exported, you have to specify a path to ffmpeg.');
 							}
