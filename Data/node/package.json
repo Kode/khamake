@@ -7,8 +7,13 @@
     "express": "^4.13.3",
     "express-ws": "^0.2.6"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^1.11.0",
+    "livereloadx": "^0.3.10"
+  },
   "scripts": {
+    "autoserve": "nodemon kha.js",
+    "autoreload": "livereloadx ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "khamake",
