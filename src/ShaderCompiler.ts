@@ -280,10 +280,10 @@ export class ShaderCompiler {
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
 					if (options.noprocessing && (!toStats || toStats.mtime.getTime() < fromStats.mtime.getTime())) {
-                        fs.copySync(from, to, { overwrite: true });
-                        resolve(new CompiledShader());
-                        return;
-                    }
+						fs.copySync(from, to, { overwrite: true });
+						resolve(new CompiledShader());
+						return;
+					}
 					fs.stat(this.compiler, (compErr: NodeJS.ErrnoException, compStats: fs.Stats) => {
 						if (!recompile && (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime()))) {
 							if (fromErr) log.error('Shader compiler error: ' + fromErr);
