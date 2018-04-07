@@ -249,6 +249,11 @@ class ShaderCompiler {
             let temp = to + '.temp';
             fs.stat(from, (fromErr, fromStats) => {
                 fs.stat(to, (toErr, toStats) => {
+                    if (options.noprocessing && (!toStats || toStats.mtime.getTime() < fromStats.mtime.getTime())) {
+                        fs.copySync(from, to, { overwrite: true });
+                        resolve(new CompiledShader());
+                        return;
+                    }
                     fs.stat(this.compiler, (compErr, compStats) => {
                         if (!recompile && (fromErr || (!toErr && toStats.mtime.getTime() > fromStats.mtime.getTime() && toStats.mtime.getTime() > compStats.mtime.getTime()))) {
                             if (fromErr)
