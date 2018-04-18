@@ -198,17 +198,19 @@ export class ShaderCompiler {
 					}
 				}
 			});
-			this.watcher.on('change', (filepath: string) => {
-				let file = path.parse(filepath);
-				switch (file.ext) {
-					case '.glsl':
-						if (!file.name.endsWith('.inc')) {
-							log.info('Recompiling ' + file.name);
-							this.compileShader(filepath, options, recompileAll);
-						}
-						break;
-				}
-			});
+			if (watch) {
+				this.watcher.on('change', (filepath: string) => {
+					let file = path.parse(filepath);
+					switch (file.ext) {
+						case '.glsl':
+							if (!file.name.endsWith('.inc')) {
+								log.info('Recompiling ' + file.name);
+								this.compileShader(filepath, options, recompileAll);
+							}
+							break;
+					}
+				});
+			}
 			this.watcher.on('unlink', (file: string) => {
 
 			});
