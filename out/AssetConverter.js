@@ -71,17 +71,19 @@ class AssetConverter {
                     files.push(file);
                 }
             });
-            this.watcher.on('change', (file) => {
-                if (ready) {
-                    let fileinfo = path.parse(file);
-                    switch (fileinfo.ext) {
-                        case '.png':
-                            log.info('Reexporting ' + fileinfo.name);
-                            this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
-                            break;
+            if (watch) {
+                this.watcher.on('change', (file) => {
+                    if (ready) {
+                        let fileinfo = path.parse(file);
+                        switch (fileinfo.ext) {
+                            case '.png':
+                                log.info('Reexporting ' + fileinfo.name);
+                                this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
+                                break;
+                        }
                     }
-                }
-            });
+                });
+            }
             this.watcher.on('ready', async () => {
                 ready = true;
                 let parsedFiles = [];
