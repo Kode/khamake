@@ -82,62 +82,71 @@ function IntelliJ(projectdir, options) {
 }
 function hxml(projectdir, options) {
     let data = '';
+    let lines = [];
+    // returns only unique lines and '' otherwise
+    function unique(line) {
+        if (lines.indexOf(line) === -1) {
+            lines.push(line);
+            return line;
+        }
+        return '';
+    }
     for (let i = 0; i < options.sources.length; ++i) {
         if (path.isAbsolute(options.sources[i])) {
-            data += '-cp ' + options.sources[i] + '\n';
+            data += unique('-cp ' + options.sources[i] + '\n');
         }
         else {
-            data += '-cp ' + path.relative(projectdir, path.resolve(options.from, options.sources[i])) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+            data += unique('-cp ' + path.relative(projectdir, path.resolve(options.from, options.sources[i])) + '\n'); // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
         }
     }
     for (let i = 0; i < options.libraries.length; ++i) {
         if (path.isAbsolute(options.libraries[i].libpath)) {
-            data += '-cp ' + options.libraries[i].libpath + '\n';
+            data += unique('-cp ' + options.libraries[i].libpath + '\n');
         }
         else {
-            data += '-cp ' + path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)) + '\n'; // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+            data += unique('-cp ' + path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)) + '\n'); // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
         }
     }
     for (let d in options.defines) {
         let define = options.defines[d];
-        data += '-D ' + define + '\n';
+        data += unique('-D ' + define + '\n');
     }
     if (options.language === 'cpp') {
-        data += '-cpp ' + path.normalize(options.to) + '\n';
+        data += unique('-cpp ' + path.normalize(options.to) + '\n');
     }
     else if (options.language === 'cs') {
-        data += '-cs ' + path.normalize(options.to) + '\n';
+        data += unique('-cs ' + path.normalize(options.to) + '\n');
         if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'netlib'))) {
-            data += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '\n';
+            data += unique('-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '\n');
         }
     }
     else if (options.language === 'java') {
-        data += '-java ' + path.normalize(options.to) + '\n';
+        data += unique('-java ' + path.normalize(options.to) + '\n');
         if (fs.existsSync(options.haxeDirectory) && fs.statSync(options.haxeDirectory).isDirectory() && fs.existsSync(path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar'))) {
-            data += '-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '\n';
+            data += unique('-java-lib ' + path.relative(projectdir, path.join(options.haxeDirectory, 'hxjava', 'hxjava-std.jar')) + '\n');
         }
     }
     else if (options.language === 'js') {
-        data += '-js ' + path.normalize(options.to) + '\n';
+        data += unique('-js ' + path.normalize(options.to) + '\n');
     }
     else if (options.language === 'as') {
-        data += '-swf ' + path.normalize(options.to) + '\n';
-        data += '-swf-version ' + options.swfVersion + '\n';
-        data += '-swf-header ' + options.width + ':' + options.height + ':' + options.framerate + ':' + options.stageBackground + '\n';
+        data += unique('-swf ' + path.normalize(options.to) + '\n');
+        data += unique('-swf-version ' + options.swfVersion + '\n');
+        data += unique('-swf-header ' + options.width + ':' + options.height + ':' + options.framerate + ':' + options.stageBackground + '\n');
     }
     else if (options.language === 'xml') {
-        data += '-xml ' + path.normalize(options.to) + '\n';
-        data += '--macro include(\'kha\')\n';
+        data += unique('-xml ' + path.normalize(options.to) + '\n');
+        data += unique('--macro include(\'kha\')\n');
     }
     else if (options.language === 'hl') {
-        data += '-hl ' + path.normalize(options.to) + '\n';
+        data += unique('-hl ' + path.normalize(options.to) + '\n');
     }
     for (let param of options.parameters) {
-        data += param + '\n';
+        data += unique(param + '\n');
     }
     if (!options.parameters.some((param) => param.includes('-main '))) {
         const entrypoint = options ? options.main ? options.main : 'Main' : 'Main';
-        data += '-main ' + entrypoint + '\n';
+        data += unique('-main ' + entrypoint + '\n');
     }
     fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
 }
