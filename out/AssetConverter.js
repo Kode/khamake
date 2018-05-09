@@ -56,7 +56,7 @@ class AssetConverter {
         return new Promise((resolve, reject) => {
             let ready = false;
             let files = [];
-            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\./, persistent: watch });
+            this.watcher = chokidar.watch(match.replace(/\\/g, '/'), { ignored: /[\/\\]\./, persistent: watch });
             this.watcher.on('add', (file) => {
                 if (ready) {
                     let fileinfo = path.parse(file);

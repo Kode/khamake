@@ -92,12 +92,11 @@ function hxml(projectdir: string, options: any) {
 	let lines: Array<String> = [];
 
 	// returns only unique lines and '' otherwise
-	function unique( line: String ) : String {
+	function unique(line: String): String {
 		if (lines.indexOf(line) === -1) {
 			lines.push(line);
 			return line;
 		}		
-
 		return '';
 	}
 
