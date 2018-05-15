@@ -582,23 +582,23 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	// }
 	
 	if (!options.aac && options.ffmpeg) {
-		options.aac = options.ffmpeg + ' -i {in} {out}';
+		options.aac = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 	
 	if (!options.h264 && options.ffmpeg) {
-		options.h264 = options.ffmpeg + ' -i {in} {out}';
+		options.h264 = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 	
 	if (!options.webm && options.ffmpeg) {
-		options.webm = options.ffmpeg + ' -i {in} {out}';
+		options.webm = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 	
 	if (!options.wmv && options.ffmpeg) {
-		options.wmv = options.ffmpeg + ' -i {in} {out}';
+		options.wmv = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 	
 	if (!options.theora && options.ffmpeg) {
-		options.theora = options.ffmpeg + ' -i {in} {out}';
+		options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 	
 	let name = await exportProject(options);
