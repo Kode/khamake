@@ -1,4 +1,4 @@
-export var Platform = {
+export const Platform = {
 	Krom: 'krom',
 	Windows: 'windows',
 	WindowsApp: 'windowsapp',

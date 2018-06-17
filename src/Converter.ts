@@ -42,4 +42,4 @@ export function convert(inFilename: string, outFilename: string, encoder: string
 			resolve(code === 0);
 		});
 	});
-};
+}

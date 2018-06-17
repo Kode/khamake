@@ -176,6 +176,9 @@ class Project {
                 // If there is no haxelib.json file, then just load the library
                 // by the Sources folder.
                 // e.g. Libraries/wyngine/Sources
+                if (!fs.existsSync(path.join(dir, 'Sources'))) {
+                    log.info('Warning: No haxelib.json and no Sources directory found in library ' + library + '.');
+                }
                 this.sources.push(path.join(dir, 'Sources'));
             }
             if (fs.existsSync(path.join(dir, 'extraParams.hxml'))) {
@@ -187,7 +190,7 @@ class Project {
                             // (DK)
                             //  - '-lib xxx' is for linking a library via haxe, it forces the use of the haxelib version
                             //  - this should be handled by khamake though, as it tracks the dependencies better (local folder or haxelib)
-                            console.log('ignoring', dir + '/extraParams.hxml "' + param + '"');
+                            log.info('Ignoring ' + dir + '/extraParams.hxml "' + param + '"');
                         }
                         else {
                             this.addParameter(param);
