@@ -44,5 +44,4 @@ function convert(inFilename, outFilename, encoder, args = null) {
     });
 }
 exports.convert = convert;
-;
 //# sourceMappingURL=Converter.js.map

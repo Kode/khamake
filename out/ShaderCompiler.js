@@ -64,10 +64,10 @@ class ShaderCompiler {
                 return 'essl';
             case Platform_1.Platform.tvOS:
             case Platform_1.Platform.iOS:
-                if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Metal || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'metal';
                 }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
                     return 'essl';
                 }
                 else {
@@ -105,10 +105,10 @@ class ShaderCompiler {
                     throw new Error('Unsupported shader language.');
                 }
             case Platform_1.Platform.OSX:
-                if (options.graphics === GraphicsApi_1.GraphicsApi.Metal) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Metal || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'metal';
                 }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
                     return 'glsl';
                 }
                 else {
@@ -120,6 +120,9 @@ class ShaderCompiler {
                 if (options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     if (process.platform === 'win32') {
                         return 'd3d11';
+                    }
+                    else if (process.platform === 'darwin') {
+                        return 'metal';
                     }
                     else {
                         return 'glsl';
