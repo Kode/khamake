@@ -95,7 +95,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		haxeOptions.defines.push('kha');
-		haxeOptions.defines.push('kha_version=1611');
+		haxeOptions.defines.push('kha_version=1807');
 		haxeOptions.safeName = safeName(haxeOptions.name);
 
 		if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
