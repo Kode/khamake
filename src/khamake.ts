@@ -326,7 +326,7 @@ async function runKhamake() {
 if (parsedOptions.init) {
 	console.log('Initializing Kha project.\n');
 	require('./init').run(parsedOptions.name, parsedOptions.from, parsedOptions.projectfile);
-	console.log('If you want to use the git version of Kha, execute "git init" and "git submodule add https://github.com/ktxsoftware/Kha.git".');
+	console.log('If you want to use the git version of Kha, execute "git init" and "git submodule add https://github.com/Kode/Kha.git".');
 }
 else if (parsedOptions.server) {
 	console.log('Running server on ' + parsedOptions.port);

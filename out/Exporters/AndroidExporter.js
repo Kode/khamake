@@ -61,7 +61,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         let safename = name.replace(/ /g, '-');
         this.safename = safename;
         let targetOptions = {
-            package: 'com.ktxsoftware.kha',
+            package: 'tech.kode.kha',
             screenOrientation: 'sensor',
             permissions: new Array()
         };

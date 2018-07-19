@@ -28,9 +28,9 @@ export class WpfExporter extends CSharpExporter {
 		this.p('[assembly: AssemblyTitle("HaxeProject")]');
 		this.p('[assembly: AssemblyDescription("")]');
 		this.p('[assembly: AssemblyConfiguration("")]');
-		this.p('[assembly: AssemblyCompany("KTX Software Development")]');
+		this.p('[assembly: AssemblyCompany("Kha Development Team")]');
 		this.p('[assembly: AssemblyProduct("HaxeProject")]');
-		this.p('[assembly: AssemblyCopyright("Copyright ? KTX Software Development 2013")]');
+		this.p('[assembly: AssemblyCopyright("Copyright ? Kha Development Team 2018")]');
 		this.p('[assembly: AssemblyTrademark("")]');
 		this.p('[assembly: AssemblyCulture("")]');
 		this.p();
