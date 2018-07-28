@@ -4,6 +4,7 @@ export class Options {
 	projectfile: string;
 	target: string;
 	vr: string;
+	raytrace: string;
 	main: string;
 	// intermediate: string;
 	graphics: string;
