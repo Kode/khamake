@@ -8,6 +8,7 @@ const path = require("path");
 const GraphicsApi_1 = require("./GraphicsApi");
 const AudioApi_1 = require("./AudioApi");
 const VrApi_1 = require("./VrApi");
+const RayTraceApi_1 = require("./RayTraceApi");
 const Options_1 = require("./Options");
 const Platform_1 = require("./Platform");
 const VisualStudioVersion_1 = require("./VisualStudioVersion");
@@ -52,6 +53,12 @@ let options = [
         value: true,
         description: 'Target VR device',
         default: VrApi_1.VrApi.None
+    },
+    {
+        full: 'raytrace',
+        value: true,
+        description: 'Target raytracing api',
+        default: RayTraceApi_1.RayTraceApi.None
     },
     {
         full: 'main',

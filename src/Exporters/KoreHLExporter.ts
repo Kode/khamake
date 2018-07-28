@@ -51,6 +51,10 @@ export class KoreHLExporter extends KhaExporter {
 			defines.push('vr_rift');
 		}
 
+		if (this.options.raytrace === 'dxr') {
+			defines.push('kha_dxr');
+		}
+
 		return {
 			from: this.options.from,
 			to: path.join(this.sysdir() + '-build', 'sources.c'),

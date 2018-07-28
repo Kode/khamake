@@ -10,6 +10,7 @@ import * as korepath from './korepath';
 import {GraphicsApi} from './GraphicsApi';
 import {AudioApi} from './AudioApi';
 import {VrApi} from './VrApi';
+import {RayTraceApi} from './RayTraceApi';
 import {Options} from './Options';
 import {Platform} from './Platform';
 import {VisualStudioVersion} from './VisualStudioVersion';
@@ -56,6 +57,12 @@ let options: Array<any> = [
 		value: true,
 		description: 'Target VR device',
 		default: VrApi.None
+	},
+	{
+		full: 'raytrace',
+		value: true,
+		description: 'Target raytracing api',
+		default: RayTraceApi.None
 	},
 	{
 		full: 'main',
