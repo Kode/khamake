@@ -31,7 +31,6 @@ class HaxeCompiler {
     }
     async run(watch) {
         if (watch) {
-            await this.compile();
             this.watcher = chokidar.watch(this.sourceMatchers, { ignored: /[\/\\]\.git/, persistent: true, ignoreInitial: true });
             this.watcher.on('add', (file) => {
                 this.scheduleCompile();
@@ -43,6 +42,7 @@ class HaxeCompiler {
                 this.scheduleCompile();
             });
             this.startCompilationServer();
+            this.triggerCompilationServer();
         }
         else {
             try {
@@ -131,15 +131,21 @@ class HaxeCompiler {
         this.todo = false;
         return new Promise((resolve, reject) => {
             this.runHaxe(['--connect', this.port, this.hxml], (code) => {
-                if (this.to) {
+                if (this.to && fs.existsSync(path.join(this.from, this.temp))) {
                     fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
                 }
                 this.ready = true;
-                log.info('Haxe compile end.');
+                if (code === 0) {
+                    log.info('Haxe compile end.');
+                }
+                else {
+                    log.info('Haxe compile error.');
+                }
                 if (code === 0)
                     resolve();
-                else
-                    reject('Haxe compiler error.');
+                // (node:3630) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future,
+                // promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+                //else reject('Haxe compiler error.');
                 if (this.todo) {
                     this.scheduleCompile();
                 }
@@ -150,7 +156,7 @@ class HaxeCompiler {
         return new Promise((resolve, reject) => {
             this.runHaxe([this.hxml], (code) => {
                 if (code === 0) {
-                    if (this.to) {
+                    if (this.to && fs.existsSync(path.join(this.from, this.temp))) {
                         fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
                     }
                     resolve();
