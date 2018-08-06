@@ -2,11 +2,8 @@
 // This is where options are processed:
 // e.g. '-t html5 --server'
 
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import {sys} from './exec';
-import * as korepath from './korepath';
 import {GraphicsApi} from './GraphicsApi';
 import {AudioApi} from './AudioApi';
 import {VrApi} from './VrApi';
@@ -218,6 +215,12 @@ let options: Array<any> = [
 		value: true,
 		default: 0
 	},
+	{
+		full: 'parallelAssetConversion',
+		description: 'Spawn multiple processes during asset conversion. Possible values\n  -1: Number of processors - 1\n   0: disabled (default value)\n   N: Number of processes to spawn',
+		value: true,
+		default: -1
+	}
 ];
 
 let parsedOptions: any = new Options();
