@@ -15,7 +15,8 @@ export class Options {
 	ffmpeg: string;
 	krafix: string;
 	noshaders: boolean;
-	
+
+	parallelAssetConversion: number;
 	noproject: boolean;
 	onlydata: boolean;
 	embedflashassets: boolean;
@@ -30,7 +31,7 @@ export class Options {
 	watch: boolean;
 	glsl2: boolean;
 	shaderversion: string;
-	
+
 	ogg: string;
 	aac: string;
 	mp3: string;
