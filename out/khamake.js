@@ -214,6 +214,12 @@ let options = [
         value: true,
         default: 0
     },
+    {
+        full: 'parallelAssetConversion',
+        description: 'Spawn multiple processes during asset conversion. Possible values\n  -1: Number of processors - 1\n   0: disabled (default value)\n   N: Number of processes to spawn',
+        value: true,
+        default: 0
+    }
 ];
 let parsedOptions = new Options_1.Options();
 function printHelp() {
