@@ -216,7 +216,7 @@ let options = [
     },
     {
         full: 'parallelAssetConversion',
-        description: 'Spawn multiple processes during asset conversion. Possible values\n  -1: Number of processors - 1\n   0: disabled (default value)\n   N: Number of processes to spawn',
+        description: 'Spawn multiple processes during asset conversion. Possible values:\n  0: disabled (default value)\n -1: choose number of processes automatically\n  N: specify number of processes manually',
         value: true,
         default: 0
     }
