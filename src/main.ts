@@ -57,7 +57,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 	for (let cdefine of cdefines) {
 		out += 'project.addDefine(\'' + cdefine + '\');\n';
 	}
-	
+
 	if (targetOptions) {
 		let koreTargetOptions: any = {};
 		for (let option in targetOptions) {
@@ -79,7 +79,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 	out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
 	if (korehl) out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\');\n';
 	else out += 'await project.addProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\');\n';
-	
+
 	for (let lib of libraries) {
 		let libPath: string = lib.libroot;
 		out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
@@ -115,7 +115,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 
 		await exporter.export(name, targetOptions, haxeOptions);
 	}
-	
+
 	let buildDir = path.join(options.to, exporter.sysdir() + '-build');
 
 	if (options.haxe !== '' && kore && !options.noproject) {
@@ -207,7 +207,7 @@ function koreplatform(platform: string) {
 
 async function exportKhaProject(options: Options): Promise<string> {
 	log.info('Creating Kha project.');
-	
+
 	let project: Project = null;
 	let foundProjectFile = false;
 
@@ -222,10 +222,10 @@ async function exportKhaProject(options: Options): Promise<string> {
 			log.error(x);
 			throw 'Loading the projectfile failed.';
 		}
-		
+
 		foundProjectFile = true;
 	}
-	
+
 	if (!foundProjectFile) {
 		throw 'No khafile found.';
 	}
@@ -236,7 +236,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let exporter: KhaExporter = null;
 	let kore = false;
 	let korehl = false;
-	
+
 	let target = options.target.toLowerCase();
 	let baseTarget = target;
 	let customTarget: Target = null;
@@ -244,7 +244,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		customTarget = project.customTargets.get(options.target);
 		baseTarget = customTarget.baseTarget;
 	}
-	
+
 	switch (baseTarget) {
 		case Platform.Krom:
 			exporter = new KromExporter(options);
@@ -308,14 +308,14 @@ async function exportKhaProject(options: Options): Promise<string> {
 		width: 800,
 		height: 600
 	};
-	
+
 	let windowOptions = project.windowOptions ? project.windowOptions : defaultWindowOptions;
 	exporter.setName(project.name);
 	exporter.setWidthAndHeight(
 		'width' in windowOptions ? windowOptions.width : defaultWindowOptions.width,
 		'height' in windowOptions ? windowOptions.height : defaultWindowOptions.height
 	);
-	
+
 	for (let source of project.sources) {
 		exporter.addSourceDirectory(source);
 	}
@@ -329,7 +329,8 @@ async function exportKhaProject(options: Options): Promise<string> {
 	for (let callback of Callbacks.preAssetConversion) {
 		callback();
 	}
-	let assetConverter = new AssetConverter(exporter, options.target, project.assetMatchers);
+
+	let assetConverter = new AssetConverter(exporter, options, project.assetMatchers);
 	lastAssetConverter = assetConverter;
 	let assets = await assetConverter.run(options.watch, temp);
 
@@ -337,7 +338,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	if (target === Platform.Unity) {
 		shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
 	}
-	
+
 	for (let callback of Callbacks.preShaderCompilation) {
 		callback();
 	}
@@ -582,27 +583,27 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	//     let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
 	//     if (fs.existsSync(kravurpath)) options.kravur = kravurpath + ' {in} {size} {out}';
 	// }
-	
+
 	if (!options.aac && options.ffmpeg) {
 		options.aac = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
-	
+
 	if (!options.h264 && options.ffmpeg) {
 		options.h264 = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
-	
+
 	if (!options.webm && options.ffmpeg) {
 		options.webm = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
-	
+
 	if (!options.wmv && options.ffmpeg) {
 		options.wmv = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
-	
+
 	if (!options.theora && options.ffmpeg) {
 		options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
-	
+
 	let name = await exportProject(options);
 
 	if (options.target === Platform.Linux && options.run) {
@@ -625,7 +626,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 
 		make.on('close', function (code: number) {
 			if (code === 0) {
-				
+
 			}
 			else {
 				log.error('Compilation failed.');

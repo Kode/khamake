@@ -291,7 +291,7 @@ async function exportKhaProject(options) {
     for (let callback of ProjectFile_1.Callbacks.preAssetConversion) {
         callback();
     }
-    let assetConverter = new AssetConverter_1.AssetConverter(exporter, options.target, project.assetMatchers);
+    let assetConverter = new AssetConverter_1.AssetConverter(exporter, options, project.assetMatchers);
     lastAssetConverter = assetConverter;
     let assets = await assetConverter.run(options.watch, temp);
     let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
