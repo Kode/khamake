@@ -180,7 +180,7 @@ class AssetConverter {
                     log.info('[WARNING] Parallel asset conversion is experimental!');
                     let todo = files.map((file, index) => {
                         return async () => {
-                            convertAsset(file, index);
+                            await convertAsset(file, index);
                         };
                     });
                     let processes = this.options.parallelAssetConversion === -1
@@ -193,7 +193,7 @@ class AssetConverter {
                 else {
                     let index = 0;
                     for (let file of files) {
-                        convertAsset(file, index);
+                        await convertAsset(file, index);
                         index += 1;
                     }
                 }

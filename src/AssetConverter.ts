@@ -202,7 +202,7 @@ export class AssetConverter {
 
 					let todo = files.map((file, index) => {
 						return async () => {
-							convertAsset(file, index);
+							await convertAsset(file, index);
 						}
 					});
 
@@ -216,7 +216,7 @@ export class AssetConverter {
 				} else {
 					let index = 0;
 					for (let file of files) {
-						convertAsset(file, index);
+						await convertAsset(file, index);
 						index += 1;
 					}
 				}
