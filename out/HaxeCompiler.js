@@ -127,6 +127,8 @@ class HaxeCompiler {
         });
     }
     triggerCompilationServer() {
+        process.stdout.write('\x1Bc');
+        log.info('Haxe compilation...');
         this.ready = false;
         this.todo = false;
         return new Promise((resolve, reject) => {
@@ -136,6 +138,7 @@ class HaxeCompiler {
                 }
                 this.ready = true;
                 if (code === 0) {
+                    process.stdout.write('\x1Bc');
                     log.info('Haxe compile end.');
                 }
                 else {
