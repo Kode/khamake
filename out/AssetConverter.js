@@ -77,10 +77,34 @@ class AssetConverter {
                 this.watcher.on('change', (file) => {
                     if (ready) {
                         let fileinfo = path.parse(file);
+                        log.info('Reexporting ' + fileinfo.name + fileinfo.ext);
                         switch (fileinfo.ext) {
                             case '.png':
-                                log.info('Reexporting ' + fileinfo.name);
+                            case '.jpg':
+                            case '.jpeg':
+                            case '.hdr':
+                                { }
                                 this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
+                                break;
+                            case '.flac':
+                            case '.wav': {
+                                this.exporter.copySound(this.platform, file, fileinfo.name, {});
+                                break;
+                            }
+                            case '.mp4':
+                            case '.webm':
+                            case '.mov':
+                            case '.wmv':
+                            case '.avi': {
+                                this.exporter.copyVideo(this.platform, file, fileinfo.name, {});
+                                break;
+                            }
+                            case '.ttf': {
+                                this.exporter.copyFont(this.platform, file, fileinfo.name, {});
+                                break;
+                            }
+                            default:
+                                this.exporter.copyBlob(this.platform, file, fileinfo.name + fileinfo.ext, {});
                                 break;
                         }
                     }
