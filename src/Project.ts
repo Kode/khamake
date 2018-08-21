@@ -12,7 +12,7 @@ export class Library {
 export class Target {
 	baseTarget: string;
 	backends: string[];
-	
+
 	constructor(baseTarget: string, backends: string[]) {
 		this.baseTarget = baseTarget;
 		this.backends = backends;
@@ -45,7 +45,7 @@ export class Project {
 	assetMatchers: { match: string, options: any }[];
 	shaderMatchers: { match: string, options: any }[];
 	customTargets: Map<string, Target>;
-	
+
 	constructor(name: string) {
 		this.name = name;
 		this.sources = [];
@@ -90,13 +90,13 @@ export class Project {
 	 */
 	addAssets(match: string, options: any) {
 		if (!options) options = {};
-		
+
 		// try to avoid weird paths - remove when https://github.com/paulmillr/chokidar/issues/300 is fixed
 		match = path.resolve(this.scriptdir, match);
 		if (contains(process.cwd(), match)) {
 			match = path.relative(process.cwd(), match);
 		}
-		
+
 		this.assetMatchers.push({ match: match, options: options });
 	}
 
@@ -110,7 +110,7 @@ export class Project {
 	 */
 	addShaders(match: string, options: any) {
 		if (!options) options = {};
-		
+
 		// try to avoid weird paths - remove when https://github.com/paulmillr/chokidar/issues/300 is fixed
 		match = path.resolve(this.scriptdir, match);
 		if (contains(process.cwd(), match)) {
@@ -127,11 +127,11 @@ export class Project {
 	addCDefine(define: string) {
 		this.cdefines.push(define);
 	}
-	
+
 	addParameter(parameter: string) {
 		this.parameters.push(parameter);
 	}
-	
+
 	addTarget(name: string, baseTarget: string, backends: string[]) {
 		this.customTargets.set(name, new Target(baseTarget, backends));
 	}
@@ -143,6 +143,12 @@ export class Project {
 			if (path.isAbsolute(name)) {
 				return { libpath: name, libroot: name };
 			}
+
+			// check relative path
+			if (fs.existsSync(path.resolve(name))) {
+				return { libpath: name, libroot: name }
+			}
+
 			// Tries to load the default library from inside the kha project.
 			// e.g. 'Libraries/wyngine'
 			let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
@@ -176,10 +182,10 @@ export class Project {
 			log.error('Add it to the \'Libraries\' subdirectory of your project. You may also install it via haxelib but that\'s less cool.');
 			throw 'Library ' + name + ' not found.';
 		}
-		
+
 		let libInfo = findLibraryDirectory(library);
 		let dir = libInfo.libpath;
-		
+
 		if (dir !== '') {
 			this.libraries.push({
 				libpath: dir,
@@ -216,7 +222,7 @@ export class Project {
 				}
 				this.sources.push(path.join(dir, 'Sources'));
 			}
-			
+
 			if (fs.existsSync(path.join(dir, 'extraParams.hxml'))) {
 				let params = fs.readFileSync(path.join(dir, 'extraParams.hxml'), 'utf8');
 				for (let parameter of params.split('\n')) {
@@ -234,7 +240,7 @@ export class Project {
 					}
 				}
 			}
-			
+
 			this.addShaders(dir + '/Sources/Shaders/**', {});
 		}
 	}
