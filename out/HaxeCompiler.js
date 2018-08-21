@@ -20,7 +20,7 @@ class HaxeCompiler {
         this.sysdir = sysdir;
         this.sourceMatchers = [];
         for (let dir of sourceDirectories) {
-            this.sourceMatchers.push(path.join(dir, '**'));
+            this.sourceMatchers.push(path.join(dir, '**').replace(/\\/g, '/'));
         }
     }
     close() {
