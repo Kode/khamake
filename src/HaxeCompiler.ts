@@ -19,7 +19,7 @@ export class HaxeCompiler {
 	resourceDir: string;
 	compilationServer: child_process.ChildProcess;
 	sysdir: string;
-		
+
 	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>, sysdir: string) {
 		this.from = from;
 		this.temp = temp;
@@ -28,10 +28,10 @@ export class HaxeCompiler {
 		this.haxeDirectory = haxeDirectory;
 		this.hxml = hxml;
 		this.sysdir = sysdir;
-		
+
 		this.sourceMatchers = [];
 		for (let dir of sourceDirectories) {
-			this.sourceMatchers.push(path.join(dir, '**'));
+			this.sourceMatchers.push(path.join(dir, '**').replace(/\\/g, '/'));
 		}
 	}
 
@@ -39,7 +39,7 @@ export class HaxeCompiler {
 		if (this.watcher) this.watcher.close();
 		if (this.compilationServer) this.compilationServer.kill();
 	}
-	
+
 	async run(watch: boolean) {
 		if (watch) {
 			this.watcher = chokidar.watch(this.sourceMatchers, { ignored: /[\/\\]\.git/, persistent: true, ignoreInitial: true });
@@ -64,7 +64,7 @@ export class HaxeCompiler {
 			}
 		}
 	}
-	
+
 	scheduleCompile() {
 		if (this.ready) {
 			this.triggerCompilationServer();
@@ -88,7 +88,7 @@ export class HaxeCompiler {
 		}
 
 		let haxe = child_process.spawn(exe, parameters, {env: env, cwd: path.normalize(this.from)});
-		
+
 		haxe.stdout.on('data', (data: any) => {
 			log.info(data.toString());
 		});
@@ -96,7 +96,7 @@ export class HaxeCompiler {
 		haxe.stderr.on('data', (data: any) => {
 			log.error(data.toString());
 		});
-		
+
 		haxe.on('close', onClose);
 
 		return haxe;
@@ -132,7 +132,7 @@ export class HaxeCompiler {
 					newhxml += '-D kha_in_worker\n';
 					fs.writeFileSync(path.join(this.from, 'temp.hxml'), newhxml, {encoding: 'utf8'});
 					this.runHaxeAgain(['temp.hxml'], (code2: number, signal2: string) => {
-						
+
 					});
 				}
 			}
@@ -141,13 +141,13 @@ export class HaxeCompiler {
 
 		return haxe;
 	}
-	
+
 	startCompilationServer() {
 		this.compilationServer = this.runHaxe(['--wait', this.port], (code: number) => {
 			log.info('Haxe compilation server stopped.');
 		});
 	}
-	
+
 	triggerCompilationServer() {
 		process.stdout.write('\x1Bc');
 		log.info('Haxe compilation...');
@@ -177,7 +177,7 @@ export class HaxeCompiler {
 			});
 		});
 	}
-	
+
 	compile(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			this.runHaxe([this.hxml], (code: number) => {
@@ -194,7 +194,7 @@ export class HaxeCompiler {
 			});
 		});
 	}
-	
+
 	private static spinRename(from: string, to: string): void {
 		for (; ; ) {
 			if (fs.existsSync(from)) {
