@@ -266,13 +266,13 @@ class ShaderCompiler {
                             resolve(null);
                         }
                         else {
-                            if (this.type === 'metal') {
+                            if (this.type === 'metal' && this.platform !== Platform_1.Platform.Krom) {
                                 fs.ensureDirSync(path.join(this.builddir, 'Sources'));
                                 let funcname = fileinfo.name;
                                 funcname = funcname.replace(/-/g, '_');
                                 funcname = funcname.replace(/\./g, '_');
                                 funcname += '_main';
-                                fs.writeFileSync(to, funcname, 'utf8');
+                                fs.writeFileSync(to, '>' + funcname, 'utf8');
                                 to = path.join(this.builddir, 'Sources', fileinfo.name + '.' + this.type);
                                 temp = to;
                             }
@@ -378,7 +378,7 @@ class ShaderCompiler {
                                     }
                                 }
                                 if (code === 0) {
-                                    if (this.type !== 'metal') {
+                                    if (this.type !== 'metal' || this.platform === Platform_1.Platform.Krom) {
                                         if (compiledShader.files === null || compiledShader.files.length === 0) {
                                             fs.renameSync(temp, to);
                                         }

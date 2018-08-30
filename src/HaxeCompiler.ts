@@ -169,7 +169,7 @@ export class HaxeCompiler {
 
 				// (node:3630) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future,
 				// promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
-				//else reject('Haxe compiler error.');
+				// else reject('Haxe compiler error.');
 
 				if (this.todo) {
 					this.scheduleCompile();

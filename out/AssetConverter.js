@@ -94,7 +94,7 @@ class AssetConverter {
                 if (fs.existsSync(cachePath)) {
                     cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
                 }
-                var self = this;
+                const self = this;
                 async function convertAsset(file, index) {
                     let fileinfo = path.parse(file);
                     log.info('Exporting asset ' + (index + 1) + ' of ' + files.length + ' (' + fileinfo.base + ').');

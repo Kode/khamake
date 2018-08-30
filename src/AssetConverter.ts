@@ -113,7 +113,7 @@ export class AssetConverter {
 					cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
 				}
 
-				var self = this;
+				const self = this;
 
 				async function convertAsset( file: string, index: number ) {
 					let fileinfo = path.parse(file);
@@ -203,7 +203,7 @@ export class AssetConverter {
 					let todo = files.map((file, index) => {
 						return async () => {
 							await convertAsset(file, index);
-						}
+						};
 					});
 
 					let processes = this.options.parallelAssetConversion === -1
