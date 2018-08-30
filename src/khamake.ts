@@ -224,7 +224,7 @@ let options: Array<any> = [
 	},
 	{
 		full: 'parallelAssetConversion',
-		description: 'Spawn multiple processes during asset conversion. Possible values:\n  0: disabled (default value)\n -1: choose number of processes automatically\n  N: specify number of processes manually',
+		description: 'Experimental - Spawn multiple processes during asset and shader conversion. Possible values:\n  0: disabled (default value)\n -1: choose number of processes automatically\n  N: specify number of processes manually',
 		value: true,
 		default: 0
 	}

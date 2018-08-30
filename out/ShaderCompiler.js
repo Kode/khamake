@@ -5,6 +5,7 @@ const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
 const chokidar = require("chokidar");
+const Throttle = require("promise-parallel-throttle");
 const GraphicsApi_1 = require("./GraphicsApi");
 const Platform_1 = require("./Platform");
 const AssetConverter_1 = require("./AssetConverter");
@@ -195,13 +196,13 @@ class ShaderCompiler {
             this.watcher.on('ready', async () => {
                 ready = true;
                 let compiledShaders = [];
-                let index = 0;
-                for (let shader of shaders) {
+                var self = this;
+                async function compile(shader, index) {
                     let parsed = path.parse(shader);
                     log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
                     let compiledShader = null;
                     try {
-                        compiledShader = await this.compileShader(shader, options, recompileAll);
+                        compiledShader = await self.compileShader(shader, options, recompileAll);
                     }
                     catch (error) {
                         log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
@@ -218,11 +219,31 @@ class ShaderCompiler {
                     }
                     if (compiledShader.files != null && compiledShader.files.length === 0) {
                         // TODO: Remove when krafix has been recompiled everywhere
-                        compiledShader.files.push(parsed.name + '.' + this.type);
+                        compiledShader.files.push(parsed.name + '.' + self.type);
                     }
-                    compiledShader.name = AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name;
+                    compiledShader.name = AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, self.exporter.options.from).name;
                     compiledShaders.push(compiledShader);
                     ++index;
+                }
+                if (this.options.parallelAssetConversion !== 0) {
+                    let todo = shaders.map((shader, index) => {
+                        return async () => {
+                            await compile(shader, index);
+                        };
+                    });
+                    let processes = this.options.parallelAssetConversion === -1
+                        ? require('os').cpus().length - 1
+                        : this.options.parallelAssetConversion;
+                    await Throttle.all(todo, {
+                        maxInProgress: processes,
+                    });
+                }
+                else {
+                    let index = 0;
+                    for (let shader of shaders) {
+                        await compile(shader, index);
+                        index += 1;
+                    }
                 }
                 resolve(compiledShaders);
                 return;
