@@ -196,7 +196,7 @@ class ShaderCompiler {
             this.watcher.on('ready', async () => {
                 ready = true;
                 let compiledShaders = [];
-                var self = this;
+                const self = this;
                 async function compile(shader, index) {
                     let parsed = path.parse(shader);
                     log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
