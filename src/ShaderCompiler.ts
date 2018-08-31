@@ -222,7 +222,7 @@ export class ShaderCompiler {
 				ready = true;
 				let compiledShaders: CompiledShader[] = [];
 				
-				var self = this;
+				const self = this;
  				async function compile( shader: any, index: number ) {
 					let parsed = path.parse(shader);
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
@@ -256,7 +256,7 @@ export class ShaderCompiler {
 					let todo = shaders.map((shader, index) => {
 						return async () => {
 							await compile(shader, index);
-						}
+						};
 					});
 
 					let processes = this.options.parallelAssetConversion === -1
