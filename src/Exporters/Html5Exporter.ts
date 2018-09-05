@@ -55,7 +55,7 @@ export class Html5Exporter extends KhaExporter {
 		}
 
 		let canvasId = targetOptions.html5.canvasId == null ? 'khanvas' : targetOptions.html5.canvasId;
-		
+
 		defines.push('canvas_id=' + canvasId);
 
 		let scriptName = this.isHtml5Worker() ? 'khaworker' : 'kha';
@@ -93,7 +93,7 @@ export class Html5Exporter extends KhaExporter {
 
 		if (this.isDebugHtml5()) {
 			this.parameters.push('-debug');
-			
+
 			defines.push('sys_debug_html5');
 
 			defines.push('kha_debug_html5');
@@ -192,7 +192,7 @@ export class Html5Exporter extends KhaExporter {
 		});
 	}*/
 
-	async copySound(platform: string, from: string, to: string) {
+	async copySound(platform: string, from: string, to: string,  options: any) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
 		let mp4 = false;
@@ -215,12 +215,12 @@ export class Html5Exporter extends KhaExporter {
 		return [to + '.' + format];
 	}
 
-	async copyBlob(platform: string, from: string, to: string) {
+	async copyBlob(platform: string, from: string, to: string, options: any) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
 		return [to];
 	}
 
-	async copyVideo(platform: string, from: string, to: string) {
+	async copyVideo(platform: string, from: string, to: string, options: any) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let mp4 = false;
 		if (!this.isDebugHtml5()) {

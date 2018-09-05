@@ -59,15 +59,42 @@ class AssetConverter {
             let ready = false;
             let files = [];
             this.watcher = chokidar.watch(match.replace(/\\/g, '/'), { ignored: /[\/\\]\.git/, persistent: watch });
+            const onFileChange = (file) => {
+                let fileinfo = path.parse(file);
+                let outPath = fileinfo.dir + '/' + fileinfo.name;
+                outPath = outPath.replace(options.nameBaseDir + '/', '');
+                log.info('Reexporting ' + fileinfo.base);
+                switch (fileinfo.ext) {
+                    case '.png':
+                    case '.jpg':
+                    case '.jpeg':
+                    case '.hdr':
+                        { }
+                        this.exporter.copyImage(this.platform, file, outPath, {}, {});
+                        break;
+                    case '.flac':
+                    case '.wav': {
+                        this.exporter.copySound(this.platform, file, outPath, {});
+                        break;
+                    }
+                    case '.mp4':
+                    case '.webm':
+                    case '.mov':
+                    case '.wmv':
+                    case '.avi': {
+                        this.exporter.copyVideo(this.platform, file, outPath, {});
+                        break;
+                    }
+                    case '.ttf':
+                        this.exporter.copyFont(this.platform, file, outPath, {});
+                        break;
+                    default:
+                        this.exporter.copyBlob(this.platform, file, outPath + fileinfo.ext, {});
+                }
+            };
             this.watcher.on('add', (file) => {
                 if (ready) {
-                    let fileinfo = path.parse(file);
-                    switch (fileinfo.ext) {
-                        case '.png':
-                            log.info('Reexporting ' + fileinfo.name);
-                            this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
-                            break;
-                    }
+                    onFileChange(file);
                 }
                 else {
                     files.push(file);
@@ -76,13 +103,7 @@ class AssetConverter {
             if (watch) {
                 this.watcher.on('change', (file) => {
                     if (ready) {
-                        let fileinfo = path.parse(file);
-                        switch (fileinfo.ext) {
-                            case '.png':
-                                log.info('Reexporting ' + fileinfo.name);
-                                this.exporter.copyImage(this.platform, file, fileinfo.name, {}, {});
-                                break;
-                        }
+                        onFileChange(file);
                     }
                 });
             }

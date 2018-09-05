@@ -158,7 +158,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             });
         });
     }*/
-    async copySound(platform, from, to) {
+    async copySound(platform, from, to, options) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
         let mp4 = false;
@@ -182,11 +182,11 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
         return [to + '.' + format];
     }
-    async copyBlob(platform, from, to) {
+    async copyBlob(platform, from, to, options) {
         fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
         return [to];
     }
-    async copyVideo(platform, from, to) {
+    async copyVideo(platform, from, to, options) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         let mp4 = false;
         if (!this.isDebugHtml5()) {

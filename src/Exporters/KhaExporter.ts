@@ -29,7 +29,7 @@ export abstract class KhaExporter extends Exporter {
 		// this.parameters = ['--macro kha.internal.GraphicsBuilder.build("' + this.backend().toLowerCase() + '")'];
 		this.addSourceDirectory(path.join(options.kha, 'Backends', this.backend()));
 	}
-	
+
 	sysdir(): string {
 		return this.systemDirectory;
 	}
