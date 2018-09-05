@@ -110,6 +110,10 @@ class Project {
             if (path.isAbsolute(name)) {
                 return { libpath: name, libroot: name };
             }
+            // check relative path
+            if (fs.existsSync(path.resolve(name))) {
+                return { libpath: name, libroot: name };
+            }
             // Tries to load the default library from inside the kha project.
             // e.g. 'Libraries/wyngine'
             let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
