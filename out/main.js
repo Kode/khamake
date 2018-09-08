@@ -501,7 +501,9 @@ async function run(options, loglog) {
     }
     log.info('Using Kha from ' + options.kha);
     if (!options.haxe) {
-        let haxepath = path.join(options.kha, 'Tools', 'haxe');
+        let haxepath = options.haxe3
+            ? path.join(options.kha, 'Tools', 'haxe', 'v3.x')
+            : path.join(options.kha, 'Tools', 'haxe');
         if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory())
             options.haxe = haxepath;
     }
