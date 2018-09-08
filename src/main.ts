@@ -58,6 +58,13 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 		out += 'project.addDefine(\'' + cdefine + '\');\n';
 	}
 
+	if (options.haxe3) {
+		out += 'project.addDefine(\'HXCPP_API_LEVEL=331\');\n';
+	}
+	else {
+		out += 'project.addDefine(\'HXCPP_API_LEVEL=332\');\n';
+	}
+
 	if (targetOptions) {
 		let koreTargetOptions: any = {};
 		for (let option in targetOptions) {

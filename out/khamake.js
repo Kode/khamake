@@ -226,6 +226,11 @@ let options = [
         description: 'Experimental - Spawn multiple processes during asset and shader conversion. Possible values:\n  0: disabled (default value)\n -1: choose number of processes automatically\n  N: specify number of processes manually',
         value: true,
         default: 0
+    },
+    {
+        full: 'haxe3',
+        description: 'Use the battle tested Haxe 3 compiler instead of the cutting edge not really released yet Haxe 4 compiler',
+        value: false
     }
 ];
 let parsedOptions = new Options_1.Options();

@@ -21,6 +21,9 @@ export class KoreExporter extends KhaExporter {
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
+		if (!this.options.haxe3) {
+			defines.push('include-prefix=hxinc');
+		}
 
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_kore');

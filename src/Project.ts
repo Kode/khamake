@@ -146,7 +146,7 @@ export class Project {
 
 			// check relative path
 			if (fs.existsSync(path.resolve(name))) {
-				return { libpath: name, libroot: name }
+				return { libpath: name, libroot: name };
 			}
 
 			// Tries to load the default library from inside the kha project.

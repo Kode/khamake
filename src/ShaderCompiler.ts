@@ -223,7 +223,7 @@ export class ShaderCompiler {
 				let compiledShaders: CompiledShader[] = [];
 				
 				const self = this;
- 				async function compile( shader: any, index: number ) {
+				async function compile( shader: any, index: number ) {
 					let parsed = path.parse(shader);
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
 					let compiledShader: CompiledShader = null;

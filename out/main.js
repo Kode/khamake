@@ -48,6 +48,12 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     for (let cdefine of cdefines) {
         out += 'project.addDefine(\'' + cdefine + '\');\n';
     }
+    if (options.haxe3) {
+        out += 'project.addDefine(\'HXCPP_API_LEVEL=331\');\n';
+    }
+    else {
+        out += 'project.addDefine(\'HXCPP_API_LEVEL=332\');\n';
+    }
     if (targetOptions) {
         let koreTargetOptions = {};
         for (let option in targetOptions) {

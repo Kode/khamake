@@ -113,7 +113,7 @@ export class AssetConverter {
 					default:
 						this.exporter.copyBlob(this.platform, file, outPath + fileinfo.ext, {});
 				}
-			}
+			};
 
 			this.watcher.on('add', (file: string) => {
 				if (ready) {
