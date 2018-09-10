@@ -220,7 +220,7 @@ let options: Array<any> = [
 		full: 'shaderversion',
 		description: 'Set target shader version manually.',
 		value: true,
-		default: 0
+		default: null
 	},
 	{
 		full: 'parallelAssetConversion',

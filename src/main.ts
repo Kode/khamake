@@ -566,6 +566,14 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 	log.info('Using Kha from ' + options.kha);
 
+	if (options.parallelAssetConversion === undefined) {
+		options.parallelAssetConversion = 0;
+	}
+
+	if (options.haxe3 === undefined) {
+		options.haxe3 = false;
+	}
+
 	if (!options.haxe) {
 		let haxepath = options.haxe3
 		? path.join(options.kha, 'Tools', 'haxe', 'v3.x')
