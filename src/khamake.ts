@@ -303,7 +303,7 @@ for (let i = 2; i < args.length; ++i) {
 		}
 	}
 	else {
-		if (isTarget(arg)) parsedOptions.target = arg;
+		if (isTarget(arg)) parsedOptions.target = arg.toLowerCase();
 	}
 }
 
