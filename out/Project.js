@@ -59,36 +59,44 @@ class Project {
         }
         // windowOptions and targetOptions are ignored
     }
+    unglob(str) {
+        const globChars = ['\\@', '\\!', '\\+', '\\*', '\\?', '\\(', '\\[', '\\{', '\\)', '\\]', '\\}'];
+        str = str.replace(/\\/g, '/');
+        for (const char of globChars) {
+            str = str.replace(new RegExp(char, 'g'), '\\' + char.substr(1));
+        }
+        return str;
+    }
     /**
-     * Add all assets matching the match regex relative to the directory containing the current khafile.
+     * Add all assets matching the match glob relative to the directory containing the current khafile.
      * Asset types are infered from the file suffix.
-     * The regex syntax is very simple: * for anything, ** for anything across directories.
+     * Glob syntax is very simple, the most important patterns are * for anything and ** for anything across directories.
      */
     addAssets(match, options) {
         if (!options)
             options = {};
-        // try to avoid weird paths - remove when https://github.com/paulmillr/chokidar/issues/300 is fixed
-        match = path.resolve(this.scriptdir, match);
-        if (contains(process.cwd(), match)) {
-            match = path.relative(process.cwd(), match);
+        let base = this.unglob(path.resolve(this.scriptdir));
+        if (!base.endsWith('/')) {
+            base += '/';
         }
+        match = base + match.replace(/\\/g, '/');
         this.assetMatchers.push({ match: match, options: options });
     }
     addSources(source) {
         this.sources.push(path.resolve(path.join(this.scriptdir, source)));
     }
     /**
-     * Add all shaders matching the match regex relative to the directory containing the current khafile.
-     * The regex syntax is very simple: * for anything, ** for anything across directories.
+     * Add all shaders matching the match glob relative to the directory containing the current khafile.
+     * Glob syntax is very simple, the most important patterns are * for anything and ** for anything across directories.
      */
     addShaders(match, options) {
         if (!options)
             options = {};
-        // try to avoid weird paths - remove when https://github.com/paulmillr/chokidar/issues/300 is fixed
-        match = path.resolve(this.scriptdir, match);
-        if (contains(process.cwd(), match)) {
-            match = path.relative(process.cwd(), match);
+        let base = this.unglob(path.resolve(this.scriptdir));
+        if (!base.endsWith('/')) {
+            base += '/';
         }
+        match = base + match.replace(/\\/g, '/');
         this.shaderMatchers.push({ match: match, options: options });
     }
     addDefine(define) {

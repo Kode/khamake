@@ -155,7 +155,7 @@ class ShaderCompiler {
         return new Promise((resolve, reject) => {
             let shaders = [];
             let ready = false;
-            this.watcher = chokidar.watch(match.replace(/\\/g, '/'), { ignored: /[\/\\]\.git/, persistent: watch });
+            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.git/, persistent: watch });
             this.watcher.on('add', (filepath) => {
                 let file = path.parse(filepath);
                 if (ready) {
