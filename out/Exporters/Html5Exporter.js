@@ -108,15 +108,13 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
         if (this.isDebugHtml5()) {
             let index = path.join(this.options.to, this.sysdir(), 'index.html');
-            if (!fs.existsSync(index)) {
-                let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), { encoding: 'utf8' });
-                protoindex = protoindex.replace(/{Name}/g, name);
-                protoindex = protoindex.replace(/{Width}/g, '' + this.width);
-                protoindex = protoindex.replace(/{Height}/g, '' + this.height);
-                protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
-                protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
-                fs.writeFileSync(index.toString(), protoindex);
-            }
+            let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), { encoding: 'utf8' });
+            protoindex = protoindex.replace(/{Name}/g, name);
+            protoindex = protoindex.replace(/{Width}/g, '' + this.width);
+            protoindex = protoindex.replace(/{Height}/g, '' + this.height);
+            protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
+            protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
+            fs.writeFileSync(index.toString(), protoindex);
             let pack = path.join(this.options.to, this.sysdir(), 'package.json');
             let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), { encoding: 'utf8' });
             protopackage = protopackage.replace(/{Name}/g, name);
