@@ -75,11 +75,13 @@ class Project {
     addAssets(match, options) {
         if (!options)
             options = {};
-        let base = this.unglob(path.resolve(this.scriptdir));
-        if (!base.endsWith('/')) {
-            base += '/';
+        if (!path.isAbsolute(match)) {
+            let base = this.unglob(path.resolve(this.scriptdir));
+            if (!base.endsWith('/')) {
+                base += '/';
+            }
+            match = base + match.replace(/\\/g, '/');
         }
-        match = base + match.replace(/\\/g, '/');
         this.assetMatchers.push({ match: match, options: options });
     }
     addSources(source) {
@@ -92,11 +94,13 @@ class Project {
     addShaders(match, options) {
         if (!options)
             options = {};
-        let base = this.unglob(path.resolve(this.scriptdir));
-        if (!base.endsWith('/')) {
-            base += '/';
+        if (!path.isAbsolute(match)) {
+            let base = this.unglob(path.resolve(this.scriptdir));
+            if (!base.endsWith('/')) {
+                base += '/';
+            }
+            match = base + match.replace(/\\/g, '/');
         }
-        match = base + match.replace(/\\/g, '/');
         this.shaderMatchers.push({ match: match, options: options });
     }
     addDefine(define) {
