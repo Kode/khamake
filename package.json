@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Kode/khamake#readme",
   "dependencies": {
+    "@microsoft/ts-command-line": "^4.2.2",
     "@types/chokidar": "^1.7.5",
     "@types/fs-extra": "^5.0.2",
     "@types/node": "^10.0.6",

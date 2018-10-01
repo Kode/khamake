@@ -4,13 +4,15 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import {GraphicsApi} from './GraphicsApi';
-import {AudioApi} from './AudioApi';
-import {VrApi} from './VrApi';
-import {RayTraceApi} from './RayTraceApi';
-import {Options} from './Options';
-import {Platform} from './Platform';
-import {VisualStudioVersion} from './VisualStudioVersion';
+import { GraphicsApi } from './GraphicsApi';
+import { AudioApi } from './AudioApi';
+import { VrApi } from './VrApi';
+import { RayTraceApi } from './RayTraceApi';
+import { Options } from './Options';
+import { Platform } from './Platform';
+import { VisualStudioVersion } from './VisualStudioVersion';
+
+import { CommandLineAction, CommandLineFlagParameter, CommandLineParser, CommandLineParameter } from '@microsoft/ts-command-line';
 
 let defaultTarget: string;
 if (os.platform() === 'linux') {
@@ -23,7 +25,7 @@ else {
 	defaultTarget = Platform.OSX;
 }
 
-let options: Array<any> = [
+/*let options: Array<any> = [
 	{
 		full: 'from',
 		value: true,
@@ -364,3 +366,67 @@ else if (parsedOptions.server) {
 else {
 	runKhamake();
 }
+*/
+
+class InitAction extends CommandLineAction {
+	private _name: CommandLineParameter;
+	private _from: CommandLineParameter;
+	private _projectFile: CommandLineParameter;
+
+	public constructor() {
+		super({
+			actionName: 'init',
+			summary: 'Init a Kha project',
+			documentation: 'Init a Kha project inside the current directory'
+		});
+	}
+
+	protected onExecute(): Promise<void> { // abstract
+		// TODO: actually make it run!
+		return Promise.resolve();
+	}
+
+	protected onDefineParameters(): void { // abstract
+		this._name = this.defineStringParameter({
+			argumentName: "NAME",
+			parameterShortName: "-n",
+			parameterLongName: "--name",
+			description: "Project name to use when initializing a project",
+			defaultValue: "Project"
+		});
+		this._from = this.defineStringParameter({
+			argumentName: "PATH",
+			parameterShortName: "-f",
+			parameterLongName: "--from",
+			description: "Location of your project",
+			defaultValue: "."
+		});
+		this._projectFile = this.defineStringParameter({
+			argumentName: "PATH",
+			parameterLongName: "--projectfile",
+			description: "Name of your project file",
+			defaultValue: "khafile.js"
+		});
+	}
+}
+
+class KhamakeCommandLine extends CommandLineParser {
+	constructor() {
+		super({
+			toolFilename: 'khamake',
+			toolDescription: 'Build tool for Kha'
+		});
+		this._populateActions();
+	}
+
+	protected onDefineParameters(): void { // override
+		// No parameters
+	}
+
+	private _populateActions(): void {
+		this.addAction(new InitAction());
+	}
+}
+
+const parser: KhamakeCommandLine = new KhamakeCommandLine();
+parser.execute();
