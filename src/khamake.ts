@@ -370,6 +370,7 @@ else {
 
 import { InitAction } from './cli/InitAction';
 import { ServerAction } from './cli/ServerAction';
+import { Html5Action } from './cli/Html5Action';
 
 class KhamakeCommandLine extends CommandLineParser {
 	constructor() {
@@ -387,6 +388,7 @@ class KhamakeCommandLine extends CommandLineParser {
 	private _populateActions(): void {
 		this.addAction(new InitAction());
 		this.addAction(new ServerAction());
+		this.addAction(new Html5Action());
 	}
 }
 
