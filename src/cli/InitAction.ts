@@ -1,9 +1,9 @@
-import { CommandLineAction, CommandLineParameter } from "@microsoft/ts-command-line";
+import { CommandLineAction, CommandLineStringParameter } from "@microsoft/ts-command-line";
 
 export class InitAction extends CommandLineAction {
-	private _name: CommandLineParameter;
-	private _from: CommandLineParameter;
-	private _projectFile: CommandLineParameter;
+	private _name: CommandLineStringParameter;
+	private _from: CommandLineStringParameter;
+	private _projectFile: CommandLineStringParameter;
 
 	public constructor() {
 		super({

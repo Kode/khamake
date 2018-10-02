@@ -1,5 +1,5 @@
 import { BuildAction } from './BuildAction';
-import { CommandLineAction, CommandLineParameter } from "@microsoft/ts-command-line";
+import { Platform } from '../Platform';
 
 export class Html5Action extends BuildAction {
 	public constructor() {
@@ -10,7 +10,9 @@ export class Html5Action extends BuildAction {
 		});
 	}
 
-	protected onExecute(): Promise<void> { // abstract
+    protected onExecute(): Promise<void> { // abstract
+        this.prepareBaseOptions();
+        this._options.target = Platform.HTML5;
 		return super.onExecute();
 	}
 }

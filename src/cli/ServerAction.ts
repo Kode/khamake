@@ -1,8 +1,8 @@
-import { CommandLineAction, CommandLineParameter } from "@microsoft/ts-command-line";
+import { CommandLineAction, CommandLineIntegerParameter, CommandLineStringParameter } from "@microsoft/ts-command-line";
 
 export class ServerAction extends CommandLineAction {
-	private _port: CommandLineParameter;
-	private _from: CommandLineParameter;
+	private _port: CommandLineIntegerParameter;
+	private _from: CommandLineStringParameter;
 
 	public constructor() {
 		super({
