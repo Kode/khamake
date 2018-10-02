@@ -3,10 +3,12 @@ import { Platform } from '../Platform';
 import { CommandLineChoiceParameter } from '@microsoft/ts-command-line';
 import { VisualStudioVersion } from '../VisualStudioVersion';
 import { VrApi } from '../VrApi';
+import { RayTraceApi } from '../RayTraceApi';
 
 export class WPFAction extends BuildAction {
 	private _visualStudio: CommandLineChoiceParameter;
 	private _vrApi: CommandLineChoiceParameter;
+    private _rayTraceAPI: CommandLineChoiceParameter;
 	
 	public constructor() {
 		super({
@@ -18,8 +20,10 @@ export class WPFAction extends BuildAction {
 
     protected onExecute(): Promise<void> { // abstract
         this.prepareBaseOptions();
-        this._options.visualstudio = this._visualStudio.value;
         this._options.target = Platform.WPF;
+        this._options.visualstudio = this._visualStudio.value;
+        this._options.vr = this._vrApi.value;
+        this._options.raytrace = this._rayTraceAPI.value;
 		return super.onExecute();
 	}
 
@@ -47,6 +51,14 @@ export class WPFAction extends BuildAction {
             ],
             defaultValue: VrApi.None
         });
-		
+        this._rayTraceAPI = this.defineChoiceParameter({
+			parameterLongName: "--raytrace",
+            description: "Target raytracing API",
+            alternatives: [
+                RayTraceApi.None,
+                RayTraceApi.DXR,
+            ],
+            defaultValue: RayTraceApi.None
+        });
 	}
 }

@@ -1,6 +1,5 @@
-import { CommandLineAction, CommandLineParameter, ICommandLineActionOptions, CommandLineChoiceParameter, CommandLineStringParameter, CommandLineFlagParameter, CommandLineIntegerParameter } from "@microsoft/ts-command-line";
+import { CommandLineAction, ICommandLineActionOptions, CommandLineChoiceParameter, CommandLineStringParameter, CommandLineFlagParameter, CommandLineIntegerParameter } from "@microsoft/ts-command-line";
 import { Options } from '../Options';
-import { VrApi } from '../VrApi';
 import { RayTraceApi } from "../RayTraceApi";
 import { GraphicsApi } from "../GraphicsApi";
 import { AudioApi } from "../AudioApi";
@@ -12,7 +11,6 @@ export class BuildAction extends CommandLineAction {
 	private _from: CommandLineStringParameter;
 	private _to: CommandLineStringParameter;
 	private _projectFile: CommandLineStringParameter;
-    private _rayTraceAPI: CommandLineChoiceParameter;
     private _main: CommandLineStringParameter;
     private _graphicsAPI: CommandLineChoiceParameter;
     private _audioAPI: CommandLineChoiceParameter;
@@ -45,7 +43,6 @@ export class BuildAction extends CommandLineAction {
         this._options.from = this._from.value;
         this._options.to = this._to.value;
         this._options.projectfile = this._projectFile.value;
-        this._options.raytrace = this._rayTraceAPI.value;
         this._options.main = this._main.value;
         this._options.graphics = this._graphicsAPI.value;
         this._options.audio = this._audioAPI.value;
@@ -113,15 +110,6 @@ export class BuildAction extends CommandLineAction {
 			description: "Name of your project file",
 			defaultValue: "khafile.js"
 		});
-        this._rayTraceAPI = this.defineChoiceParameter({
-			parameterLongName: "--raytrace",
-            description: "Target raytracing API",
-            alternatives: [
-                RayTraceApi.None,
-                RayTraceApi.DXR,
-            ],
-            defaultValue: RayTraceApi.None
-        });
         this._main = this.defineStringParameter({
 			parameterLongName: "--main",
             description: "Entrypoint for the haxe code (-main argument), defaults to \"Main\"",
