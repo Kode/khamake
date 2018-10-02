@@ -3,359 +3,71 @@
 // This is where options are processed:
 // e.g. '-t html5 --server'
 Object.defineProperty(exports, "__esModule", { value: true });
-const os = require("os");
-const path = require("path");
-const GraphicsApi_1 = require("./GraphicsApi");
-const AudioApi_1 = require("./AudioApi");
-const VrApi_1 = require("./VrApi");
-const RayTraceApi_1 = require("./RayTraceApi");
-const Options_1 = require("./Options");
-const Platform_1 = require("./Platform");
-const VisualStudioVersion_1 = require("./VisualStudioVersion");
-let defaultTarget;
-if (os.platform() === 'linux') {
-    defaultTarget = Platform_1.Platform.Linux;
-}
-else if (os.platform() === 'win32') {
-    defaultTarget = Platform_1.Platform.Windows;
-}
-else {
-    defaultTarget = Platform_1.Platform.OSX;
-}
-let options = [
-    {
-        full: 'from',
-        value: true,
-        description: 'Location of your project',
-        default: '.'
-    },
-    {
-        full: 'to',
-        value: true,
-        description: 'Build location',
-        default: 'build'
-    },
-    {
-        full: 'projectfile',
-        value: true,
-        description: 'Name of your project file, defaults to "khafile.js"',
-        default: 'khafile.js'
-    },
-    {
-        full: 'target',
-        short: 't',
-        value: true,
-        description: 'Target platform',
-        default: defaultTarget
-    },
-    {
-        full: 'vr',
-        value: true,
-        description: 'Target VR device',
-        default: VrApi_1.VrApi.None
-    },
-    {
-        full: 'raytrace',
-        value: true,
-        description: 'Target raytracing api',
-        default: RayTraceApi_1.RayTraceApi.None
-    },
-    {
-        full: 'main',
-        value: true,
-        description: 'Entrypoint for the haxe code (-main argument), defaults to "Main".',
-        default: 'Main'
-    },
-    {
-        full: 'intermediate',
-        description: 'Intermediate location for object files.',
-        value: true,
-        default: '',
-        hidden: true
-    },
-    {
-        full: 'graphics',
-        short: 'g',
-        description: 'Graphics api to use. Possible parameters are direct3d9, direct3d11, direct3d12, metal, vulkan and opengl.',
-        value: true,
-        default: GraphicsApi_1.GraphicsApi.Default
-    },
-    {
-        full: 'audio',
-        short: 'a',
-        description: 'Audio api to use. Possible parameters are directsound and wasapi.',
-        value: true,
-        default: AudioApi_1.AudioApi.Default
-    },
-    {
-        full: 'visualstudio',
-        short: 'v',
-        description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013 and vs2015.',
-        value: true,
-        default: VisualStudioVersion_1.VisualStudioVersion.VS2017
-    },
-    {
-        full: 'kha',
-        short: 'k',
-        description: 'Location of Kha directory',
-        value: true,
-        default: ''
-    },
-    {
-        full: 'haxe',
-        description: 'Location of Haxe directory',
-        value: true,
-        default: ''
-    },
-    {
-        full: 'nohaxe',
-        description: 'Do not compile Haxe sources',
-        value: false,
-    },
-    {
-        full: 'ffmpeg',
-        description: 'Location of ffmpeg executable',
-        value: true,
-        default: ''
-    },
-    {
-        full: 'ogg',
-        description: 'Commandline for running the ogg encoder',
-        value: true,
-        default: ''
-    },
-    {
-        full: 'mp3',
-        description: 'Commandline for running the mp3 encoder',
-        value: true,
-        default: ''
-    },
-    {
-        full: 'aac',
-        description: 'Commandline for running the ffmpeg executable',
-        value: true,
-        default: ''
-    },
-    {
-        full: 'krafix',
-        description: 'Location of krafix shader compiler',
-        value: true,
-        default: ''
-    },
-    {
-        full: 'noshaders',
-        description: 'Do not compile shaders',
-        value: false
-    },
-    {
-        full: 'noproject',
-        description: 'Only source files. Don\'t generate project files.',
-        value: false,
-    },
-    {
-        full: 'onlydata',
-        description: 'Only assets/data. Don\'t generate project files.',
-        value: false,
-    },
-    {
-        full: 'embedflashassets',
-        description: 'Embed assets in swf for flash target',
-        value: false
-    },
-    {
-        full: 'compile',
-        description: 'Compile executable',
-        value: false
-    },
-    {
-        full: 'run',
-        description: 'Run executable',
-        value: false
-    },
-    {
-        full: 'init',
-        description: 'Init a Kha project inside the current directory',
-        value: false
-    },
-    {
-        full: 'name',
-        description: 'Project name to use when initializing a project',
-        value: true,
-        default: 'Project'
-    },
-    {
-        full: 'server',
-        description: 'Run local http server for html5 target',
-        value: false
-    },
-    {
-        full: 'port',
-        description: 'Running port for the server',
-        value: true,
-        default: 8080
-    },
-    {
-        full: 'debug',
-        description: 'Compile in debug mode for native targets.',
-        value: false
-    },
-    {
-        full: 'silent',
-        description: 'Silent mode.',
-        value: false
-    },
-    {
-        full: 'watch',
-        short: 'w',
-        description: 'Watch files and recompile on change.',
-        value: false
-    },
-    {
-        full: 'glsl2',
-        description: 'Use experimental SPIRV-Cross glsl mode.',
-        value: false
-    },
-    {
-        full: 'shaderversion',
-        description: 'Set target shader version manually.',
-        value: true,
-        default: null
-    },
-    {
-        full: 'parallelAssetConversion',
-        description: 'Experimental - Spawn multiple processes during asset and shader conversion. Possible values:\n  0: disabled (default value)\n -1: choose number of processes automatically\n  N: specify number of processes manually',
-        value: true,
-        default: 0
-    },
-    {
-        full: 'haxe3',
-        description: 'Use the battle tested Haxe 3 compiler instead of the cutting edge not really released yet Haxe 4 compiler',
-        value: false
+const ts_command_line_1 = require("@microsoft/ts-command-line");
+const InitAction_1 = require("./cli/InitAction");
+const ServerAction_1 = require("./cli/ServerAction");
+const Html5Action_1 = require("./cli/Html5Action");
+const KromAction_1 = require("./cli/KromAction");
+const IOSAction_1 = require("./cli/IOSAction");
+const OSXAction_1 = require("./cli/OSXAction");
+const PlayStation3Action_1 = require("./cli/PlayStation3Action");
+const WindowsAction_1 = require("./cli/WindowsAction");
+const WindowsAppAction_1 = require("./cli/WindowsAppAction");
+const AndroidAction_1 = require("./cli/AndroidAction");
+const XBox360Action_1 = require("./cli/XBox360Action");
+const LinuxAction_1 = require("./cli/LinuxAction");
+const Html5WorkerAction_1 = require("./cli/Html5WorkerAction");
+const FlashAction_1 = require("./cli/FlashAction");
+const WPFAction_1 = require("./cli/WPFAction");
+const JavaAction_1 = require("./cli/JavaAction");
+const PlaystationMobileAction_1 = require("./cli/PlaystationMobileAction");
+const TizenAction_1 = require("./cli/TizenAction");
+const UnityAction_1 = require("./cli/UnityAction");
+const NodeAction_1 = require("./cli/NodeAction");
+const DebugHtml5Action_1 = require("./cli/DebugHtml5Action");
+const PiAction_1 = require("./cli/PiAction");
+const TVOSAction_1 = require("./cli/TVOSAction");
+const EmptyAction_1 = require("./cli/EmptyAction");
+class KhamakeCommandLine extends ts_command_line_1.CommandLineParser {
+    constructor() {
+        super({
+            toolFilename: 'khamake',
+            toolDescription: 'Build tool for Kha'
+        });
+        this._populateActions();
     }
-];
-let parsedOptions = new Options_1.Options();
-function printHelp() {
-    console.log('khamake options:\n');
-    for (let option of options) {
-        if (option.hidden)
-            continue;
-        if (option.short)
-            console.log('-' + option.short + ' ' + '--' + option.full);
-        else
-            console.log('--' + option.full);
-        console.log(option.description);
-        console.log();
+    onDefineParameters() {
+        // No parameters
+    }
+    _populateActions() {
+        this.addAction(new InitAction_1.InitAction());
+        this.addAction(new ServerAction_1.ServerAction());
+        this.addAction(new KromAction_1.KromAction());
+        this.addAction(new WindowsAction_1.WindowsAction());
+        this.addAction(new WindowsAppAction_1.WindowsAppAction());
+        this.addAction(new PlayStation3Action_1.PlayStation3Action());
+        this.addAction(new IOSAction_1.iOSAction());
+        this.addAction(new OSXAction_1.OSXAction());
+        this.addAction(new AndroidAction_1.AndroidAction());
+        this.addAction(new XBox360Action_1.XBox360Action());
+        this.addAction(new LinuxAction_1.LinuxAction());
+        this.addAction(new Html5Action_1.Html5Action());
+        this.addAction(new Html5WorkerAction_1.HTML5WorkerAction());
+        this.addAction(new FlashAction_1.FlashAction());
+        this.addAction(new WPFAction_1.WPFAction());
+        this.addAction(new JavaAction_1.JavaAction());
+        this.addAction(new PlaystationMobileAction_1.PlayStationMobileAction());
+        this.addAction(new TizenAction_1.TizenAction());
+        this.addAction(new UnityAction_1.UnityAction());
+        this.addAction(new NodeAction_1.NodeAction());
+        this.addAction(new DebugHtml5Action_1.DebugHTML5Action());
+        this.addAction(new EmptyAction_1.EmptyAction());
+        this.addAction(new PiAction_1.PiAction());
+        this.addAction(new TVOSAction_1.tvOSAction());
     }
 }
-function isTarget(target) {
-    if (target.trim().length < 1)
-        return false;
-    return true;
-}
-for (let option of options) {
-    if (option.value) {
-        parsedOptions[option.full] = option.default;
-    }
-    else {
-        parsedOptions[option.full] = false;
-    }
-}
-let args = process.argv;
-for (let i = 2; i < args.length; ++i) {
-    let arg = args[i];
-    if (arg[0] === '-') {
-        if (arg[1] === '-') {
-            if (arg.substr(2) === 'help') {
-                printHelp();
-                process.exit(0);
-            }
-            for (let option of options) {
-                if (arg.substr(2) === option.full) {
-                    if (option.value) {
-                        ++i;
-                        parsedOptions[option.full] = args[i];
-                    }
-                    else {
-                        parsedOptions[option.full] = true;
-                    }
-                }
-            }
-        }
-        else {
-            if (arg[1] === 'h') {
-                printHelp();
-                process.exit(0);
-            }
-            for (let option of options) {
-                if (option.short && arg[1] === option.short) {
-                    if (option.value) {
-                        ++i;
-                        parsedOptions[option.full] = args[i];
-                    }
-                    else {
-                        parsedOptions[option.full] = true;
-                    }
-                }
-            }
-        }
-    }
-    else {
-        if (isTarget(arg))
-            parsedOptions.target = arg.toLowerCase();
-    }
-}
-if (parsedOptions.run) {
-    parsedOptions.compile = true;
-}
-async function runKhamake() {
-    try {
-        let logInfo = function (text, newline) {
-            if (newline) {
-                console.log(text);
-            }
-            else {
-                process.stdout.write(text);
-            }
-        };
-        let logError = function (text, newline) {
-            if (newline) {
-                console.error(text);
-            }
-            else {
-                process.stderr.write(text);
-            }
-        };
-        await require('./main.js').run(parsedOptions, { info: logInfo, error: logError }, (name) => { });
-    }
-    catch (error) {
-        console.log(error);
-        process.exit(1);
-    }
-}
-if (parsedOptions.init) {
-    console.log('Initializing Kha project.\n');
-    require('./init').run(parsedOptions.name, parsedOptions.from, parsedOptions.projectfile);
-    console.log('If you want to use the git version of Kha, execute "git init" and "git submodule add https://github.com/Kode/Kha.git".');
-}
-else if (parsedOptions.server) {
-    console.log('Running server on ' + parsedOptions.port);
-    let nstatic = require('node-static');
-    let fileServer = new nstatic.Server(path.join(parsedOptions.from, 'build', 'html5'), { cache: 0 });
-    let server = require('http').createServer(function (request, response) {
-        request.addListener('end', function () {
-            fileServer.serve(request, response);
-        }).resume();
-    });
-    server.on('error', function (e) {
-        if (e.code === 'EADDRINUSE') {
-            console.log('Error: Port ' + parsedOptions.port + ' is already in use.');
-            console.log('Please close the competing program (maybe another instance of khamake?)');
-            console.log('or switch to a different port using the --port argument.');
-        }
-    });
-    server.listen(parsedOptions.port);
-}
-else {
-    runKhamake();
-}
+// allow numbers to be used in action names
+ts_command_line_1.CommandLineAction["_actionNameRegExp"] = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const parser = new KhamakeCommandLine();
+parser.execute();
 //# sourceMappingURL=khamake.js.map
