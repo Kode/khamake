@@ -1,3 +1,4 @@
+import { run } from '../init';
 import { CommandLineAction, CommandLineStringParameter } from "@microsoft/ts-command-line";
 
 export class InitAction extends CommandLineAction {
@@ -8,13 +9,15 @@ export class InitAction extends CommandLineAction {
 	public constructor() {
 		super({
 			actionName: 'init',
-			summary: 'Init a Kha project',
-			documentation: 'Init a Kha project inside the current directory'
+			summary: 'Initialize a Kha project',
+			documentation: 'Initialize a Kha project inside the current directory'
 		});
 	}
 
 	protected onExecute(): Promise<void> { // abstract
-		// TODO: actually make it run!
+		console.log('Initializing Kha project.\n');
+		run(this._name.value, this._from.value, this._projectFile.value);
+		console.log('If you want to use the git version of Kha, execute "git init" and "git submodule add https://github.com/Kode/Kha.git".');
 		return Promise.resolve();
 	}
 
