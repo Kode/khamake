@@ -4,7 +4,6 @@ import { VrApi } from '../VrApi';
 import { RayTraceApi } from "../RayTraceApi";
 import { GraphicsApi } from "../GraphicsApi";
 import { AudioApi } from "../AudioApi";
-import { VisualStudioVersion } from "../VisualStudioVersion";
 import { run } from "../main";
 
 export class BuildAction extends CommandLineAction {
@@ -18,7 +17,6 @@ export class BuildAction extends CommandLineAction {
     private _main: CommandLineStringParameter;
     private _graphicsAPI: CommandLineChoiceParameter;
     private _audioAPI: CommandLineChoiceParameter;
-    private _visualStudio: CommandLineChoiceParameter;
     private _kha: CommandLineStringParameter;
     private _haxe: CommandLineStringParameter;
     private _noHaxe: CommandLineFlagParameter;
@@ -53,7 +51,6 @@ export class BuildAction extends CommandLineAction {
         this._options.main = this._main.value;
         this._options.graphics = this._graphicsAPI.value;
         this._options.audio = this._audioAPI.value;
-        this._options.visualstudio = this._visualStudio.value;
         this._options.kha = this._kha.value;
         this._options.haxe = this._haxe.value;
         this._options.nohaxe = this._noHaxe.value;
@@ -171,19 +168,6 @@ export class BuildAction extends CommandLineAction {
                 AudioApi.WASAPI,
             ],
             defaultValue: AudioApi.Default
-        });
-        this._visualStudio = this.defineChoiceParameter({
-            parameterShortName: "-v",
-			parameterLongName: "--visualstudio",
-            description: "Version of Visual Studio to use",
-            alternatives: [
-                VisualStudioVersion.VS2010,
-                VisualStudioVersion.VS2012,
-                VisualStudioVersion.VS2013,
-                VisualStudioVersion.VS2015,
-                VisualStudioVersion.VS2017,
-            ],
-            defaultValue: VisualStudioVersion.VS2017
         });
         this._kha = this.defineStringParameter({
             parameterShortName: "-k",
