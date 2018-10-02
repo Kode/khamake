@@ -2,9 +2,11 @@ import { BuildAction } from './BuildAction';
 import { Platform } from '../Platform';
 import { CommandLineChoiceParameter } from '@microsoft/ts-command-line';
 import { VisualStudioVersion } from '../VisualStudioVersion';
+import { VrApi } from '../VrApi';
 
 export class WPFAction extends BuildAction {
 	private _visualStudio: CommandLineChoiceParameter;
+	private _vrApi: CommandLineChoiceParameter;
 	
 	public constructor() {
 		super({
@@ -22,6 +24,7 @@ export class WPFAction extends BuildAction {
 	}
 
 	protected onDefineParameters(): void { //abstract
+		super.onDefineParameters();
         this._visualStudio = this.defineChoiceParameter({
             parameterShortName: "-v",
 			parameterLongName: "--visualstudio",
@@ -35,7 +38,15 @@ export class WPFAction extends BuildAction {
             ],
             defaultValue: VisualStudioVersion.VS2017
 		});
+        this._vrApi = this.defineChoiceParameter({
+			parameterLongName: "--vr",
+            description: "Target VR device",
+            alternatives: [
+                VrApi.None,
+                VrApi.Oculus,
+            ],
+            defaultValue: VrApi.None
+        });
 		
-		super.onDefineParameters();
 	}
 }

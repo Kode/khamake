@@ -16,12 +16,13 @@ export class XBox360Action extends BuildAction {
 
     protected onExecute(): Promise<void> { // abstract
         this.prepareBaseOptions();
-        this._options.visualstudio = this._visualStudio.value;
         this._options.target = Platform.Xbox360;
+        this._options.visualstudio = this._visualStudio.value;
 		return super.onExecute();
 	}
 
 	protected onDefineParameters(): void { //abstract
+		super.onDefineParameters();
         this._visualStudio = this.defineChoiceParameter({
             parameterShortName: "-v",
 			parameterLongName: "--visualstudio",
@@ -36,6 +37,5 @@ export class XBox360Action extends BuildAction {
             defaultValue: VisualStudioVersion.VS2017
 		});
 		
-		super.onDefineParameters();
 	}
 }

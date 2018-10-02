@@ -15,4 +15,8 @@ export class LinuxAction extends BuildAction {
         this._options.target = Platform.Linux;
 		return super.onExecute();
 	}
+	
+	protected onDefineParameters(): void { //abstract
+		super.onDefineParameters();
+	}
 }

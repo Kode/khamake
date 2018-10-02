@@ -12,7 +12,6 @@ export class BuildAction extends CommandLineAction {
 	private _from: CommandLineStringParameter;
 	private _to: CommandLineStringParameter;
 	private _projectFile: CommandLineStringParameter;
-    private _vrApi: CommandLineChoiceParameter;
     private _rayTraceAPI: CommandLineChoiceParameter;
     private _main: CommandLineStringParameter;
     private _graphicsAPI: CommandLineChoiceParameter;
@@ -46,7 +45,6 @@ export class BuildAction extends CommandLineAction {
         this._options.from = this._from.value;
         this._options.to = this._to.value;
         this._options.projectfile = this._projectFile.value;
-        this._options.vr = this._vrApi.value;
         this._options.raytrace = this._rayTraceAPI.value;
         this._options.main = this._main.value;
         this._options.graphics = this._graphicsAPI.value;
@@ -115,18 +113,6 @@ export class BuildAction extends CommandLineAction {
 			description: "Name of your project file",
 			defaultValue: "khafile.js"
 		});
-        this._vrApi = this.defineChoiceParameter({
-			parameterLongName: "--vr",
-            description: "Target VR device",
-            alternatives: [
-                VrApi.None,
-                VrApi.GearVr,
-                VrApi.Cardboard,
-                VrApi.Oculus,
-                VrApi.WebVR
-            ],
-            defaultValue: VrApi.None
-        });
         this._rayTraceAPI = this.defineChoiceParameter({
 			parameterLongName: "--raytrace",
             description: "Target raytracing API",
