@@ -1,6 +1,5 @@
 import { CommandLineAction, ICommandLineActionOptions, CommandLineChoiceParameter, CommandLineStringParameter, CommandLineFlagParameter, CommandLineIntegerParameter } from "@microsoft/ts-command-line";
 import { Options } from '../Options';
-import { RayTraceApi } from "../RayTraceApi";
 import { GraphicsApi } from "../GraphicsApi";
 import { AudioApi } from "../AudioApi";
 import { run } from "../main";
@@ -120,7 +119,7 @@ export class BuildAction extends CommandLineAction {
             parameterShortName: "-g",
 			parameterLongName: "--graphics",
             description: "Graphics api to use",
-            alternatives: [
+            alternatives: [ // TODO: available graphics depending on the platform
                 GraphicsApi.Default,
                 GraphicsApi.OpenGL,
                 GraphicsApi.OpenGL1,
@@ -136,7 +135,7 @@ export class BuildAction extends CommandLineAction {
             parameterShortName: "-a",
 			parameterLongName: "--audio",
             description: "Audio api to use",
-            alternatives: [
+            alternatives: [ // TODO: available audio depending on the platform
                 AudioApi.Default,
                 AudioApi.DirectSound,
                 AudioApi.WASAPI,
@@ -202,15 +201,15 @@ export class BuildAction extends CommandLineAction {
 			parameterLongName: "--onlydata",
             description: "Only assets/data. Don\'t generate project files",
         });
-        this._compile = this.defineFlagParameter({
+        this._compile = this.defineFlagParameter({ // TODO: only on native platforms
             parameterLongName: "--compile",
             description: "Compile executable",
         });
-        this._run = this.defineFlagParameter({
+        this._run = this.defineFlagParameter({ // TODO: only on native platforms
             parameterLongName: "--run",
             description: "Run executable",
         });
-        this._debug = this.defineFlagParameter({
+        this._debug = this.defineFlagParameter({ // TODO: only on native platforms?
             parameterLongName: "--debug",
             description: "Compile in debug mode",
         });
