@@ -113,7 +113,7 @@ export class BuildAction extends CommandLineAction {
 			defaultValue: "build"
 		});
 		this._projectFile = this.defineStringParameter({
-			argumentName: "PATH",
+			argumentName: "FILENAME",
 			parameterLongName: "--projectfile",
 			description: "Name of your project file",
 			defaultValue: "khafile.js"
