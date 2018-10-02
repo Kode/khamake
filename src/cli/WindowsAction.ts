@@ -4,11 +4,13 @@ import { CommandLineChoiceParameter } from '@microsoft/ts-command-line';
 import { VisualStudioVersion } from '../VisualStudioVersion';
 import { VrApi } from '../VrApi';
 import { RayTraceApi } from '../RayTraceApi';
+import { GraphicsApi } from '../GraphicsApi';
 
 export class WindowsAction extends BuildAction {
 	private _visualStudio: CommandLineChoiceParameter;
 	private _vrApi: CommandLineChoiceParameter;
     private _rayTraceAPI: CommandLineChoiceParameter;
+    private _graphicsAPI: CommandLineChoiceParameter;
 	
 	public constructor() {
 		super({
@@ -24,6 +26,7 @@ export class WindowsAction extends BuildAction {
         this._options.visualstudio = this._visualStudio.value;
         this._options.vr = this._vrApi.value;
         this._options.raytrace = this._rayTraceAPI.value;
+        this._options.graphics = this._graphicsAPI.value;
 		return super.onExecute();
 	}
 
@@ -60,6 +63,20 @@ export class WindowsAction extends BuildAction {
                 RayTraceApi.DXR,
             ],
             defaultValue: RayTraceApi.None
+        });
+        this._graphicsAPI = this.defineChoiceParameter({
+            parameterShortName: "-g",
+			parameterLongName: "--graphics",
+            description: "Graphics api to use",
+            alternatives: [
+                GraphicsApi.Default,
+                GraphicsApi.OpenGL,
+                GraphicsApi.Direct3D9,
+                GraphicsApi.Direct3D11,
+                GraphicsApi.Direct3D12,
+                GraphicsApi.Vulkan,
+            ],
+            defaultValue: GraphicsApi.Default
         });
 	}
 }

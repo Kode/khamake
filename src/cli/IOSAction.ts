@@ -2,9 +2,11 @@ import { BuildAction } from './BuildAction';
 import { Platform } from '../Platform';
 import { CommandLineChoiceParameter } from '@microsoft/ts-command-line';
 import { VrApi } from '../VrApi';
+import { GraphicsApi } from '../GraphicsApi';
 
 export class iOSAction extends BuildAction {
 	private _vrApi: CommandLineChoiceParameter;
+    private _graphicsAPI: CommandLineChoiceParameter;
 	
 	public constructor() {
 		super({
@@ -18,6 +20,7 @@ export class iOSAction extends BuildAction {
         this.prepareBaseOptions();
         this._options.target = Platform.iOS;
         this._options.vr = this._vrApi.value;
+        this._options.graphics = this._graphicsAPI.value;
 		return super.onExecute();
 	}
 	
@@ -31,6 +34,17 @@ export class iOSAction extends BuildAction {
                 VrApi.Cardboard,
             ],
             defaultValue: VrApi.None
+        });
+        this._graphicsAPI = this.defineChoiceParameter({
+            parameterShortName: "-g",
+			parameterLongName: "--graphics",
+            description: "Graphics api to use",
+            alternatives: [
+                GraphicsApi.Default,
+                GraphicsApi.OpenGL,
+                GraphicsApi.Metal,
+            ],
+            defaultValue: GraphicsApi.Default
         });
 	}
 }

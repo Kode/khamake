@@ -11,7 +11,6 @@ export class BuildAction extends CommandLineAction {
 	private _to: CommandLineStringParameter;
 	private _projectFile: CommandLineStringParameter;
     private _main: CommandLineStringParameter;
-    private _graphicsAPI: CommandLineChoiceParameter;
     private _audioAPI: CommandLineChoiceParameter;
     private _kha: CommandLineStringParameter;
     private _haxe: CommandLineStringParameter;
@@ -43,7 +42,6 @@ export class BuildAction extends CommandLineAction {
         this._options.to = this._to.value;
         this._options.projectfile = this._projectFile.value;
         this._options.main = this._main.value;
-        this._options.graphics = this._graphicsAPI.value;
         this._options.audio = this._audioAPI.value;
         this._options.kha = this._kha.value;
         this._options.haxe = this._haxe.value;
@@ -114,22 +112,6 @@ export class BuildAction extends CommandLineAction {
             description: "Entrypoint for the haxe code (-main argument), defaults to \"Main\"",
             argumentName: "CLASS",
             defaultValue: "Main"
-        });
-        this._graphicsAPI = this.defineChoiceParameter({
-            parameterShortName: "-g",
-			parameterLongName: "--graphics",
-            description: "Graphics api to use",
-            alternatives: [ // TODO: available graphics depending on the platform
-                GraphicsApi.Default,
-                GraphicsApi.OpenGL,
-                GraphicsApi.OpenGL1,
-                GraphicsApi.Direct3D9,
-                GraphicsApi.Direct3D11,
-                GraphicsApi.Direct3D12,
-                GraphicsApi.Metal,
-                GraphicsApi.Vulkan,
-            ],
-            defaultValue: GraphicsApi.Default
         });
         this._audioAPI = this.defineChoiceParameter({
             parameterShortName: "-a",
