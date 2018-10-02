@@ -4,7 +4,7 @@ import { Platform } from '../Platform';
 export class DebugHTML5Action extends BuildAction {
 	public constructor() {
 		super({
-			actionName: "debug-html",
+			actionName: Platform.DebugHTML5,
 			summary: 'build for the DebugHTML5 target',
 			documentation: 'build for the DebugHTML5 target'
 		});

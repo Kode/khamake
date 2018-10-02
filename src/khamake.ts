@@ -2,7 +2,7 @@
 // This is where options are processed:
 // e.g. '-t html5 --server'
 
-import { CommandLineParser } from '@microsoft/ts-command-line';
+import { CommandLineParser, CommandLineAction } from '@microsoft/ts-command-line';
 import { InitAction } from './cli/InitAction';
 import { ServerAction } from './cli/ServerAction';
 import { Html5Action } from './cli/Html5Action';
@@ -69,5 +69,7 @@ class KhamakeCommandLine extends CommandLineParser {
 	}
 }
 
+// allow numbers to be used in action names
+CommandLineAction["_actionNameRegExp"] = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const parser: KhamakeCommandLine = new KhamakeCommandLine();
 parser.execute();

@@ -4,7 +4,7 @@ import { Platform } from '../Platform';
 export class HTML5WorkerAction extends BuildAction {
 	public constructor() {
 		super({
-			actionName: "html-worker",
+			actionName: Platform.HTML5Worker,
 			summary: 'build for the HTML5Worker target',
 			documentation: 'build for the HTML5Worker target'
 		});

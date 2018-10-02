@@ -4,9 +4,9 @@ import { Platform } from '../Platform';
 export class Html5Action extends BuildAction {
 	public constructor() {
 		super({
-			actionName: 'html',
-			summary: 'build for the html5 target',
-			documentation: 'build for the html5 target'
+			actionName: Platform.HTML5,
+			summary: 'build for the HTML5 target',
+			documentation: 'build for the HTML5 target'
 		});
 	}
 

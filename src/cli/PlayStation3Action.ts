@@ -4,7 +4,7 @@ import { Platform } from '../Platform';
 export class PlayStation3Action extends BuildAction {
 	public constructor() {
 		super({
-			actionName: "playstation",
+			actionName: Platform.PlayStation3,
 			summary: 'build for the PlayStation3 target',
 			documentation: 'build for the PlayStation3 target'
 		});

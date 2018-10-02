@@ -4,7 +4,7 @@ import { Platform } from '../Platform';
 export class XBox360Action extends BuildAction {
 	public constructor() {
 		super({
-			actionName: "xbox",
+			actionName: Platform.Xbox360,
 			summary: 'build for the Xbox360 target',
 			documentation: 'build for the Xbox360 target'
 		});
