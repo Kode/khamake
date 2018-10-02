@@ -23,8 +23,6 @@ export class BuildAction extends CommandLineAction {
     private _noShaders: CommandLineFlagParameter;
     private _noProject: CommandLineFlagParameter;
     private _onlyData: CommandLineFlagParameter;
-    private _compile: CommandLineFlagParameter;
-    private _run: CommandLineFlagParameter;
     private _debug: CommandLineFlagParameter;
     private _silent: CommandLineFlagParameter;
     private _watch: CommandLineFlagParameter;
@@ -54,8 +52,6 @@ export class BuildAction extends CommandLineAction {
         this._options.noshaders = this._noShaders.value;
         this._options.noproject = this._noProject.value;
         this._options.onlydata = this._onlyData.value;
-        this._options.compile = this._compile.value;
-        this._options.run = this._run.value;
         this._options.debug = this._debug.value;
         this._options.silent = this._silent.value;
         this._options.watch = this._watch.value;
@@ -113,11 +109,12 @@ export class BuildAction extends CommandLineAction {
             argumentName: "CLASS",
             defaultValue: "Main"
         });
+        // TODO: THIS CHOICE IS NEVER USED?
         this._audioAPI = this.defineChoiceParameter({
             parameterShortName: "-a",
 			parameterLongName: "--audio",
             description: "Audio api to use",
-            alternatives: [ // TODO: available audio depending on the platform
+            alternatives: [
                 AudioApi.Default,
                 AudioApi.DirectSound,
                 AudioApi.WASAPI,
@@ -183,15 +180,7 @@ export class BuildAction extends CommandLineAction {
 			parameterLongName: "--onlydata",
             description: "Only assets/data. Don\'t generate project files",
         });
-        this._compile = this.defineFlagParameter({ // TODO: only on native platforms
-            parameterLongName: "--compile",
-            description: "Compile executable",
-        });
-        this._run = this.defineFlagParameter({ // TODO: only on native platforms
-            parameterLongName: "--run",
-            description: "Run executable",
-        });
-        this._debug = this.defineFlagParameter({ // TODO: only on native platforms?
+        this._debug = this.defineFlagParameter({
             parameterLongName: "--debug",
             description: "Compile in debug mode",
         });

@@ -1,6 +1,6 @@
 import { BuildAction } from './BuildAction';
 import { Platform } from '../Platform';
-import { CommandLineChoiceParameter } from '@microsoft/ts-command-line';
+import { CommandLineChoiceParameter, CommandLineFlagParameter } from '@microsoft/ts-command-line';
 import { VisualStudioVersion } from '../VisualStudioVersion';
 import { VrApi } from '../VrApi';
 import { RayTraceApi } from '../RayTraceApi';
@@ -9,6 +9,8 @@ export class WindowsAppAction extends BuildAction {
 	private _visualStudio: CommandLineChoiceParameter;
 	private _vrApi: CommandLineChoiceParameter;
     private _rayTraceAPI: CommandLineChoiceParameter;
+    private _compile: CommandLineFlagParameter;
+    private _run: CommandLineFlagParameter;
 	
 	public constructor() {
 		super({
@@ -24,6 +26,8 @@ export class WindowsAppAction extends BuildAction {
         this._options.visualstudio = this._visualStudio.value;
         this._options.vr = this._vrApi.value;
         this._options.raytrace = this._rayTraceAPI.value;
+        this._options.compile = this._compile.value;
+        this._options.run = this._run.value;
 		return super.onExecute();
 	}
 
@@ -59,6 +63,14 @@ export class WindowsAppAction extends BuildAction {
                 RayTraceApi.DXR,
             ],
             defaultValue: RayTraceApi.None
+        });
+        this._compile = this.defineFlagParameter({
+            parameterLongName: "--compile",
+            description: "Compile executable",
+        });
+        this._run = this.defineFlagParameter({
+            parameterLongName: "--run",
+            description: "Run executable",
         });
 	}
 }

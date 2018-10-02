@@ -1,10 +1,12 @@
 import { BuildAction } from './BuildAction';
 import { Platform } from '../Platform';
-import { CommandLineChoiceParameter } from '@microsoft/ts-command-line';
+import { CommandLineChoiceParameter, CommandLineFlagParameter } from '@microsoft/ts-command-line';
 import { GraphicsApi } from '../GraphicsApi';
 
 export class LinuxAction extends BuildAction {
 	private _graphicsAPI: CommandLineChoiceParameter;
+    private _compile: CommandLineFlagParameter;
+    private _run: CommandLineFlagParameter;
 	
 	public constructor() {
 		super({
@@ -18,6 +20,8 @@ export class LinuxAction extends BuildAction {
         this.prepareBaseOptions();
         this._options.target = Platform.Linux;
         this._options.graphics = this._graphicsAPI.value;
+        this._options.compile = this._compile.value;
+        this._options.run = this._run.value;
 		return super.onExecute();
 	}
 	
@@ -33,6 +37,14 @@ export class LinuxAction extends BuildAction {
                 GraphicsApi.Vulkan,
             ],
             defaultValue: GraphicsApi.Default
+        });
+        this._compile = this.defineFlagParameter({
+            parameterLongName: "--compile",
+            description: "Compile executable",
+        });
+        this._run = this.defineFlagParameter({
+            parameterLongName: "--run",
+            description: "Run executable",
         });
 	}
 }

@@ -1,6 +1,6 @@
 import { BuildAction } from './BuildAction';
 import { Platform } from '../Platform';
-import { CommandLineChoiceParameter } from '@microsoft/ts-command-line';
+import { CommandLineChoiceParameter, CommandLineFlagParameter } from '@microsoft/ts-command-line';
 import { VisualStudioVersion } from '../VisualStudioVersion';
 import { VrApi } from '../VrApi';
 import { RayTraceApi } from '../RayTraceApi';
@@ -11,6 +11,8 @@ export class WindowsAction extends BuildAction {
 	private _vrApi: CommandLineChoiceParameter;
     private _rayTraceAPI: CommandLineChoiceParameter;
     private _graphicsAPI: CommandLineChoiceParameter;
+    private _compile: CommandLineFlagParameter;
+    private _run: CommandLineFlagParameter;
 	
 	public constructor() {
 		super({
@@ -27,6 +29,8 @@ export class WindowsAction extends BuildAction {
         this._options.vr = this._vrApi.value;
         this._options.raytrace = this._rayTraceAPI.value;
         this._options.graphics = this._graphicsAPI.value;
+        this._options.compile = this._compile.value;
+        this._options.run = this._run.value;
 		return super.onExecute();
 	}
 
@@ -77,6 +81,14 @@ export class WindowsAction extends BuildAction {
                 GraphicsApi.Vulkan,
             ],
             defaultValue: GraphicsApi.Default
+        });
+        this._compile = this.defineFlagParameter({
+            parameterLongName: "--compile",
+            description: "Compile executable",
+        });
+        this._run = this.defineFlagParameter({
+            parameterLongName: "--run",
+            description: "Run executable",
         });
 	}
 }
