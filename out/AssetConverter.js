@@ -62,8 +62,10 @@ class AssetConverter {
             const onFileChange = (file) => {
                 let fileinfo = path.parse(file);
                 let outPath = fileinfo.dir + '/' + fileinfo.name;
-                outPath = outPath.replace(options.nameBaseDir + '/', '');
-                log.info('Reexporting ' + fileinfo.base);
+                var regexp = new RegExp('.*/' + options.nameBaseDir + '/', 'g');
+                outPath = outPath.replace(regexp, '');
+                outPath = outPath.normalize();
+                log.info('Reexporting ' + outPath + fileinfo.ext);
                 switch (fileinfo.ext) {
                     case '.png':
                     case '.jpg':
