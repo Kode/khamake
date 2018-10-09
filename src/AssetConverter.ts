@@ -79,8 +79,8 @@ export class AssetConverter {
 			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.git/, persistent: watch });
 
 			const onFileChange = (file: string) => {
-				let fileinfo = path.parse(file);
-				var baseDir = path.dirname(match);
+				const fileinfo = path.parse(file);
+				const baseDir = path.dirname(match);
 				let outPath = fileinfo.dir + path.sep + fileinfo.name;
 				outPath = path.relative(baseDir, outPath);
 				log.info('Reexporting ' + outPath + fileinfo.ext);
