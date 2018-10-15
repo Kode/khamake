@@ -60,10 +60,11 @@ class AssetConverter {
             let files = [];
             this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.git/, persistent: watch });
             const onFileChange = (file) => {
-                let fileinfo = path.parse(file);
-                let outPath = fileinfo.dir + '/' + fileinfo.name;
-                outPath = outPath.replace(options.nameBaseDir + '/', '');
-                log.info('Reexporting ' + fileinfo.base);
+                const fileinfo = path.parse(file);
+                const baseDir = path.dirname(match);
+                let outPath = fileinfo.dir + path.sep + fileinfo.name;
+                outPath = path.relative(baseDir, outPath);
+                log.info('Reexporting ' + outPath + fileinfo.ext);
                 switch (fileinfo.ext) {
                     case '.png':
                     case '.jpg':
