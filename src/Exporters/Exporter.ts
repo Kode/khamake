@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 export class Exporter {
 	out: number;
@@ -19,7 +18,7 @@ export class Exporter {
 	p(line: string = '', indent: number = 0) {
 		let tabs = '';
 		for (let i = 0; i < indent; ++i) tabs += '\t';
-		let data = new Buffer(tabs + line + '\n');
+		let data = Buffer.from(tabs + line + '\n');
 		fs.writeSync(this.out, data, 0, data.length, null);
 	}
 
