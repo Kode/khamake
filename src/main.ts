@@ -210,6 +210,22 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 	}
 }
 
+function checkKorePlatform(platform: string) {
+	return platform === 'windows'
+		|| platform === 'windowsapp'
+		|| platform === 'ios'
+		|| platform === 'osx'
+		|| platform === 'android'
+		|| platform === 'linux'
+		|| platform === 'html5'
+		|| platform === 'tizen'
+		|| platform === 'pi'
+		|| platform === 'tvos'
+		|| platform === 'ps4'
+		|| platform === 'xboxone'
+		|| platform === 'switch';
+}
+
 function koreplatform(platform: string) {
 	// 'android-native' becomes 'android'
 	if (platform.endsWith('-native')) return platform.substr(0, platform.length - '-native'.length);
@@ -299,12 +315,20 @@ async function exportKhaProject(options: Options): Promise<string> {
 			if (target.endsWith('-hl')) {
 				korehl = true;
 				options.target = koreplatform(target);
+				if (!checkKorePlatform(options.target)) {
+					log.error('Unknown platform: ' + options.target);
+					return Promise.reject();
+				}
 				exporter = new KoreHLExporter(options);
 			}
 			else {
 				kore = true;
 				// If target is 'android-native' then options.target becomes 'android'
 				options.target = koreplatform(target);
+				if (!checkKorePlatform(options.target)) {
+					log.error('Unknown platform: ' + options.target);
+					return Promise.reject();
+				}
 				exporter = new KoreExporter(options);
 			}
 			break;
