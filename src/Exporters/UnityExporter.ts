@@ -11,7 +11,6 @@ const uuid = require('uuid');
 export class UnityExporter extends KhaExporter {
 	constructor(options: Options) {
 		super(options);
-		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
 	}
 
 	backend(): string {
@@ -19,6 +18,11 @@ export class UnityExporter extends KhaExporter {
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
+		const sources = path.join(this.options.to, this.sysdir(), 'Assets', 'Sources');
+		if (fs.existsSync(sources)) {
+			fs.removeSync(sources);
+		}
+
 		defines.push('no-root');
 		defines.push('no-compilation');
 

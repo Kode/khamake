@@ -9,12 +9,15 @@ const uuid = require('uuid');
 class UnityExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        fs.removeSync(path.join(this.options.to, this.sysdir(), 'Assets', 'Sources'));
     }
     backend() {
         return 'Unity';
     }
     haxeOptions(name, targetOptions, defines) {
+        const sources = path.join(this.options.to, this.sysdir(), 'Assets', 'Sources');
+        if (fs.existsSync(sources)) {
+            fs.removeSync(sources);
+        }
         defines.push('no-root');
         defines.push('no-compilation');
         defines.push('sys_' + this.options.target);

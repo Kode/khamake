@@ -9,6 +9,10 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
         super(options);
     }
     haxeOptions(name, targetOptions, defines) {
+        const sources = path.join(this.options.to, this.sysdir(), 'Sources');
+        if (fs.existsSync(sources)) {
+            fs.removeSync(sources);
+        }
         defines.push('no-compilation');
         defines.push('sys_' + this.options.target);
         defines.push('sys_g1');
@@ -39,10 +43,6 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
         };
     }
     async export(name, targetOptions, haxeOptions) {
-        const sources = path.join(this.options.to, this.sysdir(), 'Sources');
-        if (fs.existsSync(sources)) {
-            fs.removeSync(sources);
-        }
         fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
         this.exportEclipseProject();
     }

@@ -13,6 +13,11 @@ export class JavaExporter extends KhaExporter {
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
+		const sources = path.join(this.options.to, this.sysdir(), 'Sources');
+		if (fs.existsSync(sources)) {
+			fs.removeSync(sources);
+		}
+		
 		defines.push('no-compilation');
 
 		defines.push('sys_' + this.options.target);
@@ -47,10 +52,6 @@ export class JavaExporter extends KhaExporter {
 	}
 
 	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
-		const sources = path.join(this.options.to, this.sysdir(), 'Sources');
-		if (fs.existsSync(sources)) {
-			fs.removeSync(sources);
-		}
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 		this.exportEclipseProject();
 	}
