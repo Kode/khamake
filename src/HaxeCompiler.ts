@@ -60,7 +60,7 @@ export class HaxeCompiler {
 				await this.compile();
 			}
 			catch (error) {
-				return Promise.reject();
+				return Promise.reject(error);
 			}
 		}
 		return Promise.resolve();

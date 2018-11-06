@@ -207,7 +207,7 @@ class ShaderCompiler {
                     catch (error) {
                         log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
                         log.error(error);
-                        return Promise.reject();
+                        return Promise.reject(error);
                     }
                     if (compiledShader === null) {
                         compiledShader = new CompiledShader();

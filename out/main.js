@@ -103,7 +103,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 await compiler.run(options.watch);
             }
             catch (error) {
-                return Promise.reject();
+                return Promise.reject(error);
             }
         }
         for (let callback of ProjectFile_1.Callbacks.postHaxeCompilation) {
@@ -285,7 +285,7 @@ async function exportKhaProject(options) {
                 options.target = koreplatform(target);
                 if (!checkKorePlatform(options.target)) {
                     log.error('Unknown platform: ' + options.target);
-                    return Promise.reject();
+                    return Promise.reject('');
                 }
                 exporter = new KoreHLExporter_1.KoreHLExporter(options);
             }
@@ -295,7 +295,7 @@ async function exportKhaProject(options) {
                 options.target = koreplatform(target);
                 if (!checkKorePlatform(options.target)) {
                     log.error('Unknown platform: ' + options.target);
-                    return Promise.reject();
+                    return Promise.reject('');
                 }
                 exporter = new KoreExporter_1.KoreExporter(options);
             }
@@ -371,7 +371,7 @@ async function exportKhaProject(options) {
             exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
         }
         catch (err) {
-            return Promise.reject();
+            return Promise.reject(err);
         }
     }
     if (target === Platform_1.Platform.Unity) {

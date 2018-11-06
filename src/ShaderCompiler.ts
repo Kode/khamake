@@ -221,7 +221,7 @@ export class ShaderCompiler {
 			this.watcher.on('ready', async () => {
 				ready = true;
 				let compiledShaders: CompiledShader[] = [];
-				
+
 				const self = this;
 				async function compile(shader: any, index: number) {
 					let parsed = path.parse(shader);
@@ -233,7 +233,7 @@ export class ShaderCompiler {
 					catch (error) {
 						log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
 						log.error(error);
-						return Promise.reject();
+						return Promise.reject(error);
 					}
 					if (compiledShader === null) {
 						compiledShader = new CompiledShader();
@@ -360,9 +360,9 @@ export class ShaderCompiler {
 							parameters[1] = path.resolve(parameters[1]);
 							parameters[2] = path.resolve(parameters[2]);
 							parameters[3] = path.resolve(parameters[3]);
-							
+
 							let child = child_process.spawn(this.compiler, parameters);
-							
+
 							child.stdout.on('data', (data: any) => {
 								log.info(data.toString());
 							});
