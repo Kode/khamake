@@ -223,7 +223,7 @@ export class ShaderCompiler {
 				let compiledShaders: CompiledShader[] = [];
 				
 				const self = this;
-				async function compile( shader: any, index: number ) {
+				async function compile(shader: any, index: number) {
 					let parsed = path.parse(shader);
 					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
 					let compiledShader: CompiledShader = null;
@@ -233,6 +233,7 @@ export class ShaderCompiler {
 					catch (error) {
 						log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
 						log.error(error);
+						return Promise.reject();
 					}
 					if (compiledShader === null) {
 						compiledShader = new CompiledShader();
@@ -270,7 +271,13 @@ export class ShaderCompiler {
 				else {
 					let index = 0;
 					for (let shader of shaders) {
-						await compile(shader, index);
+						try {
+							await compile(shader, index);
+						}
+						catch (err) {
+							reject();
+							return;
+						}
 						index += 1;
 					}
 				}
@@ -284,12 +291,7 @@ export class ShaderCompiler {
 	async run(watch: boolean, recompileAll: boolean): Promise<CompiledShader[]> {
 		let shaders: CompiledShader[] = [];
 		for (let matcher of this.shaderMatchers) {
-			try {
-				shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options, recompileAll));
-			}
-			catch (error) {
-
-			}
+			shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options, recompileAll));
 		}
 		return shaders;
 	}

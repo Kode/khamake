@@ -339,7 +339,12 @@ async function exportKhaProject(options) {
         }
         let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, buildDir, options, project.shaderMatchers);
         lastShaderCompiler = shaderCompiler;
-        exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
+        try {
+            exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
+        }
+        catch (err) {
+            return Promise.reject();
+        }
     }
     if (target === Platform_1.Platform.Unity) {
         fs.ensureDirSync(path.join(options.to, exporter.sysdir() + '-resources'));
@@ -547,7 +552,13 @@ async function run(options, loglog) {
     if (!options.theora && options.ffmpeg) {
         options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
     }
-    let name = await exportProject(options);
+    let name = '';
+    try {
+        name = await exportProject(options);
+    }
+    catch (err) {
+        process.exit(1);
+    }
     if (options.target === Platform_1.Platform.Linux && options.run) {
         await runProject(options);
     }

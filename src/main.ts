@@ -386,7 +386,12 @@ async function exportKhaProject(options: Options): Promise<string> {
 		let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp,
 		buildDir, options, project.shaderMatchers);
 		lastShaderCompiler = shaderCompiler;
-		exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
+		try {
+			exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
+		}
+		catch (err) {
+			return Promise.reject();
+		}
 	}
 
 	if (target === Platform.Unity) {
@@ -621,7 +626,13 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 
-	let name = await exportProject(options);
+	let name = '';
+	try {
+		name = await exportProject(options);
+	}
+	catch (err) {
+		process.exit(1);
+	}
 
 	if (options.target === Platform.Linux && options.run) {
 		await runProject(options);
