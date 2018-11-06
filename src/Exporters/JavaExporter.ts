@@ -10,7 +10,6 @@ import {Library} from '../Project';
 export class JavaExporter extends KhaExporter {
 	constructor(options: Options) {
 		super(options);
-		fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
@@ -48,6 +47,10 @@ export class JavaExporter extends KhaExporter {
 	}
 
 	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+		const sources = path.join(this.options.to, this.sysdir(), 'Sources');
+		if (fs.existsSync(sources)) {
+			fs.removeSync(sources);
+		}
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 		this.exportEclipseProject();
 	}

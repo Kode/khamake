@@ -7,7 +7,6 @@ const ImageTool_1 = require("../ImageTool");
 class JavaExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        fs.removeSync(path.join(this.options.to, this.sysdir(), 'Sources'));
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('no-compilation');
@@ -40,6 +39,10 @@ class JavaExporter extends KhaExporter_1.KhaExporter {
         };
     }
     async export(name, targetOptions, haxeOptions) {
+        const sources = path.join(this.options.to, this.sysdir(), 'Sources');
+        if (fs.existsSync(sources)) {
+            fs.removeSync(sources);
+        }
         fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
         this.exportEclipseProject();
     }
