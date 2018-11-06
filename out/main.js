@@ -321,7 +321,9 @@ async function exportKhaProject(options) {
     }
     exporter.parameters = exporter.parameters.concat(project.parameters);
     project.scriptdir = options.kha;
-    project.addShaders('Sources/Shaders/**', {});
+    if (baseTarget !== Platform_1.Platform.Java && baseTarget !== Platform_1.Platform.WPF) {
+        project.addShaders('Sources/Shaders/**', {});
+    }
     for (let callback of ProjectFile_1.Callbacks.preAssetConversion) {
         callback();
     }
