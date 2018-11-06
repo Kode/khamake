@@ -225,6 +225,7 @@ class ShaderCompiler {
                     compiledShader.name = AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, self.exporter.options.from).name;
                     compiledShaders.push(compiledShader);
                     ++index;
+                    return Promise.resolve();
                 }
                 if (this.options.parallelAssetConversion !== 0) {
                     let todo = shaders.map((shader, index) => {

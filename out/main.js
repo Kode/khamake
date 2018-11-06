@@ -99,7 +99,12 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         if (!options.nohaxe) {
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir());
             lastHaxeCompiler = compiler;
-            await compiler.run(options.watch);
+            try {
+                await compiler.run(options.watch);
+            }
+            catch (error) {
+                return Promise.reject();
+            }
         }
         for (let callback of ProjectFile_1.Callbacks.postHaxeCompilation) {
             callback();

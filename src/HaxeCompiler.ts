@@ -60,9 +60,10 @@ export class HaxeCompiler {
 				await this.compile();
 			}
 			catch (error) {
-
+				return Promise.reject();
 			}
 		}
+		return Promise.resolve();
 	}
 
 	scheduleCompile() {
@@ -102,6 +103,19 @@ export class HaxeCompiler {
 		return haxe;
 	}
 
+	runHaxeAgainAndWait(parameters: string[]): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			this.runHaxeAgain(parameters, (code, signal) => {
+				if (code === 0) {
+					resolve();
+				}
+				else {
+					reject();
+				}
+			});
+		});
+	}
+
 	static cleanHxml(hxml: string): string {
 		let params: string[] = [];
 		let ignoreNext = false;
@@ -118,7 +132,7 @@ export class HaxeCompiler {
 		if (fs.existsSync(path.join(this.resourceDir, 'workers.txt'))) {
 			fs.unlinkSync(path.join(this.resourceDir, 'workers.txt'));
 		}
-		let haxe = this.runHaxeAgain(parameters, (code: number, signal: string) => {
+		let haxe = this.runHaxeAgain(parameters, async (code: number, signal: string) => {
 			if (fs.existsSync(path.join(this.resourceDir, 'workers.txt'))) {
 				let hxml = fs.readFileSync(path.join(this.from, parameters[0]), {encoding: 'utf8'});
 				let workers = fs.readFileSync(path.join(this.resourceDir, 'workers.txt'), {encoding: 'utf8'});
@@ -131,12 +145,13 @@ export class HaxeCompiler {
 					newhxml += '-js ' + path.join(this.sysdir, line.trim()) + '.js\n';
 					newhxml += '-D kha_in_worker\n';
 					fs.writeFileSync(path.join(this.from, 'temp.hxml'), newhxml, {encoding: 'utf8'});
-					this.runHaxeAgain(['temp.hxml'], (code2: number, signal2: string) => {
-
-					});
+					await this.runHaxeAgainAndWait(['temp.hxml']);
 				}
+				onClose(code, signal);
 			}
-			onClose(code, signal);
+			else {
+				onClose(code, signal);
+			}
 		});
 
 		return haxe;
@@ -189,7 +204,8 @@ export class HaxeCompiler {
 				}
 				else {
 					process.exitCode = 1;
-					reject('Haxe compiler error.');
+					log.error('Haxe compiler error.');
+					reject();
 				}
 			});
 		});
