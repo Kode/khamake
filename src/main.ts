@@ -118,7 +118,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				await compiler.run(options.watch);
 			}
 			catch (error) {
-				return Promise.reject();
+				return Promise.reject(error);
 			}
 		}
 		for (let callback of Callbacks.postHaxeCompilation) {
@@ -317,7 +317,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 				options.target = koreplatform(target);
 				if (!checkKorePlatform(options.target)) {
 					log.error('Unknown platform: ' + options.target);
-					return Promise.reject();
+					return Promise.reject('');
 				}
 				exporter = new KoreHLExporter(options);
 			}
@@ -327,7 +327,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 				options.target = koreplatform(target);
 				if (!checkKorePlatform(options.target)) {
 					log.error('Unknown platform: ' + options.target);
-					return Promise.reject();
+					return Promise.reject('');
 				}
 				exporter = new KoreExporter(options);
 			}
@@ -421,7 +421,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 			exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
 		}
 		catch (err) {
-			return Promise.reject();
+			return Promise.reject(err);
 		}
 	}
 
