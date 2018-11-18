@@ -69,8 +69,8 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
         }
         out += 'project.targetOptions = ' + JSON.stringify(koreTargetOptions) + ';\n';
     }
-    out += 'project.setDebugDir(\'' + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + '\');\n';
-    let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
+    out += 'project.setDebugDir(\'' + path.relative(options.to, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + '\');\n';
+    let buildpath = path.relative(options.to, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
     out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
@@ -117,14 +117,14 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         // If target is a Kore project, generate additional project folders here.
         // generate the korefile.js
         fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
-        fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, false));
+        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, false));
         // Similar to khamake.js -> main.js -> run(...)
         // We now do koremake.js -> main.js -> run(...)
         // This will create additional project folders for the target,
         // e.g. 'build/android-native-build'
         try {
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
-                from: options.from,
+                from: options.to,
                 to: buildDir,
                 target: koreplatform(options.target),
                 graphics: options.graphics,
@@ -154,10 +154,10 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
     else if (options.haxe !== '' && korehl && !options.noproject) {
         fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
         fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
-        fs.writeFileSync(path.join(options.from, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, korehl));
+        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, korehl));
         try {
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
-                from: options.from,
+                from: options.to,
                 to: buildDir,
                 target: koreplatform(options.target),
                 graphics: options.graphics,
