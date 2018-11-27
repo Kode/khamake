@@ -81,7 +81,12 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     for (let lib of libraries) {
         let libPath = lib.libroot;
         out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
-        out += '\tawait project.addProject(path.join(\'..\', \'' + libPath.replace(/\\/g, '/') + '\'));\n';
+        if (path.isAbsolute(libPath)) {
+            out += '\tawait project.addProject(\'' + libPath.replace(/\\/g, '/') + '\');\n';
+        }
+        else {
+            out += '\tawait project.addProject(path.join(\'..\', \'' + libPath.replace(/\\/g, '/') + '\'));\n';
+        }
         out += '}\n';
     }
     out += 'resolve(project);\n';
