@@ -85,11 +85,16 @@ export class KoreExporter extends KhaExporter {
 	async copySound(platform: string, from: string, to: string, options: any) {
 		if (options.quality < 1) {
 			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-			let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
 			return [to + '.ogg'];
 		}
 		else {
-			fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+			if (from.endsWith('.wav')) {
+				fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+			}
+			else {
+				throw 'Can not convert ' + from + ' to wav format.';
+			}
 			return [to + '.wav'];
 		}
 	}
