@@ -29,6 +29,7 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "promise-parallel-throttle": "^3.1.0"
+    "promise-parallel-throttle": "^3.1.0",
+    "typescript": "^3.1.6"
   }
 }
