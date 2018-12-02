@@ -313,8 +313,10 @@ export class ShaderCompiler {
 
 			fs.stat(from, (fromErr: NodeJS.ErrnoException, fromStats: fs.Stats) => {
 				fs.stat(to, (toErr: NodeJS.ErrnoException, toStats: fs.Stats) => {
-					if (options.noprocessing && (!toStats || toStats.mtime.getTime() < fromStats.mtime.getTime())) {
-						fs.copySync(from, to, { overwrite: true });
+					if (options.noprocessing) {
+						if (!toStats || toStats.mtime.getTime() < fromStats.mtime.getTime()) {
+							fs.copySync(from, to, { overwrite: true });
+						}
 						resolve(new CompiledShader());
 						return;
 					}
