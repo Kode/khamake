@@ -236,6 +236,7 @@ function checkKorePlatform(platform: string) {
 function koreplatform(platform: string) {
 	// 'android-native' becomes 'android'
 	if (platform.endsWith('-native')) return platform.substr(0, platform.length - '-native'.length);
+	else if (platform.endsWith('-native-hl')) return platform.substr(0, platform.length - '-native-hl'.length);
 	else if (platform.endsWith('-hl')) return platform.substr(0, platform.length - '-hl'.length);
 	else return platform;
 }
