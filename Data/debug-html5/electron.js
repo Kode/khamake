@@ -9,7 +9,7 @@ var mainWindow = null;
 electron.ipcMain.on('asynchronous-message', (event, arg) => {
 	if (arg.width && arg.height) mainWindow.setContentSize(arg.width, arg.height);
 	if (arg.title) mainWindow.setTitle(arg.title);
-	if (arg.x && arg.y) {
+	if (arg.x != -1 && arg.y != -1) {
 		mainWindow.setPosition(arg.x, arg.y);
 	} else {
 		mainWindow.center();
