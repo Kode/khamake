@@ -45,6 +45,7 @@ export class Project {
 	assetMatchers: { match: string, options: any }[];
 	shaderMatchers: { match: string, options: any }[];
 	customTargets: Map<string, Target>;
+	stackSize: number;
 
 	constructor(name: string) {
 		this.name = name;
@@ -58,6 +59,7 @@ export class Project {
 		this.assetMatchers = [];
 		this.shaderMatchers = [];
 		this.customTargets = new Map();
+		this.stackSize = 0;
 
 		this.windowOptions = {};
 		this.targetOptions = {

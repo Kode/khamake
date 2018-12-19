@@ -37,6 +37,7 @@ class Project {
         this.assetMatchers = [];
         this.shaderMatchers = [];
         this.customTargets = new Map();
+        this.stackSize = 0;
         this.windowOptions = {};
         this.targetOptions = {
             html5: {},
