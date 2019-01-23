@@ -69,8 +69,8 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
         }
         out += 'project.targetOptions = ' + JSON.stringify(koreTargetOptions) + ';\n';
     }
-    out += 'project.setDebugDir(\'' + path.relative(options.from, path.join(options.to, exporter.sysdir())).replace(/\\/g, '/') + '\');\n';
-    let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
+    out += 'project.setDebugDir(\'' + path.relative(options.from, exporter.sysdir()).replace(/\\/g, '/') + '\');\n';
+    let buildpath = path.relative(options.from, exporter.sysdir() + '-build').replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
     out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
@@ -135,7 +135,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
                 from: options.from,
                 to: buildDir,
-                korefile: 'build/korefile.js',
+                korefile: `${buildDir}/korefile.js`,
                 target: koreplatform(options.target),
                 graphics: options.graphics,
                 audio: options.audio,
