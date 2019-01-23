@@ -1,4 +1,4 @@
-let project = new Project('HaxeCrossCode', __dirname);
+let project = new Project('HaxeCpp');
 if (platform === Platform.WindowsApp) {
 	project.addFiles('Sources/**.h', 'Sources/**.cpp');
 }
