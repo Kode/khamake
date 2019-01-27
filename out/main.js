@@ -45,7 +45,8 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     out += 'let fs = require(\'fs\');\n';
     out += 'let path = require(\'path\');\n';
     out += 'let project = new Project(\'' + name + '\');\n';
-    out += 'project.icon = \'' + icon + '\';\n';
+    if (icon != null)
+        out += 'project.icon = \'' + icon + '\';\n';
     for (let cdefine of cdefines) {
         out += 'project.addDefine(\'' + cdefine + '\');\n';
     }
