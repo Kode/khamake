@@ -26,6 +26,7 @@ function contains(main, sub) {
 }
 class Project {
     constructor(name) {
+        this.icon = null;
         this.name = name;
         this.sources = [];
         this.defines = [];
