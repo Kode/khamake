@@ -152,7 +152,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			{
 				from: options.from,
 				to: buildDir,
-				korefile: 'build/korefile.js',
+				korefile: path.join(options.to, 'korefile.js'),
 				target: koreplatform(options.target),
 				graphics: options.graphics,
 				audio: options.audio,
@@ -189,7 +189,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			{
 				from: options.from,
 				to: buildDir,
-				korefile: 'build/korefile.js',
+				korefile: path.join(options.to, 'korefile.js'),
 				target: koreplatform(options.target),
 				graphics: options.graphics,
 				vrApi: options.vr,
