@@ -13,7 +13,6 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         return 'Krom';
     }
     haxeOptions(name, targetOptions, defines) {
-        defines.push('js-classic');
         defines.push('sys_' + this.options.target);
         defines.push('sys_g1');
         defines.push('sys_g2');
@@ -31,7 +30,10 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         defines.push('kha_g4');
         defines.push('kha_a1');
         defines.push('kha_a2');
-        this.parameters.push('-debug');
+        if (this.options.debug) {
+            this.parameters.push('-debug');
+            defines.push('js-classic');
+        }
         return {
             from: this.options.from.toString(),
             to: path.join(this.sysdir(), 'krom.js.temp'),
