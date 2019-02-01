@@ -33,6 +33,7 @@ export class Project {
 	static platform: string;
 	static scriptdir: string;
 	name: string;
+	version: string;
 	sources: string[];
 	defines: string[];
 	cdefines: string[];
@@ -49,6 +50,7 @@ export class Project {
 
 	constructor(name: string) {
 		this.name = name;
+		this.version = '1.0';
 		this.sources = [];
 		this.defines = [];
 		this.cdefines = [];
