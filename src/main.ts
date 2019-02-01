@@ -7,12 +7,14 @@ import {sys} from './exec';
 import * as korepath from './korepath';
 import * as log from './log';
 import {Options} from './Options';
+import {KhabindOptions} from './KhabindOptions';
 import {Platform} from './Platform';
 import {Project, Target, Library} from './Project';
 import {loadProject, Callbacks} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
 import {HaxeCompiler} from './HaxeCompiler';
+import {executeHaxe} from './Haxe';
 import {ShaderCompiler, CompiledShader} from './ShaderCompiler';
 import {KhaExporter} from './Exporters/KhaExporter';
 import {AndroidExporter} from './Exporters/AndroidExporter';
@@ -250,6 +252,92 @@ function koreplatform(platform: string) {
 	else if (platform.endsWith('-native-hl')) return platform.substr(0, platform.length - '-native-hl'.length);
 	else if (platform.endsWith('-hl')) return platform.substr(0, platform.length - '-hl'.length);
 	else return platform;
+}
+
+async function generateBindings(lib:Library, bindOpts:KhabindOptions, options:Options) {
+	log.info(`Generating bindings for: ${lib.libroot}`);
+	// Call Haxe macro to generate Haxe JS/HL bindings
+	await executeHaxe(lib.libroot, options.haxe, [
+		'-cp', path.resolve(options.kha, 'Sources'),
+		'--macro', 'kha.internal.WebIdlBinder.generate()',
+	]);
+
+	log.info('Generated Haxe bindings');
+
+	// Compile C++ to Javascript library
+	let emsdk = process.env.EMSCRIPTEN;
+	if (emsdk == undefined) {
+		let msg = 'EMSCRIPTEN environment variable not set cannot compile C++ library for Javascript';
+		log.error(msg);
+		throw msg;
+	}
+	let emcc = path.join(emsdk, 'emcc');
+	let sourcesDir = path.resolve(lib.libroot, bindOpts.sourcesDir);
+
+	// Variables used in function
+	let fileExt:string;
+	let filename:string;
+	let baseFilepath:string;
+	let sourceFile:string;
+	let sourceModTime:number;
+	let targetFile:string;
+	let targetModTime:number;
+	let targetFiles:Array<string> = [];
+	let invalidateCache:boolean;
+	let needsLink:boolean = false;
+	function compileSources(dir:string) {
+		for (let item of fs.readdirSync(dir)) {
+			if (fs.statSync(path.resolve(dir, item)).isDirectory()) {
+				compileSources(path.resolve(dir, item));
+
+			} else if (item.endsWith('.cpp') || item.endsWith('.c')) {
+				invalidateCache = false;
+				fileExt = path.extname(item);
+				filename = item.substr(0, item.length - fileExt.length);
+				baseFilepath = path.resolve(dir, filename);
+				sourceFile = baseFilepath + fileExt;
+				targetFile = baseFilepath + '.bc';
+				targetFiles.push(path.relative(lib.libroot, targetFile));
+
+				if (fs.existsSync(targetFile)) {
+					sourceModTime = fs.statSync(sourceFile).mtime.getTime();
+					targetModTime = fs.statSync(targetFile).mtime.getTime();
+					if (sourceModTime > targetModTime) invalidateCache = true; needsLink = true;
+				} else {
+					invalidateCache = true;
+					needsLink = true;
+				}
+
+				if(invalidateCache) {
+					log.info(`Compiling ${sourceFile}`);
+					let cp = child_process.spawnSync(emcc, [`-I${sourcesDir}`, sourceFile, '-o', targetFile]);
+					if (cp.stderr.toString() != "") {
+						log.error(cp.stderr.toString());
+					}
+				}
+			}
+		}
+	}
+
+	log.info('Compiling C++ Lib to Javascript');
+	if (fs.existsSync(sourcesDir) && fs.statSync(sourcesDir).isDirectory()) {
+
+		compileSources(sourcesDir);
+
+		if (needsLink) {
+			log.info('Linking Javascript');
+			let cp = child_process.spawnSync(emcc, [...targetFiles, '-o', `${bindOpts.nativeLib}.js`], {cwd:lib.libroot});
+			if (cp.stderr.toString() != "") {
+				log.error(cp.stderr.toString());
+			}
+		}
+	} else {
+		let msg = 'C++ lib Sources directory doesn\'t exist';
+		log.error(msg);
+		throw msg;
+	}
+
+	log.info(`Done generating bindings for: ${lib.libroot}`);
 }
 
 async function exportKhaProject(options: Options): Promise<string> {
@@ -546,6 +634,15 @@ async function exportKhaProject(options: Options): Promise<string> {
 
 	if (foundProjectFile) {
 		fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
+	}
+
+	// Generate bindings for any khabind libraries
+	for (let lib of project.libraries) {
+		if (fs.existsSync(path.join(lib.libroot, "khabind.json"))) {
+			let bindOptions:KhabindOptions = JSON.parse(fs.readFileSync(path.join(lib.libroot, "khabind.json"), 'utf-8'));
+
+			await generateBindings(lib, bindOptions, options);
+		}
 	}
 
 	for (let callback of Callbacks.preHaxeCompilation) {
