@@ -445,6 +445,8 @@ async function exportKhaProject(options) {
         files.push(file);
     }
     for (let shader of exportedShaders) {
+        if (shader.noembed)
+            continue;
         let oldShader = findShader(shader.name);
         files.push({
             name: fixName(shader.name),
