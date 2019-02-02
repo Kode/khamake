@@ -1,7 +1,9 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as os from 'os';
+import * as util from 'util';
 import * as path from 'path';
+import * as Throttle from 'promise-parallel-throttle';
 
 import {sys} from './exec';
 import * as korepath from './korepath';
@@ -32,6 +34,7 @@ import {PlayStationMobileExporter} from './Exporters/PlayStationMobileExporter';
 import {WpfExporter} from './Exporters/WpfExporter';
 import {UnityExporter} from './Exporters/UnityExporter';
 import {writeHaxeProject} from './HaxeProject';
+import { rejects } from 'assert';
 
 let lastAssetConverter: AssetConverter;
 let lastShaderCompiler: ShaderCompiler;
@@ -257,12 +260,12 @@ function koreplatform(platform: string) {
 async function generateBindings(lib:Library, bindOpts:KhabindOptions, options:Options) {
 	log.info(`Generating bindings for: ${lib.libroot}`);
 	// Call Haxe macro to generate Haxe JS/HL bindings
+	// TODO: This is the longest step for a cached build. Maybe we can omit the
+	// Haxe call when we don't need to update the bindings.
 	await executeHaxe(lib.libroot, options.haxe, [
 		'-cp', path.resolve(options.kha, 'Sources'),
 		'--macro', 'kha.internal.WebIdlBinder.generate()',
 	]);
-
-	log.info('Generated Haxe bindings');
 
 	// Compile C++ to Javascript library
 	let emsdk = process.env.EMSCRIPTEN;
@@ -273,69 +276,101 @@ async function generateBindings(lib:Library, bindOpts:KhabindOptions, options:Op
 	}
 	let emcc = path.join(emsdk, 'emcc');
 	let sourcesDir = path.resolve(lib.libroot, bindOpts.sourcesDir);
-
-	// Variables used in function
-	let fileExt:string;
-	let filename:string;
-	let baseFilepath:string;
-	let sourceFile:string;
-	let sourceModTime:number;
-	let targetFile:string;
-	let targetModTime:number;
+	let sourceFiles:Array<string> = [];
 	let targetFiles:Array<string> = [];
-	let invalidateCache:boolean;
-	let needsLink:boolean = false;
-	function compileSources(dir:string) {
+	let invalidateCache = false;
+
+	// Search sources
+	function addSources(dir:string) {
+		if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) return;
 		for (let item of fs.readdirSync(dir)) {
 			if (fs.statSync(path.resolve(dir, item)).isDirectory()) {
-				compileSources(path.resolve(dir, item));
+				addSources(path.resolve(dir, item));
 
 			} else if (item.endsWith('.cpp') || item.endsWith('.c')) {
-				invalidateCache = false;
-				fileExt = path.extname(item);
-				filename = item.substr(0, item.length - fileExt.length);
-				baseFilepath = path.resolve(dir, filename);
-				sourceFile = baseFilepath + fileExt;
-				targetFile = baseFilepath + '.bc';
-				targetFiles.push(path.relative(lib.libroot, targetFile));
+				sourceFiles.push(path.resolve(dir, item));
+			}
+		}
+	}
 
-				if (fs.existsSync(targetFile)) {
-					sourceModTime = fs.statSync(sourceFile).mtime.getTime();
-					targetModTime = fs.statSync(targetFile).mtime.getTime();
-					if (sourceModTime > targetModTime) invalidateCache = true; needsLink = true;
-				} else {
-					invalidateCache = true;
-					needsLink = true;
-				}
+	addSources(sourcesDir);
+	addSources(path.resolve(lib.libroot, 'khabind'));
 
-				if(invalidateCache) {
-					log.info(`Compiling ${sourceFile}`);
-					let cp = child_process.spawnSync(emcc, [`-I${sourcesDir}`, sourceFile, '-o', targetFile]);
-					if (cp.stderr.toString() != "") {
-						log.error(cp.stderr.toString());
+	function compileSource(file:string) {
+		return new Promise<void>(async (resolve, reject:(err:string)=>void) => {
+			let needsRecompile = false;
+			// TODO: Put bytecode in its own folder so we don't clutter the sources
+			let targetFile = file.substr(0, file.length - path.extname(file).length) + ".bc";
+			targetFiles.push(targetFile);
+
+			if (await fs.pathExists(targetFile)) {
+				if ((await fs.stat(file)).mtime.getTime() > (await fs.stat(targetFile)).mtime.getTime()) {
+					needsRecompile = invalidateCache = true;
+				}  
+			} else { needsRecompile = invalidateCache = true;}
+
+			if (needsRecompile) {
+				log.info(`    Compiling ${path.relative(lib.libroot, file)}`);
+				let stderr = "";
+				let run = child_process.spawn(
+					emcc, ['-O2', `-I${sourcesDir}`, '-c', file, '-o', targetFile],
+					{cwd: lib.libroot}
+				);
+
+				run.stderr.on('data', function (data: any) {
+					stderr += data.toString();
+				});
+
+				run.on('close', function (code: number) {
+					if (stderr != "") {
+						reject(stderr);
+					} else {
+						resolve();
 					}
-				}
+				});
+			} else {
+				resolve();
 			}
+		});
+	}
+
+	let jobs = sourceFiles.map(file => () => compileSource(file));
+
+	// Compile sources
+	await Throttle.all(jobs, {
+		maxInProgress: os.cpus().length,
+		failFast: true
+	}).catch(err => {
+		log.info(err);
+	});
+
+	if (invalidateCache || !fs.existsSync(path.join(lib.libroot, 'khabind', bindOpts.nativeLib + '.js'))) {
+		log.info('    Linking Javascript Library');
+		let output = child_process.spawnSync(emcc, 
+			[
+				'-O2', ...targetFiles,
+				'-s', 'EXPORT_NAME=' + bindOpts.nativeLib, '--memory-init-file', '0',
+				'-o', path.join('khabind', bindOpts.nativeLib) + '.js',
+				'-s', 'WASM=1', '-s', 'SINGLE_FILE=1' 
+			],
+			{cwd:lib.libroot}
+		);
+		if (output.stderr.toString() !== '') {
+			log.error(output.stderr.toString());
+		}
+		if (output.stdout.toString() !== '') {
+			log.info(output.stdout.toString());
 		}
 	}
 
-	log.info('Compiling C++ Lib to Javascript');
-	if (fs.existsSync(sourcesDir) && fs.statSync(sourcesDir).isDirectory()) {
-
-		compileSources(sourcesDir);
-
-		if (needsLink) {
-			log.info('Linking Javascript');
-			let cp = child_process.spawnSync(emcc, [...targetFiles, '-o', `${bindOpts.nativeLib}.js`], {cwd:lib.libroot});
-			if (cp.stderr.toString() != "") {
-				log.error(cp.stderr.toString());
-			}
-		}
-	} else {
-		let msg = 'C++ lib Sources directory doesn\'t exist';
-		log.error(msg);
-		throw msg;
-	}
+	// Create a Korefile for HL/C builds of the library
+	var korefile = path.resolve(lib.libroot, 'korefile.js');
+	var content = `let project = new Project('${path.basename(lib.libroot)}', __dirname);\n`;
+	content += `project.addFile('${bindOpts.sourcesDir}/**');\n`;
+	content += `project.addIncludeDir('${bindOpts.sourcesDir}');\n`;
+	content += `project.addFile('khabind/${bindOpts.nativeLib}.cpp');\n`;
+	content += 'resolve(project);\n';
+	fs.writeFile(korefile, content);
 
 	log.info(`Done generating bindings for: ${lib.libroot}`);
 }
