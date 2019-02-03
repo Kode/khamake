@@ -5,4 +5,6 @@ export class KhabindOptions {
     chopPrefix: string;
     autoGC: boolean;
     includes: Array<string>;
+    emccOptimizationLevel: string;
+    emccArgs: Array<string>;
 }
