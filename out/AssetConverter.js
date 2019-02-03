@@ -6,6 +6,9 @@ const log = require("./log");
 const chokidar = require("chokidar");
 const crypto = require("crypto");
 const Throttle = require("promise-parallel-throttle");
+class Asset {
+}
+exports.Asset = Asset;
 class AssetConverter {
     constructor(exporter, options, assetMatchers) {
         this.exporter = exporter;

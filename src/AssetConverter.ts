@@ -7,6 +7,16 @@ import * as crypto from 'crypto';
 import * as Throttle from 'promise-parallel-throttle';
 import { Options } from './Options';
 
+export class Asset {
+	name: string;
+	from: string;
+	type: string;
+	files: string[];
+	original_width: number;
+	original_height: number;
+	readable: boolean;
+}
+
 export class AssetConverter {
 	options: Options;
 	exporter: KhaExporter;
@@ -261,8 +271,8 @@ export class AssetConverter {
 		});
 	}
 
-	async run(watch: boolean, temp: string): Promise<{ name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[]> {
-		let files: { name: string, from: string, type: string, files: string[], original_width: number, original_height: number, readable: boolean }[] = [];
+	async run(watch: boolean, temp: string): Promise<Asset[]> {
+		let files:Asset[] = [];
 		for (let matcher of this.assetMatchers) {
 			files = files.concat(await this.watch(watch, matcher.match, temp, matcher.options));
 		}
