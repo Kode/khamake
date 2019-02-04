@@ -8,6 +8,7 @@ export class Options {
 	main: string;
 	// intermediate: string;
 	graphics: string;
+	arch: string;
 	audio: string;
 	visualstudio: string;
 	kha: string;
