@@ -8,17 +8,39 @@ const Throttle = require("promise-parallel-throttle");
 const log = require("./log");
 const Haxe_1 = require("./Haxe");
 async function generateBindings(lib, bindOpts, options, project) {
+    if (options.target != 'krom' && !options.target.endsWith('html5') && !options.target.endsWith('-hl')) {
+        log.info(`WARNING: Cannot bind library "${path.basename(lib.libroot)}" to Haxe for target ${options.target}.`);
+        return;
+    }
     log.info(`Generating bindings for: ${path.basename(lib.libroot)}`);
     let webidlSourcePath = path.resolve(options.kha, 'Tools', 'webidl');
-    // Call Haxe macro to generate Haxe JS/HL bindings
-    // TODO: This is the longest step for a cached build. Maybe we can omit the
-    // Haxe call when we don't need to update the bindings.
-    await Haxe_1.executeHaxe(lib.libroot, options.haxe, [
-        '-cp', path.resolve(options.kha, 'Sources'),
-        '-cp', webidlSourcePath,
-        '--macro', 'kha.internal.WebIdlBinder.generate()',
-    ]);
-    // Add webidl library to sources
+    // Evaluate file modified times to determine what needs to be recompiled
+    let recompileAll = false;
+    let rebuildBindings = false;
+    let khabindFile = path.resolve(lib.libroot, 'khabind.json');
+    let webidlFile = path.resolve(lib.libroot, bindOpts.idlFile);
+    let jsLibrary = path.resolve(lib.libroot, 'khabind', bindOpts.nativeLib + '.js');
+    if (fs.existsSync(jsLibrary)) {
+        if (fs.statSync(khabindFile).mtime > fs.statSync(jsLibrary).mtime) {
+            recompileAll = true; // khabind.json file has been updated, recompile everything
+        }
+        else if (fs.statSync(webidlFile).mtime > fs.statSync(jsLibrary).mtime) {
+            rebuildBindings = true; // webidl bindings have been update, recompile bindings
+        }
+    }
+    else {
+        rebuildBindings = true;
+    }
+    // Genreate HL/JS Haxe bindings
+    if (recompileAll || rebuildBindings) {
+        // Call Haxe macro to generate bindings
+        await Haxe_1.executeHaxe(lib.libroot, options.haxe, [
+            '-cp', path.resolve(options.kha, 'Sources'),
+            '-cp', webidlSourcePath,
+            '--macro', 'kha.internal.WebIdlBinder.generate()',
+        ]);
+    }
+    // Add webidl library to project sources
     if (project.sources.indexOf(webidlSourcePath) == -1)
         project.sources.push(webidlSourcePath);
     // Create a Korefile for HL/C builds of the library
@@ -29,8 +51,8 @@ async function generateBindings(lib, bindOpts, options, project) {
     content += `project.addFile('khabind/${bindOpts.nativeLib}.cpp');\n`;
     content += 'resolve(project);\n';
     fs.writeFile(korefile, content);
-    if (options.target == 'krom' || options.target == 'html5') {
-        // Compile C++ to Javascript library
+    // Compile C++ library to JavaScript for Krom/HTML5
+    if (options.target == 'krom' || options.target.endsWith('html5')) {
         let emsdk = "";
         let emcc = "";
         function ensureEmscripten() {
@@ -49,7 +71,7 @@ async function generateBindings(lib, bindOpts, options, project) {
         let sourceFiles = [];
         let targetFiles = [];
         let invalidateCache = false;
-        // Search sources
+        // Source scan helper function
         function addSources(dir) {
             if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory())
                 return;
@@ -62,16 +84,21 @@ async function generateBindings(lib, bindOpts, options, project) {
                 }
             }
         }
+        // Search source dirs for C/C++ files
         addSources(sourcesDir);
         addSources(path.resolve(lib.libroot, 'khabind'));
+        // Compiler helper function
         function compileSource(file) {
             return new Promise(async (resolve, reject) => {
                 let needsRecompile = false;
-                // TODO: Put bytecode in its own folder so we don't clutter the sources
-                let targetFile = file.substr(0, file.length - path.extname(file).length) + ".bc";
+                let relativeSource = path.relative(lib.libroot, file);
+                let relativeTargetFile = relativeSource.substr(0, file.length - path.extname(file).length) + ".bc";
+                let targetFile = path.resolve(lib.libroot, 'khabind', 'bytecode', relativeTargetFile);
+                fs.ensureDirSync(path.dirname(targetFile));
                 targetFiles.push(targetFile);
+                // Check file modifications times to determine whether to recompile source file
                 if (await fs.pathExists(targetFile)) {
-                    if ((await fs.stat(file)).mtime.getTime() > (await fs.stat(targetFile)).mtime.getTime()) {
+                    if (recompileAll || (await fs.stat(file)).mtime.getTime() > (await fs.stat(targetFile)).mtime.getTime()) {
                         ensureEmscripten();
                         needsRecompile = invalidateCache = true;
                     }
@@ -80,6 +107,7 @@ async function generateBindings(lib, bindOpts, options, project) {
                     ensureEmscripten();
                     needsRecompile = invalidateCache = true;
                 }
+                // Compile source file using Emscripten
                 if (needsRecompile) {
                     log.info(`    Compiling ${path.relative(lib.libroot, file)}`);
                     let stderr = "";
@@ -101,8 +129,8 @@ async function generateBindings(lib, bindOpts, options, project) {
                 }
             });
         }
+        // Run compiler jobs
         let jobs = sourceFiles.map(file => () => compileSource(file));
-        // Compile sources
         await Throttle.all(jobs, {
             maxInProgress: os.cpus().length,
             failFast: true
@@ -127,9 +155,9 @@ async function generateBindings(lib, bindOpts, options, project) {
                 log.info(output.stdout.toString());
             }
         }
-        // Add JavaScript library to assets list
+        // Add JavaScript library to project asset list
         project.addAssets(path.resolve(lib.libroot, 'khabind', bindOpts.nativeLib + '.js'), { name: '_khabind_' + bindOpts.nativeLib + '_js' });
-    } // If (options.target == 'krom' || options.target == 'html5')
+    } // if (options.target == 'krom' || options.target.endsWith('html5'))
     log.info(`Done generating bindings for: ${lib.libroot}`);
 }
 exports.generateBindings = generateBindings;
