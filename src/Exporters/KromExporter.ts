@@ -20,8 +20,6 @@ export class KromExporter extends KhaExporter {
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
-		defines.push('js-classic');
-
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
@@ -41,7 +39,10 @@ export class KromExporter extends KhaExporter {
 		defines.push('kha_a1');
 		defines.push('kha_a2');
 
-		this.parameters.push('-debug');
+		if (this.options.debug) {
+			this.parameters.push('-debug');
+			defines.push('js-classic');
+		}
 		
 		return {
 			from: this.options.from.toString(),

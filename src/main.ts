@@ -510,6 +510,13 @@ async function exportKhaProject(options: Options): Promise<string> {
 		});
 	}
 
+	// Sort to prevent files.json from changing between makes when no files have changed.
+	files.sort(function(a: any, b: any) {
+		if(a.name > b.name) return 1;
+		if(a.name < b.name) return -1;
+		return 0;
+	});
+
 	function secondPass() {
 		// First pass is for main project files. Second pass is for shaders.
 		// Will try to look for the folder, e.g. 'build/Shaders'.

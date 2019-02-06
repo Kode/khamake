@@ -197,7 +197,7 @@ let options: Array<any> = [
 	},
 	{
 		full: 'debug',
-		description: 'Compile in debug mode for native targets.',
+		description: 'Compile in debug mode.',
 		value: false
 	},
 	{
