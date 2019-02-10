@@ -162,13 +162,12 @@ async function generateBindings(lib, bindOpts, options, project) {
             }
         }
         // Add JavaScript library to project asset list
-        // project.addAssets(
-        // 	path.resolve(lib.libroot, 'khabind', bindOpts.nativeLib + '.js'),
-        // 	{name: '_khabind_' + bindOpts.nativeLib + '_js'}
-        // );
-        project.khabindJsLibs.push(path.resolve(lib.libroot, 'khabind', bindOpts.nativeLib + '.js'));
+        project.khabindLibs.push({
+            lib: lib,
+            options: bindOpts
+        });
     } // if (options.target == 'krom' || options.target.endsWith('html5'))
     log.info(`Done generating bindings for: ${path.basename(lib.libroot)}`);
 }
 exports.generateBindings = generateBindings;
-//# sourceMappingURL=WebidlBinder.js.map
+//# sourceMappingURL=Khabind.js.map

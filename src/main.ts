@@ -9,14 +9,13 @@ import {sys} from './exec';
 import * as korepath from './korepath';
 import * as log from './log';
 import {Options} from './Options';
-import {KhabindOptions} from './KhabindOptions';
 import {Platform} from './Platform';
 import {Project, Target, Library} from './Project';
 import {loadProject, Callbacks} from './ProjectFile';
 import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
 import {HaxeCompiler} from './HaxeCompiler';
-import {generateBindings} from './WebidlBinder';
+import {generateBindings, KhabindOptions} from './Khabind';
 import {ShaderCompiler, CompiledShader} from './ShaderCompiler';
 import {KhaExporter} from './Exporters/KhaExporter';
 import {AndroidExporter} from './Exporters/AndroidExporter';
@@ -35,6 +34,7 @@ import {WpfExporter} from './Exporters/WpfExporter';
 import {UnityExporter} from './Exporters/UnityExporter';
 import {writeHaxeProject} from './HaxeProject';
 import { rejects } from 'assert';
+import { stringify } from 'querystring';
 
 let lastAssetConverter: AssetConverter;
 let lastShaderCompiler: ShaderCompiler;
@@ -53,20 +53,20 @@ function safeName(name: string): string {
 	return name.replace(/[\\\/]/g, '_');
 }
 
-function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[], stackSize: number, version: string, id: string, korehl: boolean, icon: string): string {
+function createKorefile(name: string, exporter: KhaExporter, options: any, id: string, korehl: boolean, icon: string, project: Project): string {
 	let out = '';
 	out += 'let fs = require(\'fs\');\n';
 	out += 'let path = require(\'path\');\n';
 	out += 'let project = new Project(\'' + name + '\');\n';
-	if (version) {
-		out += 'project.version = \'' + version + '\';\n';
+	if (icon != null) out += 'project.icon = \'' + icon + '\';\n';
+	if (project.version) {
+		out += 'project.version = \'' + project.version + '\';\n';
 	}
 	if (id) {
 		out += 'project.id = \'' + id + '\';\n';
 	}
-	if (icon != null) out += 'project.icon = \'' + icon + '\';\n';
 
-	for (let cdefine of cdefines) {
+	for (let cdefine of project.cdefines) {
 		out += 'project.addDefine(\'' + cdefine + '\');\n';
 	}
 
@@ -79,15 +79,15 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 
 	out += 'project.addDefine(\'HXCPP_DEBUG\', \'Debug\');\n';
 
-	if (targetOptions) {
+	if (project.targetOptions) {
 		let koreTargetOptions: any = {};
-		for (let option in targetOptions) {
+		for (let option in project.targetOptions) {
 			if (option.endsWith('_native')) continue;
-			koreTargetOptions[option] = targetOptions[option];
+			koreTargetOptions[option] = project.targetOptions[option];
 		}
-		for (let option in targetOptions) {
+		for (let option in project.targetOptions) {
 			if (option.endsWith('_native')) {
-				koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
+				koreTargetOptions[option.substr(0, option.length - '_native'.length)] = project.targetOptions[option];
 			}
 		}
 		out += 'project.targetOptions = ' + JSON.stringify(koreTargetOptions) + ';\n';
@@ -101,14 +101,14 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 	if (korehl) out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\');\n';
 	else out += 'await project.addProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\');\n';
 
-	for (let lib of libraries) {
+	for (let lib of project.libraries) {
 		let libPath: string = lib.libroot;
 		out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
 		out += '\tawait project.addProject(\'' + libPath.replace(/\\/g, '/') + '\');\n';
 		out += '}\n';
 	}
-	if (stackSize) {
-		out += 'project.stackSize = ' + stackSize + ';\n';
+	if (project.stackSize) {
+		out += 'project.stackSize = ' + project.stackSize + ';\n';
 	}
 	out += 'resolve(project);\n';
 
@@ -116,9 +116,9 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 }
 
 async function exportProjectFiles(name: string, resourceDir: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, icon: string,
-	libraries: Library[], targetOptions: any, defines: string[], cdefines: string[], stackSize: number, version: string, id: string): Promise<string> {
+	project:Project, id: string): Promise<string> {
 	if (options.haxe !== '') {
-		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
+		let haxeOptions = exporter.haxeOptions(name, project.targetOptions, project.defines);
 		haxeOptions.defines.push('kha');
 		haxeOptions.defines.push('kha_version=1810');
 		haxeOptions.defines.push('kha_project_name=' + haxeOptions.name);
@@ -139,21 +139,40 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			catch (error) {
 				return Promise.reject(error);
 			}
+
+			// Add any khabind JS libs to the outputed JavaScript
+			if ((options.target == 'krom' || options.target.endsWith('html5')) && project.khabindLibs.length != 0) {
+				let toFile = haxeOptions.realto ? haxeOptions.realto : haxeOptions.to;
+				let targetFile = path.resolve(options.to, toFile);
+				let origFile = path.resolve(path.dirname(targetFile), path.basename(targetFile) + '.orig');
+
+				fs.moveSync(targetFile, origFile);
+
+				for (let lib of project.khabindLibs) {
+					fs.appendFileSync(
+						targetFile, 
+						fs.readFileSync(path.resolve(lib.lib.libpath, 'khabind', lib.options.nativeLib + ".js"))
+					);
+				}
+
+				fs.appendFileSync(targetFile, fs.readFileSync(origFile));
+				fs.removeSync(origFile);
+			}
 		}
 		for (let callback of Callbacks.postHaxeCompilation) {
 			callback();
 		}
 
-		await exporter.export(name, targetOptions, haxeOptions);
+		await exporter.export(name, project.targetOptions, haxeOptions);
 	}
 
 	let buildDir = path.join(options.to, exporter.sysdir() + '-build');
 
 	if (options.haxe !== '' && kore && !options.noproject) {
 		// If target is a Kore project, generate additional project folders here.
-		// generate the kincfile.js
+		// generate the korefile.js
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, id, false, icon));
+		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, id, false, icon, project));
 
 		// Similar to khamake.js -> main.js -> run(...)
 		// We now do kincmake.js -> main.js -> run(...)
@@ -195,7 +214,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 	else if (options.haxe !== '' && korehl && !options.noproject) {
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, id, korehl, icon));
+		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, id, korehl, icon, project));
 
 		try {
 			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
@@ -558,9 +577,15 @@ async function exportKhaProject(options: Options): Promise<string> {
 		}*/
 	}
 
+	let resourceDir = path.join(options.to, exporter.sysdir() + '-resources');
+
 	if (foundProjectFile) {
-		fs.outputFileSync(path.join(options.to, exporter.sysdir() + '-resources', 'files.json'), JSON.stringify({ files: files }, null, '\t'));
+		fs.outputFileSync(path.resolve(resourceDir, 'files.json'), JSON.stringify({ files: files }, null, '\t'));
 	}
+
+	// Write out list of Khabind Libs
+	let khabindLibsFile = path.resolve(resourceDir, 'khabindLibs.json');
+	fs.writeJsonSync(khabindLibsFile, project.khabindLibs);
 
 	for (let callback of Callbacks.preHaxeCompilation) {
 		callback();
@@ -582,8 +607,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		return project.name;
 	}
 	else {
-		return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.icon,
-			project.libraries, project.targetOptions, project.defines, project.cdefines, project.stackSize, project.version, project.id);
+		return await exportProjectFiles(project.name, resourceDir, options, exporter, kore, korehl, project.icon, project, project.id);
 	}
 }
 

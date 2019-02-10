@@ -7,12 +7,27 @@ import * as Throttle from 'promise-parallel-throttle';
 import * as log from './log';
 import { executeHaxe } from './Haxe';
 import { Library, Project } from './Project';
-import { KhabindOptions } from './KhabindOptions';
 import { Options } from './Options';
+
+export class KhabindOptions {
+    idlFile: string;
+    nativeLib: string;
+    sourcesDir: string;
+    chopPrefix: string;
+    autoGC: boolean;
+    includes: Array<string>;
+    emccOptimizationLevel: string;
+    emccArgs: Array<string>;
+}
+
+export class KhabindLib {
+	lib:Library;
+	options:KhabindOptions;
+}
 
 export async function generateBindings(lib:Library, bindOpts:KhabindOptions, options:Options, project:Project) {
     if (options.target != 'krom' && !options.target.endsWith('html5') && !options.target.endsWith('-hl')) {
-        log.info(`WARNING: Cannot bind library "${path.basename(lib.libroot)}" to Haxe for target ${options.target}.`);
+        log.info(`WARNING: Auto-binding library "${path.basename(lib.libroot)}" to Haxe for target ${options.target} is not supported.`);
         return;
     }
 
@@ -153,9 +168,9 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 			ensureEmscripten();
 			let args = [
 				optimizationArg,
-				'-s', 'EXPORT_NAME=' + bindOpts.nativeLib,
+				'-s', 'EXPORT_NAME=' + bindOpts.nativeLib, '-s', 'MODULARIZE=1',
 				'-o', path.join('khabind', bindOpts.nativeLib) + '.js',
-				...bindOpts.emccArgs.reduce((a, b) => {return a + ' ' + b}).split(" "), // Remove spaces from emccArgs
+				...bindOpts.emccArgs.reduce((a, b) => {return a + ' ' + b}).split(" "), // Remove spaces and split emccArgs
 			];
 			let output = child_process.spawnSync(emcc, 
 				[...targetFiles, ...args],
@@ -170,11 +185,11 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 		}
 
 		// Add JavaScript library to project asset list
-		project.addAssets(
-			path.resolve(lib.libroot, 'khabind', bindOpts.nativeLib + '.js'),
-			{name: '_khabind_' + bindOpts.nativeLib + '_js'}
-		);
+		project.khabindLibs.push({
+			lib: lib,
+			options: bindOpts
+		});
 	} // if (options.target == 'krom' || options.target.endsWith('html5'))
 
-	log.info(`Done generating bindings for: ${lib.libroot}`);
+	log.info(`Done generating bindings for: ${path.basename(lib.libroot)}`);
 }

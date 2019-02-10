@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as log from './log';
 import {loadProject} from './ProjectFile';
+import {KhabindLib} from './Khabind';
 
 export class Library {
 	libpath: string;
@@ -40,6 +41,7 @@ export class Project {
 	parameters: string[];
 	scriptdir: string;
 	libraries: Library[];
+	khabindLibs: KhabindLib[];
 	localLibraryPath: string;
 	windowOptions: any;
 	targetOptions: any;
@@ -59,6 +61,7 @@ export class Project {
 		this.parameters = [];
 		this.scriptdir = Project.scriptdir;
 		this.libraries = [];
+		this.khabindLibs = [];
 		this.localLibraryPath = 'Libraries';
 		this.assetMatchers = [];
 		this.shaderMatchers = [];
@@ -238,9 +241,9 @@ export class Project {
 			}
 			else {
 				// If there is no haxelib.json file, then just load the library
-				// by the Sources folder.
-				// e.g. Libraries/wyngine/Sources
-				if (!fs.existsSync(path.join(dir, 'Sources'))) {
+				// by the Sources folder. ( e.g. Libraries/wyngine/Sources ) If
+				// there is a khabind.json file, the Sources will be generated.
+				if (!fs.existsSync(path.join(dir, 'Sources')) && !fs.existsSync(path.join(dir, 'khabind.json'))) {
 					log.info('Warning: No haxelib.json and no Sources directory found in library ' + library + '.');
 				}
 				this.sources.push(path.join(dir, 'Sources'));
