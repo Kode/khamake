@@ -1,18 +1,14 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as util from 'util';
 import * as path from 'path';
-import * as Throttle from 'promise-parallel-throttle';
 
 import {sys} from './exec';
 import * as korepath from './korepath';
 import * as log from './log';
 import {Options} from './Options';
 import {Platform} from './Platform';
-import {Project, Target, Library} from './Project';
+import {Project, Target} from './Project';
 import {loadProject, Callbacks} from './ProjectFile';
-import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter} from './AssetConverter';
 import {HaxeCompiler} from './HaxeCompiler';
 import {generateBindings, KhabindOptions} from './Khabind';
@@ -33,8 +29,6 @@ import {PlayStationMobileExporter} from './Exporters/PlayStationMobileExporter';
 import {WpfExporter} from './Exporters/WpfExporter';
 import {UnityExporter} from './Exporters/UnityExporter';
 import {writeHaxeProject} from './HaxeProject';
-import { rejects } from 'assert';
-import { stringify } from 'querystring';
 
 let lastAssetConverter: AssetConverter;
 let lastShaderCompiler: ShaderCompiler;
