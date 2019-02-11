@@ -25,8 +25,8 @@ export class KhabindLib {
 	options:KhabindOptions;
 }
 
-export async function generateBindings(lib:Library, bindOpts:KhabindOptions, options:Options, project:Project) {
-    if (options.target != 'krom' && !options.target.endsWith('html5') && !options.target.endsWith('-hl')) {
+export async function generateBindings(lib:Library, bindOpts:KhabindOptions, options:Options, project:Project, korehl:boolean) {
+    if (options.target != 'krom' && !options.target.endsWith('html5') && !korehl) {
         log.info(`WARNING: Auto-binding library "${path.basename(lib.libroot)}" to Haxe for target ${options.target} is not supported.`);
         return;
     }

@@ -382,7 +382,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		if (fs.existsSync(path.join(lib.libroot, "khabind.json"))) {
 			let bindOptions:KhabindOptions = JSON.parse(fs.readFileSync(path.join(lib.libroot, "khabind.json"), 'utf-8'));
 
-			await generateBindings(lib, bindOptions, options, project);
+			await generateBindings(lib, bindOptions, options, project, korehl);
 		}
 	}
 

@@ -342,7 +342,7 @@ async function exportKhaProject(options) {
     for (let lib of project.libraries) {
         if (fs.existsSync(path.join(lib.libroot, "khabind.json"))) {
             let bindOptions = JSON.parse(fs.readFileSync(path.join(lib.libroot, "khabind.json"), 'utf-8'));
-            await Khabind_1.generateBindings(lib, bindOptions, options, project);
+            await Khabind_1.generateBindings(lib, bindOptions, options, project, korehl);
         }
     }
     let defaultWindowOptions = {
