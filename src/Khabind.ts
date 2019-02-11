@@ -168,7 +168,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 			ensureEmscripten();
 			let args = [
 				optimizationArg,
-				'-s', 'EXPORT_NAME=' + bindOpts.nativeLib, '-s', 'MODULARIZE=1',
+				'-s', 'EXPORT_NAME=' + bindOpts.nativeLib, '-s', 'MODULARIZE=1', '-s', 'SINGLE_FILE=1', '-s', 'WASM=0',
 				'-o', path.join('khabind', bindOpts.nativeLib) + '.js',
 				...bindOpts.emccArgs.reduce((a, b) => {return a + ' ' + b}).split(" "), // Remove spaces and split emccArgs
 			];
