@@ -56,6 +56,7 @@ class Project {
         this.defines = this.defines.concat(project.defines);
         this.cdefines = this.cdefines.concat(project.cdefines);
         this.parameters = this.parameters.concat(project.parameters);
+        this.libraries = this.libraries.concat(project.libraries);
         for (let customTarget of project.customTargets.keys()) {
             this.customTargets.set(customTarget, project.customTargets.get(customTarget));
         }
