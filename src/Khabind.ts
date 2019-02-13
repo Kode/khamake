@@ -52,11 +52,11 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 
     // Genreate HL/JS Haxe bindings
     if (recompileAll || rebuildBindings) {
-        // Call Haxe macro to generate bindings
+		// Call Haxe macro to generate bindings
         await executeHaxe(lib.libroot, options.haxe, [
             '-cp', path.resolve(options.kha, 'Sources'),
             '-cp', webidlSourcePath,
-            '--macro', 'kha.internal.WebIdlBinder.generate()',
+            '--macro', `kha.internal.WebIdlBinder.generate(${recompileAll})`,
         ]);
     }
 
@@ -169,9 +169,10 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 			let args = [
 				optimizationArg,
 				'-s', 'EXPORT_NAME=' + bindOpts.nativeLib, '-s', 'MODULARIZE=1', '-s', 'SINGLE_FILE=1', '-s', 'WASM=0',
-				'-o', path.join('khabind', bindOpts.nativeLib) + '.js',
 				...bindOpts.emccArgs.reduce((a, b) => {return a + ' ' + b}).split(" "), // Remove spaces and split emccArgs
+				'-o', path.join('khabind', bindOpts.nativeLib) + '.js'
 			];
+			log.info('    running emcc: emcc ' + args.join(' '));
 			let output = child_process.spawnSync(emcc, 
 				[...targetFiles, ...args],
 				{cwd:lib.libroot}

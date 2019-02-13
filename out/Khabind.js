@@ -43,7 +43,7 @@ async function generateBindings(lib, bindOpts, options, project, korehl) {
         await Haxe_1.executeHaxe(lib.libroot, options.haxe, [
             '-cp', path.resolve(options.kha, 'Sources'),
             '-cp', webidlSourcePath,
-            '--macro', 'kha.internal.WebIdlBinder.generate()',
+            '--macro', `kha.internal.WebIdlBinder.generate(${recompileAll})`,
         ]);
     }
     // Add webidl library to project sources
@@ -150,9 +150,10 @@ async function generateBindings(lib, bindOpts, options, project, korehl) {
             let args = [
                 optimizationArg,
                 '-s', 'EXPORT_NAME=' + bindOpts.nativeLib, '-s', 'MODULARIZE=1', '-s', 'SINGLE_FILE=1', '-s', 'WASM=0',
-                '-o', path.join('khabind', bindOpts.nativeLib) + '.js',
                 ...bindOpts.emccArgs.reduce((a, b) => { return a + ' ' + b; }).split(" "),
+                '-o', path.join('khabind', bindOpts.nativeLib) + '.js'
             ];
+            log.info('    running emcc: emcc ' + args.join(' '));
             let output = child_process.spawnSync(emcc, [...targetFiles, ...args], { cwd: lib.libroot });
             if (output.stderr.toString() !== '') {
                 log.error(output.stderr.toString());
