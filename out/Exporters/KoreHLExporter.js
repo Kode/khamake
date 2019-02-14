@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
+const defaults = require("../defaults");
 const KhaExporter_1 = require("./KhaExporter");
 const Converter_1 = require("../Converter");
 const GraphicsApi_1 = require("../GraphicsApi");
@@ -27,7 +28,11 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
         defines.push('kha_hl');
         defines.push('kha_' + this.options.target);
         defines.push('kha_' + this.options.target + '_hl');
-        defines.push('kha_' + this.options.graphics);
+        let graphics = this.options.graphics;
+        if (graphics === GraphicsApi_1.GraphicsApi.Default) {
+            graphics = defaults.graphicsApi(this.options.target);
+        }
+        defines.push('kha_' + graphics);
         defines.push('kha_g1');
         defines.push('kha_g2');
         defines.push('kha_g3');
