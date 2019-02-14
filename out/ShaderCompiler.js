@@ -17,6 +17,7 @@ class CompiledShader {
         this.outputs = [];
         this.uniforms = [];
         this.types = [];
+        this.noembed = false;
     }
 }
 exports.CompiledShader = CompiledShader;
@@ -334,6 +335,7 @@ class ShaderCompiler {
                             let newErrorLine = true;
                             let errorData = false;
                             let compiledShader = new CompiledShader();
+                            compiledShader.noembed = options.noembed;
                             function parseData(data) {
                                 data = data.replace(':\\', '#\\'); // Filter out absolute paths on Windows
                                 let parts = data.split(':');
