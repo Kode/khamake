@@ -33,7 +33,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 
 	log.info(`Generating bindings for: ${path.basename(lib.libroot)}`);
     let webidlSourcePath = path.resolve(options.kha, 'Tools', 'webidl');
-    
+
     // Evaluate file modified times to determine what needs to be recompiled
     let recompileAll = false;
     let rebuildBindings = false;
@@ -124,7 +124,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 					if (recompileAll || (await fs.stat(file)).mtime.getTime() > (await fs.stat(targetFile)).mtime.getTime()) {
 						ensureEmscripten();
 						needsRecompile = invalidateCache = true;
-					}  
+					}
                 } else { ensureEmscripten(); needsRecompile = invalidateCache = true;}
 
                 // Compile source file using Emscripten
@@ -173,7 +173,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 				'-o', path.join('khabind', bindOpts.nativeLib) + '.js'
 			];
 			log.info('    running emcc: emcc ' + args.join(' '));
-			let output = child_process.spawnSync(emcc, 
+			let output = child_process.spawnSync(emcc,
 				[...targetFiles, ...args],
 				{cwd:lib.libroot}
 			);

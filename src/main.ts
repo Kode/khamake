@@ -135,7 +135,9 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			}
 
 			// Add any khabind JS libs to the outputed JavaScript
-			if ((options.target == 'krom' || options.target.endsWith('html5')) && project.khabindLibs.length != 0) {
+			if ((options.target == 'krom' || options.target.endsWith('html5'))
+				&& project.khabindLibs.length != 0 && !project.defines.includes("kha_no_bundle_khabind")) {
+
 				let toFile = haxeOptions.realto ? haxeOptions.realto : haxeOptions.to;
 				let targetFile = path.resolve(options.to, toFile);
 				let origFile = path.resolve(path.dirname(targetFile), path.basename(targetFile) + '.orig');
@@ -144,7 +146,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 
 				for (let lib of project.khabindLibs) {
 					fs.appendFileSync(
-						targetFile, 
+						targetFile,
 						fs.readFileSync(path.resolve(lib.lib.libpath, 'khabind', lib.options.nativeLib + ".js"))
 					);
 				}
@@ -409,7 +411,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	if (baseTarget !== Platform.Java && baseTarget !== Platform.WPF) {
 		project.addShaders('Sources/Shaders/**', {});
 	}
-	
+
 	for (let callback of Callbacks.preAssetConversion) {
 		callback();
 	}

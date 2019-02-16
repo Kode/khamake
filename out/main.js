@@ -120,7 +120,8 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 return Promise.reject(error);
             }
             // Add any khabind JS libs to the outputed JavaScript
-            if ((options.target == 'krom' || options.target.endsWith('html5')) && project.khabindLibs.length != 0) {
+            if ((options.target == 'krom' || options.target.endsWith('html5'))
+                && project.khabindLibs.length != 0 && !project.defines.includes("kha_no_bundle_khabind")) {
                 let toFile = haxeOptions.realto ? haxeOptions.realto : haxeOptions.to;
                 let targetFile = path.resolve(options.to, toFile);
                 let origFile = path.resolve(path.dirname(targetFile), path.basename(targetFile) + '.orig');
