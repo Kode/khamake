@@ -239,6 +239,7 @@ export class ShaderCompiler {
 					}
 					if (compiledShader === null) {
 						compiledShader = new CompiledShader();
+						compiledShader.noembed = options.noembed;
 						// mark variables as invalid, so they are loaded from previous compilation
 						compiledShader.files = null;
 						compiledShader.inputs = null;
@@ -319,7 +320,9 @@ export class ShaderCompiler {
 						if (!toStats || toStats.mtime.getTime() < fromStats.mtime.getTime()) {
 							fs.copySync(from, to, { overwrite: true });
 						}
-						resolve(new CompiledShader());
+						let compiledShader = new CompiledShader();
+						compiledShader.noembed = options.noembed;
+						resolve(compiledShader);
 						return;
 					}
 					fs.stat(this.compiler, (compErr: NodeJS.ErrnoException, compStats: fs.Stats) => {
