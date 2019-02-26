@@ -127,7 +127,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 let origFile = path.resolve(path.dirname(targetFile), path.basename(targetFile) + '.orig');
                 fs.moveSync(targetFile, origFile);
                 for (let lib of project.khabindLibs) {
-                    fs.appendFileSync(targetFile, fs.readFileSync(path.resolve(lib.lib.libpath, 'khabind', lib.options.nativeLib + ".js")));
+                    fs.appendFileSync(targetFile, fs.readFileSync(path.resolve(lib.libRoot, 'khabind', lib.options.nativeLib + ".js")));
                 }
                 fs.appendFileSync(targetFile, fs.readFileSync(origFile));
                 fs.removeSync(origFile);
@@ -340,11 +340,12 @@ async function exportKhaProject(options) {
     // e.g. 'build/android-native'
     fs.ensureDirSync(path.join(options.to, exporter.sysdir()));
     // Generate bindings for any khabind libraries
-    for (let lib of project.libraries) {
-        if (fs.existsSync(path.join(lib.libroot, "khabind.json"))) {
-            let bindOptions = JSON.parse(fs.readFileSync(path.join(lib.libroot, "khabind.json"), 'utf-8'));
-            await Khabind_1.generateBindings(lib, bindOptions, options, project, korehl);
-        }
+    for (let lib of project.khabindLibs) {
+        await Khabind_1.generateBindings(lib.libRoot, lib.options, options, korehl);
+    }
+    // Add the WebIDL sources needed by the Khabind libraries
+    if (project.khabindLibs.length > 0) {
+        project.sources.push(path.resolve(options.kha, 'Tools', 'webidl'));
     }
     let defaultWindowOptions = {
         width: 800,

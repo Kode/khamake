@@ -21,27 +21,26 @@ export class KhabindOptions {
 }
 
 export class KhabindLib {
-	lib:Library;
-	options:KhabindOptions;
+	libRoot: string;
+	options: KhabindOptions;
 }
 
-export async function generateBindings(lib:Library, bindOpts:KhabindOptions, options:Options, project:Project, korehl:boolean) {
+export async function generateBindings(libRoot:string, bindOpts:KhabindOptions, options:Options, korehl:boolean) {
     if (options.target != 'krom' && !options.target.endsWith('html5') && !korehl) {
-        log.info(`WARNING: Auto-binding library "${path.basename(lib.libroot)}" to Haxe for target ${options.target} is not supported.`);
+        log.info(`WARNING: Auto-binding library "${path.basename(libRoot)}" to Haxe for target ${options.target} is not supported.`);
         return;
     }
 
-	log.info(`Generating bindings for: ${path.basename(lib.libroot)}`);
-    let webidlSourcePath = path.resolve(options.kha, 'Tools', 'webidl');
+	log.info(`Generating bindings for: ${path.basename(libRoot)}`);
 
     // Evaluate file modified times to determine what needs to be recompiled
     let recompileAll = false;
     let rebuildBindings = false;
-    let khabindFile = path.resolve(lib.libroot, 'khabind.json');
-    let webidlFile = path.resolve(lib.libroot, bindOpts.idlFile);
-    let jsLibrary = path.resolve(lib.libroot, 'khabind', bindOpts.nativeLib + '.js');
+    let khafile = path.resolve(libRoot, 'khafile.js');
+    let webidlFile = path.resolve(libRoot, bindOpts.idlFile);
+    let jsLibrary = path.resolve(libRoot, 'khabind', bindOpts.nativeLib + '.js');
     if (fs.existsSync(jsLibrary)) {
-        if (fs.statSync(khabindFile).mtime > fs.statSync(jsLibrary).mtime) {
+        if (fs.statSync(khafile).mtime > fs.statSync(jsLibrary).mtime) {
             recompileAll = true; // khabind.json file has been updated, recompile everything
         } else if (fs.statSync(webidlFile).mtime > fs.statSync(jsLibrary).mtime) {
             rebuildBindings = true; // webidl bindings have been update, recompile bindings
@@ -53,19 +52,16 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
     // Genreate HL/JS Haxe bindings
     if (recompileAll || rebuildBindings) {
 		// Call Haxe macro to generate bindings
-        await executeHaxe(lib.libroot, options.haxe, [
+        await executeHaxe(libRoot, options.haxe, [
             '-cp', path.resolve(options.kha, 'Sources'),
-            '-cp', webidlSourcePath,
+            '-cp', path.resolve(options.kha, 'Tools', 'webidl'),
             '--macro', `kha.internal.WebIdlBinder.generate(${recompileAll})`,
         ]);
     }
 
-	// Add webidl library to project sources
-	if (project.sources.indexOf(webidlSourcePath) == -1) project.sources.push(webidlSourcePath);
-
 	// Create a Korefile for HL/C builds of the library
-	var korefile = path.resolve(lib.libroot, 'korefile.js');
-	var content = `let project = new Project('${path.basename(lib.libroot)}', __dirname);\n`;
+	var korefile = path.resolve(libRoot, 'korefile.js');
+	var content = `let project = new Project('${path.basename(libRoot)}', __dirname);\n`;
 	content += `project.addFile('${bindOpts.sourcesDir}/**');\n`;
 	content += `project.addIncludeDir('${bindOpts.sourcesDir}');\n`;
 	content += `project.addFile('khabind/${bindOpts.nativeLib}.cpp');\n`;
@@ -87,7 +83,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 			emcc = path.join(emsdk, 'emcc');
 		}
 		let optimizationArg = bindOpts.emccOptimizationLevel ? '-O' + bindOpts.emccOptimizationLevel : '-O2';
-		let sourcesDir = path.resolve(lib.libroot, bindOpts.sourcesDir);
+		let sourcesDir = path.resolve(libRoot, bindOpts.sourcesDir);
 		let sourceFiles:string[] = [];
 		let targetFiles:string[] = [];
 		let invalidateCache = false;
@@ -107,15 +103,15 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 
 		// Search source dirs for C/C++ files
 		addSources(sourcesDir);
-		addSources(path.resolve(lib.libroot, 'khabind'));
+		addSources(path.resolve(libRoot, 'khabind'));
 
         // Compiler helper function
 		function compileSource(file:string) {
 			return new Promise<void>(async (resolve, reject:(err:string)=>void) => {
 				let needsRecompile = false;
-                let relativeSource = path.relative(lib.libroot, file);
+                let relativeSource = path.relative(libRoot, file);
                 let relativeTargetFile = relativeSource.substr(0, file.length - path.extname(file).length) + ".bc";
-                let targetFile = path.resolve(lib.libroot, 'khabind', 'bytecode', relativeTargetFile);
+                let targetFile = path.resolve(libRoot, 'khabind', 'bytecode', relativeTargetFile);
                 fs.ensureDirSync(path.dirname(targetFile));
 				targetFiles.push(targetFile);
 
@@ -129,11 +125,11 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 
                 // Compile source file using Emscripten
 				if (needsRecompile) {
-					log.info(`    Compiling ${path.relative(lib.libroot, file)}`);
+					log.info(`    Compiling ${path.relative(libRoot, file)}`);
 					let stderr = "";
 					let run = child_process.spawn(
 						emcc, [optimizationArg, `-I${sourcesDir}`, '-c', file, '-o', targetFile],
-						{cwd: lib.libroot}
+						{cwd: libRoot}
 					);
 
 					run.stderr.on('data', function (data: any) {
@@ -163,7 +159,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 		});
 
 		// Link bytecode to final JavaScript library
-		if (invalidateCache || !fs.existsSync(path.join(lib.libroot, 'khabind', bindOpts.nativeLib + '.js'))) {
+		if (invalidateCache || !fs.existsSync(path.join(libRoot, 'khabind', bindOpts.nativeLib + '.js'))) {
 			log.info('    Linking Javascript Library');
 			ensureEmscripten();
 			let args = [
@@ -175,7 +171,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 			log.info('    running emcc: emcc ' + args.join(' '));
 			let output = child_process.spawnSync(emcc,
 				[...targetFiles, ...args],
-				{cwd:lib.libroot}
+				{cwd:libRoot}
 			);
 			if (output.stderr.toString() !== '') {
 				log.error(output.stderr.toString());
@@ -184,13 +180,7 @@ export async function generateBindings(lib:Library, bindOpts:KhabindOptions, opt
 				log.info(output.stdout.toString());
 			}
 		}
-
-		// Add JavaScript library to project asset list
-		project.khabindLibs.push({
-			lib: lib,
-			options: bindOpts
-		});
 	} // if (options.target == 'krom' || options.target.endsWith('html5'))
 
-	log.info(`Done generating bindings for: ${path.basename(lib.libroot)}`);
+	log.info(`Done generating bindings for: ${path.basename(libRoot)}`);
 }

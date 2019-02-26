@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as log from './log';
 import {loadProject} from './ProjectFile';
-import {KhabindLib} from './Khabind';
+import {KhabindLib, KhabindOptions} from './Khabind';
 
 export class Library {
 	libpath: string;
@@ -90,6 +90,7 @@ export class Project {
 		this.cdefines = this.cdefines.concat(project.cdefines);
 		this.parameters = this.parameters.concat(project.parameters);
 		this.libraries = this.libraries.concat(project.libraries);
+		this.khabindLibs = this.khabindLibs.concat(project.khabindLibs);
 		for (let customTarget of project.customTargets.keys()) {
 			this.customTargets.set(customTarget, project.customTargets.get(customTarget));
 		}
@@ -269,5 +270,13 @@ export class Project {
 
 			this.addShaders(dir + '/Sources/Shaders/**', {});
 		}
+	}
+
+	khabind(bindOptions:KhabindOptions) {
+		this.addSources("Sources");
+		this.khabindLibs.push({
+			libRoot: this.scriptdir,
+			options: bindOptions
+		});
 	}
 }

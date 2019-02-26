@@ -62,6 +62,7 @@ class Project {
         this.cdefines = this.cdefines.concat(project.cdefines);
         this.parameters = this.parameters.concat(project.parameters);
         this.libraries = this.libraries.concat(project.libraries);
+        this.khabindLibs = this.khabindLibs.concat(project.khabindLibs);
         for (let customTarget of project.customTargets.keys()) {
             this.customTargets.set(customTarget, project.customTargets.get(customTarget));
         }
@@ -224,6 +225,13 @@ class Project {
             }
             this.addShaders(dir + '/Sources/Shaders/**', {});
         }
+    }
+    khabind(bindOptions) {
+        this.addSources("Sources");
+        this.khabindLibs.push({
+            libRoot: this.scriptdir,
+            options: bindOptions
+        });
     }
 }
 exports.Project = Project;

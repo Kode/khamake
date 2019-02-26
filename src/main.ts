@@ -147,7 +147,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				for (let lib of project.khabindLibs) {
 					fs.appendFileSync(
 						targetFile,
-						fs.readFileSync(path.resolve(lib.lib.libpath, 'khabind', lib.options.nativeLib + ".js"))
+						fs.readFileSync(path.resolve(lib.libRoot, 'khabind', lib.options.nativeLib + ".js"))
 					);
 				}
 
@@ -380,12 +380,13 @@ async function exportKhaProject(options: Options): Promise<string> {
 	fs.ensureDirSync(path.join(options.to, exporter.sysdir()));
 
 	// Generate bindings for any khabind libraries
-	for (let lib of project.libraries) {
-		if (fs.existsSync(path.join(lib.libroot, "khabind.json"))) {
-			let bindOptions:KhabindOptions = JSON.parse(fs.readFileSync(path.join(lib.libroot, "khabind.json"), 'utf-8'));
+	for (let lib of project.khabindLibs) {
+		await generateBindings(lib.libRoot, lib.options, options, korehl);
+	}
 
-			await generateBindings(lib, bindOptions, options, project, korehl);
-		}
+	// Add the WebIDL sources needed by the Khabind libraries
+	if (project.khabindLibs.length > 0) {
+		project.sources.push(path.resolve(options.kha, 'Tools', 'webidl'));
 	}
 
 	let defaultWindowOptions = {
