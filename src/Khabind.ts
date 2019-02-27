@@ -55,7 +55,7 @@ export async function generateBindings(libRoot:string, bindOpts:KhabindOptions, 
         await executeHaxe(libRoot, options.haxe, [
             '-cp', path.resolve(options.kha, 'Sources'),
             '-cp', path.resolve(options.kha, 'Tools', 'webidl'),
-            '--macro', `kha.internal.WebIdlBinder.generate(${recompileAll})`,
+            '--macro', `kha.internal.WebIdlBinder.generate('${JSON.stringify(bindOpts)}', ${recompileAll})`,
         ]);
     }
 

@@ -42,7 +42,7 @@ async function generateBindings(libRoot, bindOpts, options, korehl) {
         await Haxe_1.executeHaxe(libRoot, options.haxe, [
             '-cp', path.resolve(options.kha, 'Sources'),
             '-cp', path.resolve(options.kha, 'Tools', 'webidl'),
-            '--macro', `kha.internal.WebIdlBinder.generate(${recompileAll})`,
+            '--macro', `kha.internal.WebIdlBinder.generate('${JSON.stringify(bindOpts)}', ${recompileAll})`,
         ]);
     }
     // Create a Korefile for HL/C builds of the library
