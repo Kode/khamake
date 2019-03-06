@@ -40,11 +40,12 @@ function fixName(name) {
 function safeName(name) {
     return name.replace(/[\\\/]/g, '_');
 }
-function createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, korehl, icon) {
+function createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, korehl, icon) {
     let out = '';
     out += 'let fs = require(\'fs\');\n';
     out += 'let path = require(\'path\');\n';
     out += 'let project = new Project(\'' + name + '\');\n';
+    out += 'project.version = \'' + version + '\';\n';
     if (icon != null)
         out += 'project.icon = \'' + icon + '\';\n';
     for (let cdefine of cdefines) {
@@ -92,7 +93,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     out += 'resolve(project);\n';
     return out;
 }
-async function exportProjectFiles(name, resourceDir, options, exporter, kore, korehl, icon, libraries, targetOptions, defines, cdefines, stackSize) {
+async function exportProjectFiles(name, resourceDir, options, exporter, kore, korehl, icon, libraries, targetOptions, defines, cdefines, stackSize, version) {
     if (options.haxe !== '') {
         let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
         haxeOptions.defines.push('kha');
@@ -123,7 +124,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         // If target is a Kore project, generate additional project folders here.
         // generate the korefile.js
         fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
-        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, false, icon));
+        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, false, icon));
         // Similar to khamake.js -> main.js -> run(...)
         // We now do koremake.js -> main.js -> run(...)
         // This will create additional project folders for the target,
@@ -132,9 +133,10 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
                 from: options.from,
                 to: buildDir,
-                korefile: 'build/korefile.js',
+                korefile: path.join(options.to, 'korefile.js'),
                 target: koreplatform(options.target),
                 graphics: options.graphics,
+                arch: options.arch,
                 audio: options.audio,
                 vrApi: options.vr,
                 raytrace: options.raytrace,
@@ -161,14 +163,15 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
     else if (options.haxe !== '' && korehl && !options.noproject) {
         fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
         fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
-        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, korehl, icon));
+        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, korehl, icon));
         try {
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
                 from: options.from,
                 to: buildDir,
-                korefile: 'build/korefile.js',
+                korefile: path.join(options.to, 'korefile.js'),
                 target: koreplatform(options.target),
                 graphics: options.graphics,
+                arch: options.arch,
                 vrApi: options.vr,
                 raytrace: options.raytrace,
                 visualstudio: options.visualstudio,
@@ -447,6 +450,8 @@ async function exportKhaProject(options) {
         files.push(file);
     }
     for (let shader of exportedShaders) {
+        if (shader.noembed)
+            continue;
         let oldShader = findShader(shader.name);
         files.push({
             name: fixName(shader.name),
@@ -458,6 +463,14 @@ async function exportKhaProject(options) {
             types: shader.types === null ? oldShader.types : shader.types
         });
     }
+    // Sort to prevent files.json from changing between makes when no files have changed.
+    files.sort(function (a, b) {
+        if (a.name > b.name)
+            return 1;
+        if (a.name < b.name)
+            return -1;
+        return 0;
+    });
     function secondPass() {
         // First pass is for main project files. Second pass is for shaders.
         // Will try to look for the folder, e.g. 'build/Shaders'.
@@ -498,7 +511,7 @@ async function exportKhaProject(options) {
         return project.name;
     }
     else {
-        return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.icon, project.libraries, project.targetOptions, project.defines, project.cdefines, project.stackSize);
+        return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.icon, project.libraries, project.targetOptions, project.defines, project.cdefines, project.stackSize, project.version);
     }
 }
 function isKhaProject(directory, projectfile) {

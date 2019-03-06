@@ -2,8 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
 const path = require("path");
+const defaults = require("../defaults");
 const KhaExporter_1 = require("./KhaExporter");
 const Converter_1 = require("../Converter");
+const GraphicsApi_1 = require("../GraphicsApi");
 const ImageTool_1 = require("../ImageTool");
 class KromExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
@@ -13,7 +15,6 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         return 'Krom';
     }
     haxeOptions(name, targetOptions, defines) {
-        defines.push('js-classic');
         defines.push('sys_' + this.options.target);
         defines.push('sys_g1');
         defines.push('sys_g2');
@@ -24,14 +25,21 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         defines.push('kha_js');
         defines.push('kha_' + this.options.target);
         defines.push('kha_' + this.options.target + '_js');
-        defines.push('kha_' + this.options.graphics);
+        let graphics = this.options.graphics;
+        if (graphics === GraphicsApi_1.GraphicsApi.Default) {
+            graphics = defaults.graphicsApi(this.options.target);
+        }
+        defines.push('kha_' + graphics);
         defines.push('kha_g1');
         defines.push('kha_g2');
         defines.push('kha_g3');
         defines.push('kha_g4');
         defines.push('kha_a1');
         defines.push('kha_a2');
-        this.parameters.push('-debug');
+        if (this.options.debug) {
+            this.parameters.push('-debug');
+            defines.push('js-classic');
+        }
         return {
             from: this.options.from.toString(),
             to: path.join(this.sysdir(), 'krom.js.temp'),

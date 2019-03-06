@@ -28,6 +28,7 @@ class Project {
     constructor(name) {
         this.icon = null;
         this.name = name;
+        this.version = '1.0';
         this.sources = [];
         this.defines = [];
         this.cdefines = [];

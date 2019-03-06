@@ -1,8 +1,10 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as defaults from '../defaults';
 import {KhaExporter} from './KhaExporter';
 import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
+import {GraphicsApi} from '../GraphicsApi';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {Library} from '../Project';
@@ -20,8 +22,6 @@ export class KromExporter extends KhaExporter {
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
-		defines.push('js-classic');
-
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
@@ -33,7 +33,11 @@ export class KromExporter extends KhaExporter {
 		defines.push('kha_js');
 		defines.push('kha_' + this.options.target);
 		defines.push('kha_' + this.options.target + '_js');
-		defines.push('kha_' + this.options.graphics);
+		let graphics = this.options.graphics;
+		if (graphics === GraphicsApi.Default) {
+			graphics = defaults.graphicsApi(this.options.target);
+		}
+		defines.push('kha_' + graphics);
 		defines.push('kha_g1');
 		defines.push('kha_g2');
 		defines.push('kha_g3');
@@ -41,7 +45,10 @@ export class KromExporter extends KhaExporter {
 		defines.push('kha_a1');
 		defines.push('kha_a2');
 
-		this.parameters.push('-debug');
+		if (this.options.debug) {
+			this.parameters.push('-debug');
+			defines.push('js-classic');
+		}
 		
 		return {
 			from: this.options.from.toString(),
