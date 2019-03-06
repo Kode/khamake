@@ -52,7 +52,7 @@ export class Project {
 		this.name = name;
 		this.version = '1.0';
 		this.sources = [];
-		this.defines = [];
+		this.defines = ['hxcpp_smart_strings'];
 		this.cdefines = [];
 		this.parameters = [];
 		this.scriptdir = Project.scriptdir;
