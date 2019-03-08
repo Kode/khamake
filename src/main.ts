@@ -153,7 +153,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			{
 				from: options.from,
 				to: buildDir,
-				korefile: path.join(options.to, 'korefile.js'),
+				korefile: path.resolve(options.to, 'korefile.js'),
 				target: koreplatform(options.target),
 				graphics: options.graphics,
 				arch: options.arch,
@@ -191,7 +191,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			{
 				from: options.from,
 				to: buildDir,
-				korefile: path.join(options.to, 'korefile.js'),
+				korefile: path.resolve(options.to, 'korefile.js'),
 				target: koreplatform(options.target),
 				graphics: options.graphics,
 				arch: options.arch,
@@ -515,8 +515,8 @@ async function exportKhaProject(options: Options): Promise<string> {
 
 	// Sort to prevent files.json from changing between makes when no files have changed.
 	files.sort(function(a: any, b: any) {
-		if(a.name > b.name) return 1;
-		if(a.name < b.name) return -1;
+		if (a.name > b.name) return 1;
+		if (a.name < b.name) return -1;
 		return 0;
 	});
 

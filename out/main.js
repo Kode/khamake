@@ -131,7 +131,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
                 from: options.from,
                 to: buildDir,
-                korefile: path.join(options.to, 'korefile.js'),
+                korefile: path.resolve(options.to, 'korefile.js'),
                 target: koreplatform(options.target),
                 graphics: options.graphics,
                 arch: options.arch,
@@ -166,7 +166,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
                 from: options.from,
                 to: buildDir,
-                korefile: path.join(options.to, 'korefile.js'),
+                korefile: path.resolve(options.to, 'korefile.js'),
                 target: koreplatform(options.target),
                 graphics: options.graphics,
                 arch: options.arch,
