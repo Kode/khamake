@@ -47,6 +47,7 @@ export class Project {
 	shaderMatchers: { match: string, options: any }[];
 	customTargets: Map<string, Target>;
 	stackSize: number;
+	id: string;
 
 	constructor(name: string) {
 		this.name = name;
