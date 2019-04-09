@@ -74,7 +74,8 @@ class AssetConverter {
                         this.exporter.copyImage(this.platform, file, outPath, {}, {});
                         break;
                     case '.flac':
-                    case '.wav': {
+                    case '.wav':
+                    case '.ogg': {
                         this.exporter.copySound(this.platform, file, outPath, {});
                         break;
                     }
@@ -120,7 +121,8 @@ class AssetConverter {
                 async function convertAsset(file, index) {
                     let fileinfo = path.parse(file);
                     log.info('Exporting asset ' + (index + 1) + ' of ' + files.length + ' (' + fileinfo.base + ').');
-                    switch (fileinfo.ext.toLowerCase()) {
+                    const ext = fileinfo.ext.toLowerCase();
+                    switch (ext) {
                         case '.png':
                         case '.jpg':
                         case '.jpeg':
@@ -135,6 +137,17 @@ class AssetConverter {
                             }
                             if (!options.notinlist) {
                                 parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
+                            }
+                            break;
+                        }
+                        case '.ogg': {
+                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, self.exporter.options.from);
+                            let sounds;
+                            sounds = await self.exporter.copyBlob(self.platform, file, exportInfo.destination + ext, options);
+                            if (!options.notinlist) {
+                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
+                                exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, self.exporter.options.from);
+                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
                             }
                             break;
                         }
