@@ -645,6 +645,14 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		if (fs.existsSync(krafixpath)) options.krafix = krafixpath;
 	}
 
+	if (!options.ogg && options.ffmpeg) {
+		options.ogg = options.ffmpeg + ' -nostdin -i {in} {out}';
+	}
+
+	if (!options.mp3 && options.ffmpeg) {
+		options.mp3 = options.ffmpeg + ' -nostdin -i {in} {out}';
+	}
+
 	if (!options.ogg) {
 		let oggpath = path.join(options.kha, 'Tools', 'oggenc', 'oggenc' + sys());
 		if (fs.existsSync(oggpath)) options.ogg = oggpath + ' {in} -o {out} --quiet';

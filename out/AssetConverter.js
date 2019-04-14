@@ -73,9 +73,10 @@ class AssetConverter {
                         { }
                         this.exporter.copyImage(this.platform, file, outPath, {}, {});
                         break;
+                    case '.ogg':
+                    case '.mp3':
                     case '.flac':
-                    case '.wav':
-                    case '.ogg': {
+                    case '.wav': {
                         this.exporter.copySound(this.platform, file, outPath, {});
                         break;
                     }
@@ -140,17 +141,8 @@ class AssetConverter {
                             }
                             break;
                         }
-                        case '.ogg': {
-                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, self.exporter.options.from);
-                            let sounds;
-                            sounds = await self.exporter.copyBlob(self.platform, file, exportInfo.destination + ext, options);
-                            if (!options.notinlist) {
-                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
-                                exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, self.exporter.options.from);
-                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
-                            }
-                            break;
-                        }
+                        case '.ogg':
+                        case '.mp3':
                         case '.flac':
                         case '.wav': {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, self.exporter.options.from);
@@ -160,6 +152,9 @@ class AssetConverter {
                             }
                             else {
                                 sounds = await self.exporter.copySound(self.platform, file, exportInfo.destination, options);
+                            }
+                            if (sounds.length === 0) {
+                                throw 'Audio file ' + file + ' could not be exported, you have to specify a path to ffmpeg.';
                             }
                             if (!options.notinlist) {
                                 parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
