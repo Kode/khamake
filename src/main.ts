@@ -101,6 +101,11 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, id: s
 		out += '\tawait project.addProject(\'' + libPath.replace(/\\/g, '/') + '\');\n';
 		out += '}\n';
 	}
+	for  (let lib of project.khabindLibs) {
+		out += 'if (fs.existsSync(path.join(\'' + lib.libRoot.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
+		out += '\tawait project.addProject(\'' + lib.libRoot.replace(/\\/g, '/') + '\');\n';
+		out += '}\n';
+	}
 	if (project.stackSize) {
 		out += 'project.stackSize = ' + project.stackSize + ';\n';
 	}
