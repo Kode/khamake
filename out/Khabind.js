@@ -48,7 +48,7 @@ async function generateBindings(libRoot, bindOpts, options, korehl) {
             }
         }
         // Genreate HL/JS Haxe bindings
-        if (recompileAll || rebuildBindings) {
+        if ((recompileAll || rebuildBindings) && !bindOpts.forceCache) {
             // Call Haxe macro to generate bindings
             await Haxe_1.executeHaxe(libRoot, options.haxe, [
                 '-cp', path.resolve(options.kha, 'Sources'),
