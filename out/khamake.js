@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const os = require("os");
 const path = require("path");
 const GraphicsApi_1 = require("./GraphicsApi");
+const Architecture_1 = require("./Architecture");
 const AudioApi_1 = require("./AudioApi");
 const VrApi_1 = require("./VrApi");
 const RayTraceApi_1 = require("./RayTraceApi");
@@ -81,6 +82,12 @@ let options = [
         default: GraphicsApi_1.GraphicsApi.Default
     },
     {
+        full: 'arch',
+        description: 'Target architecture to use. Possible parameters are arm7, arm8, x86, x86_64.',
+        value: true,
+        default: Architecture_1.Architecture.Default
+    },
+    {
         full: 'audio',
         short: 'a',
         description: 'Audio api to use. Possible parameters are directsound and wasapi.',
@@ -92,7 +99,7 @@ let options = [
         short: 'v',
         description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013 and vs2015.',
         value: true,
-        default: VisualStudioVersion_1.VisualStudioVersion.VS2017
+        default: VisualStudioVersion_1.VisualStudioVersion.VS2019
     },
     {
         full: 'kha',

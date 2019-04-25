@@ -5,6 +5,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import {GraphicsApi} from './GraphicsApi';
+import {Architecture} from './Architecture';
 import {AudioApi} from './AudioApi';
 import {VrApi} from './VrApi';
 import {RayTraceApi} from './RayTraceApi';
@@ -82,6 +83,12 @@ let options: Array<any> = [
 		default: GraphicsApi.Default
 	},
 	{
+		full: 'arch',
+		description: 'Target architecture to use. Possible parameters are arm7, arm8, x86, x86_64.',
+		value: true,
+		default: Architecture.Default
+	},
+	{
 		full: 'audio',
 		short: 'a',
 		description: 'Audio api to use. Possible parameters are directsound and wasapi.',
@@ -93,7 +100,7 @@ let options: Array<any> = [
 		short: 'v',
 		description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013 and vs2015.',
 		value: true,
-		default: VisualStudioVersion.VS2017
+		default: VisualStudioVersion.VS2019
 	},
 	{
 		full: 'kha',

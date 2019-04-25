@@ -37,6 +37,9 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         if (targetOptions.html5.noKeyboard) {
             defines.push('kha_no_keyboard');
         }
+        if (targetOptions.html5.disableContextMenu) {
+            defines.push('kha_disable_context_menu');
+        }
         if (this.options.vr === VrApi_1.VrApi.WebVR) {
             defines.push('kha_webvr');
         }
