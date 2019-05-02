@@ -82,7 +82,7 @@ export class AssetConverter {
 				const fileinfo = path.parse(file);
 				let baseDir = path.dirname(match);
 				// fix glob patterns with exclusions
-				baseDir = baseDir.replace(/\/\*+/g, '');
+				baseDir = baseDir.replace(/\/\*+$/g, '');
 
 				let outPath = fileinfo.dir + path.sep + fileinfo.name;
 				outPath = path.relative(baseDir, outPath);
