@@ -4,7 +4,7 @@
   "description": "Kha build tool",
   "main": "khamake.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p ."
   },
   "repository": {
     "type": "git",
