@@ -1,9 +1,9 @@
 ﻿import * as path from 'path';
 
-let korepath = path.join(__dirname, '..', '..', '..', 'Kore', 'Tools', 'koremake');
+let korepath = path.join(__dirname, '..', '..', '..', 'Kinc', 'Tools', 'kincmake');
 
 export function init(options: any) {
-	korepath = path.join(options.kha, 'Kore', 'Tools', 'koremake');
+	korepath = path.join(options.kha, 'Kinc', 'Tools', 'kincmake');
 }
 
 export function get() {

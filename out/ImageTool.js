@@ -12,7 +12,7 @@ function getWidthAndHeight(kha, from, to, options, format, prealpha) {
         if (options.scale !== undefined && options.scale !== 1) {
             params.push('scale=' + options.scale);
         }
-        let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
+        let process = child_process.spawn(path.join(kha, 'Kinc', 'Tools', 'kraffiti', exe), params);
         let output = '';
         process.stdout.on('data', (data) => {
             output += data.toString();
@@ -39,7 +39,7 @@ function getWidthAndHeight(kha, from, to, options, format, prealpha) {
 }
 function convertImage(from, temp, to, kha, exe, params, options, cache) {
     return new Promise((resolve, reject) => {
-        let process = child_process.spawn(path.join(kha, 'Kore', 'Tools', 'kraffiti', exe), params);
+        let process = child_process.spawn(path.join(kha, 'Kinc', 'Tools', 'kraffiti', exe), params);
         let output = '';
         process.stdout.on('data', (data) => {
             output += data.toString();

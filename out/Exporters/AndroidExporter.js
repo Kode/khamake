@@ -9,7 +9,7 @@ function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
     else
-        return path.join(options.kha, 'Kore', 'Tools', 'kraffiti', 'ball.png');
+        return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'ball.png');
 }
 class AndroidExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
@@ -62,7 +62,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         this.safename = safename;
         let targetOptions = {
             package: 'tech.kode.kha',
-            installLocation: "internalOnly",
+            installLocation: 'internalOnly',
             screenOrientation: 'sensor',
             permissions: new Array()
         };

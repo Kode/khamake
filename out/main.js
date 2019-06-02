@@ -83,7 +83,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
         out += 'await project.addProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\');\n';
     for (let lib of libraries) {
         let libPath = lib.libroot;
-        out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
+        out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
         out += '\tawait project.addProject(\'' + libPath.replace(/\\/g, '/') + '\');\n';
         out += '}\n';
     }
@@ -122,18 +122,18 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
     let buildDir = path.join(options.to, exporter.sysdir() + '-build');
     if (options.haxe !== '' && kore && !options.noproject) {
         // If target is a Kore project, generate additional project folders here.
-        // generate the korefile.js
-        fs.copySync(path.join(__dirname, '..', 'Data', 'build-korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
-        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, false, icon));
+        // generate the kincfile.js
+        fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
+        fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, false, icon));
         // Similar to khamake.js -> main.js -> run(...)
-        // We now do koremake.js -> main.js -> run(...)
+        // We now do kincmake.js -> main.js -> run(...)
         // This will create additional project folders for the target,
         // e.g. 'build/android-native-build'
         try {
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
                 from: options.from,
                 to: buildDir,
-                korefile: path.resolve(options.to, 'korefile.js'),
+                kincfile: path.resolve(options.to, 'kincfile.js'),
                 target: koreplatform(options.target),
                 graphics: options.graphics,
                 arch: options.arch,
@@ -162,13 +162,13 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
     }
     else if (options.haxe !== '' && korehl && !options.noproject) {
         fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
-        fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'korefile.js'), path.join(buildDir, 'korefile.js'), { overwrite: true });
-        fs.writeFileSync(path.join(options.to, 'korefile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, korehl, icon));
+        fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
+        fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, korehl, icon));
         try {
             let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
                 from: options.from,
                 to: buildDir,
-                korefile: path.resolve(options.to, 'korefile.js'),
+                kincfile: path.resolve(options.to, 'kincfile.js'),
                 target: koreplatform(options.target),
                 graphics: options.graphics,
                 arch: options.arch,
@@ -500,7 +500,7 @@ async function exportKhaProject(options) {
         if (exporter.sysdir() === 'android-native') {
             // Location of preprocessed assets
             let dataDir = path.join(options.to, exporter.sysdir());
-            // Use the same 'safename' as koremake
+            // Use the same 'safename' as kincmake
             let safename = project.name.replace(/ /g, '-');
             let assetsDir = path.resolve(buildDir, safename, 'app', 'src', 'main', 'assets');
             // Create path if it does not exist (although it should)
@@ -573,7 +573,7 @@ async function run(options, loglog) {
             options.haxe = haxepath;
     }
     if (!options.krafix) {
-        let krafixpath = path.join(options.kha, 'Kore', 'Tools', 'krafix', 'krafix' + exec_1.sys());
+        let krafixpath = path.join(options.kha, 'Kinc', 'Tools', 'krafix', 'krafix' + exec_1.sys());
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
     }
