@@ -9,7 +9,7 @@ function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
     else
-        return path.join(options.kha, 'Kore', 'Tools', 'kraffiti', 'ball.png');
+        return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'ball.png');
 }
 class AndroidExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
@@ -62,6 +62,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         this.safename = safename;
         let targetOptions = {
             package: 'tech.kode.kha',
+            installLocation: 'internalOnly',
             screenOrientation: 'sensor',
             permissions: new Array()
         };
@@ -69,6 +70,8 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
             let userOptions = _targetOptions.android;
             if (userOptions.package != null)
                 targetOptions.package = userOptions.package;
+            if (userOptions.installLocation != null)
+                targetOptions.installLocation = userOptions.installLocation;
             if (userOptions.screenOrientation != null)
                 targetOptions.screenOrientation = userOptions.screenOrientation;
             if (userOptions.permissions != null)
@@ -91,6 +94,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         // fs.emptyDirSync(path.join(outdir, 'app', 'src'));
         let manifest = fs.readFileSync(path.join(indir, 'main', 'AndroidManifest.xml'), { encoding: 'utf8' });
         manifest = manifest.replace(/{package}/g, targetOptions.package);
+        manifest = manifest.replace(/{installLocation}/g, targetOptions.installLocation);
         manifest = manifest.replace(/{screenOrientation}/g, targetOptions.screenOrientation);
         manifest = manifest.replace(/{permissions}/g, targetOptions.permissions.map(function (p) { return '\n\t<uses-permission android:name="' + p + '"/>'; }).join(''));
         fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main'));

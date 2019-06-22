@@ -8,12 +8,12 @@ export function convert(inFilename: string, outFilename: string, encoder: string
 			resolve(true);
 			return;
 		}
-		
+
 		if (!encoder) {
 			resolve(false);
 			return;
 		}
-		
+
 		let dirend = Math.max(encoder.lastIndexOf('/'), encoder.lastIndexOf('\\'));
 		let firstspace = encoder.indexOf(' ', dirend);
 		let exe = encoder.substr(0, firstspace);
@@ -36,8 +36,8 @@ export function convert(inFilename: string, outFilename: string, encoder: string
 			else if (parts[i] === '{out}') options.push(outFilename.toString());
 			else options.push(parts[i]);
 		}
-
-		let process = child_process.spawn(exe, options);
+		// About stdio ignore: https://stackoverflow.com/a/20792428
+		let process = child_process.spawn(exe, options, {stdio: 'ignore'});
 		process.on('close', (code: number) => {
 			resolve(code === 0);
 		});

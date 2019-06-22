@@ -10,7 +10,7 @@ import {Library} from '../Project';
 
 function findIcon(from: string, options: any) {
 	if (fs.existsSync(path.join(from, 'icon.png'))) return path.join(from, 'icon.png');
-	else return path.join(options.kha, 'Kore', 'Tools', 'kraffiti', 'ball.png');
+	else return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'ball.png');
 }
 
 export class AndroidExporter extends KhaExporter {
@@ -26,7 +26,7 @@ export class AndroidExporter extends KhaExporter {
 		const safename = name.replace(/ /g, '-');
 
 		defines.push('no-compilation');
-		
+
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_g1');
 		defines.push('sys_g2');
@@ -73,12 +73,14 @@ export class AndroidExporter extends KhaExporter {
 
 		let targetOptions = {
 			package: 'tech.kode.kha',
+			installLocation: 'internalOnly',
 			screenOrientation: 'sensor',
 			permissions: new Array<string>()
 		};
 		if (_targetOptions != null && _targetOptions.android != null) {
 			let userOptions = _targetOptions.android;
 			if (userOptions.package != null) targetOptions.package = userOptions.package;
+			if (userOptions.installLocation != null) targetOptions.installLocation = userOptions.installLocation;
 			if (userOptions.screenOrientation != null) targetOptions.screenOrientation = userOptions.screenOrientation;
 			if (userOptions.permissions != null) targetOptions.permissions = userOptions.permissions;
 		}
@@ -106,6 +108,7 @@ export class AndroidExporter extends KhaExporter {
 
 		let manifest = fs.readFileSync(path.join(indir, 'main', 'AndroidManifest.xml'), {encoding: 'utf8'});
 		manifest = manifest.replace(/{package}/g, targetOptions.package);
+		manifest = manifest.replace(/{installLocation}/g, targetOptions.installLocation);
 		manifest = manifest.replace(/{screenOrientation}/g, targetOptions.screenOrientation);
 		manifest = manifest.replace(/{permissions}/g, targetOptions.permissions.map(function(p) { return '\n\t<uses-permission android:name="' + p + '"/>'; }).join(''));
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main'));
