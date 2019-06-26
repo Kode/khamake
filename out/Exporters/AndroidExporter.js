@@ -36,6 +36,7 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         defines.push('kha_g3');
         defines.push('kha_g4');
         defines.push('kha_a1');
+        defines.push('android');
         return {
             from: this.options.from,
             to: path.join(this.sysdir(), safename),
