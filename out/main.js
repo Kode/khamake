@@ -60,7 +60,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
         out += 'project.addDefine(\'HXCPP_API_LEVEL=331\');\n';
     }
     else {
-        out += 'project.addDefine(\'HXCPP_API_LEVEL=332\');\n';
+        out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
     }
     out += 'project.addDefine(\'HXCPP_DEBUG\', \'Debug\');\n';
     if (targetOptions) {
