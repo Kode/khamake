@@ -255,9 +255,15 @@ function printHelp() {
     }
 }
 function isTarget(target) {
-    if (target.trim().length < 1)
-        return false;
-    return true;
+    const t = target.trim();
+    for (let key of Object.keys(Platform_1.Platform)) {
+        const v = Platform_1.Platform[key];
+        const vhl = v + '-hl';
+        const vnative = v + '-native';
+        if (t == v || t == vhl || t == vnative)
+            return true;
+    }
+    return false;
 }
 for (let option of options) {
     if (option.value) {
