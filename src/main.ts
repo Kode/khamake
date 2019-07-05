@@ -334,7 +334,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 			if (target.endsWith('-hl')) {
 				korehl = true;
 				options.target = koreplatform(target);
-				if (!checkKorePlatform(options.target)) {
+				if (!checkKorePlatform(baseTarget)) {
 					log.error('Unknown platform: ' + options.target);
 					return Promise.reject('');
 				}
@@ -344,7 +344,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 				kore = true;
 				// If target is 'android-native' then options.target becomes 'android'
 				options.target = koreplatform(target);
-				if (!checkKorePlatform(options.target)) {
+				if (!checkKorePlatform(baseTarget)) {
 					log.error('Unknown platform: ' + options.target);
 					return Promise.reject('');
 				}
@@ -433,7 +433,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 			}
 		}
 
-		let shaderCompiler = new ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp,
+		let shaderCompiler = new ShaderCompiler(exporter, baseTarget, options.krafix, shaderDir, temp,
 		buildDir, options, project.shaderMatchers);
 		lastShaderCompiler = shaderCompiler;
 		try {
