@@ -97,6 +97,10 @@ export class Html5Exporter extends KhaExporter {
 
 			defines.push('kha_' + this.options.target);
 			defines.push('kha_' + this.options.target + '_js');
+
+			defines.push('sys_html5');
+			defines.push('kha_html5');
+			defines.push('kha_html5_js');
 		}
 
 		if (this.isADebugTarget()) {
