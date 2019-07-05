@@ -13,6 +13,9 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     backend() {
         return 'HTML5';
     }
+    isADebugTarget() {
+        return this.sysdir().indexOf('debug') !== -1;
+    }
     isDebugHtml5() {
         return this.sysdir() === 'debug-html5';
     }
@@ -71,7 +74,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             defines.push('kha_' + this.options.target);
             defines.push('kha_' + this.options.target + '_js');
         }
-        if (this.isDebugHtml5()) {
+        if (this.isADebugTarget()) {
             this.parameters.push('-debug');
             defines.push('sys_debug_html5');
             defines.push('kha_debug_html5');
@@ -109,6 +112,17 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
                 targetOptions.scriptName = userOptions.scriptName;
         }
         fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
+        if (this.isADebugTarget()) {
+            let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
+            let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), { encoding: 'utf8' });
+            protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
+            protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
+            fs.writeFileSync(electron.toString(), protoelectron);
+            let pack = path.join(this.options.to, this.sysdir(), 'package.json');
+            let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), { encoding: 'utf8' });
+            protopackage = protopackage.replace(/{Name}/g, name);
+            fs.writeFileSync(pack.toString(), protopackage);
+        }
         if (this.isDebugHtml5()) {
             let index = path.join(this.options.to, this.sysdir(), 'index.html');
             let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), { encoding: 'utf8' });
@@ -118,15 +132,6 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
             protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
             fs.writeFileSync(index.toString(), protoindex);
-            let pack = path.join(this.options.to, this.sysdir(), 'package.json');
-            let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), { encoding: 'utf8' });
-            protopackage = protopackage.replace(/{Name}/g, name);
-            fs.writeFileSync(pack.toString(), protopackage);
-            let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
-            let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), { encoding: 'utf8' });
-            protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
-            protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
-            fs.writeFileSync(electron.toString(), protoelectron);
         }
         else if (this.isNode()) {
             let pack = path.join(this.options.to, this.sysdir(), 'package.json');
