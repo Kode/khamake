@@ -583,7 +583,7 @@ async function run(options, loglog) {
             options.krafix = krafixpath;
     }
     if (!options.ogg && options.ffmpeg) {
-        options.ogg = options.ffmpeg + ' -nostdin -i {in} {out}';
+        options.ogg = options.ffmpeg + ' -nostdin -i {in} {out} -y';
     }
     if (!options.mp3 && options.ffmpeg) {
         options.mp3 = options.ffmpeg + ' -nostdin -i {in} {out}';
