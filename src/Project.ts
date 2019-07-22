@@ -71,7 +71,10 @@ export class Project {
 			flash: {},
 			android: {},
 			android_native: {},
-			ios: {}
+			ios: {},
+			xboxOne: {},
+			playStation4: {},
+			switch: {}
 		};
 	}
 
