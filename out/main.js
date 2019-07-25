@@ -299,11 +299,11 @@ async function exportKhaProject(options) {
             exporter = new EmptyExporter_1.EmptyExporter(options);
             break;
         default:
-            if (target.endsWith('-hl')) {
+            if (baseTarget.endsWith('-hl')) {
                 korehl = true;
-                options.target = koreplatform(target);
-                if (!checkKorePlatform(options.target)) {
-                    log.error('Unknown platform: ' + options.target);
+                options.target = koreplatform(baseTarget);
+                if (!checkKorePlatform(baseTarget)) {
+                    log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
                 exporter = new KoreHLExporter_1.KoreHLExporter(options);
@@ -311,9 +311,9 @@ async function exportKhaProject(options) {
             else {
                 kore = true;
                 // If target is 'android-native' then options.target becomes 'android'
-                options.target = koreplatform(target);
-                if (!checkKorePlatform(options.target)) {
-                    log.error('Unknown platform: ' + options.target);
+                options.target = koreplatform(baseTarget);
+                if (!checkKorePlatform(baseTarget)) {
+                    log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
                 exporter = new KoreExporter_1.KoreExporter(options);
@@ -386,7 +386,7 @@ async function exportKhaProject(options) {
                 }
             }
         }
-        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, options.target, options.krafix, shaderDir, temp, buildDir, options, project.shaderMatchers);
+        let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, baseTarget, options.krafix, shaderDir, temp, buildDir, options, project.shaderMatchers);
         lastShaderCompiler = shaderCompiler;
         try {
             exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
