@@ -651,7 +651,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (!options.ogg && options.ffmpeg) {
-		options.ogg = options.ffmpeg + ' -nostdin -i {in} {out}';
+		options.ogg = options.ffmpeg + ' -nostdin -i {in} {out} -y';
 	}
 
 	if (!options.mp3 && options.ffmpeg) {
