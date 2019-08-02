@@ -102,7 +102,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, id: s
 		out += '}\n';
 	}
 	for  (let lib of project.khabindLibs) {
-		out += 'if (fs.existsSync(path.join(\'' + lib.libRoot.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
+		out += 'if (fs.existsSync(path.join(\'' + lib.libRoot.replace(/\\/g, '/') + '\', \'kincfile.js\'))) {\n';
 		out += '\tawait project.addProject(\'' + lib.libRoot.replace(/\\/g, '/') + '\');\n';
 		out += '}\n';
 	}
@@ -171,7 +171,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 
 	if (options.haxe !== '' && kore && !options.noproject) {
 		// If target is a Kore project, generate additional project folders here.
-		// generate the korefile.js
+		// generate the kincfile.js
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
 		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, id, false, icon, project));
 

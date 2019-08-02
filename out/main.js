@@ -94,7 +94,7 @@ function createKorefile(name, exporter, options, id, korehl, icon, project) {
         out += '}\n';
     }
     for (let lib of project.khabindLibs) {
-        out += 'if (fs.existsSync(path.join(\'' + lib.libRoot.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
+        out += 'if (fs.existsSync(path.join(\'' + lib.libRoot.replace(/\\/g, '/') + '\', \'kincfile.js\'))) {\n';
         out += '\tawait project.addProject(\'' + lib.libRoot.replace(/\\/g, '/') + '\');\n';
         out += '}\n';
     }
@@ -146,7 +146,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
     let buildDir = path.join(options.to, exporter.sysdir() + '-build');
     if (options.haxe !== '' && kore && !options.noproject) {
         // If target is a Kore project, generate additional project folders here.
-        // generate the korefile.js
+        // generate the kincfile.js
         fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
         fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, id, false, icon, project));
         // Similar to khamake.js -> main.js -> run(...)

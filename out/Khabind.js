@@ -57,7 +57,7 @@ async function generateBindings(libRoot, bindOpts, options, korehl) {
             ]);
         }
         // Create a Korefile for HL/C builds of the library
-        var korefile = path.resolve(libRoot, 'korefile.js');
+        var korefile = path.resolve(libRoot, 'kincfile.js');
         var content = `let project = new Project('${path.basename(libRoot)}', __dirname);\n`;
         content += `project.addFile('${bindOpts.sourcesDir}/**');\n`;
         content += `project.addIncludeDir('${bindOpts.sourcesDir}');\n`;
