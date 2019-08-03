@@ -321,7 +321,7 @@ async function exportKhaProject(options) {
             if (baseTarget.endsWith('-hl')) {
                 korehl = true;
                 options.target = koreplatform(baseTarget);
-                if (!checkKorePlatform(baseTarget)) {
+                if (!checkKorePlatform(options.target)) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
