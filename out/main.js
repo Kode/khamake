@@ -302,7 +302,7 @@ async function exportKhaProject(options) {
             if (baseTarget.endsWith('-hl')) {
                 korehl = true;
                 options.target = koreplatform(baseTarget);
-                if (!checkKorePlatform(baseTarget)) {
+                if (!checkKorePlatform(options.target)) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
@@ -312,7 +312,7 @@ async function exportKhaProject(options) {
                 kore = true;
                 // If target is 'android-native' then options.target becomes 'android'
                 options.target = koreplatform(baseTarget);
-                if (!checkKorePlatform(baseTarget)) {
+                if (!checkKorePlatform(options.target)) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
