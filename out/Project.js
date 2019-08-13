@@ -28,6 +28,7 @@ class Project {
     constructor(name) {
         this.icon = null;
         this.name = name;
+        this.safeName = name.replace(/[^A-z0-9\-\_]/g, '-');
         this.version = '1.0';
         this.sources = [];
         this.defines = ['hxcpp_smart_strings'];
@@ -51,6 +52,9 @@ class Project {
             playStation4: {},
             switch: {}
         };
+    }
+    getSafeName() {
+        return this.safeName;
     }
     async addProject(projectDir) {
         let project = await ProjectFile_1.loadProject(projectDir, 'khafile.js', Project.platform);

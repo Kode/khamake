@@ -33,6 +33,7 @@ export class Project {
 	static platform: string;
 	static scriptdir: string;
 	name: string;
+	safeName: string;
 	version: string;
 	sources: string[];
 	defines: string[];
@@ -52,6 +53,7 @@ export class Project {
 
 	constructor(name: string) {
 		this.name = name;
+		this.safeName = name.replace(/[^A-z0-9\-\_]/g, '-');
 		this.version = '1.0';
 		this.sources = [];
 		this.defines = ['hxcpp_smart_strings'];
@@ -76,6 +78,10 @@ export class Project {
 			playStation4: {},
 			switch: {}
 		};
+	}
+
+	getSafeName() {
+		return this.safeName;
 	}
 
 	async addProject(projectDir: string) {
