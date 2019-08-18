@@ -53,18 +53,65 @@ class Project {
         };
     }
     async addProject(projectDir) {
-        let project = await ProjectFile_1.loadProject(projectDir, 'khafile.js', Project.platform);
-        this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
-        this.sources = this.sources.concat(project.sources);
-        this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
-        this.defines = this.defines.concat(project.defines);
-        this.cdefines = this.cdefines.concat(project.cdefines);
-        this.parameters = this.parameters.concat(project.parameters);
-        this.libraries = this.libraries.concat(project.libraries);
-        for (let customTarget of project.customTargets.keys()) {
-            this.customTargets.set(customTarget, project.customTargets.get(customTarget));
+        function findProjectDirectory(name) {
+            return new Promise((resolve, reject) => {
+                if (path.isAbsolute(name)) {
+                    resolve({ libpath: name, libroot: name });
+                }
+                // Look for Project in HaxeLib if not absolute.
+                // e.g. addLibrary('hxcpp') => '/usr/lib/haxelib/hxcpp/3,2,193'
+                child_process.exec('haxelib config', { encoding: 'utf8' }, (err, result) => {
+                    let libpath;
+                    // If there was an error with haxelib use the HAXEPATH.
+                    if (!err) {
+                        libpath = path.join(result.trim(), name.replace(/\./g, ','));
+                    }
+                    else if (process.env.HAXEPATH) {
+                        libpath = path.join(process.env.HAXEPATH, 'lib', name.toLowerCase());
+                    }
+                    // Start searching for a development HaxeLib.
+                    fs.readFile(path.join(libpath, '.dev'), "utf8", (err, data) => {
+                        if (!err) {
+                            resolve({ libpath: data, libroot: libpath });
+                        }
+                        else {
+                            // Check for current, otherwise there is no valid HaxeLib path.
+                            fs.readFile(path.join(libpath, '.current'), "utf8", (err, current) => {
+                                if (!err) {
+                                    resolve({ libpath: path.join(libpath, current.replace(/\./g, ',')), libroot: libpath });
+                                }
+                                else {
+                                    reject('Library ' + name + ' not found.');
+                                }
+                            });
+                        }
+                    });
+                });
+            });
         }
-        // windowOptions and targetOptions are ignored
+        ;
+        try {
+            let projInfo = await findProjectDirectory(projectDir);
+            let dir = projInfo.libpath;
+            let project = await ProjectFile_1.loadProject(dir, 'khafile.js', Project.platform);
+            this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
+            this.sources = this.sources.concat(project.sources);
+            this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
+            this.defines = this.defines.concat(project.defines);
+            this.cdefines = this.cdefines.concat(project.cdefines);
+            this.parameters = this.parameters.concat(project.parameters);
+            this.libraries = this.libraries.concat(project.libraries);
+            for (let customTarget of project.customTargets.keys()) {
+                this.customTargets.set(customTarget, project.customTargets.get(customTarget));
+            }
+            // windowOptions and targetOptions are ignored
+        }
+        catch (err) {
+            // Show error if library isn't found in Libraries or haxelib folder
+            log.error('Error: Project ' + name + ' not found.');
+            log.error('Either use the project\'s full path or install it in Haxelib, but that\'s less cool.');
+            log.error(err);
+        }
     }
     unglob(str) {
         const globChars = ['\\@', '\\!', '\\+', '\\*', '\\?', '\\(', '\\[', '\\{', '\\)', '\\]', '\\}'];
