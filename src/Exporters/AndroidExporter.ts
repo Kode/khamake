@@ -43,6 +43,7 @@ export class AndroidExporter extends KhaExporter {
 		defines.push('kha_g3');
 		defines.push('kha_g4');
 		defines.push('kha_a1');
+		defines.push('android');
 
 		return {
 			from: this.options.from,
