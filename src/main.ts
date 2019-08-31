@@ -45,7 +45,7 @@ function fixName(name: string): string {
 }
 
 function safeName(name: string): string {
-	return name.replace(/[\\\/]/g, '_');
+	return name.replace(/[^A-z0-9\-\_]/g, '-');
 }
 
 function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[], stackSize: number, version: string, id: string, korehl: boolean, icon: string): string {
@@ -116,8 +116,8 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		haxeOptions.defines.push('kha');
 		haxeOptions.defines.push('kha_version=1810');
-		haxeOptions.defines.push('kha_project_name=' + haxeOptions.name);
 		haxeOptions.safeName = safeName(haxeOptions.name);
+		haxeOptions.defines.push('kha_project_name=' + haxeOptions.name);
 
 		if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
 			haxeOptions.parameters.push('-debug');
