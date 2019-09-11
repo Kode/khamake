@@ -272,6 +272,7 @@ for (let option of options) {
 let args = process.argv;
 for (let i = 2; i < args.length; ++i) {
 	let arg = args[i];
+	if (arg === '--') break;
 
 	if (arg[0] === '-') {
 		if (arg[1] === '-') {
