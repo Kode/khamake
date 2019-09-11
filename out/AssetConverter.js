@@ -46,6 +46,9 @@ class AssetConverter {
         if (options.destination) {
             destination = AssetConverter.replacePattern(options.destination, destination, fileinfo, options, from);
         }
+        if (options.destinationCallback) {
+            destination = options.destinationCallback(destination);
+        }
         if (keepextension && (!options.name || options.name.indexOf('{ext}') < 0)) {
             nameValue += fileinfo.ext;
         }
