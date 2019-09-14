@@ -267,6 +267,7 @@ for (let option of options) {
         parsedOptions[option.full] = false;
     }
 }
+let targetIsDefault = true;
 let args = process.argv;
 for (let i = 2; i < args.length; ++i) {
     let arg = args[i];
@@ -283,6 +284,9 @@ for (let i = 2; i < args.length; ++i) {
                     if (option.value) {
                         ++i;
                         parsedOptions[option.full] = args[i];
+                        if (option.full === 'target') {
+                            targetIsDefault = false;
+                        }
                     }
                     else {
                         parsedOptions[option.full] = true;
@@ -300,6 +304,9 @@ for (let i = 2; i < args.length; ++i) {
                     if (option.value) {
                         ++i;
                         parsedOptions[option.full] = args[i];
+                        if (option.full === 'target') {
+                            targetIsDefault = false;
+                        }
                     }
                     else {
                         parsedOptions[option.full] = true;
@@ -309,8 +316,10 @@ for (let i = 2; i < args.length; ++i) {
         }
     }
     else {
-        if (isTarget(arg))
+        if (isTarget(arg)) {
             parsedOptions.target = arg.toLowerCase();
+            targetIsDefault = false;
+        }
     }
 }
 if (parsedOptions.run) {
@@ -349,7 +358,7 @@ if (parsedOptions.init) {
 else if (parsedOptions.server) {
     console.log('Running server on ' + parsedOptions.port);
     let nstatic = require('node-static');
-    let fileServer = new nstatic.Server(path.join(parsedOptions.from, 'build', parsedOptions.target), { cache: 0 });
+    let fileServer = new nstatic.Server(path.join(parsedOptions.from, 'build', targetIsDefault ? 'html5' : parsedOptions.target), { cache: 0 });
     let server = require('http').createServer(function (request, response) {
         request.addListener('end', function () {
             fileServer.serve(request, response);
