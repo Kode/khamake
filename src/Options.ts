@@ -41,6 +41,4 @@ export class Options {
 	webm: string;
 	wmv: string;
 	theora: string;
-
-	haxe3: boolean;
 }
