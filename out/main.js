@@ -56,12 +56,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     for (let cdefine of cdefines) {
         out += 'project.addDefine(\'' + cdefine + '\');\n';
     }
-    if (options.haxe3) {
-        out += 'project.addDefine(\'HXCPP_API_LEVEL=331\');\n';
-    }
-    else {
-        out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
-    }
+    out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
     out += 'project.addDefine(\'HXCPP_DEBUG\', \'Debug\');\n';
     if (targetOptions) {
         let koreTargetOptions = {};
@@ -567,13 +562,8 @@ async function run(options, loglog) {
     if (options.parallelAssetConversion === undefined) {
         options.parallelAssetConversion = 0;
     }
-    if (options.haxe3 === undefined) {
-        options.haxe3 = false;
-    }
     if (!options.haxe) {
-        let haxepath = options.haxe3
-            ? path.join(options.kha, 'Tools', 'haxe', 'v3.x')
-            : path.join(options.kha, 'Tools', 'haxe');
+        let haxepath = path.join(options.kha, 'Tools', 'haxe');
         if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory())
             options.haxe = haxepath;
     }
