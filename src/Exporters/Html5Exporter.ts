@@ -230,7 +230,7 @@ export class Html5Exporter extends KhaExporter {
 	}
 
 	async copyBlob(platform: string, from: string, to: string, options: any) {
-		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true, dereference: true });
 		return [to];
 	}
 
