@@ -193,7 +193,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         return [to + '.' + format];
     }
     async copyBlob(platform, from, to, options) {
-        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
+        fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true, dereference: true });
         return [to];
     }
     async copyVideo(platform, from, to, options) {
