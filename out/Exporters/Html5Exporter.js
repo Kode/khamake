@@ -14,7 +14,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         return 'HTML5';
     }
     isADebugTarget() {
-        return this.sysdir().indexOf('debug') !== -1;
+        return this.isDebug;
     }
     isDebugHtml5() {
         return this.sysdir() === 'debug-html5';
@@ -173,7 +173,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
         let mp4 = false;
         let mp3 = false;
-        if (!this.isDebugHtml5()) {
+        if (!this.isADebugTarget()) {
             mp4 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
             if (!mp4) {
                 mp3 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
@@ -199,7 +199,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     async copyVideo(platform, from, to, options) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         let mp4 = false;
-        if (!this.isDebugHtml5()) {
+        if (!this.isADebugTarget()) {
             mp4 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
         }
         let webm = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
