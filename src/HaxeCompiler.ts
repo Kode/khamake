@@ -42,7 +42,7 @@ export class HaxeCompiler {
 
 	async run(watch: boolean) {
 		if (watch) {
-			this.watcher = chokidar.watch(this.sourceMatchers, { ignored: /[\/\\]\.git/, persistent: true, ignoreInitial: true });
+			this.watcher = chokidar.watch(this.sourceMatchers, { ignored: /[\/\\]\.(git|DS_Store)/, persistent: true, ignoreInitial: true });
 			this.watcher.on('add', (file: string) => {
 				this.scheduleCompile();
 			});
