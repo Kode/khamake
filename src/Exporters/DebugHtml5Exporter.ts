@@ -4,5 +4,6 @@ import {Options} from '../Options';
 export class DebugHtml5Exporter extends Html5Exporter {
 	constructor(options: Options) {
 		super(options);
+		this.isDebug = true;
 	}
 }
