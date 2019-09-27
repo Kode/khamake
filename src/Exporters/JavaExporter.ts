@@ -98,20 +98,20 @@ export class JavaExporter extends KhaExporter {
 
 	async copySound(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
-		return [to + '.wav'];
+		return { files: [to + '.wav'], sizes: [1] };
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any, cache: any) {
 		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
-		return [to + '.' + format];
+		return { files: [to + '.' + format], sizes: [1] };
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-		return [to];
+		return { files: [to], sizes: [1] };
 	}
 
 	async copyVideo(platform: string, from: string, to: string) {
-		return [to];
+		return { files: [to], sizes: [1] };
 	}
 }

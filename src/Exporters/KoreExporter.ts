@@ -89,7 +89,7 @@ export class KoreExporter extends KhaExporter {
 		if (options.quality < 1) {
 			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-			return [to + '.ogg'];
+			return { files: [to + '.ogg'], sizes: [1] };
 		}
 		else {
 			if (from.endsWith('.wav')) {
@@ -98,48 +98,48 @@ export class KoreExporter extends KhaExporter {
 			else {
 				throw 'Can not convert ' + from + ' to wav format.';
 			}
-			return [to + '.wav'];
+			return { files: [to + '.wav'], sizes: [1] };
 		}
 	}
 
 	async copyImage(platform: string, from: string, to: string, options: any, cache: any) {
 		if (platform === Platform.iOS && options.quality < 1) {
 			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true, false, cache);
-			return [to + '.' + format];
+			return { files: [to + '.' + format], sizes: [1] };
 		}
 		else if (platform === Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi.OpenGL || this.options.graphics === GraphicsApi.Vulkan)) {
 			// let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true, false, cache);
 			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true, false, cache);
-			return [to + '.' + format];
+			return { files: [to + '.' + format], sizes: [1] };
 		}
 		else {
 			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true, false, cache);
-			return [to + '.' + format];
+			return { files: [to + '.' + format], sizes: [1] };
 		}
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-		return [to];
+		return { files: [to], sizes: [1] };
 	}
 
 	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		if (platform === Platform.Windows) {
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.avi'), this.options.h264);
-			return [to + '.avi'];
+			return { files: [to + '.avi'], sizes: [1] };
 		}
 		else if (platform === Platform.iOS || platform === Platform.OSX) {
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
-			return [to + '.mp4'];
+			return { files: [to + '.mp4'], sizes: [1] };
 		}
 		else if (platform === Platform.Android) {
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ts'), this.options.h264);
-			return [to + '.ts'];
+			return { files: [to + '.ts'], sizes: [1] };
 		}
 		else {
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogv'), this.options.theora);
-			return [to + '.ogv'];
+			return { files: [to + '.ogv'], sizes: [1] };
 		}
 	}
 }

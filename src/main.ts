@@ -485,11 +485,12 @@ async function exportKhaProject(options: Options): Promise<string> {
 		return fallback;
 	}
 
-	let files: {name: string, files: string[], type: string, inputs: any[], outputs: any[], uniforms: any[], types: any[]}[] = [];
+	let files: {name: string, files: string[], file_sizes: number[], type: string, inputs: any[], outputs: any[], uniforms: any[], types: any[]}[] = [];
 	for (let asset of assets) {
 		let file: any = {
 			name: fixName(asset.name),
 			files: asset.files,
+			file_sizes: asset.file_sizes,
 			type: asset.type
 		};
 		if (file.type === 'image') {
@@ -505,6 +506,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 		files.push({
 			name: fixName(shader.name),
 			files: shader.files === null ? oldShader.files : shader.files,
+			file_sizes: [1],
 			type: 'shader',
 			inputs: shader.inputs === null ? oldShader.inputs : shader.inputs,
 			outputs: shader.outputs === null ? oldShader.outputs : shader.outputs,

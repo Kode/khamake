@@ -276,12 +276,12 @@ export class WpfExporter extends CSharpExporter {
 
 	async copySound(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
-		return [to + '.wav'];
+		return { files: [to + '.wav'], sizes: [1] };
 	}
 
 	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		await convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), this.options.wmv);
-		return [to + '.wmv'];
+		return { files: [to + '.wmv'], sizes: [1] };
 	}
 }

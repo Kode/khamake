@@ -76,29 +76,30 @@ export class KromExporter extends KhaExporter {
 		if (options.quality < 1) {
 			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 			let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
-			return [to + '.ogg'];
+			return { files: [to + '.ogg'], sizes: [1] };
 		}
 		else {
 			fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
-			return [to + '.wav'];
+			return { files: [to + '.wav'], sizes: [1] };
 		}
 	}
 
 	async copyImage(platform: string, from: string, to: string, options: any, cache: any) {
 		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
-		return [to + '.' + format];
+		return { files: [to + '.' + format], sizes: [1] };
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
 		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-		return [to];
+		return { files: [to], sizes: [1] };
 	}
 
 	async copyVideo(platform: string, from: string, to: string) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
 		let files: string[] = [];
-		if (webm) files.push(to + '.webm');
-		return files;
+		let sizes: number[] = [];
+		if (webm) { files.push(to + '.webm'); sizes.push(1); }
+		return { files: files, sizes: sizes };
 	}
 }
