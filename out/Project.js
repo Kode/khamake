@@ -74,25 +74,9 @@ class Project {
         const globChars = ['\\@', '\\!', '\\+', '\\*', '\\?', '\\(', '\\[', '\\{', '\\)', '\\]', '\\}'];
         str = str.replace(/\\/g, '/');
         for (const char of globChars) {
-            str = str.replace(new RegExp(char, 'g'), char);
+            str = str.replace(new RegExp(char, 'g'), '\\' + char.substr(1));
         }
         return str;
-    }
-    getBaseDir(str) {
-        // replace \\ to / if next char is not glob
-        str = str.replace(/\\([^@!+*?{}()[\]]|$)/g, '/$1');
-        // find non-globby path part
-        const globby = /[^\\][@!+*?{}()[\]]/;
-        while (globby.test(str)) {
-            str = path.dirname(str);
-        }
-        str = this.removeGlobEscaping(str);
-        if (!str.endsWith('/'))
-            str += '/';
-        return str;
-    }
-    removeGlobEscaping(str) {
-        return str.replace(/\\([@!+*?{}()[\]]|$)/g, '$1');
     }
     /**
      * Add all assets matching the match glob relative to the directory containing the current khafile.
@@ -104,15 +88,10 @@ class Project {
             options = {};
         if (!path.isAbsolute(match)) {
             let base = this.unglob(path.resolve(this.scriptdir));
-            if (!base.endsWith('/'))
+            if (!base.endsWith('/')) {
                 base += '/';
-            // if there is no nameBaseDir: extract relative assets path from match
-            const baseName = options.nameBaseDir == null ? this.getBaseDir(match) : options.nameBaseDir;
-            match = path.resolve(base, match.replace(/\\/g, '/'));
-            options.baseDir = path.resolve(this.removeGlobEscaping(base), baseName);
-        }
-        else {
-            options.baseDir = this.getBaseDir(match);
+            }
+            match = base + match.replace(/\\/g, '/');
         }
         this.assetMatchers.push({ match: match, options: options });
     }
