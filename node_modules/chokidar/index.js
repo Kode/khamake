@@ -273,13 +273,18 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
     this._throttled[action] = Object.create(null);
   }
   var throttled = this._throttled[action];
-  if (path in throttled) return false;
+  if (path in throttled) {
+    throttled[path].count++;
+    return false;
+  }
   function clear() {
+    var count = throttled[path] ? throttled[path].count : 0;
     delete throttled[path];
     clearTimeout(timeoutObject);
+    return count;
   }
   var timeoutObject = setTimeout(clear, timeout);
-  throttled[path] = {timeoutObject: timeoutObject, clear: clear};
+  throttled[path] = {timeoutObject: timeoutObject, clear: clear, count: 0};
   return throttled[path];
 };
 
@@ -287,7 +292,7 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
 //
 // * path    - string, path being acted upon
 // * threshold - int, time in milliseconds a file size must be fixed before
-//                    acknowledgeing write operation is finished
+//                    acknowledging write operation is finished
 // * awfEmit - function, to be called when ready for event to be emitted
 // Polls a newly created file for size variations. When files size does not
 // change for 'threshold' milliseconds calls callback.
@@ -575,7 +580,9 @@ FSWatcher.prototype._remove = function(directory, item) {
 
 FSWatcher.prototype._closePath = function(path) {
   if (!this._closers[path]) return;
-  this._closers[path]();
+  this._closers[path].forEach(function(closer) {
+    closer();
+  });
   delete this._closers[path];
   this._getWatchedDir(sysPath.dirname(path)).remove(sysPath.basename(path));
 }
@@ -694,7 +701,9 @@ FSWatcher.prototype.close = function() {
 
   this.closed = true;
   Object.keys(this._closers).forEach(function(watchPath) {
-    this._closers[watchPath]();
+    this._closers[watchPath].forEach(function(closer) {
+      closer();
+    });
     delete this._closers[watchPath];
   }, this);
   this._watched = Object.create(null);

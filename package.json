@@ -23,7 +23,7 @@
     "@types/chokidar": "^1.7.5",
     "@types/fs-extra": "^5.0.2",
     "@types/node": "^12.7.11",
-    "chokidar": "^2.0.3",
+    "chokidar": "^2.1.8",
     "fs-extra": "^6.0.0",
     "node-static": "^0.7.10",
     "uuid": "^3.2.1"
