@@ -48,7 +48,7 @@ function safeName(name: string): string {
 	return name.replace(/[^A-z0-9\-\_]/g, '-');
 }
 
-function createKorefile(name: string, exporter: KhaExporter, options: any, targetOptions: any, libraries: Library[], cdefines: string[], stackSize: number, version: string, id: string, korehl: boolean, icon: string): string {
+function createKorefile(name: string, exporter: KhaExporter, options: Options, targetOptions: any, libraries: Library[], cdefines: string[], stackSize: number, version: string, id: string, korehl: boolean, icon: string): string {
 	let out = '';
 	out += 'let fs = require(\'fs\');\n';
 	out += 'let path = require(\'path\');\n';
@@ -67,6 +67,9 @@ function createKorefile(name: string, exporter: KhaExporter, options: any, targe
 
 	out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
 	out += 'project.addDefine(\'HXCPP_DEBUG\', \'Debug\');\n';
+	if (!options.slowgc) {
+		out += 'project.addDefine(\'HXCPP_GC_GENERATIONAL\');\n';
+	}
 
 	if (targetOptions) {
 		let koreTargetOptions: any = {};
@@ -174,6 +177,11 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				callback();
 			}
 			log.info('Done.');
+			if (!options.slowgc) {
+				log.info('\nDramatic Warning:\nKha is now using hxcpp\'s generational garbage collection by default.\nYou might run into problems with it.\n'
+				+ 'If that happens, please tell Robert about it because he is\ndesperately searching for small and reproducable test cases.\n'
+				+ 'While you wait for a fix you can then use the --slowgc option.\n');
+			}
 			return name;
 		}
 		catch (error) {

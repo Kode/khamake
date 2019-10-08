@@ -41,4 +41,6 @@ export class Options {
 	webm: string;
 	wmv: string;
 	theora: string;
+
+	slowgc: boolean;
 }

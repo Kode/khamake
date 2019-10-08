@@ -58,6 +58,9 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     }
     out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
     out += 'project.addDefine(\'HXCPP_DEBUG\', \'Debug\');\n';
+    if (!options.slowgc) {
+        out += 'project.addDefine(\'HXCPP_GC_GENERATIONAL\');\n';
+    }
     if (targetOptions) {
         let koreTargetOptions = {};
         for (let option in targetOptions) {
@@ -153,6 +156,11 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 callback();
             }
             log.info('Done.');
+            if (!options.slowgc) {
+                log.info('\nDramatic Warning:\nKha is now using hxcpp\'s generational garbage collection by default.\nYou might run into problems with it.\n'
+                    + 'If that happens, please tell Robert about it because he is\ndesperately searching for small and reproducable test cases.\n'
+                    + 'While you wait for a fix you can then use the --slowgc option.\n');
+            }
             return name;
         }
         catch (error) {

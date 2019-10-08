@@ -234,6 +234,11 @@ let options: Array<any> = [
 		description: 'Experimental - Spawn multiple processes during asset and shader conversion. Possible values:\n  0: disabled (default value)\n -1: choose number of processes automatically\n  N: specify number of processes manually',
 		value: true,
 		default: 0
+	},
+	{
+		full: 'slowgc',
+		description: 'Disables generational garbage collection.',
+		value: false
 	}
 ];
 

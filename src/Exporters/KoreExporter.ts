@@ -11,8 +11,11 @@ import {Options} from '../Options';
 import {Library} from '../Project';
 
 export class KoreExporter extends KhaExporter {
+	slowgc: boolean;
+
 	constructor(options: Options) {
 		super(options);
+		this.slowgc = options.slowgc;
 		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 	}
 
@@ -23,6 +26,10 @@ export class KoreExporter extends KhaExporter {
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {
 		defines.push('no-compilation');
 		defines.push('include-prefix=hxinc');
+
+		if (!this.slowgc) {
+			defines.push('HXCPP_GC_GENERATIONAL');
+		}
 
 		defines.push('sys_' + this.options.target);
 		defines.push('sys_kore');
