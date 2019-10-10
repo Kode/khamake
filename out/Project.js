@@ -84,7 +84,7 @@ class Project {
         // find non-globby path part
         const globby = /[^\\][@!+*?{}()[\]]/;
         while (globby.test(str)) {
-            str = path.dirname(str);
+            str = path.posix.dirname(str);
         }
         str = this.removeGlobEscaping(str);
         if (!str.endsWith('/'))
@@ -108,8 +108,8 @@ class Project {
                 base += '/';
             // if there is no nameBaseDir: extract relative assets path from match
             const baseName = options.nameBaseDir == null ? this.getBaseDir(match) : options.nameBaseDir;
-            match = path.resolve(base, match.replace(/\\/g, '/'));
-            options.baseDir = path.resolve(this.removeGlobEscaping(base), baseName);
+            match = path.posix.join(base, match.replace(/\\/g, '/'));
+            options.baseDir = path.posix.join(this.removeGlobEscaping(base), baseName);
         }
         else {
             options.baseDir = this.getBaseDir(match);
