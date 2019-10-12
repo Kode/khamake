@@ -177,11 +177,6 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				callback();
 			}
 			log.info('Done.');
-			if (!options.slowgc) {
-				log.info('\nDramatic Warning:\nKha is now using hxcpp\'s generational garbage collection by default.\nYou might run into problems with it.\n'
-				+ 'If that happens, please tell Robert about it because he is\ndesperately searching for small and reproducable test cases.\n'
-				+ 'While you wait for a fix you can then use the --slowgc option.\n');
-			}
 			return name;
 		}
 		catch (error) {
