@@ -11,6 +11,20 @@ function copyAndReplace(from: string, to: string, names: string[], values: strin
 	fs.writeFileSync(to, data, { encoding: 'utf8' });
 }
 
+function escapeXml(s: string) {
+    return s.replace(/[<>&'"]/g, c=>{
+			switch (c) {
+				case '<': return '&lt;';
+				case '>': return '&gt;';
+				case '&': return '&amp;';
+				case '\'': return '&apos;';
+				case '"': return '&quot;';
+				default: throw "unreachable code";
+			}
+		}
+    );
+}
+
 function IntelliJ(projectdir: string, options: any) {
 	let indir = path.join(__dirname, '..', 'Data', 'intellij');
 	let outdir = path.join(projectdir, options.safeName + '-' + options.system + '-intellij');
@@ -309,7 +323,7 @@ function FlashDevelop(projectdir: string, options: any) {
 	}
 	def += '-D kha_output=&quot;' + path.resolve(path.join(projectdir, options.to)) + '&quot;&#xA;';
 	for (let param of options.parameters) {
-		def += param + '&#xA;';
+		def += escapeXml(param) + '&#xA;';
 	}
 
 	let project = {
