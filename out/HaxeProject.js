@@ -18,7 +18,7 @@ function escapeXml(s) {
             case '&': return '&amp;';
             case '\'': return '&apos;';
             case '"': return '&quot;';
-            default: throw "unreachable code";
+            default: throw 'unreachable code';
         }
     });
 }

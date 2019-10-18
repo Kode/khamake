@@ -545,6 +545,44 @@ function runProject(options) {
     });
 }
 exports.api = 2;
+function findKhaVersion(dir) {
+    if (fs.existsSync(path.join(dir, '.git'))) {
+        let gitVersion = 'git-error';
+        try {
+            const output = child_process.spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', cwd: dir }).output;
+            for (const str of output) {
+                if (str != null && str.length > 0) {
+                    gitVersion = str.substr(0, 8);
+                    break;
+                }
+            }
+        }
+        catch (error) {
+        }
+        let gitStatus = 'git-error';
+        try {
+            const output = child_process.spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8', cwd: dir }).output;
+            gitStatus = '';
+            for (const str of output) {
+                if (str != null && str.length > 0) {
+                    gitStatus = str.trim();
+                    break;
+                }
+            }
+        }
+        catch (error) {
+        }
+        if (gitStatus) {
+            return gitVersion + ', ' + gitStatus;
+        }
+        else {
+            return gitVersion;
+        }
+    }
+    else {
+        return 'unversioned';
+    }
+}
 async function run(options, loglog) {
     if (options.silent) {
         log.silent();
@@ -561,7 +599,7 @@ async function run(options, loglog) {
     else {
         options.kha = path.resolve(options.kha);
     }
-    log.info('Using Kha from ' + options.kha);
+    log.info('Using Kha (' + findKhaVersion(options.kha) + ') from ' + options.kha);
     if (options.parallelAssetConversion === undefined) {
         options.parallelAssetConversion = 0;
     }

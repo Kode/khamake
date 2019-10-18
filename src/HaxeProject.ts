@@ -12,17 +12,17 @@ function copyAndReplace(from: string, to: string, names: string[], values: strin
 }
 
 function escapeXml(s: string) {
-    return s.replace(/[<>&'"]/g, c=>{
+	return s.replace(/[<>&'"]/g, c => {
 			switch (c) {
 				case '<': return '&lt;';
 				case '>': return '&gt;';
 				case '&': return '&amp;';
 				case '\'': return '&apos;';
 				case '"': return '&quot;';
-				default: throw "unreachable code";
+				default: throw 'unreachable code';
 			}
 		}
-    );
+	);
 }
 
 function IntelliJ(projectdir: string, options: any) {
