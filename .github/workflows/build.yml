@@ -1,0 +1,23 @@
+name: Build
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install tslint
+      run: sudo npm install -g tslint
+    - name: Lint
+      run: tslint -c tslint.json src/*.ts src/Exporters/*.ts
+    - name: Compile
+      run: tsc
