@@ -238,6 +238,11 @@ let options = [
         full: 'slowgc',
         description: 'Disables generational garbage collection.',
         value: false
+    },
+    {
+        full: 'nosigning',
+        value: false,
+        description: 'Disable code signing for iOS'
     }
 ];
 let parsedOptions = new Options_1.Options();

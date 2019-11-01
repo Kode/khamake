@@ -239,6 +239,11 @@ let options: Array<any> = [
 		full: 'slowgc',
 		description: 'Disables generational garbage collection.',
 		value: false
+	},
+	{
+		full: 'nosigning',
+		value: false,
+		description: 'Disable code signing for iOS'
 	}
 ];
 

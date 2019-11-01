@@ -147,7 +147,8 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 compile: options.compile,
                 run: options.run,
                 debug: options.debug,
-                noshaders: true
+                noshaders: true,
+                nosigning: options.nosigning
             }, {
                 info: log.info,
                 error: log.error
@@ -181,7 +182,8 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 compile: options.compile,
                 run: options.run,
                 debug: options.debug,
-                noshaders: true
+                noshaders: true,
+                nosigning: options.nosigning
             }, {
                 info: log.info,
                 error: log.error

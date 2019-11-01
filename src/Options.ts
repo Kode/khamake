@@ -43,4 +43,5 @@ export class Options {
 	theora: string;
 
 	slowgc: boolean;
+	nosigning: boolean;
 }

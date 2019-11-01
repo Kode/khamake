@@ -167,7 +167,8 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				compile: options.compile,
 				run: options.run,
 				debug: options.debug,
-				noshaders: true
+				noshaders: true,
+				nosigning: options.nosigning
 			},
 			{
 				info: log.info,
@@ -204,7 +205,8 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				compile: options.compile,
 				run: options.run,
 				debug: options.debug,
-				noshaders: true
+				noshaders: true,
+				nosigning: options.nosigning
 			},
 			{
 				info: log.info,
