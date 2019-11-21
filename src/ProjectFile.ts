@@ -9,6 +9,7 @@ export let Callbacks = {
 	preShaderCompilation: [() => {}],
 	preHaxeCompilation:   [() => {}],
 	postHaxeCompilation:  [() => {}],
+	postHaxeRecompilation:[() => {}],
 	postCppCompilation:   [() => {}]
 };
 
@@ -25,6 +26,7 @@ export async function loadProject(from: string, projectfile: string, platform: s
 				preShaderCompilation: () => {},
 				preHaxeCompilation:   () => {},
 				postHaxeCompilation:  () => {},
+				postHaxeRecompilation:() => {},
 				postCppCompilation:   () => {}
 			};
 			let resolver = (project: Project) => {
@@ -33,6 +35,7 @@ export async function loadProject(from: string, projectfile: string, platform: s
 				Callbacks.preShaderCompilation.push(callbacks.preShaderCompilation);
 				Callbacks.preHaxeCompilation.push(callbacks.preHaxeCompilation);
 				Callbacks.postHaxeCompilation.push(callbacks.postHaxeCompilation);
+				Callbacks.postHaxeRecompilation.push(callbacks.postHaxeRecompilation);
 				Callbacks.postCppCompilation.push(callbacks.postCppCompilation);
 				resolve(project);
 			};
@@ -42,7 +45,7 @@ export async function loadProject(from: string, projectfile: string, platform: s
 					console.error('Error: khafile.js did not call resolve, no project created.');
 				}
 			});
-	
+
 			Project.platform = platform;
 			Project.scriptdir = from;
 			try {

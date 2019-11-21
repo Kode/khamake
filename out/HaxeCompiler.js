@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const ProjectFile_1 = require("./ProjectFile");
 const child_process = require("child_process");
 const fs = require("fs");
 const path = require("path");
@@ -156,6 +157,9 @@ class HaxeCompiler {
                 if (code === 0) {
                     process.stdout.write('\x1Bc');
                     log.info('Haxe compile end.');
+                    for (let callback of ProjectFile_1.Callbacks.postHaxeRecompilation) {
+                        callback();
+                    }
                 }
                 else {
                     log.info('Haxe compile error.');

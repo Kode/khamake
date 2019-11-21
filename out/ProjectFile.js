@@ -9,6 +9,7 @@ exports.Callbacks = {
     preShaderCompilation: [() => { }],
     preHaxeCompilation: [() => { }],
     postHaxeCompilation: [() => { }],
+    postHaxeRecompilation: [() => { }],
     postCppCompilation: [() => { }]
 };
 async function loadProject(from, projectfile, platform) {
@@ -23,6 +24,7 @@ async function loadProject(from, projectfile, platform) {
                 preShaderCompilation: () => { },
                 preHaxeCompilation: () => { },
                 postHaxeCompilation: () => { },
+                postHaxeRecompilation: () => { },
                 postCppCompilation: () => { }
             };
             let resolver = (project) => {
@@ -31,6 +33,7 @@ async function loadProject(from, projectfile, platform) {
                 exports.Callbacks.preShaderCompilation.push(callbacks.preShaderCompilation);
                 exports.Callbacks.preHaxeCompilation.push(callbacks.preHaxeCompilation);
                 exports.Callbacks.postHaxeCompilation.push(callbacks.postHaxeCompilation);
+                exports.Callbacks.postHaxeRecompilation.push(callbacks.postHaxeRecompilation);
                 exports.Callbacks.postCppCompilation.push(callbacks.postCppCompilation);
                 resolve(project);
             };

@@ -1,3 +1,4 @@
+import {Callbacks} from './ProjectFile';
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -177,6 +178,9 @@ export class HaxeCompiler {
 				if (code === 0) {
 					process.stdout.write('\x1Bc');
 					log.info('Haxe compile end.');
+					for (let callback of Callbacks.postHaxeRecompilation) {
+						callback();
+					}
 				} else {
 					log.info('Haxe compile error.');
 				}
