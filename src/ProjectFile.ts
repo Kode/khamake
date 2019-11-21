@@ -5,12 +5,12 @@ import {Platform} from './Platform';
 import {Project} from './Project';
 
 export let Callbacks = {
-	preAssetConversion:   [() => {}],
-	preShaderCompilation: [() => {}],
-	preHaxeCompilation:   [() => {}],
-	postHaxeCompilation:  [() => {}],
-	postHaxeRecompilation:[() => {}],
-	postCppCompilation:   [() => {}]
+	preAssetConversion:    [() => {}],
+	preShaderCompilation:  [() => {}],
+	preHaxeCompilation:    [() => {}],
+	postHaxeCompilation:   [() => {}],
+	postHaxeRecompilation: [() => {}],
+	postCppCompilation:    [() => {}]
 };
 
 export async function loadProject(from: string, projectfile: string, platform: string): Promise<Project> {
@@ -22,12 +22,12 @@ export async function loadProject(from: string, projectfile: string, platform: s
 
 			let resolved = false;
 			let callbacks = {
-				preAssetConversion:   () => {},
-				preShaderCompilation: () => {},
-				preHaxeCompilation:   () => {},
-				postHaxeCompilation:  () => {},
-				postHaxeRecompilation:() => {},
-				postCppCompilation:   () => {}
+				preAssetConversion:    () => {},
+				preShaderCompilation:  () => {},
+				preHaxeCompilation:    () => {},
+				postHaxeCompilation:   () => {},
+				postHaxeRecompilation: () => {},
+				postCppCompilation:    () => {}
 			};
 			let resolver = (project: Project) => {
 				resolved = true;
