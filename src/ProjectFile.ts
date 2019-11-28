@@ -50,8 +50,8 @@ export async function loadProject(from: string, projectfile: string, platform: s
 			Project.scriptdir = from;
 			try {
 				let AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
-				new AsyncFunction('Project', 'Platform', 'platform', 'require', 'process', 'resolve', 'reject', 'callbacks', data)
-					(Project, Platform, platform, require, process, resolver, reject, callbacks);
+				new AsyncFunction('Project', 'Platform', 'platform', 'require', '__dirname', 'process', 'resolve', 'reject', 'callbacks', data)
+					(Project, Platform, platform, require, path.resolve(from), process, resolver, reject, callbacks);
 			}
 			catch (error) {
 				reject(error);
