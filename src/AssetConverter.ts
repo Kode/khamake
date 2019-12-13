@@ -1,3 +1,4 @@
+import {Callbacks} from './ProjectFile';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {KhaExporter} from './Exporters/KhaExporter';
@@ -82,7 +83,7 @@ export class AssetConverter {
 			let files: string[] = [];
 			this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.(svn|git|DS_Store)/, persistent: watch, followSymlinks: false });
 
-			const onFileChange = (file: string) => {
+			const onFileChange = async (file: string) => {
 				const fileinfo = path.parse(file);
 				const baseDir = path.dirname(match);
 				let outPath = fileinfo.dir + path.sep + fileinfo.name;
@@ -93,14 +94,14 @@ export class AssetConverter {
 					case '.jpg':
 					case '.jpeg':
 					case '.hdr': {}
-						this.exporter.copyImage(this.platform, file, outPath, {}, {});
+						await this.exporter.copyImage(this.platform, file, outPath, {}, {});
 						break;
 
 					case '.ogg':
 					case '.mp3':
 					case '.flac':
 					case '.wav': {
-						this.exporter.copySound(this.platform, file, outPath, {});
+						await this.exporter.copySound(this.platform, file, outPath, {});
 						break;
 					}
 
@@ -109,16 +110,19 @@ export class AssetConverter {
 					case '.mov':
 					case '.wmv':
 					case '.avi': {
-						this.exporter.copyVideo(this.platform, file, outPath, {});
+						await this.exporter.copyVideo(this.platform, file, outPath, {});
 						break;
 					}
 
 					case '.ttf':
-						this.exporter.copyFont(this.platform, file, outPath, {});
+						await this.exporter.copyFont(this.platform, file, outPath, {});
 						break;
 
 					default:
-						this.exporter.copyBlob(this.platform, file, outPath + fileinfo.ext, {});
+						await this.exporter.copyBlob(this.platform, file, outPath + fileinfo.ext, {});
+				}
+				for (let callback of Callbacks.postAssetReexporting) {
+					callback(outPath + fileinfo.ext);
 				}
 			};
 
