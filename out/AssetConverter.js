@@ -62,7 +62,7 @@ class AssetConverter {
         return new Promise((resolve, reject) => {
             let ready = false;
             let files = [];
-            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.(git|DS_Store)/, persistent: watch, followSymlinks: false });
+            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.(svn|git|DS_Store)/, persistent: watch, followSymlinks: false });
             const onFileChange = async (file) => {
                 const fileinfo = path.parse(file);
                 const baseDir = path.dirname(match);

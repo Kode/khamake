@@ -49,7 +49,7 @@ async function loadProject(from, projectfile, platform) {
             Project_1.Project.scriptdir = from;
             try {
                 let AsyncFunction = Object.getPrototypeOf(async () => { }).constructor;
-                new AsyncFunction('Project', 'Platform', 'platform', 'require', 'process', 'resolve', 'reject', 'callbacks', data)(Project_1.Project, Platform_1.Platform, platform, require, process, resolver, reject, callbacks);
+                new AsyncFunction('Project', 'Platform', 'platform', 'require', '__dirname', 'process', 'resolve', 'reject', 'callbacks', data)(Project_1.Project, Platform_1.Platform, platform, require, path.resolve(from), process, resolver, reject, callbacks);
             }
             catch (error) {
                 reject(error);
