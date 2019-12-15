@@ -165,7 +165,7 @@ export class Project {
 		this.customTargets.set(name, new Target(baseTarget, backends));
 	}
 
-	addLibrary(library: string) {
+	addLibrary(library: string): string {
 		this.addDefine(library);
 		let self = this;
 		function findLibraryDirectory(name: string) {
@@ -272,5 +272,6 @@ export class Project {
 
 			this.addShaders(dir + '/Sources/Shaders/**', {});
 		}
+		return dir;
 	}
 }
