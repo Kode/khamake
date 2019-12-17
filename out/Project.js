@@ -227,6 +227,7 @@ class Project {
             }
             this.addShaders(dir + '/Sources/Shaders/**', {});
         }
+        return dir;
     }
 }
 exports.Project = Project;
