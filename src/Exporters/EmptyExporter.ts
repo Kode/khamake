@@ -71,18 +71,18 @@ export class EmptyExporter extends KhaExporter {
 	}
 
 	async copySound(platform: string, from: string, to: string) {
-		return [''];
+		return { files: [''], sizes: [0] };
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any) {
-		return [''];
+		return { files: [''], sizes: [0] };
 	}
 
 	async copyBlob(platform: string, from: string, to: string) {
-		return [''];
+		return { files: [''], sizes: [0] };
 	}
 
 	async copyVideo(platform: string, from: string, to: string) {
-		return [''];
+		return { files: [''], sizes: [0] };
 	}
 }

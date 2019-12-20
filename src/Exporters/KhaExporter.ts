@@ -75,23 +75,23 @@ export abstract class KhaExporter extends Exporter {
 		}
 	}
 
-	async copyImage(platform: string, from: string, to: string, options: any, cache: any): Promise<Array<string>> {
-		return [];
+	async copyImage(platform: string, from: string, to: string, options: any, cache: any): Promise<{ files: Array<string>, sizes: Array<number>}> {
+		return {files: [], sizes: []};
 	}
 
-	async copySound(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
-		return [];
+	async copySound(platform: string, from: string, to: string, options: any): Promise<{ files: Array<string>, sizes: Array<number>}> {
+		return {files: [], sizes: []};
 	}
 
-	async copyVideo(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
-		return [];
+	async copyVideo(platform: string, from: string, to: string, options: any): Promise<{ files: Array<string>, sizes: Array<number>}> {
+		return {files: [], sizes: []};
 	}
 
-	async copyBlob(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
-		return [];
+	async copyBlob(platform: string, from: string, to: string, options: any): Promise<{ files: Array<string>, sizes: Array<number>}> {
+		return {files: [], sizes: []};
 	}
 
-	async copyFont(platform: string, from: string, to: string, options: any): Promise<Array<string>> {
+	async copyFont(platform: string, from: string, to: string, options: any): Promise<{ files: Array<string>, sizes: Array<number>}> {
 		return await this.copyBlob(platform, from, to + '.ttf', options);
 	}
 }
