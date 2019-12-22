@@ -125,20 +125,20 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
         callback();
     }*/
     async copySound(platform, from, to) {
-        return [''];
+        return { files: [''], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
         this.files.push(asset['file']);
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
-        return [to + '.' + format];
+        return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {
         fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
         this.files.push(to);
-        return [to];
+        return { files: [to], sizes: [1] };
     }
     async copyVideo(platform, from, to) {
-        return [''];
+        return { files: [''], sizes: [1] };
     }
 }
 exports.PlayStationMobileExporter = PlayStationMobileExporter;

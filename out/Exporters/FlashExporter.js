@@ -97,24 +97,24 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
     async copySound(platform, from, to) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
-        return [to + '.mp3'];
+        return { files: [to + '.mp3'], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
         if (this.options.embedflashassets)
             this.images.push(to + '.' + format);
-        return [to + '.' + format];
+        return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {
         fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
         if (this.options.embedflashassets)
             this.blobs.push(to);
-        return [to];
+        return { files: [to], sizes: [1] };
     }
     async copyVideo(platform, from, to) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
-        return [to + '.mp4'];
+        return { files: [to + '.mp4'], sizes: [1] };
     }
     addShader(shader) {
         if (this.options.embedflashassets)

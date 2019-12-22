@@ -444,6 +444,7 @@ async function exportKhaProject(options) {
         let file = {
             name: fixName(asset.name),
             files: asset.files,
+            file_sizes: asset.file_sizes,
             type: asset.type
         };
         if (file.type === 'image') {
@@ -461,6 +462,7 @@ async function exportKhaProject(options) {
         files.push({
             name: fixName(shader.name),
             files: shader.files === null ? oldShader.files : shader.files,
+            file_sizes: [1],
             type: 'shader',
             inputs: shader.inputs === null ? oldShader.inputs : shader.inputs,
             outputs: shader.outputs === null ? oldShader.outputs : shader.outputs,

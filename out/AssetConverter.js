@@ -144,7 +144,7 @@ class AssetConverter {
                                 images = await self.exporter.copyImage(self.platform, file, exportInfo.destination, options, cache);
                             }
                             if (!options.notinlist) {
-                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
+                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images.files, file_sizes: images.sizes, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
                             }
                             break;
                         }
@@ -160,11 +160,11 @@ class AssetConverter {
                             else {
                                 sounds = await self.exporter.copySound(self.platform, file, exportInfo.destination, options);
                             }
-                            if (sounds.length === 0) {
+                            if (sounds.files.length === 0) {
                                 throw 'Audio file ' + file + ' could not be exported, you have to specify a path to ffmpeg.';
                             }
                             if (!options.notinlist) {
-                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds, original_width: undefined, original_height: undefined, readable: undefined });
+                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'sound', files: sounds.files, file_sizes: sounds.sizes, original_width: undefined, original_height: undefined, readable: undefined });
                             }
                             break;
                         }
@@ -178,7 +178,7 @@ class AssetConverter {
                                 fonts = await self.exporter.copyFont(self.platform, file, exportInfo.destination, options);
                             }
                             if (!options.notinlist) {
-                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts, original_width: undefined, original_height: undefined, readable: undefined });
+                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts.files, file_sizes: fonts.sizes, original_width: undefined, original_height: undefined, readable: undefined });
                             }
                             break;
                         }
@@ -195,11 +195,11 @@ class AssetConverter {
                             else {
                                 videos = await self.exporter.copyVideo(self.platform, file, exportInfo.destination, options);
                             }
-                            if (videos.length === 0) {
+                            if (videos.files.length === 0) {
                                 log.error('Video file ' + file + ' could not be exported, you have to specify a path to ffmpeg.');
                             }
                             if (!options.notinlist) {
-                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'video', files: videos, original_width: undefined, original_height: undefined, readable: undefined });
+                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'video', files: videos.files, file_sizes: videos.sizes, original_width: undefined, original_height: undefined, readable: undefined });
                             }
                             break;
                         }
@@ -207,7 +207,7 @@ class AssetConverter {
                             let exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, self.exporter.options.from);
                             let blobs = await self.exporter.copyBlob(self.platform, file, exportInfo.destination, options);
                             if (!options.notinlist) {
-                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs, original_width: undefined, original_height: undefined, readable: undefined });
+                                parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs.files, file_sizes: blobs.sizes, original_width: undefined, original_height: undefined, readable: undefined });
                             }
                             break;
                         }

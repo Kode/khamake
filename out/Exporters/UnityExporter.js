@@ -68,18 +68,18 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
     }*/
     async copySound(platform, from, to) {
         let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), this.options.ogg);
-        return [to + '.ogg'];
+        return { files: [to + '.ogg'], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true, cache);
-        return [to + '.' + format];
+        return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {
         fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Blobs', to + '.bytes'), { overwrite: true });
-        return [to];
+        return { files: [to], sizes: [1] };
     }
     async copyVideo(platform, from, to) {
-        return [to];
+        return { files: [to], sizes: [1] };
     }
 }
 exports.UnityExporter = UnityExporter;

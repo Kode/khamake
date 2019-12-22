@@ -131,23 +131,23 @@ class AndroidExporter extends KhaExporter_1.KhaExporter {
         if (options.quality < 1) {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', path.dirname(to)));
             let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.ogg'), this.options.ogg);
-            return [to + '.ogg'];
+            return { files: [to + '.ogg'], sizes: [1] };
         }
         else {
             fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to + '.wav'), { overwrite: true });
-            return [to + '.wav'];
+            return { files: [to + '.wav'], sizes: [1] };
         }
     }
     async copyImage(platform, from, to, asset, cache) {
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), asset, undefined, false, false, cache);
-        return [to + '.' + format];
+        return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {
         fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), this.safename, 'app', 'src', 'main', 'assets', to), { overwrite: true });
-        return [to];
+        return { files: [to], sizes: [1] };
     }
     async copyVideo(platform, from, to) {
-        return [to];
+        return { files: [to], sizes: [1] };
     }
 }
 exports.AndroidExporter = AndroidExporter;

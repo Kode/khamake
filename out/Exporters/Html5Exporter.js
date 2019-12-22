@@ -171,44 +171,68 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     async copySound(platform, from, to, options) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+        let ogg_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.ogg'))).size;
         let mp4 = false;
+        let mp4_size = 0;
         let mp3 = false;
+        let mp3_size = 0;
         if (!this.isADebugTarget()) {
             mp4 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
+            mp4_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
             if (!mp4) {
                 mp3 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
+                mp3_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
             }
         }
         let files = [];
-        if (ogg)
+        let sizes = [];
+        if (ogg) {
             files.push(to + '.ogg');
-        if (mp4)
+            sizes.push(ogg_size);
+        }
+        if (mp4) {
             files.push(to + '.mp4');
-        if (mp3)
+            sizes.push(mp4_size);
+        }
+        if (mp3) {
             files.push(to + '.mp3');
-        return files;
+            sizes.push(mp3_size);
+        }
+        return { files: files, sizes: sizes };
     }
     async copyImage(platform, from, to, options, cache) {
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
-        return [to + '.' + format];
+        let stat = await fs.stat(path.join(this.options.to, this.sysdir(), to + '.' + format));
+        let size = stat.size;
+        return { files: [to + '.' + format], sizes: [size] };
     }
     async copyBlob(platform, from, to, options) {
         fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true, dereference: true });
-        return [to];
+        let stat = await fs.stat(path.join(this.options.to, this.sysdir(), to));
+        let size = stat.size;
+        return { files: [to], sizes: [size] };
     }
     async copyVideo(platform, from, to, options) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         let mp4 = false;
+        let mp4_size = 0;
         if (!this.isADebugTarget()) {
             mp4 = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+            mp4_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
         }
         let webm = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
+        let webm_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.webm'))).size;
         let files = [];
-        if (mp4)
+        let sizes = [];
+        if (mp4) {
             files.push(to + '.mp4');
-        if (webm)
+            sizes.push(mp4_size);
+        }
+        if (webm) {
             files.push(to + '.webm');
-        return files;
+            sizes.push(webm_size);
+        }
+        return { files: files, sizes: sizes };
     }
 }
 exports.Html5Exporter = Html5Exporter;

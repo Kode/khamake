@@ -59,16 +59,16 @@ class EmptyExporter extends KhaExporter_1.KhaExporter {
         }
     }
     async copySound(platform, from, to) {
-        return [''];
+        return { files: [''], sizes: [0] };
     }
     async copyImage(platform, from, to, asset) {
-        return [''];
+        return { files: [''], sizes: [0] };
     }
     async copyBlob(platform, from, to) {
-        return [''];
+        return { files: [''], sizes: [0] };
     }
     async copyVideo(platform, from, to) {
-        return [''];
+        return { files: [''], sizes: [0] };
     }
 }
 exports.EmptyExporter = EmptyExporter;

@@ -86,18 +86,18 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         this.closeFile();
     }
     async copySound(platform, from, to) {
-        return [to];
+        return { files: [to], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
         let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
-        return [to + '.' + format];
+        return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {
         fs.copySync(from, path.join(this.options.to, this.sysdir(), to), { overwrite: true });
-        return [to];
+        return { files: [to], sizes: [1] };
     }
     async copyVideo(platform, from, to) {
-        return [to];
+        return { files: [to], sizes: [1] };
     }
 }
 exports.CSharpExporter = CSharpExporter;

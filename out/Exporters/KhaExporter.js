@@ -47,16 +47,16 @@ class KhaExporter extends Exporter_1.Exporter {
         }
     }
     async copyImage(platform, from, to, options, cache) {
-        return [];
+        return { files: [], sizes: [] };
     }
     async copySound(platform, from, to, options) {
-        return [];
+        return { files: [], sizes: [] };
     }
     async copyVideo(platform, from, to, options) {
-        return [];
+        return { files: [], sizes: [] };
     }
     async copyBlob(platform, from, to, options) {
-        return [];
+        return { files: [], sizes: [] };
     }
     async copyFont(platform, from, to, options) {
         return await this.copyBlob(platform, from, to + '.ttf', options);
