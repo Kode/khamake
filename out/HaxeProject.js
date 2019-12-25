@@ -297,8 +297,15 @@ function FlashDevelop(projectdir, options) {
         def += '-net-std ' + path.relative(projectdir, path.join(options.haxeDirectory, 'netlib')) + '&#xA;';
     }
     def += '-D kha_output=&quot;' + path.resolve(path.join(projectdir, options.to)) + '&quot;&#xA;';
+    let mainClass = "Main";
     for (let param of options.parameters) {
-        def += escapeXml(param) + '&#xA;';
+        const mainRe = /-main\s+([^\s]+)/.exec(param);
+        if (mainRe) {
+            mainClass = mainRe[1];
+        }
+        else {
+            def += escapeXml(param) + '&#xA;';
+        }
     }
     let project = {
         n: 'project',
@@ -337,7 +344,7 @@ function FlashDevelop(projectdir, options) {
                     },
                     {
                         n: 'option',
-                        mainClass: 'Main'
+                        mainClass: mainClass
                     },
                     {
                         n: 'option',
