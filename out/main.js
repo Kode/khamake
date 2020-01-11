@@ -577,7 +577,7 @@ function findKhaVersion(dir) {
         catch (error) {
         }
         if (gitStatus) {
-            return gitVersion + ', ' + gitStatus;
+            return gitVersion + ', ' + gitStatus.replace(/\n/g, ',');
         }
         else {
             return gitVersion;
