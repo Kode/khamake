@@ -10,7 +10,7 @@ import {exportImage} from '../ImageTool';
 import {Options} from '../Options';
 import {Library} from '../Project';
 
-export class KoreExporter extends KhaExporter {
+export class KincExporter extends KhaExporter {
 	slowgc: boolean;
 
 	constructor(options: Options) {

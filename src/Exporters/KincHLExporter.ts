@@ -10,7 +10,7 @@ import {exportImage} from '../ImageTool';
 import {Options} from '../Options';
 import {Library} from '../Project';
 
-export class KoreHLExporter extends KhaExporter {
+export class KincHLExporter extends KhaExporter {
 	constructor(options: Options) {
 		super(options);
 		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));

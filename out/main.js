@@ -18,8 +18,8 @@ const FlashExporter_1 = require("./Exporters/FlashExporter");
 const Html5Exporter_1 = require("./Exporters/Html5Exporter");
 const Html5WorkerExporter_1 = require("./Exporters/Html5WorkerExporter");
 const JavaExporter_1 = require("./Exporters/JavaExporter");
-const KoreExporter_1 = require("./Exporters/KoreExporter");
-const KoreHLExporter_1 = require("./Exporters/KoreHLExporter");
+const KincExporter_1 = require("./Exporters/KincExporter");
+const KincHLExporter_1 = require("./Exporters/KincHLExporter");
 const KromExporter_1 = require("./Exporters/KromExporter");
 const NodeExporter_1 = require("./Exporters/NodeExporter");
 const PlayStationMobileExporter_1 = require("./Exporters/PlayStationMobileExporter");
@@ -215,7 +215,9 @@ function checkKorePlatform(platform) {
         || platform === 'tvos'
         || platform === 'ps4'
         || platform === 'xboxone'
-        || platform === 'switch';
+        || platform === 'switch'
+        || platform === 'xboxscarlett'
+        || platform === 'ps5';
 }
 function koreplatform(platform) {
     // 'android-native' becomes 'android'
@@ -306,7 +308,7 @@ async function exportKhaProject(options) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
-                exporter = new KoreHLExporter_1.KoreHLExporter(options);
+                exporter = new KincHLExporter_1.KincHLExporter(options);
             }
             else {
                 kore = true;
@@ -316,7 +318,7 @@ async function exportKhaProject(options) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
-                exporter = new KoreExporter_1.KoreExporter(options);
+                exporter = new KincExporter_1.KincExporter(options);
             }
             break;
     }

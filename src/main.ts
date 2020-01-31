@@ -22,8 +22,8 @@ import {FlashExporter} from './Exporters/FlashExporter';
 import {Html5Exporter} from './Exporters/Html5Exporter';
 import {Html5WorkerExporter} from './Exporters/Html5WorkerExporter';
 import {JavaExporter} from './Exporters/JavaExporter';
-import {KoreExporter} from './Exporters/KoreExporter';
-import {KoreHLExporter} from './Exporters/KoreHLExporter';
+import {KincExporter} from './Exporters/KincExporter';
+import {KincHLExporter} from './Exporters/KincHLExporter';
 import {KromExporter} from './Exporters/KromExporter';
 import {NodeExporter} from './Exporters/NodeExporter';
 import {PlayStationMobileExporter} from './Exporters/PlayStationMobileExporter';
@@ -240,7 +240,9 @@ function checkKorePlatform(platform: string) {
 		|| platform === 'tvos'
 		|| platform === 'ps4'
 		|| platform === 'xboxone'
-		|| platform === 'switch';
+		|| platform === 'switch'
+		|| platform === 'xboxscarlett'
+		|| platform === 'ps5';
 }
 
 function koreplatform(platform: string) {
@@ -337,7 +339,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 					log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
 					return Promise.reject('');
 				}
-				exporter = new KoreHLExporter(options);
+				exporter = new KincHLExporter(options);
 			}
 			else {
 				kore = true;
@@ -347,7 +349,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 					log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
 					return Promise.reject('');
 				}
-				exporter = new KoreExporter(options);
+				exporter = new KincExporter(options);
 			}
 			break;
 	}
