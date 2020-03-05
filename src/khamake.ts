@@ -213,6 +213,11 @@ let options: Array<any> = [
 		value: false
 	},
 	{
+		full: 'quiet',
+		description: 'Quiet mode. Like silent mode but prints error messages.',
+		value: false
+	},
+	{
 		full: 'watch',
 		short: 'w',
 		description: 'Watch files and recompile on change.',

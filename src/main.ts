@@ -665,6 +665,10 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		log.set(loglog);
 	}
 
+	if (options.quiet) {
+		log.silent(true);
+	}
+
 	if (!options.kha) {
 		let p = path.join(__dirname, '..', '..', '..');
 		if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {

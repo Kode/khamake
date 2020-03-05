@@ -30,6 +30,7 @@ export class Options {
 	port: string;
 	debug: boolean;
 	silent: boolean;
+	quiet: boolean;
 	watch: boolean;
 	glsl2: boolean;
 	shaderversion: string;
