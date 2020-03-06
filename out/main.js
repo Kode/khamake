@@ -596,6 +596,9 @@ async function run(options, loglog) {
     else {
         log.set(loglog);
     }
+    if (options.quiet) {
+        log.silent(true);
+    }
     if (!options.kha) {
         let p = path.join(__dirname, '..', '..', '..');
         if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {

@@ -21,9 +21,11 @@ export function set(log: {info: (text: string, newline: boolean) => void, error:
 	myError = log.error;
 }
 
-export function silent() {
+export function silent(showErrors: boolean = false) {
 	myInfo = function () {};
-	myError = function () {};
+	if (!showErrors) {
+		myError = function () {};
+	}
 }
 
 export function info(text: string, newline: boolean = true) {
