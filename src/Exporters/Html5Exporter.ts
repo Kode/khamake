@@ -217,10 +217,12 @@ export class Html5Exporter extends KhaExporter {
 		let mp3_size = 0;
 		if (!this.isADebugTarget()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
-			mp4_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
+			if (mp4) {
+				mp4_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
+			}
 			if (!mp4) {
 				mp3 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
-				mp3_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
+				mp3_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp3'))).size;
 			}
 		}
 		let files: string[] = [];
