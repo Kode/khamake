@@ -737,6 +737,34 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 
+	if (options.target === 'android') {
+		console.log();
+		console.log(
+			'Please note that the android-native target\n'
+			+ 'is usually a better choice.\n'
+			+ 'The android target compiles faster but it is problematic\n'
+			+ 'in many ways which we can not fix due to restrictions\n'
+			+ 'in Android\'s Java APIs.'
+		);
+		console.log();
+	}
+
+	if (options.target === 'html5-native') {
+		console.log();
+		console.log('Please note that the html5 target\n'
+		+ 'is usually a better choice.\n'		
+		+ 'In particular the html5 target usually runs faster\n'
+		+ 'than the html5-native target. That is because\n'
+		+ 'Haxe and JavaScript are similar in many ways and\n'
+		+ 'therefore the html5 target can make direct use of\n'
+		+ 'all of the optimizations in modern JavaScript\n'
+		+ 'runtimes. The html5-native target on the other hand\n'
+		+ 'has to provide its own garbage collector and many\n'
+		+ 'other performance critical pieces of infrastructure.'
+		);
+		console.log();
+	}
+
 	let name = '';
 	try {
 		name = await exportProject(options);
