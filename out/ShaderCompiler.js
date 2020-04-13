@@ -331,9 +331,6 @@ class ShaderCompiler {
                             parameters[2] = path.resolve(parameters[2]);
                             parameters[3] = path.resolve(parameters[3]);
                             let child = child_process.spawn(this.compiler, parameters);
-                            child.stdout.on('data', (data) => {
-                                log.info(data.toString());
-                            });
                             let errorLine = '';
                             let newErrorLine = true;
                             let errorData = false;
@@ -376,6 +373,10 @@ class ShaderCompiler {
                                     }
                                 }
                             }
+                            let stdOutString = '';
+                            child.stdout.on('data', (data) => {
+                                stdOutString += data.toString();
+                            });
                             child.stderr.on('data', (data) => {
                                 let str = data.toString();
                                 for (let char of str) {
@@ -401,6 +402,12 @@ class ShaderCompiler {
                                 }
                             });
                             child.on('close', (code) => {
+                                if (code === 0) {
+                                    log.info(stdOutString);
+                                }
+                                else {
+                                    log.error(stdOutString);
+                                }
                                 if (errorLine.trim().length > 0) {
                                     if (errorData) {
                                         parseData(errorLine.trim());

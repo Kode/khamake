@@ -370,10 +370,6 @@ export class ShaderCompiler {
 
 							let child = child_process.spawn(this.compiler, parameters);
 
-							child.stdout.on('data', (data: any) => {
-								log.info(data.toString());
-							});
-
 							let errorLine = '';
 							let newErrorLine = true;
 							let errorData = false;
@@ -418,6 +414,11 @@ export class ShaderCompiler {
 								}
 							}
 
+							let stdOutString = '';
+							child.stdout.on('data', (data: any) => {
+								stdOutString += data.toString();
+							});
+
 							child.stderr.on('data', (data: any) => {
 								let str: string = data.toString();
 								for (let char of str) {
@@ -444,6 +445,13 @@ export class ShaderCompiler {
 							});
 
 							child.on('close', (code: number) => {
+								if (code === 0) {
+									log.info(stdOutString);
+								}
+								else {
+									log.error(stdOutString);
+								}
+
 								if (errorLine.trim().length > 0) {
 									if (errorData) {
 										parseData(errorLine.trim());
