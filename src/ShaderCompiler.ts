@@ -187,7 +187,7 @@ export class ShaderCompiler {
 				if (ready) {
 					switch (file.ext) {
 						case '.glsl':
-							if (!file.name.endsWith('.inc')) {
+							if (!file.name.endsWith('.inc') && this.isSupported(file.name)) {
 								log.info('Compiling ' + file.name);
 								this.compileShader(filepath, options, recompileAll);
 							}
@@ -209,7 +209,7 @@ export class ShaderCompiler {
 					let file = path.parse(filepath);
 					switch (file.ext) {
 						case '.glsl':
-							if (!file.name.endsWith('.inc')) {
+							if (!file.name.endsWith('.inc') && this.isSupported(file.name)) {
 								log.info('Recompiling ' + file.name);
 								this.compileShader(filepath, options, recompileAll);
 							}
@@ -227,32 +227,37 @@ export class ShaderCompiler {
 				const self = this;
 				async function compile(shader: any, index: number) {
 					let parsed = path.parse(shader);
-					log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
-					let compiledShader: CompiledShader = null;
-					try {
-						compiledShader = await self.compileShader(shader, options, recompileAll);
+					if (self.isSupported(shader)) {
+						log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
+						let compiledShader: CompiledShader = null;
+						try {
+							compiledShader = await self.compileShader(shader, options, recompileAll);
+						}
+						catch (error) {
+							log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
+							log.error(error);
+							return Promise.reject(error);
+						}
+						if (compiledShader === null) {
+							compiledShader = new CompiledShader();
+							compiledShader.noembed = options.noembed;
+							// mark variables as invalid, so they are loaded from previous compilation
+							compiledShader.files = null;
+							compiledShader.inputs = null;
+							compiledShader.outputs = null;
+							compiledShader.uniforms = null;
+							compiledShader.types = null;
+						}
+						if (compiledShader.files != null && compiledShader.files.length === 0) {
+							// TODO: Remove when krafix has been recompiled everywhere
+							compiledShader.files.push(parsed.name + '.' + self.type);
+						}
+						compiledShader.name = AssetConverter.createExportInfo(parsed, false, options, self.exporter.options.from).name;
+						compiledShaders.push(compiledShader);
 					}
-					catch (error) {
-						log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
-						log.error(error);
-						return Promise.reject(error);
+					else {
+						log.info('Skipping shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
 					}
-					if (compiledShader === null) {
-						compiledShader = new CompiledShader();
-						compiledShader.noembed = options.noembed;
-						// mark variables as invalid, so they are loaded from previous compilation
-						compiledShader.files = null;
-						compiledShader.inputs = null;
-						compiledShader.outputs = null;
-						compiledShader.uniforms = null;
-						compiledShader.types = null;
-					}
-					if (compiledShader.files != null && compiledShader.files.length === 0) {
-						// TODO: Remove when krafix has been recompiled everywhere
-						compiledShader.files.push(parsed.name + '.' + self.type);
-					}
-					compiledShader.name = AssetConverter.createExportInfo(parsed, false, options, self.exporter.options.from).name;
-					compiledShaders.push(compiledShader);
 					++index;
 					return Promise.resolve();
 				}
@@ -298,6 +303,13 @@ export class ShaderCompiler {
 			shaders = shaders.concat(await this.watch(watch, matcher.match, matcher.options, recompileAll));
 		}
 		return shaders;
+	}
+
+	isSupported(file: string): boolean {
+		if (file.endsWith('.frag.glsl') || file.endsWith('.vert.glsl')) {
+			return true;
+		}
+		return this.type !== 'essl' && this.type !== 'agal';
 	}
 
 	compileShader(file: string, options: any, recompile: boolean): Promise<CompiledShader> {
@@ -445,11 +457,13 @@ export class ShaderCompiler {
 							});
 
 							child.on('close', (code: number) => {
-								if (code === 0) {
-									log.info(stdOutString);
-								}
-								else {
-									log.error(stdOutString);
+								if (stdOutString) {
+									if (code === 0) {
+										log.info(stdOutString);
+									}
+									else {
+										log.error(stdOutString);
+									}
 								}
 
 								if (errorLine.trim().length > 0) {
