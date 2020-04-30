@@ -10,7 +10,7 @@ import {Library} from '../Project';
 
 function findIcon(from: string, options: any) {
 	if (fs.existsSync(path.join(from, 'icon.png'))) return path.join(from, 'icon.png');
-	else return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'ball.png');
+	else return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'icon.png');
 }
 
 export class AndroidExporter extends KhaExporter {
