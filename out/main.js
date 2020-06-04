@@ -391,7 +391,9 @@ async function exportKhaProject(options) {
         let shaderCompiler = new ShaderCompiler_1.ShaderCompiler(exporter, baseTarget, options.krafix, shaderDir, temp, buildDir, options, project.shaderMatchers);
         lastShaderCompiler = shaderCompiler;
         try {
-            exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
+            if (baseTarget !== Platform_1.Platform.Java && baseTarget !== Platform_1.Platform.WPF) {
+                exportedShaders = await shaderCompiler.run(options.watch, recompileAllShaders);
+            }
         }
         catch (err) {
             return Promise.reject(err);
