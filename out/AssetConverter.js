@@ -65,9 +65,14 @@ class AssetConverter {
             this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.(svn|git|DS_Store)/, persistent: watch, followSymlinks: false });
             const onFileChange = async (file) => {
                 const fileinfo = path.parse(file);
-                const baseDir = path.dirname(match);
                 let outPath = fileinfo.dir + path.sep + fileinfo.name;
-                outPath = path.relative(baseDir, outPath);
+                // with subfolders
+                if (options.destination != null) {
+                    outPath = path.relative(options.baseDir, outPath);
+                }
+                else { // flat
+                    outPath = fileinfo.name;
+                }
                 log.info('Reexporting ' + outPath + fileinfo.ext);
                 switch (fileinfo.ext) {
                     case '.png':
