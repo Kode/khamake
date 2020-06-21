@@ -173,9 +173,8 @@ class Project {
         let libInfo = findLibraryDirectory(library);
         let dir = libInfo.libpath;
         if (dir !== '') {
-            for (let elem of this.libraries)
-            {
-                if (elem.libroot == libInfo.libroot)
+            for (let elem of this.libraries) {
+                if (elem.libroot === libInfo.libroot)
                     return '';
             }
             this.libraries.push({

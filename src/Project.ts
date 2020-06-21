@@ -216,6 +216,10 @@ export class Project {
 		let dir = libInfo.libpath;
 
 		if (dir !== '') {
+            for (let elem of this.libraries) {
+                if (elem.libroot === libInfo.libroot)
+                    return '';
+            }
 			this.libraries.push({
 				libpath: dir,
 				libroot: libInfo.libroot
