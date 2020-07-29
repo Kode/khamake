@@ -71,7 +71,7 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
         return { files: [to + '.ogg'], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
-        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true, cache);
+        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true, cache);
         return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {

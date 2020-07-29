@@ -49,7 +49,7 @@ export class KromExporter extends KhaExporter {
 			this.parameters.push('-debug');
 			defines.push('js-classic');
 		}
-		
+
 		return {
 			from: this.options.from.toString(),
 			to: path.join(this.sysdir(), 'krom.js.temp'),
@@ -85,7 +85,7 @@ export class KromExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, options: any, cache: any) {
-		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
+		let format = await exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
 		return { files: [to + '.' + format], sizes: [1] };
 	}
 

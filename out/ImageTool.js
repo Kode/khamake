@@ -4,15 +4,13 @@ const child_process = require("child_process");
 const fs = require("fs-extra");
 const path = require("path");
 const log = require("./log");
-const exec_1 = require("./exec");
 function getWidthAndHeight(kha, from, to, options, format, prealpha) {
     return new Promise((resolve, reject) => {
-        const exe = 'kraffiti' + exec_1.sys();
         let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
         if (options.scale !== undefined && options.scale !== 1) {
             params.push('scale=' + options.scale);
         }
-        let process = child_process.spawn(path.join(kha, 'Kinc', 'Tools', 'kraffiti', exe), params);
+        let process = child_process.spawn(options.kraffiti, params);
         let output = '';
         process.stdout.on('data', (data) => {
             output += data.toString();
@@ -39,7 +37,7 @@ function getWidthAndHeight(kha, from, to, options, format, prealpha) {
 }
 function convertImage(from, temp, to, kha, exe, params, options, cache) {
     return new Promise((resolve, reject) => {
-        let process = child_process.spawn(path.join(kha, 'Kinc', 'Tools', 'kraffiti', exe), params);
+        let process = child_process.spawn(exe, params);
         let output = '';
         process.stdout.on('data', (data) => {
             output += data.toString();
@@ -68,7 +66,7 @@ function convertImage(from, temp, to, kha, exe, params, options, cache) {
         });
     });
 }
-async function exportImage(kha, from, to, options, format, prealpha, poweroftwo, cache) {
+async function exportImage(kha, exe, from, to, options, format, prealpha, poweroftwo, cache) {
     if (format === undefined) {
         if (from.toString().endsWith('.png'))
             format = 'png';
@@ -138,7 +136,6 @@ async function exportImage(kha, from, to, options, format, prealpha, poweroftwo,
         options.original_height = wh.h;
         return outputformat;
     }
-    const exe = 'kraffiti' + exec_1.sys();
     let params = ['from=' + from, 'to=' + temp, 'format=' + format];
     if (!poweroftwo) {
         params.push('filter=nearest');

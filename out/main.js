@@ -624,6 +624,14 @@ async function run(options, loglog) {
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
     }
+    if (!options.kraffiti) {
+        const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'kraffiti' + exec_1.sys());
+        if (fs.existsSync(kraffitipath))
+            options.kraffiti = kraffitipath;
+    }
+    else {
+        console.log(`using custom kraffiti at "${options.kraffiti}"`);
+    }
     if (!options.ogg && options.ffmpeg) {
         options.ogg = options.ffmpeg + ' -nostdin -i {in} {out} -y';
     }

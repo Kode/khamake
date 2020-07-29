@@ -696,6 +696,13 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		if (fs.existsSync(krafixpath)) options.krafix = krafixpath;
 	}
 
+	if (!options.kraffiti) {
+		const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'kraffiti' + sys());
+		if (fs.existsSync(kraffitipath)) options.kraffiti = kraffitipath;
+	} else {
+		console.log(`using custom kraffiti at "${options.kraffiti}"`);
+	}
+
 	if (!options.ogg && options.ffmpeg) {
 		options.ogg = options.ffmpeg + ' -nostdin -i {in} {out} -y';
 	}
@@ -754,7 +761,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	if (options.target === 'html5-native') {
 		console.log();
 		console.log('Please note that the html5 target\n'
-		+ 'is usually a better choice.\n'		
+		+ 'is usually a better choice.\n'
 		+ 'In particular the html5 target usually runs faster\n'
 		+ 'than the html5-native target. That is because\n'
 		+ 'Haxe and JavaScript are similar in many ways and\n'

@@ -100,7 +100,7 @@ class FlashExporter extends KhaExporter_1.KhaExporter {
         return { files: [to + '.mp3'], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
-        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
         if (this.options.embedflashassets)
             this.images.push(to + '.' + format);
         return { files: [to + '.' + format], sizes: [1] };

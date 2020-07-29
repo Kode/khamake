@@ -150,6 +150,12 @@ let options = [
         default: ''
     },
     {
+        full: 'kraffiti',
+        description: 'Location of kraffiti image processing tool',
+        value: true,
+        default: ''
+    },
+    {
         full: 'noshaders',
         description: 'Do not compile shaders',
         value: false
