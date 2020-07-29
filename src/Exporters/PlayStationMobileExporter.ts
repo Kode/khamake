@@ -9,7 +9,7 @@ const uuid = require('uuid');
 
 export class PlayStationMobileExporter extends CSharpExporter {
 	files: Array<string>;
-	
+
 	constructor(options: Options) {
 		super(options);
 		this.files = [];
@@ -149,7 +149,7 @@ export class PlayStationMobileExporter extends CSharpExporter {
 
 	async copyImage(platform: string, from: string, to: string, asset: any, cache: any) {
 		this.files.push(asset['file']);
-		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+		let format = await exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
 		return { files: [to + '.' + format], sizes: [1] };
 	}
 

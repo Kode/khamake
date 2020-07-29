@@ -16,6 +16,7 @@ export class Options {
 	nohaxe: boolean;
 	ffmpeg: string;
 	krafix: string;
+	kraffiti: string;
 	noshaders: boolean;
 
 	parallelAssetConversion: number;

@@ -72,7 +72,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         }
     }
     async copyImage(platform, from, to, options, cache) {
-        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
+        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
         return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {

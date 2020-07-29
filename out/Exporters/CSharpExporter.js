@@ -89,7 +89,7 @@ class CSharpExporter extends KhaExporter_1.KhaExporter {
         return { files: [to], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
-        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
         return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {

@@ -203,7 +203,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         return { files: files, sizes: sizes };
     }
     async copyImage(platform, from, to, options, cache) {
-        let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
+        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
         let stat = await fs.stat(path.join(this.options.to, this.sysdir(), to + '.' + format));
         let size = stat.size;
         return { files: [to + '.' + format], sizes: [size] };

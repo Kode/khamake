@@ -111,16 +111,16 @@ export class KincExporter extends KhaExporter {
 
 	async copyImage(platform: string, from: string, to: string, options: any, cache: any) {
 		if (platform === Platform.iOS && options.quality < 1) {
-			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true, false, cache);
+			let format = await exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true, false, cache);
 			return { files: [to + '.' + format], sizes: [1] };
 		}
 		else if (platform === Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi.OpenGL || this.options.graphics === GraphicsApi.Vulkan)) {
 			// let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true, false, cache);
-			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true, false, cache);
+			let format = await exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true, false, cache);
 			return { files: [to + '.' + format], sizes: [1] };
 		}
 		else {
-			let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true, false, cache);
+			let format = await exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true, false, cache);
 			return { files: [to + '.' + format], sizes: [1] };
 		}
 	}

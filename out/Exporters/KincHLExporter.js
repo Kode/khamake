@@ -82,16 +82,16 @@ class KincHLExporter extends KhaExporter_1.KhaExporter {
     }
     async copyImage(platform, from, to, options, cache) {
         if (platform === Platform_1.Platform.iOS && options.quality < 1) {
-            let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true, false, cache);
+            let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true, false, cache);
             return { files: [to + '.' + format], sizes: [1] };
         }
         else if (platform === Platform_1.Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || this.options.graphics === GraphicsApi_1.GraphicsApi.Vulkan)) {
             // let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true, false, cache);
-            let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true, false, cache);
+            let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true, false, cache);
             return { files: [to + '.' + format], sizes: [1] };
         }
         else {
-            let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true, false, cache);
+            let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true, false, cache);
             return { files: [to + '.' + format], sizes: [1] };
         }
     }

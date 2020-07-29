@@ -125,7 +125,7 @@ export class FlashExporter extends KhaExporter {
 	}
 
 	async copyImage(platform: string, from: string, to: string, asset: any, cache: any) {
-		let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+		let format = await exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
 		if (this.options.embedflashassets) this.images.push(to + '.' + format);
 		return { files: [to + '.' + format], sizes: [1] };
 	}

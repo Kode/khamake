@@ -7,28 +7,26 @@ import {sys} from './exec';
 
 function getWidthAndHeight(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
 	return new Promise((resolve, reject) => {
-		const exe = 'kraffiti' + sys();
-
 		let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
 		if (options.scale !== undefined && options.scale !== 1) {
-			params.push('scale=' + options.scale);	
+			params.push('scale=' + options.scale);
 		}
-		let process = child_process.spawn(path.join(kha, 'Kinc', 'Tools', 'kraffiti', exe), params);
-		
+		let process = child_process.spawn(options.kraffiti, params);
+
 		let output = '';
 		process.stdout.on('data', (data: any) => {
 			output += data.toString();
 		});
 
 		process.stderr.on('data', (data: any) => {
-			
+
 		});
 
 		process.on('close', (code: number) => {
 			if (code !== 0) {
 				log.error('kraffiti process exited with code ' + code + ' when trying to get size of ' + path.parse(from).name);
 				resolve({w: 0, h: 0});
-				return;	
+				return;
 			}
 			const lines = output.split('\n');
 			for (let line of lines) {
@@ -45,15 +43,15 @@ function getWidthAndHeight(kha: string, from: string, to: string, options: any, 
 
 function convertImage(from: string, temp: string, to: string, kha: string, exe: string, params: string[], options: any, cache: any): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
-		let process = child_process.spawn(path.join(kha, 'Kinc', 'Tools', 'kraffiti', exe), params);
-		
+		let process = child_process.spawn(exe, params);
+
 		let output = '';
 		process.stdout.on('data', (data: any) => {
 			output += data.toString();
 		});
 
 		process.stderr.on('data', (data: any) => {
-			
+
 		});
 
 		process.on('close', (code: number) => {
@@ -64,7 +62,7 @@ function convertImage(from: string, temp: string, to: string, kha: string, exe: 
 			}
 
 			fs.renameSync(temp, to);
-			
+
 			const lines = output.split('\n');
 			for (let line of lines) {
 				if (line.startsWith('#')) {
@@ -81,10 +79,10 @@ function convertImage(from: string, temp: string, to: string, kha: string, exe: 
 	});
 }
 
-export async function exportImage(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean, cache: any): Promise<string> {
+export async function exportImage(kha: string, exe: string, from: string, to: string, options: any, format: string, prealpha: boolean, poweroftwo: boolean, cache: any): Promise<string> {
 	if (format === undefined) {
 		if (from.toString().endsWith('.png')) format = 'png';
-		else if (from.toString().endsWith('.hdr')) format = 'hdr'; 
+		else if (from.toString().endsWith('.hdr')) format = 'hdr';
 		else format = 'jpg';
 	}
 
@@ -111,9 +109,9 @@ export async function exportImage(kha: string, from: string, to: string, options
 		if (prealpha) to = to + '.kng';
 		else to = to + '.png';
 	}
-	
+
 	let temp = to + '.temp';
-	
+
 	let outputformat = format;
 	if (format === 'png' && prealpha) {
 		outputformat = 'kng';
@@ -153,15 +151,13 @@ export async function exportImage(kha: string, from: string, to: string, options
 		return outputformat;
 	}
 
-	const exe = 'kraffiti' + sys();
-	
 	let params = ['from=' + from, 'to=' + temp, 'format=' + format];
 	if (!poweroftwo) {
 		params.push('filter=nearest');
 	}
 	if (prealpha) params.push('prealpha');
 	if (options.scale !== undefined && options.scale !== 1) {
-		params.push('scale=' + options.scale);	
+		params.push('scale=' + options.scale);
 	}
 	if (options.background !== undefined) {
 		params.push('transparent=' + ((options.background.red << 24) | (options.background.green << 16) | (options.background.blue << 8) | 0xff).toString(16));
@@ -169,7 +165,7 @@ export async function exportImage(kha: string, from: string, to: string, options
 	if (poweroftwo) {
 		params.push('poweroftwo');
 	}
-	
+
 	await convertImage(from, temp, to, kha, exe, params, options, cache);
 	return outputformat;
 }
