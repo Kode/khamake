@@ -121,7 +121,7 @@ async function exportImage(kha, exe, from, to, options, format, prealpha, powero
             options.original_height = cachedOptions.original_height;
             return outputformat;
         }
-        let wh = await getWidthAndHeight(kha, from, to, options, format, prealpha);
+        let wh = await getWidthAndHeight(kha, exe, from, to, options, format, prealpha);
         cache[to] = {};
         cache[to].original_width = options.original_width = wh.w;
         cache[to].original_height = options.original_height = wh.h;
