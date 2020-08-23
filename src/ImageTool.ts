@@ -5,13 +5,13 @@ import * as path from 'path';
 import * as log from './log';
 import {sys} from './exec';
 
-function getWidthAndHeight(kha: string, from: string, to: string, options: any, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
+function getWidthAndHeight(kha: string, exe: string, from: string, to: string, options: any, format: string, prealpha: boolean): Promise<{w: number, h: number}> {
 	return new Promise((resolve, reject) => {
 		let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
 		if (options.scale !== undefined && options.scale !== 1) {
 			params.push('scale=' + options.scale);
 		}
-		let process = child_process.spawn(options.kraffiti, params);
+		let process = child_process.spawn(exe, params);
 
 		let output = '';
 		process.stdout.on('data', (data: any) => {
@@ -145,7 +145,7 @@ export async function exportImage(kha: string, exe: string, from: string, to: st
 	if (format === 'jpg' || format === 'hdr') {
 		fs.copySync(from, temp, { overwrite: true });
 		fs.renameSync(temp, to);
-		let wh = await getWidthAndHeight(kha, from, to, options, format, prealpha);
+		let wh = await getWidthAndHeight(kha, exe, from, to, options, format, prealpha);
 		options.original_width = wh.w;
 		options.original_height = wh.h;
 		return outputformat;

@@ -699,8 +699,9 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	if (!options.kraffiti) {
 		const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'kraffiti' + sys());
 		if (fs.existsSync(kraffitipath)) options.kraffiti = kraffitipath;
-	} else {
-		console.log(`using custom kraffiti at "${options.kraffiti}"`);
+	}
+	else {
+		log.info('Using kraffiti from ' + options.kraffiti);
 	}
 
 	if (!options.ogg && options.ffmpeg) {

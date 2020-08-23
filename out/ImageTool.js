@@ -4,13 +4,13 @@ const child_process = require("child_process");
 const fs = require("fs-extra");
 const path = require("path");
 const log = require("./log");
-function getWidthAndHeight(kha, from, to, options, format, prealpha) {
+function getWidthAndHeight(kha, exe, from, to, options, format, prealpha) {
     return new Promise((resolve, reject) => {
         let params = ['from=' + from, 'to=' + to, 'format=' + format, 'donothing'];
         if (options.scale !== undefined && options.scale !== 1) {
             params.push('scale=' + options.scale);
         }
-        let process = child_process.spawn(options.kraffiti, params);
+        let process = child_process.spawn(exe, params);
         let output = '';
         process.stdout.on('data', (data) => {
             output += data.toString();
@@ -131,7 +131,7 @@ async function exportImage(kha, exe, from, to, options, format, prealpha, powero
     if (format === 'jpg' || format === 'hdr') {
         fs.copySync(from, temp, { overwrite: true });
         fs.renameSync(temp, to);
-        let wh = await getWidthAndHeight(kha, from, to, options, format, prealpha);
+        let wh = await getWidthAndHeight(kha, exe, from, to, options, format, prealpha);
         options.original_width = wh.w;
         options.original_height = wh.h;
         return outputformat;

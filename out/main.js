@@ -630,7 +630,7 @@ async function run(options, loglog) {
             options.kraffiti = kraffitipath;
     }
     else {
-        console.log(`using custom kraffiti at "${options.kraffiti}"`);
+        log.info('Using kraffiti from ' + options.kraffiti);
     }
     if (!options.ogg && options.ffmpeg) {
         options.ogg = options.ffmpeg + ' -nostdin -i {in} {out} -y';
