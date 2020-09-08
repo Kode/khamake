@@ -8,6 +8,9 @@ class NodeExporter extends Html5Exporter_1.Html5Exporter {
     backend() {
         return 'Node';
     }
+    isNode() {
+        return true;
+    }
 }
 exports.NodeExporter = NodeExporter;
 //# sourceMappingURL=NodeExporter.js.map

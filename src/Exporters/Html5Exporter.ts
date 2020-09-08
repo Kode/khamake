@@ -30,7 +30,7 @@ export class Html5Exporter extends KhaExporter {
 	}
 
 	isNode() {
-		return this.sysdir() === 'node';
+		return false;
 	}
 
 	isHtml5Worker() {

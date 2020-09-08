@@ -10,4 +10,8 @@ export class NodeExporter extends Html5Exporter {
 	backend(): string {
 		return 'Node';
 	}
+
+	isNode() {
+		return true;
+	}
 }

@@ -20,7 +20,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         return this.sysdir() === 'debug-html5';
     }
     isNode() {
-        return this.sysdir() === 'node';
+        return false;
     }
     isHtml5Worker() {
         return this.sysdir() === 'html5worker';
