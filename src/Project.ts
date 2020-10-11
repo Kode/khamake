@@ -76,7 +76,10 @@ export class Project {
 			ios: {},
 			xboxOne: {},
 			playStation4: {},
-			switch: {}
+			switch: {},
+			xboxSeriesXS: {},
+			playStation5: {},
+			stadia: {}
 		};
 	}
 

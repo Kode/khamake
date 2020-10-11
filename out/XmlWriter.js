@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.writeXml = void 0;
 const fs = require("fs-extra");
 function printElement(elem, data, indents) {
     for (let i = 0; i < indents; ++i)

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.KromExporter = void 0;
 const fs = require("fs-extra");
 const path = require("path");
 const defaults = require("../defaults");
