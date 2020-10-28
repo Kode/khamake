@@ -9,7 +9,7 @@ function run(exe: string, from: string, to: string, width: number, height: numbe
 	let params = ['from=' + from, 'to=' + to, 'format=' + format, 'keepaspect'];
 	if (width > 0) params.push('width=' + width);
 	if (height > 0) params.push('height=' + height);
-    if (background !== undefined) params.push('background=' + background.toString(16));
+	if (background !== undefined) params.push('background=' + background.toString(16));
 	let child = cp.spawn(exe, params);
 	
 	child.stdout.on('data', (data: any) => {
