@@ -25,6 +25,7 @@ app.on('ready', function () {
 	mainWindow = new BrowserWindow({
 		width: {Width}, height: {Height},
 		show: false, useContentSize: true, autoHideMenuBar: true,
+		icon: __dirname+'/favicon'+{ext},
 		webPreferences: {
 			nodeIntegration: true
 		}

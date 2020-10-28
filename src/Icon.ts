@@ -5,11 +5,12 @@ import * as path from 'path';
 import * as log from './log';
 import * as exec from './exec';
 
-function run(exe: string, from: string, to: string, width: number, height: number, format: string, background: number, callback: any) {
+function run(exe: string, from: string, to: string, width: number, height: number, format: string, background: number, transparent: boolean, callback: any) {
 	let params = ['from=' + from, 'to=' + to, 'format=' + format, 'keepaspect'];
 	if (width > 0) params.push('width=' + width);
 	if (height > 0) params.push('height=' + height);
-	if (background !== undefined) params.push('background=' + background.toString(16));
+	if (background !== undefined && !transparent) params.push('background=' + background.toString(16));
+	if (transparent) params.push('transparent=' + background.toString(16));
 	let child = cp.spawn(exe, params);
 	
 	child.stdout.on('data', (data: any) => {
@@ -37,21 +38,21 @@ function findIcon(icon: string, from: string, options: any) {
 }
 
 export function exportIco(icon: string, to: string, from: string, options: any) {
-	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), 0, 0, 'ico', undefined, function () { });
+	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), 0, 0, 'ico', undefined, false, function () { });
 }
 
 export function exportIcns(icon: string, to: string, from: string, options: any) {
-	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), 0, 0, 'icns', undefined, function () { });
+	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), 0, 0, 'icns', undefined, false, function () { });
 }
 
-export function exportPng(icon: string, to: string, width: number, height: number, background: number, from: string, options: any) {
-	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), width, height, 'png', background, function () { });
+export function exportPng(icon: string, to: string, width: number, height: number, background: number, transparent: boolean, from: string, options: any) {
+	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), width, height, 'png', background, transparent, function () { });
 }
 
-export function exportPng24(icon: string, to: string, width: number, height: number, background: number, from: string, options: any) {
-	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), width, height, 'png24', background, function () { });
+export function exportPng24(icon: string, to: string, width: number, height: number, background: number, transparent: boolean, from: string, options: any) {
+	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), width, height, 'png24', background, transparent, function () { });
 }
 
 export function exportBmp(icon: string, to: string, width: number, height: number, background: number, from: string, options: any) {
-	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), width, height, 'bmp', background, function () { });
+	run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), width, height, 'bmp', background, false, function () { });
 }
