@@ -354,7 +354,7 @@ async function exportKhaProject(options) {
     lastAssetConverter = assetConverter;
     let assets = await assetConverter.run(options.watch, temp);
     if (target === Platform_1.Platform.HTML5 || target === Platform_1.Platform.DebugHTML5) {
-        Icon.exportIco(project.icon, path.join(options.to, exporter.sysdir(), "favicon.ico"), options.from, options);
+        Icon.exportIco(project.icon, path.join(options.to, exporter.sysdir(), 'favicon.ico'), options.from, options);
     }
     let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
     if (target === Platform_1.Platform.Unity) {

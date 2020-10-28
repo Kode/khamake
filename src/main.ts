@@ -393,8 +393,8 @@ async function exportKhaProject(options: Options): Promise<string> {
 	lastAssetConverter = assetConverter;
 	let assets = await assetConverter.run(options.watch, temp);
 	
-	if(target === Platform.HTML5 || target === Platform.DebugHTML5){
-		Icon.exportIco(project.icon,path.join(options.to, exporter.sysdir(),"favicon.ico"),options.from,options);
+	if (target === Platform.HTML5 || target === Platform.DebugHTML5) {
+		Icon.exportIco(project.icon, path.join(options.to, exporter.sysdir(), 'favicon.ico'), options.from, options);
 	}
 
 	let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
