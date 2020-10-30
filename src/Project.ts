@@ -96,6 +96,7 @@ export class Project {
 		this.cdefines = this.cdefines.concat(project.cdefines);
 		this.parameters = this.parameters.concat(project.parameters);
 		this.libraries = this.libraries.concat(project.libraries);
+		if (this.icon === null && project.icon !== null) this.icon = path.join(projectDir, project.icon);
 		for (let customTarget of project.customTargets.keys()) {
 			this.customTargets.set(customTarget, project.customTargets.get(customTarget));
 		}
