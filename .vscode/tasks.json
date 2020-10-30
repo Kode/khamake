@@ -7,6 +7,18 @@
 		"problemMatcher": [
 		  "$tsc"
 		]
+	},
+	{
+		"label": "Linter",
+		"type": "shell",
+		"command": "tslint",
+		"args": [
+			"-c",
+			"tslint.json",
+			"src/*.ts",
+			"src/Exporters/*.ts",
+		],
+		"problemMatcher": []
 	}
 	]
 }

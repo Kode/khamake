@@ -30,6 +30,7 @@ import {PlayStationMobileExporter} from './Exporters/PlayStationMobileExporter';
 import {WpfExporter} from './Exporters/WpfExporter';
 import {UnityExporter} from './Exporters/UnityExporter';
 import {writeHaxeProject} from './HaxeProject';
+import * as Icon from './Icon';
 
 let lastAssetConverter: AssetConverter;
 let lastShaderCompiler: ShaderCompiler;
@@ -391,6 +392,13 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let assetConverter = new AssetConverter(exporter, options, project.assetMatchers);
 	lastAssetConverter = assetConverter;
 	let assets = await assetConverter.run(options.watch, temp);
+	
+	if ( target === Platform.DebugHTML5 && process.platform === 'win32' || target === Platform.HTML5 ) {
+		Icon.exportIco(project.icon, path.join(options.to, exporter.sysdir(), 'favicon.ico'), options.from, options);
+	}
+	else if (target === Platform.DebugHTML5) {
+		Icon.exportPng(project.icon, path.join(options.to, exporter.sysdir(), 'favicon.png'), 256, 256, 0xffffffff, true, options.from, options);
+	}
 
 	let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
 	if (target === Platform.Unity) {
