@@ -121,6 +121,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), { encoding: 'utf8' });
             protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
             protoelectron = protoelectron.replace(/{Height}/g, '' + this.height);
+            protoelectron = protoelectron.replace(/{ext}/g, process.platform === 'win32' ? '\'.ico\'' : '\'.png\'');
             fs.writeFileSync(electron.toString(), protoelectron);
             let pack = path.join(this.options.to, this.sysdir(), 'package.json');
             let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), { encoding: 'utf8' });
