@@ -367,6 +367,9 @@ export class ShaderCompiler {
 							if (this.options.glsl2) {
 								parameters.push('--glsl2');
 							}
+							if (this.options.debug) {
+								parameters.push('--debug');
+							}
 							if (options.defines) {
 								for (let define of options.defines) {
 									parameters.push('-D' + define);
