@@ -154,7 +154,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 		// If target is a Kore project, generate additional project folders here.
 		// generate the kincfile.js
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags,cppflags, stackSize, version, id, false, icon));
+		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, false, icon));
 
 		// Similar to khamake.js -> main.js -> run(...)
 		// We now do kincmake.js -> main.js -> run(...)
