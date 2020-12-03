@@ -38,6 +38,8 @@ export class Project {
 	sources: string[];
 	defines: string[];
 	cdefines: string[];
+	cflags: string[];
+	cppflags: string[];
 	parameters: string[];
 	scriptdir: string;
 	libraries: Library[];
@@ -58,6 +60,8 @@ export class Project {
 		this.sources = [];
 		this.defines = ['hxcpp_smart_strings'];
 		this.cdefines = [];
+		this.cflags = [];
+		this.cppflags = [];
 		this.parameters = [];
 		this.scriptdir = Project.scriptdir;
 		this.libraries = [];
@@ -94,6 +98,8 @@ export class Project {
 		this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
 		this.defines = this.defines.concat(project.defines);
 		this.cdefines = this.cdefines.concat(project.cdefines);
+		this.cflags = this.cflags.concat(project.cflags);
+		this.cppflags = this.cppflags.concat(project.cppflags);
 		this.parameters = this.parameters.concat(project.parameters);
 		this.libraries = this.libraries.concat(project.libraries);
 		if (this.icon === null && project.icon !== null) this.icon = path.join(projectDir, project.icon);
@@ -180,6 +186,14 @@ export class Project {
 
 	addCDefine(define: string) {
 		this.cdefines.push(define);
+	}
+
+	addCFlag(flag: string) {
+		this.cflags.push(flag);
+	}
+
+	addCppFlag(flag: string) {
+		this.cppflags.push(flag);
 	}
 
 	addParameter(parameter: string) {

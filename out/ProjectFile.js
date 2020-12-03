@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadProject = exports.Callbacks = void 0;
 const fs = require("fs");
 const path = require("path");
 const Platform_1 = require("./Platform");

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlayStationMobileExporter = void 0;
 const fs = require("fs-extra");
 const path = require("path");
 const CSharpExporter_1 = require("./CSharpExporter");

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exportImage = void 0;
 const child_process = require("child_process");
 const fs = require("fs-extra");
 const path = require("path");

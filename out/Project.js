@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Project = exports.Target = exports.Library = void 0;
 const child_process = require("child_process");
 const fs = require("fs");
 const path = require("path");
@@ -34,6 +33,8 @@ class Project {
         this.sources = [];
         this.defines = ['hxcpp_smart_strings'];
         this.cdefines = [];
+        this.cflags = [];
+        this.cppflags = [];
         this.parameters = [];
         this.scriptdir = Project.scriptdir;
         this.libraries = [];
@@ -67,6 +68,8 @@ class Project {
         this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
         this.defines = this.defines.concat(project.defines);
         this.cdefines = this.cdefines.concat(project.cdefines);
+        this.cflags = this.cflags.concat(project.cflags);
+        this.cppflags = this.cppflags.concat(project.cppflags);
         this.parameters = this.parameters.concat(project.parameters);
         this.libraries = this.libraries.concat(project.libraries);
         if (this.icon === null && project.icon !== null)
@@ -146,6 +149,12 @@ class Project {
     }
     addCDefine(define) {
         this.cdefines.push(define);
+    }
+    addCFlag(flag) {
+        this.cflags.push(flag);
+    }
+    addCppFlag(flag) {
+        this.cppflags.push(flag);
     }
     addParameter(parameter) {
         this.parameters.push(parameter);
