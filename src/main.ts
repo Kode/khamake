@@ -783,6 +783,17 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		console.log();
 	}
 
+	if (options.target === 'unity') {
+		console.log();
+		console.log(
+			'The Unity target hasn\'t been updated for years.\n'
+			+ 'Rob thinks it is not needed anymore now that\n'
+			+ 'proper console backends exist but please tell.\n'
+			+ 'Rob if you think he is wrong about that.'
+		);
+		console.log();
+	}
+
 	let name = '';
 	try {
 		name = await exportProject(options);
