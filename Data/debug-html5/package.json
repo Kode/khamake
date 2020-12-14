@@ -1,5 +1,5 @@
 {
-  "name"    : "KodeStudio-Debug",
+  "name"    : "kodestudio-debug",
   "version" : "0.1.0",
   "main"    : "electron.js"
 }
