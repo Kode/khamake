@@ -38,7 +38,11 @@ export abstract class KhaExporter extends Exporter {
 
 	abstract haxeOptions(name: string, targetOptions: any, defines: Array<string>): any;
 
-	abstract async export(name: string, targetOptions: any, haxeOptions: any): Promise<void>;
+	async export(name: string, targetOptions: any, haxeOptions: any): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			reject('Called an abstract function');
+		});
+	}
 
 	setWidthAndHeight(width: number, height: number): void {
 		this.width = width;

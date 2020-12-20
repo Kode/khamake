@@ -164,7 +164,7 @@ export class HaxeCompiler {
 		});
 	}
 
-	triggerCompilationServer() {
+	triggerCompilationServer(): Promise<void> {
 		process.stdout.write('\x1Bc');
 		log.info('Haxe compilation...');
 		this.ready = false;
@@ -184,7 +184,9 @@ export class HaxeCompiler {
 				} else {
 					log.info('Haxe compile error.');
 				}
-				if (code === 0) resolve();
+				if (code === 0) {
+					resolve();
+				}
 
 				// (node:3630) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future,
 				// promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.

@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as log from './log';
 import {sys} from './exec';
 
-export function executeHaxe(from: string, haxeDirectory: string, options: string[]): Promise<{}> {
+export function executeHaxe(from: string, haxeDirectory: string, options: string[]): Promise<void> {
 	return new Promise((resolve, reject) => {
 		let exe = 'haxe';
 		let env = process.env;
@@ -28,7 +28,9 @@ export function executeHaxe(from: string, haxeDirectory: string, options: string
 		});
 		
 		haxe.on('close', (code: number) => {
-			if (code === 0) resolve();
+			if (code === 0) {
+				resolve();
+			}
 			else reject('Haxe compiler error.');
 		});
 	});

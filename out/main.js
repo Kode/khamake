@@ -545,7 +545,7 @@ async function exportProject(options) {
         return 'Unknown';
     }
 }
-function runProject(options) {
+function runProject(options, name) {
     return new Promise((resolve, reject) => {
         log.info('Running...');
         let run = child_process.spawn(path.join(process.cwd(), options.to, 'linux-build', name), [], { cwd: path.join(process.cwd(), options.to, 'linux') });
@@ -714,7 +714,7 @@ async function run(options, loglog) {
         process.exit(1);
     }
     if (options.target === Platform_1.Platform.Linux && options.run) {
-        await runProject(options);
+        await runProject(options, name);
     }
     if (options.compile && options.target === Platform_1.Platform.Android) {
         let gradlew = (process.platform === 'win32') ? 'gradlew.bat' : 'bash';

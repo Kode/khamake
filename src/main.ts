@@ -600,7 +600,7 @@ async function exportProject(options: Options): Promise<string> {
 	}
 }
 
-function runProject(options: any): Promise<void> {
+function runProject(options: any, name: string): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		log.info('Running...');
 		let run = child_process.spawn(
@@ -803,7 +803,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (options.target === Platform.Linux && options.run) {
-		await runProject(options);
+		await runProject(options, name);
 	}
 
 	if (options.compile && options.target === Platform.Android) {

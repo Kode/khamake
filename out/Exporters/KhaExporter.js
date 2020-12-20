@@ -20,6 +20,11 @@ class KhaExporter extends Exporter_1.Exporter {
     sysdir() {
         return this.systemDirectory;
     }
+    async export(name, targetOptions, haxeOptions) {
+        return new Promise((resolve, reject) => {
+            reject('Called an abstract function');
+        });
+    }
     setWidthAndHeight(width, height) {
         this.width = width;
         this.height = height;

@@ -29,8 +29,9 @@ function executeHaxe(from, haxeDirectory, options) {
             log.error(data.toString());
         });
         haxe.on('close', (code) => {
-            if (code === 0)
+            if (code === 0) {
                 resolve();
+            }
             else
                 reject('Haxe compiler error.');
         });
