@@ -49,7 +49,7 @@ function safeName(name: string): string {
 	return name.replace(/[^A-z0-9\-\_]/g, '-');
 }
 
-function createKorefile(name: string, exporter: KhaExporter, options: Options, targetOptions: any, libraries: Library[], cdefines: string[], stackSize: number, version: string, id: string, korehl: boolean, icon: string): string {
+function createKorefile(name: string, exporter: KhaExporter, options: Options, targetOptions: any, libraries: Library[], cdefines: string[], cflags: string[], cppflags: string[], stackSize: number, version: string, id: string, korehl: boolean, icon: string): string {
 	let out = '';
 	out += 'let fs = require(\'fs\');\n';
 	out += 'let path = require(\'path\');\n';
@@ -64,6 +64,14 @@ function createKorefile(name: string, exporter: KhaExporter, options: Options, t
 
 	for (let cdefine of cdefines) {
 		out += 'project.addDefine(\'' + cdefine + '\');\n';
+	}
+
+	for (let cppflag of cppflags) {
+		out += 'project.addCppFlag(\'' + cppflag + '\');\n';
+	}
+
+	for (let cflag of cflags) {
+		out += 'project.addCFlag(\'' + cflag + '\');\n';
 	}
 
 	out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
@@ -109,7 +117,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: Options, t
 }
 
 async function exportProjectFiles(name: string, resourceDir: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, icon: string,
-	libraries: Library[], targetOptions: any, defines: string[], cdefines: string[], stackSize: number, version: string, id: string): Promise<string> {
+	libraries: Library[], targetOptions: any, defines: string[], cdefines: string[], cflags: string[], cppflags: string[], stackSize: number, version: string, id: string): Promise<string> {
 	if (options.haxe !== '') {
 		let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
 		haxeOptions.defines.push('kha');
@@ -146,7 +154,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 		// If target is a Kore project, generate additional project folders here.
 		// generate the kincfile.js
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, id, false, icon));
+		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, false, icon));
 
 		// Similar to khamake.js -> main.js -> run(...)
 		// We now do kincmake.js -> main.js -> run(...)
@@ -189,7 +197,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 	else if (options.haxe !== '' && korehl && !options.noproject) {
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, id, korehl, icon));
+		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, korehl, icon));
 
 		try {
 			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
@@ -582,7 +590,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	}
 	else {
 		return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.icon,
-			project.libraries, project.targetOptions, project.defines, project.cdefines, project.stackSize, project.version, project.id);
+			project.libraries, project.targetOptions, project.defines, project.cdefines, project.cflags, project.cppflags, project.stackSize, project.version, project.id);
 	}
 }
 

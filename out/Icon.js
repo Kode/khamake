@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exportBmp = exports.exportPng24 = exports.exportPng = exports.exportIcns = exports.exportIco = void 0;
 const cp = require("child_process");
 const fs = require("fs");
 const path = require("path");

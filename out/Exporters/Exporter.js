@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Exporter = void 0;
 const fs = require("fs-extra");
 class Exporter {
     constructor() {

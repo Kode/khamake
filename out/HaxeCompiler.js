@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HaxeCompiler = void 0;
 const ProjectFile_1 = require("./ProjectFile");
 const child_process = require("child_process");
 const fs = require("fs");

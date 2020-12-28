@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AssetConverter = void 0;
 const ProjectFile_1 = require("./ProjectFile");
 const fs = require("fs-extra");
 const path = require("path");
