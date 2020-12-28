@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.KhaExporter = void 0;
 const path = require("path");
 const Exporter_1 = require("./Exporter");
 class KhaExporter extends Exporter_1.Exporter {

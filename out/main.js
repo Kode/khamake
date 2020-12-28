@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.close = exports.run = exports.api = void 0;
 const child_process = require("child_process");
 const fs = require("fs-extra");
 const path = require("path");

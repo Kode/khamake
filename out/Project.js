@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Project = exports.Target = exports.Library = void 0;
 const child_process = require("child_process");
 const fs = require("fs");
 const path = require("path");

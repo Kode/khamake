@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.GraphicsApi = void 0;
 exports.GraphicsApi = {
     Default: 'default',
     OpenGL: 'opengl',

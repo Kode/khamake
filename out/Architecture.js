@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Architecture = void 0;
 exports.Architecture = {
     Default: 'default',
     Arm7: 'arm7',
