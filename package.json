@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Kha build tool",
   "main": "khamake.js",
+  "bin": {
+    "khamake": "./bin/index.js"
+  },
   "scripts": {
     "build": "tsc -p ."
   },
