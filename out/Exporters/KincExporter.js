@@ -16,7 +16,7 @@ class KincExporter extends KhaExporter_1.KhaExporter {
         // Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
     }
     backend() {
-        return 'Kore';
+        return 'Kinc-hxcpp';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('no-compilation');

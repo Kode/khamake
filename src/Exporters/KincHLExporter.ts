@@ -17,7 +17,7 @@ export class KincHLExporter extends KhaExporter {
 	}
 
 	backend(): string {
-		return 'KoreHL';
+		return 'Kinc-HL';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

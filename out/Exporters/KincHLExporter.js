@@ -15,7 +15,7 @@ class KincHLExporter extends KhaExporter_1.KhaExporter {
         // Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
     }
     backend() {
-        return 'KoreHL';
+        return 'Kinc-HL';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('no-compilation');

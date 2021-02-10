@@ -20,7 +20,7 @@ export class KincExporter extends KhaExporter {
 	}
 
 	backend(): string {
-		return 'Kore';
+		return 'Kinc-hxcpp';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

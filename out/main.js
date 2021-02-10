@@ -89,9 +89,9 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
     out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
     if (korehl)
-        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'KoreHL').replace(/\\/g, '/') + '\');\n';
+        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-HL').replace(/\\/g, '/') + '\');\n';
     else
-        out += 'await project.addProject(\'' + path.normalize(options.kha).replace(/\\/g, '/') + '\');\n';
+        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-hxcpp').replace(/\\/g, '/') + '\');\n';
     for (let lib of libraries) {
         let libPath = lib.libroot;
         out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
