@@ -633,7 +633,8 @@ function runProject(options: any, name: string): Promise<void> {
 export let api = 2;
 
 function findKhaVersion(dir: string): string {
-	if (fs.existsSync(path.join(dir, '.git'))) {
+	let p = path.join(dir, '.git');
+	if (fs.existsSync(p) && fs.statSync(p).isDirectory() ) {
 		let gitVersion = 'git-error';
 		try {
 			const output = child_process.spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8', cwd: dir}).output;
