@@ -568,7 +568,8 @@ function runProject(options, name) {
 }
 exports.api = 2;
 function findKhaVersion(dir) {
-    if (fs.existsSync(path.join(dir, '.git'))) {
+    let p = path.join(dir, '.git');
+    if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
         let gitVersion = 'git-error';
         try {
             const output = child_process.spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', cwd: dir }).output;
@@ -602,7 +603,7 @@ function findKhaVersion(dir) {
         }
     }
     else {
-        return 'unversioned';
+        return '¯\\_(ツ)_/¯';
     }
 }
 async function run(options, loglog) {

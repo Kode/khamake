@@ -672,7 +672,7 @@ function findKhaVersion(dir: string): string {
 		}
 	}
 	else {
-		return 'unversioned';
+		return '¯\\_(ツ)_/¯';
 	}
 }
 
