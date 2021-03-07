@@ -148,7 +148,7 @@ export class Html5Exporter extends KhaExporter {
 
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 
-		if (this.isADebugTarget()) {
+		if (this.isDebugHtml5()) {
 			let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
 			let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), {encoding: 'utf8'});
 			protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
@@ -160,9 +160,7 @@ export class Html5Exporter extends KhaExporter {
 			let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), {encoding: 'utf8'});
 			protopackage = protopackage.replace(/{Name}/g, name);
 			fs.writeFileSync(pack.toString(), protopackage);
-		}
-
-		if (this.isDebugHtml5()) {
+			
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 
 			let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), {encoding: 'utf8'});
@@ -172,6 +170,8 @@ export class Html5Exporter extends KhaExporter {
 			protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
 			protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
 			fs.writeFileSync(index.toString(), protoindex);
+
+			fs.copyFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'preload.js'), path.join(this.options.to, this.sysdir(), 'preload.js'));
 		}
 		else if (this.isNode()) {
 			let pack = path.join(this.options.to, this.sysdir(), 'package.json');
@@ -216,7 +216,7 @@ export class Html5Exporter extends KhaExporter {
 		let mp4_size = 0;
 		let mp3 = false;
 		let mp3_size = 0;
-		if (!this.isADebugTarget()) {
+		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
 			if (mp4) {
 				mp4_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
@@ -252,7 +252,7 @@ export class Html5Exporter extends KhaExporter {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let mp4 = false;
 		let mp4_size = 0;
-		if (!this.isADebugTarget()) {
+		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
 			mp4_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.mp4'))).size;
 		}
