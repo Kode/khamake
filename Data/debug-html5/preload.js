@@ -1,4 +1,6 @@
 const electron = require("electron");
+const fs = require('fs');
+const path = require('path');
 
 electron.contextBridge.exposeInMainWorld(
 	'electron', {
@@ -15,6 +17,23 @@ electron.contextBridge.exposeInMainWorld(
 				height: height,
 			}
 			electron.ipcRenderer.send('asynchronous-message', options);
+		},
+		loadBlob: (desc, done, failed) => {
+			let url = null;
+			if (path.isAbsolute(desc.files[0])) {
+				url = desc.files[0];
+			}
+			else {
+				url = path.join(__dirname, desc.files[0]);
+			}
+			fs.readFile(url, function(err, data) {
+				if (err != null) {
+					failed({url: url, error: err});
+					return;
+				}
+
+				done(new Uint8Array(data));
+			});
 		}
 	}
 );
