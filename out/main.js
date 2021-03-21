@@ -225,7 +225,8 @@ function checkKorePlatform(platform) {
         || platform === 'xboxone'
         || platform === 'switch'
         || platform === 'xboxscarlett'
-        || platform === 'ps5';
+        || platform === 'ps5'
+        || platform === 'freebsd';
 }
 function koreplatform(platform) {
     // 'android-native' becomes 'android'
@@ -720,7 +721,7 @@ async function run(options, loglog) {
     catch (err) {
         process.exit(1);
     }
-    if (options.target === Platform_1.Platform.Linux && options.run) {
+    if ((options.target === Platform_1.Platform.Linux || options.target === Platform_1.Platform.FreeBSD) && options.run) {
         await runProject(options, name);
     }
     if (options.compile && options.target === Platform_1.Platform.Android) {

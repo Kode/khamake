@@ -29,6 +29,8 @@ export function graphicsApi(platform: string): string {
 		else {
 			return GraphicsApi.OpenGL;
 		}
+	case Platform.FreeBSD:
+		return GraphicsApi.OpenGL;
 	default:
 		return platform;
 	}
