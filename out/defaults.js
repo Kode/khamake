@@ -31,6 +31,8 @@ function graphicsApi(platform) {
             else {
                 return GraphicsApi_1.GraphicsApi.OpenGL;
             }
+        case Platform_1.Platform.FreeBSD:
+            return GraphicsApi_1.GraphicsApi.OpenGL;
         default:
             return platform;
     }

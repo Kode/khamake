@@ -172,6 +172,8 @@ export class ShaderCompiler {
 			else {
 				throw new Error('Unsupported shader language.');
 			}
+		case Platform.FreeBSD:
+			return 'glsl';
 		default:
 			return platform;
 		}

@@ -9,6 +9,9 @@ export function sys() {
 	else if (os.platform() === 'win32') {
 		return '.exe';
 	}
+	else if (os.platform() === 'freebsd') {
+		return '-freebsd';
+	}
 	else {
 		return '-osx';
 	}

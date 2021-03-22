@@ -251,7 +251,8 @@ function checkKorePlatform(platform: string) {
 		|| platform === 'xboxone'
 		|| platform === 'switch'
 		|| platform === 'xboxscarlett'
-		|| platform === 'ps5';
+		|| platform === 'ps5'
+		|| platform === 'freebsd';
 }
 
 function koreplatform(platform: string) {
@@ -811,7 +812,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		process.exit(1);
 	}
 
-	if (options.target === Platform.Linux && options.run) {
+	if ((options.target === Platform.Linux || options.target === Platform.FreeBSD) && options.run) {
 		await runProject(options, name);
 	}
 

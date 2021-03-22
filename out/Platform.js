@@ -23,6 +23,7 @@ exports.Platform = {
     DebugHTML5: 'debug-html5',
     Empty: 'empty',
     Pi: 'pi',
-    tvOS: 'tvos'
+    tvOS: 'tvos',
+    FreeBSD: 'freebsd'
 };
 //# sourceMappingURL=Platform.js.map

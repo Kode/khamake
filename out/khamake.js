@@ -20,6 +20,9 @@ if (os.platform() === 'linux') {
 else if (os.platform() === 'win32') {
     defaultTarget = Platform_1.Platform.Windows;
 }
+else if (os.platform() === 'freebsd') {
+    defaultTarget = Platform_1.Platform.FreeBSD;
+}
 else {
     defaultTarget = Platform_1.Platform.OSX;
 }
