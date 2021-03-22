@@ -29,6 +29,7 @@ app.on('ready', function () {
 		show: false, useContentSize: true, autoHideMenuBar: true,
 		icon: app.getAppPath() + '/favicon' + {ext},
 		webPreferences: {
+			contextIsolation: true,
 			preload: path.join(app.getAppPath(), 'preload.js')
 		}
 	});
