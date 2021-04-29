@@ -63,6 +63,9 @@ class Project {
         return this.safeName;
     }
     async addProject(projectDir) {
+        if (!path.isAbsolute(projectDir)) {
+            projectDir = path.join(this.scriptdir, projectDir);
+        }
         let project = await ProjectFile_1.loadProject(projectDir, 'khafile.js', Project.platform);
         this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
         this.sources = this.sources.concat(project.sources);
