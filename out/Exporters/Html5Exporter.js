@@ -106,7 +106,8 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
     async export(name, _targetOptions, haxeOptions) {
         let targetOptions = {
             canvasId: 'khanvas',
-            scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha'
+            scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha',
+            unsafeEval: false
         };
         if (_targetOptions != null && _targetOptions.html5 != null) {
             let userOptions = _targetOptions.html5;
@@ -114,6 +115,8 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
                 targetOptions.canvasId = userOptions.canvasId;
             if (userOptions.scriptName != null)
                 targetOptions.scriptName = userOptions.scriptName;
+            if (userOptions.unsafeEval != null)
+                targetOptions.unsafeEval = userOptions.unsafeEval;
         }
         fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
         if (this.isDebugHtml5()) {
@@ -134,6 +137,7 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             protoindex = protoindex.replace(/{Height}/g, '' + this.height);
             protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
             protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
+            protoindex = protoindex.replace(/{UnsafeEval}/g, targetOptions.unsafeEval ? "'unsafe-eval'" : '');
             fs.writeFileSync(index.toString(), protoindex);
             fs.copyFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'preload.js'), path.join(this.options.to, this.sysdir(), 'preload.js'));
         }
