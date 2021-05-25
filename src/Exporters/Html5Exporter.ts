@@ -171,7 +171,7 @@ export class Html5Exporter extends KhaExporter {
 			protoindex = protoindex.replace(/{Height}/g, '' + this.height);
 			protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
 			protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
-			protoindex = protoindex.replace(/{UnsafeEval}/g, targetOptions.unsafeEval ? "'unsafe-eval'" : '');
+			protoindex = protoindex.replace(/{UnsafeEval}/g, targetOptions.unsafeEval ? '\'unsafe-eval\'' : '');
 			fs.writeFileSync(index.toString(), protoindex);
 
 			fs.copyFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'preload.js'), path.join(this.options.to, this.sysdir(), 'preload.js'));
