@@ -137,13 +137,15 @@ export class Html5Exporter extends KhaExporter {
 	async export(name: string, _targetOptions: any, haxeOptions: any): Promise<void> {
 		let targetOptions = {
 			canvasId: 'khanvas',
-			scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha'
+			scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha',
+			unsafeEval: false
 		};
 
 		if (_targetOptions != null && _targetOptions.html5 != null) {
 			let userOptions = _targetOptions.html5;
 			if (userOptions.canvasId != null) targetOptions.canvasId = userOptions.canvasId;
 			if (userOptions.scriptName != null) targetOptions.scriptName = userOptions.scriptName;
+			if (userOptions.unsafeEval != null) targetOptions.unsafeEval = userOptions.unsafeEval;
 		}
 
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
@@ -160,7 +162,7 @@ export class Html5Exporter extends KhaExporter {
 			let protopackage = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'package.json'), {encoding: 'utf8'});
 			protopackage = protopackage.replace(/{Name}/g, name);
 			fs.writeFileSync(pack.toString(), protopackage);
-			
+
 			let index = path.join(this.options.to, this.sysdir(), 'index.html');
 
 			let protoindex = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'index.html'), {encoding: 'utf8'});
@@ -169,6 +171,7 @@ export class Html5Exporter extends KhaExporter {
 			protoindex = protoindex.replace(/{Height}/g, '' + this.height);
 			protoindex = protoindex.replace(/{CanvasId}/g, '' + targetOptions.canvasId);
 			protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
+			protoindex = protoindex.replace(/{UnsafeEval}/g, targetOptions.unsafeEval ? '\'unsafe-eval\'' : '');
 			fs.writeFileSync(index.toString(), protoindex);
 
 			fs.copyFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'preload.js'), path.join(this.options.to, this.sysdir(), 'preload.js'));
