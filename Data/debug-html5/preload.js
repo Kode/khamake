@@ -1,6 +1,21 @@
-const electron = require("electron");
+const electron = require('electron');
 const fs = require('fs');
 const path = require('path');
+
+let blobId = 0;
+let blobRequests = {};
+
+electron.ipcRenderer.on('blob-loaded', (event, args) => {
+	const blobRequest = blobRequests[args.id];
+	delete blobRequests[args.id];
+	blobRequest.done(new Uint8Array(args.data));
+});
+
+electron.ipcRenderer.on('blob-failed', (event, args) => {
+	const blobRequest = blobRequests[args.id];
+	delete blobRequests[args.id];
+	blobRequest.failed({url: args.url, error: args.error});
+});
 
 electron.contextBridge.exposeInMainWorld(
 	'electron', {
@@ -9,31 +24,24 @@ electron.contextBridge.exposeInMainWorld(
 				electron.webFrame.setZoomLevelLimits(1, 1);
 			}
 			const options = {
-				type: 'showWindow',
 				title: title,
 				x: x,
 				y: y,
 				width: width,
 				height: height,
-			}
-			electron.ipcRenderer.send('asynchronous-message', options);
+			};
+			electron.ipcRenderer.send('show-window', options);
 		},
 		loadBlob: (desc, done, failed) => {
-			let url = null;
-			if (path.isAbsolute(desc.files[0])) {
-				url = desc.files[0];
-			}
-			else {
-				url = path.join(__dirname, desc.files[0]);
-			}
-			fs.readFile(url, function(err, data) {
-				if (err != null) {
-					failed({url: url, error: err});
-					return;
-				}
-
-				done(new Uint8Array(data));
-			});
+			const options = {
+				file: desc.files[0],
+				id: blobId++
+			};
+			blobRequests[options.id] = {
+				done: done,
+				failed: failed
+			};
+			electron.ipcRenderer.send('load-blob', options);
 		}
 	}
 );

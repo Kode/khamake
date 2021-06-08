@@ -1,13 +1,14 @@
 'use strict';
 
 const electron = require('electron');
+const fs = require('fs');
 const path = require('path');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 var mainWindow = null;
 
-electron.ipcMain.on('asynchronous-message', (event, arg) => {
+electron.ipcMain.on('show-window', (event, arg) => {
 	if (arg.width && arg.height) mainWindow.setContentSize(arg.width, arg.height);
 	if (arg.title) mainWindow.setTitle(arg.title);
 	if (arg.x != -1 && arg.y != -1) {
@@ -17,6 +18,24 @@ electron.ipcMain.on('asynchronous-message', (event, arg) => {
 		mainWindow.center();
 	}
 	mainWindow.show();
+});
+
+electron.ipcMain.on('load-blob', (event, arg) => {
+	let url = null;
+	if (path.isAbsolute(arg.file)) {
+		url = arg.file;
+	}
+	else {
+		url = path.join(__dirname, arg.file);
+	}
+	fs.readFile(url, function(err, data) {
+		if (err != null) {
+			mainWindow.webContents.send('blob-failed', {id: arg.id, url: url, error: err});
+		}
+		else {
+			mainWindow.webContents.send('blob-loaded', {id: arg.id, data: data});
+		}
+	});
 });
 
 app.on('window-all-closed', function () {
