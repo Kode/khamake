@@ -56,7 +56,7 @@ export class EmptyExporter extends KhaExporter {
 		try {
 			// Remove any @:export first
 			await executeHaxe(this.options.to, this.options.haxe, ['project-' + this.sysdir() + '.hxml']);
-			let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join('build', this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.from) });
+			let doxresult = child_process.spawnSync('haxelib', ['run', 'dox', '-in', 'kha.*', '-i', path.join(this.sysdir(), 'docs.xml')], { env: process.env, cwd: path.normalize(this.options.to) });
 			if (doxresult.stdout.toString() !== '') {
 				log.info(doxresult.stdout.toString());
 			}
