@@ -28,14 +28,13 @@ electron.ipcMain.on('load-blob', (event, arg) => {
 	else {
 		url = path.join(__dirname, arg.file);
 	}
-	fs.readFile(url, function(err, data) {
-		if (err != null) {
-			mainWindow.webContents.send('blob-failed', {id: arg.id, url: url, error: err});
-		}
-		else {
-			mainWindow.webContents.send('blob-loaded', {id: arg.id, data: data});
-		}
-	});
+	try {
+		const data = fs.readFileSync(url);
+		mainWindow.webContents.send('blob-loaded', {id: arg.id, data: data});
+	}
+	catch (err) {
+		mainWindow.webContents.send('blob-failed', {id: arg.id, url: url, error: err});
+	}
 });
 
 app.on('window-all-closed', function () {
