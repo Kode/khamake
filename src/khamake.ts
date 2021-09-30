@@ -233,6 +233,13 @@ let options: Array<any> = [
 		value: false
 	},
 	{
+		full: 'watchport',
+		short: 'wp',
+		description: 'Port for the compilation server (default value is 7000).',
+		value: true,
+		default: '7000',
+	},
+	{
 		full: 'glsl2',
 		description: 'Use experimental SPIRV-Cross glsl mode.',
 		value: false

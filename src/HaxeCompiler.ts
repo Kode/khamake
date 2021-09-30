@@ -21,7 +21,7 @@ export class HaxeCompiler {
 	compilationServer: child_process.ChildProcess;
 	sysdir: string;
 
-	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>, sysdir: string) {
+	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>, sysdir: string, port: string) {
 		this.from = from;
 		this.temp = temp;
 		this.to = to;
@@ -29,6 +29,7 @@ export class HaxeCompiler {
 		this.haxeDirectory = haxeDirectory;
 		this.hxml = hxml;
 		this.sysdir = sysdir;
+		this.port = port;
 
 		this.sourceMatchers = [];
 		for (let dir of sourceDirectories) {
