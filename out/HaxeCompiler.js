@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HaxeCompiler = void 0;
 const ProjectFile_1 = require("./ProjectFile");
 const child_process = require("child_process");
 const fs = require("fs");
@@ -9,7 +8,7 @@ const chokidar = require("chokidar");
 const log = require("./log");
 const exec_1 = require("./exec");
 class HaxeCompiler {
-    constructor(from, temp, to, resourceDir, haxeDirectory, hxml, sourceDirectories, sysdir) {
+    constructor(from, temp, to, resourceDir, haxeDirectory, hxml, sourceDirectories, sysdir, port) {
         this.ready = true;
         this.todo = false;
         this.port = '7000';
@@ -20,6 +19,7 @@ class HaxeCompiler {
         this.haxeDirectory = haxeDirectory;
         this.hxml = hxml;
         this.sysdir = sysdir;
+        this.port = port;
         this.sourceMatchers = [];
         for (let dir of sourceDirectories) {
             this.sourceMatchers.push(path.join(dir, '**').replace(/\\/g, '/'));

@@ -132,7 +132,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 		writeHaxeProject(options.to, !options.noproject, haxeOptions);
 
 		if (!options.nohaxe) {
-			let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir());
+			let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir(), options.watchport);
 			lastHaxeCompiler = compiler;
 			try {
 				await compiler.run(options.watch);
@@ -401,7 +401,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	let assetConverter = new AssetConverter(exporter, options, project.assetMatchers);
 	lastAssetConverter = assetConverter;
 	let assets = await assetConverter.run(options.watch, temp);
-	
+
 	if ( target === Platform.DebugHTML5 && process.platform === 'win32' || target === Platform.HTML5 ) {
 		Icon.exportIco(project.icon, path.join(options.to, exporter.sysdir(), 'favicon.ico'), options.from, options);
 	}

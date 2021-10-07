@@ -33,6 +33,7 @@ export class Options {
 	silent: boolean;
 	quiet: boolean;
 	watch: boolean;
+	watchport: string;
 	glsl2: boolean;
 	shaderversion: string;
 
