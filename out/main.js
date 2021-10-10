@@ -728,6 +728,9 @@ async function run(options, loglog) {
         name = await exportProject(options);
     }
     catch (err) {
+        for (let callback of ProjectFile_1.Callbacks.onFailure) {
+            callback(err);
+        }
         process.exit(1);
     }
     if ((options.target === Platform_1.Platform.Linux || options.target === Platform_1.Platform.FreeBSD) && options.run) {

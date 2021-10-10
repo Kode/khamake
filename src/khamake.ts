@@ -4,6 +4,7 @@
 
 import * as os from 'os';
 import * as path from 'path';
+import {Callbacks} from './ProjectFile';
 import {GraphicsApi} from './GraphicsApi';
 import {Architecture} from './Architecture';
 import {AudioApi} from './AudioApi';
@@ -379,6 +380,9 @@ async function runKhamake() {
 	}
 	catch (error) {
 		console.log(error);
+		for (let callback of Callbacks.onFailure) {
+			callback(error);
+		}
 		process.exit(1);
 	}
 }
