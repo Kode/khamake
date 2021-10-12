@@ -822,6 +822,9 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		name = await exportProject(options);
 	}
 	catch (err) {
+		for (let callback of Callbacks.onFailure) {
+			callback(err);
+		}
 		process.exit(1);
 	}
 

@@ -5,6 +5,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = require("os");
 const path = require("path");
+const ProjectFile_1 = require("./ProjectFile");
 const GraphicsApi_1 = require("./GraphicsApi");
 const Architecture_1 = require("./Architecture");
 const AudioApi_1 = require("./AudioApi");
@@ -373,6 +374,9 @@ async function runKhamake() {
     }
     catch (error) {
         console.log(error);
+        for (let callback of ProjectFile_1.Callbacks.onFailure) {
+            callback(error);
+        }
         process.exit(1);
     }
 }

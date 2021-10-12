@@ -11,7 +11,8 @@ export let Callbacks = {
 	postHaxeCompilation:   [() => {}],
 	postHaxeRecompilation: [() => {}],
 	postCppCompilation:    [() => {}],
-	postAssetReexporting:  [(filePath: string) => {}]
+	postAssetReexporting:  [(filePath: string) => {}],
+	onFailure:             [(error: any) => {}]
 };
 
 export async function loadProject(from: string, projectfile: string, platform: string): Promise<Project> {
@@ -30,6 +31,7 @@ export async function loadProject(from: string, projectfile: string, platform: s
 				postHaxeRecompilation: () => {},
 				postCppCompilation:    () => {},
 				postAssetReexporting:  (filePath: string) => {},
+				onFailure:             (error: any) => {}
 			};
 			let resolver = (project: Project) => {
 				resolved = true;
@@ -40,6 +42,7 @@ export async function loadProject(from: string, projectfile: string, platform: s
 				Callbacks.postHaxeRecompilation.push(callbacks.postHaxeRecompilation);
 				Callbacks.postCppCompilation.push(callbacks.postCppCompilation);
 				Callbacks.postAssetReexporting.push(callbacks.postAssetReexporting);
+				Callbacks.onFailure.push(callbacks.onFailure);
 				resolve(project);
 			};
 
