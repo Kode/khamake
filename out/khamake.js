@@ -268,17 +268,27 @@ let options = [
     }
 ];
 let parsedOptions = new Options_1.Options();
+function printHelpLine(options, description) {
+    let helpLine = options;
+    while (helpLine.length < 30) {
+        helpLine += ' ';
+    }
+    helpLine += '' + description;
+    console.log(helpLine);
+    console.log();
+}
 function printHelp() {
     console.log('khamake options:\n');
     for (let option of options) {
-        if (option.hidden)
+        if (option.hidden) {
             continue;
-        if (option.short)
-            console.log('-' + option.short + ' ' + '--' + option.full);
-        else
-            console.log('--' + option.full);
-        console.log(option.description);
-        console.log();
+        }
+        if (option.short) {
+            printHelpLine('-' + option.short + ' ' + '--' + option.full, option.description);
+        }
+        else {
+            printHelpLine('--' + option.full, option.description);
+        }
     }
 }
 function isTarget(target) {
