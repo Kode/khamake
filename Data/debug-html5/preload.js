@@ -19,6 +19,7 @@ electron.ipcRenderer.on('blob-failed', (event, args) => {
 
 electron.contextBridge.exposeInMainWorld(
 	'electron', {
+		{Expose}
 		showWindow: (title, x, y, width, height) => {
 			if (electron.webFrame.setZoomLevelLimits != null) { // TODO: Figure out why this check is sometimes required
 				electron.webFrame.setZoomLevelLimits(1, 1);

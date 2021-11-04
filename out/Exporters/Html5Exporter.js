@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Html5Exporter = void 0;
 const fs = require("fs-extra");
 const path = require("path");
 const KhaExporter_1 = require("./KhaExporter");
@@ -107,7 +106,8 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
         let targetOptions = {
             canvasId: 'khanvas',
             scriptName: this.isHtml5Worker() ? 'khaworker' : 'kha',
-            unsafeEval: false
+            unsafeEval: false,
+            expose: ''
         };
         if (_targetOptions != null && _targetOptions.html5 != null) {
             let userOptions = _targetOptions.html5;
@@ -117,9 +117,11 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
                 targetOptions.scriptName = userOptions.scriptName;
             if (userOptions.unsafeEval != null)
                 targetOptions.unsafeEval = userOptions.unsafeEval;
+            if (userOptions.expose != null)
+                targetOptions.expose = userOptions.expose;
         }
         fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
-        if (this.isDebugHtml5()) {
+        if (this.isADebugTarget()) { // support custom debug-html5 based targets
             let electron = path.join(this.options.to, this.sysdir(), 'electron.js');
             let protoelectron = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'electron.js'), { encoding: 'utf8' });
             protoelectron = protoelectron.replace(/{Width}/g, '' + this.width);
@@ -139,7 +141,10 @@ class Html5Exporter extends KhaExporter_1.KhaExporter {
             protoindex = protoindex.replace(/{ScriptName}/g, '' + targetOptions.scriptName);
             protoindex = protoindex.replace(/{UnsafeEval}/g, targetOptions.unsafeEval ? '\'unsafe-eval\'' : '');
             fs.writeFileSync(index.toString(), protoindex);
-            fs.copyFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'preload.js'), path.join(this.options.to, this.sysdir(), 'preload.js'));
+            let preload = path.join(this.options.to, this.sysdir(), 'preload.js');
+            let protopreload = fs.readFileSync(path.join(__dirname, '..', '..', 'Data', 'debug-html5', 'preload.js'), { encoding: 'utf8' });
+            protopreload = protopreload.replace(/{Expose}/g, targetOptions.expose);
+            fs.writeFileSync(preload.toString(), protopreload);
         }
         else if (this.isNode()) {
             let pack = path.join(this.options.to, this.sysdir(), 'package.json');
