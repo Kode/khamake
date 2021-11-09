@@ -103,7 +103,7 @@ let options = [
         short: 'v',
         description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013 and vs2015.',
         value: true,
-        default: VisualStudioVersion_1.VisualStudioVersion.VS2019
+        default: VisualStudioVersion_1.VisualStudioVersion.VS2022
     },
     {
         full: 'kha',
