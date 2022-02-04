@@ -103,9 +103,9 @@ function createKorefile(name: string, exporter: KhaExporter, options: Options, t
 	else out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-hxcpp').replace(/\\/g, '/') + '\');\n';
 
 	for (let lib of libraries) {
-		let libPath: string = lib.libroot;
-		out += 'if (fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath.replace(/\\/g, '/') + '\', \'korefile.js\'))) {\n';
-		out += '\tawait project.addProject(\'' + libPath.replace(/\\/g, '/') + '\');\n';
+		let libPath: string = lib.libpath.replace(/\\/g, '/');
+		out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath + '\', \'korefile.js\'))) {\n';
+		out += '\tawait project.addProject(\'' + libPath + '\');\n';
 		out += '}\n';
 	}
 	if (stackSize) {
