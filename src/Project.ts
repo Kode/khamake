@@ -224,7 +224,8 @@ export class Project {
 			// e.g. 'Libraries/wyngine'
 			let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
 			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
-				return { libpath: path.resolve(libpath), libroot: self.localLibraryPath + '/' + name };
+				let dir = path.resolve(libpath);
+				return { libpath: dir, libroot: dir };
 			}
 			// If the library couldn't be found in Libraries folder, try
 			// looking in the haxelib folders.
