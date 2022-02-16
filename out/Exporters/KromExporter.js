@@ -64,7 +64,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     async copySound(platform, from, to, options) {
         if (options.quality < 1) {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+            let ogg = await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
             return { files: [to + '.ogg'], sizes: [1] };
         }
         else {
@@ -73,7 +73,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
         }
     }
     async copyImage(platform, from, to, options, cache) {
-        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
+        let format = await (0, ImageTool_1.exportImage)(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, undefined, false, false, cache);
         return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {
@@ -82,7 +82,7 @@ class KromExporter extends KhaExporter_1.KhaExporter {
     }
     async copyVideo(platform, from, to) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-        let webm = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
+        let webm = await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);
         let files = [];
         let sizes = [];
         if (webm) {

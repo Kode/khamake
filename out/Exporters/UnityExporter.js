@@ -68,11 +68,11 @@ class UnityExporter extends KhaExporter_1.KhaExporter {
         callback([to]);
     }*/
     async copySound(platform, from, to) {
-        let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), this.options.ogg);
+        let ogg = await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Sounds', to + '.ogg'), this.options.ogg);
         return { files: [to + '.ogg'], sizes: [1] };
     }
     async copyImage(platform, from, to, asset, cache) {
-        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true, cache);
+        let format = await (0, ImageTool_1.exportImage)(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), 'Assets', 'Resources', 'Images', to), asset, undefined, false, true, cache);
         return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {

@@ -69,7 +69,7 @@ class HaxeCompiler {
         let exe = 'haxe';
         let env = process.env;
         if (fs.existsSync(this.haxeDirectory) && fs.statSync(this.haxeDirectory).isDirectory()) {
-            let localexe = path.resolve(this.haxeDirectory, 'haxe' + exec_1.sys());
+            let localexe = path.resolve(this.haxeDirectory, 'haxe' + (0, exec_1.sys)());
             if (!fs.existsSync(localexe))
                 localexe = path.resolve(this.haxeDirectory, 'haxe');
             if (fs.existsSync(localexe))

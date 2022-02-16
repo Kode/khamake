@@ -130,7 +130,7 @@ class PlayStationMobileExporter extends CSharpExporter_1.CSharpExporter {
     }
     async copyImage(platform, from, to, asset, cache) {
         this.files.push(asset['file']);
-        let format = await ImageTool_1.exportImage(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
+        let format = await (0, ImageTool_1.exportImage)(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), asset, undefined, false, false, cache);
         return { files: [to + '.' + format], sizes: [1] };
     }
     async copyBlob(platform, from, to) {

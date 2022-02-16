@@ -401,7 +401,7 @@ function FlashDevelop(projectdir, options) {
             }
         ]
     };
-    XmlWriter_1.writeXml(project, path.join(projectdir, options.safeName + '-' + options.system + '.hxproj'));
+    (0, XmlWriter_1.writeXml)(project, path.join(projectdir, options.safeName + '-' + options.system + '.hxproj'));
 }
 function writeHaxeProject(projectdir, projectFiles, options) {
     hxml(projectdir, options);

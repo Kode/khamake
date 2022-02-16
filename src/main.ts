@@ -98,22 +98,58 @@ function createKorefile(name: string, exporter: KhaExporter, options: Options, t
 
 	let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
 	if (buildpath.startsWith('..')) buildpath = path.resolve(path.join(options.from.toString(), buildpath));
+
+	out += 'await project.addProject(\'' + path.join(options.kha, 'Kinc') + '\');\n';
 	out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
 	if (korehl) out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-HL').replace(/\\/g, '/') + '\');\n';
 	else out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-hxcpp').replace(/\\/g, '/') + '\');\n';
 
 	for (let lib of libraries) {
 		let libPath: string = lib.libpath.replace(/\\/g, '/');
-		out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath + '\', \'korefile.js\'))) {\n';
+		out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kfile.js\'))) {\n';
 		out += '\tawait project.addProject(\'' + libPath + '\');\n';
 		out += '}\n';
 	}
+	
 	if (stackSize) {
 		out += 'project.stackSize = ' + stackSize + ';\n';
 	}
+
+	out += 'project.flatten();\n';
+
 	out += 'resolve(project);\n';
 
 	return out;
+}
+
+function runKmake(options: string[]) {
+	return new Promise<void>((resolve, reject) => {
+		const child = child_process.spawn(path.join(korepath.get(), 'kmake' + sys()), options);
+
+		child.stdout.on('data', (data: any) => {
+			const str = data.toString();
+			log.info(str, false);
+		});
+
+		child.stderr.on('data', (data: any) => {
+			const str = data.toString();
+			log.error(str, false);
+		});
+
+		child.on('error', (err: any) => {
+			log.error('Could not start kmake.');
+			reject();
+		});
+
+		child.on('close', (code: number) => {
+			if (code === 0) {
+				resolve();
+			}
+			else {
+				reject();
+			}
+		});
+	});
 }
 
 async function exportProjectFiles(name: string, resourceDir: string, options: Options, exporter: KhaExporter, kore: boolean, korehl: boolean, icon: string,
@@ -153,36 +189,30 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 	if (options.haxe !== '' && kore && !options.noproject) {
 		// If target is a Kore project, generate additional project folders here.
 		// generate the kincfile.js
-		fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, false, icon));
+		fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kfile.js'), path.join(buildDir, 'kfile.js'), { overwrite: true });
+		fs.writeFileSync(path.join(options.to, 'kfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, false, icon));
 
 		// Similar to khamake.js -> main.js -> run(...)
 		// We now do kincmake.js -> main.js -> run(...)
 		// This will create additional project folders for the target,
 		// e.g. 'build/android-native-build'
 		try {
-			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
-			{
-				from: options.from,
-				to: buildDir,
-				kincfile: path.resolve(options.to, 'kincfile.js'),
-				target: koreplatform(options.target),
-				graphics: options.graphics,
-				arch: options.arch,
-				audio: options.audio,
-				vrApi: options.vr,
-				raytrace: options.raytrace,
-				visualstudio: options.visualstudio,
-				compile: options.compile,
-				run: options.run,
-				debug: options.debug,
-				noshaders: true,
-				nosigning: options.nosigning
-			},
-			{
-				info: log.info,
-				error: log.error
-			});
+			const kmakeOptions = ['--from', options.from, '--to', buildDir, '--kfile', path.resolve(options.to, 'kfile.js'), '-t', koreplatform(options.target), '--noshaders',
+				'--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-vs', options.visualstudio
+			];
+			if (options.nosigning) {
+				kmakeOptions.push('--nosigning');
+			}
+			if (options.debug) {
+				kmakeOptions.push('--debug');
+			}
+			if (options.run) {
+				kmakeOptions.push('--run');
+			}
+			if (options.compile) {
+				kmakeOptions.push('--compile');
+			}
+			await runKmake(kmakeOptions);
 			for (let callback of Callbacks.postCppCompilation) {
 				callback();
 			}

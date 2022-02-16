@@ -87,6 +87,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
+    out += 'await project.addProject(\'' + path.join(options.kha, 'Kinc') + '\');\n';
     out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
     if (korehl)
         out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-HL').replace(/\\/g, '/') + '\');\n';
@@ -94,15 +95,41 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
         out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-hxcpp').replace(/\\/g, '/') + '\');\n';
     for (let lib of libraries) {
         let libPath = lib.libpath.replace(/\\/g, '/');
-        out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath + '\', \'korefile.js\'))) {\n';
+        out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kfile.js\'))) {\n';
         out += '\tawait project.addProject(\'' + libPath + '\');\n';
         out += '}\n';
     }
     if (stackSize) {
         out += 'project.stackSize = ' + stackSize + ';\n';
     }
+    out += 'project.flatten();\n';
     out += 'resolve(project);\n';
     return out;
+}
+function runKmake(options) {
+    return new Promise((resolve, reject) => {
+        const child = child_process.spawn(path.join(korepath.get(), 'kmake' + (0, exec_1.sys)()), options);
+        child.stdout.on('data', (data) => {
+            const str = data.toString();
+            log.info(str, false);
+        });
+        child.stderr.on('data', (data) => {
+            const str = data.toString();
+            log.error(str, false);
+        });
+        child.on('error', (err) => {
+            log.error('Could not start kmake.');
+            reject();
+        });
+        child.on('close', (code) => {
+            if (code === 0) {
+                resolve();
+            }
+            else {
+                reject();
+            }
+        });
+    });
 }
 async function exportProjectFiles(name, resourceDir, options, exporter, kore, korehl, icon, libraries, targetOptions, defines, cdefines, cflags, cppflags, stackSize, version, id) {
     if (options.haxe !== '') {
@@ -114,7 +141,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
             haxeOptions.parameters.push('-debug');
         }
-        HaxeProject_1.writeHaxeProject(options.to, !options.noproject, haxeOptions);
+        (0, HaxeProject_1.writeHaxeProject)(options.to, !options.noproject, haxeOptions);
         if (!options.nohaxe) {
             let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir(), options.watchport);
             lastHaxeCompiler = compiler;
@@ -134,33 +161,29 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
     if (options.haxe !== '' && kore && !options.noproject) {
         // If target is a Kore project, generate additional project folders here.
         // generate the kincfile.js
-        fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-        fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, false, icon));
+        fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kfile.js'), path.join(buildDir, 'kfile.js'), { overwrite: true });
+        fs.writeFileSync(path.join(options.to, 'kfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, false, icon));
         // Similar to khamake.js -> main.js -> run(...)
         // We now do kincmake.js -> main.js -> run(...)
         // This will create additional project folders for the target,
         // e.g. 'build/android-native-build'
         try {
-            let name = await require(path.join(korepath.get(), 'out', 'main.js')).run({
-                from: options.from,
-                to: buildDir,
-                kincfile: path.resolve(options.to, 'kincfile.js'),
-                target: koreplatform(options.target),
-                graphics: options.graphics,
-                arch: options.arch,
-                audio: options.audio,
-                vrApi: options.vr,
-                raytrace: options.raytrace,
-                visualstudio: options.visualstudio,
-                compile: options.compile,
-                run: options.run,
-                debug: options.debug,
-                noshaders: true,
-                nosigning: options.nosigning
-            }, {
-                info: log.info,
-                error: log.error
-            });
+            const kmakeOptions = ['--from', options.from, '--to', buildDir, '--kfile', path.resolve(options.to, 'kfile.js'), '-t', koreplatform(options.target), '--noshaders',
+                '--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-vs', options.visualstudio
+            ];
+            if (options.nosigning) {
+                kmakeOptions.push('--nosigning');
+            }
+            if (options.debug) {
+                kmakeOptions.push('--debug');
+            }
+            if (options.run) {
+                kmakeOptions.push('--run');
+            }
+            if (options.compile) {
+                kmakeOptions.push('--compile');
+            }
+            await runKmake(kmakeOptions);
             for (let callback of ProjectFile_1.Callbacks.postCppCompilation) {
                 callback();
             }
@@ -248,7 +271,7 @@ async function exportKhaProject(options) {
     // like project name, assets paths, sources path, library path...
     if (fs.existsSync(path.join(options.from, options.projectfile))) {
         try {
-            project = await ProjectFile_1.loadProject(options.from, options.projectfile, options.target);
+            project = await (0, ProjectFile_1.loadProject)(options.from, options.projectfile, options.target);
         }
         catch (x) {
             log.error(x);
@@ -646,12 +669,12 @@ async function run(options, loglog) {
             options.haxe = haxepath;
     }
     if (!options.krafix) {
-        let krafixpath = path.join(options.kha, 'Kinc', 'Tools', 'krafix', 'krafix' + exec_1.sys());
+        let krafixpath = path.join(options.kha, 'Kinc', 'Tools', 'krafix', 'krafix' + (0, exec_1.sys)());
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
     }
     if (!options.kraffiti) {
-        const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'kraffiti' + exec_1.sys());
+        const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'kraffiti' + (0, exec_1.sys)());
         if (fs.existsSync(kraffitipath))
             options.kraffiti = kraffitipath;
     }
@@ -665,12 +688,12 @@ async function run(options, loglog) {
         options.mp3 = options.ffmpeg + ' -nostdin -i {in} {out}';
     }
     if (!options.ogg) {
-        let oggpath = path.join(options.kha, 'Tools', 'oggenc', 'oggenc' + exec_1.sys());
+        let oggpath = path.join(options.kha, 'Tools', 'oggenc', 'oggenc' + (0, exec_1.sys)());
         if (fs.existsSync(oggpath))
             options.ogg = oggpath + ' {in} -o {out} --quiet';
     }
     if (!options.mp3) {
-        let lamepath = path.join(options.kha, 'Tools', 'lame', 'lame' + exec_1.sys());
+        let lamepath = path.join(options.kha, 'Tools', 'lame', 'lame' + (0, exec_1.sys)());
         if (fs.existsSync(lamepath))
             options.mp3 = lamepath + ' {in} {out}';
     }

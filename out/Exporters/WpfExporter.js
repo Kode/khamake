@@ -269,7 +269,7 @@ class WpfExporter extends CSharpExporter_1.CSharpExporter {
     }
     async copyVideo(platform, from, to) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-        await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), this.options.wmv);
+        await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.wmv'), this.options.wmv);
         return { files: [to + '.wmv'], sizes: [1] };
     }
 }

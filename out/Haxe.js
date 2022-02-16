@@ -11,7 +11,7 @@ function executeHaxe(from, haxeDirectory, options) {
         let exe = 'haxe';
         let env = process.env;
         if (fs.existsSync(haxeDirectory) && fs.statSync(haxeDirectory).isDirectory()) {
-            let localexe = path.resolve(haxeDirectory, 'haxe' + exec_1.sys());
+            let localexe = path.resolve(haxeDirectory, 'haxe' + (0, exec_1.sys)());
             if (!fs.existsSync(localexe))
                 localexe = path.resolve(haxeDirectory, 'haxe');
             if (fs.existsSync(localexe))
