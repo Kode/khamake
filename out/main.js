@@ -87,7 +87,7 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-    out += 'await project.addProject(\'' + path.join(options.kha, 'Kinc') + '\');\n';
+    out += 'await project.addProject(\'' + path.join(options.kha, 'Kinc').replace(/\\/g, '/') + '\');\n';
     out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
     if (korehl)
         out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-HL').replace(/\\/g, '/') + '\');\n';
@@ -169,7 +169,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         // e.g. 'build/android-native-build'
         try {
             const kmakeOptions = ['--from', options.from, '--to', buildDir, '--kfile', path.resolve(options.to, 'kfile.js'), '-t', koreplatform(options.target), '--noshaders',
-                '--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-vs', options.visualstudio
+                '--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-v', options.visualstudio
             ];
             if (options.nosigning) {
                 kmakeOptions.push('--nosigning');
