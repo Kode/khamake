@@ -106,7 +106,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: Options, t
 
 	for (let lib of libraries) {
 		let libPath: string = lib.libpath.replace(/\\/g, '/');
-		out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kfile.js\'))) {\n';
+		out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kfile.js\')) || fs.existsSync(path.join(\'' + libPath + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath + '\', \'korefile.js\'))) {\n';
 		out += '\tawait project.addProject(\'' + libPath + '\');\n';
 		out += '}\n';
 	}
