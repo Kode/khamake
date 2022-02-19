@@ -262,6 +262,8 @@ function koreplatform(platform) {
     else
         return platform;
 }
+let kore = false;
+let korehl = false;
 async function exportKhaProject(options) {
     log.info('Creating Kha project.');
     let project = null;
@@ -285,8 +287,6 @@ async function exportKhaProject(options) {
     let temp = path.join(options.to, 'temp');
     fs.ensureDirSync(temp);
     let exporter = null;
-    let kore = false;
-    let korehl = false;
     let target = options.target.toLowerCase();
     let baseTarget = target;
     let customTarget = null;
@@ -760,7 +760,7 @@ async function run(options, loglog) {
     if ((options.target === Platform_1.Platform.Linux || options.target === Platform_1.Platform.FreeBSD) && options.run) {
         await runProject(options, name);
     }
-    if (options.compile && options.target === Platform_1.Platform.Android) {
+    if (options.compile && options.target === Platform_1.Platform.Android && !kore && !korehl) {
         let gradlew = (process.platform === 'win32') ? 'gradlew.bat' : 'bash';
         let args = (process.platform === 'win32') ? [] : ['gradlew'];
         args.push('assemble');
