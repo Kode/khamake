@@ -771,6 +771,9 @@ async function run(options, loglog) {
         make.stderr.on('data', function (data) {
             log.error(data.toString());
         });
+        make.on('error', () => {
+            log.error('Could not call gradle to compile the Android project.');
+        });
         make.on('close', function (code) {
             if (code === 0) {
             }

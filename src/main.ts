@@ -876,6 +876,10 @@ export async function run(options: Options, loglog: any): Promise<string> {
 			log.error(data.toString());
 		});
 
+		make.on('error', () => {
+			log.error('Could not call gradle to compile the Android project.');
+		});
+
 		make.on('close', function (code: number) {
 			if (code === 0) {
 
