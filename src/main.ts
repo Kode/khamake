@@ -226,31 +226,29 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 	}
 	else if (options.haxe !== '' && korehl && !options.noproject) {
 		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kore_sources.c'), path.join(buildDir, 'kore_sources.c'), { overwrite: true });
-		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kincfile.js'), path.join(buildDir, 'kincfile.js'), { overwrite: true });
-		fs.writeFileSync(path.join(options.to, 'kincfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, korehl, icon));
+		fs.copySync(path.join(__dirname, '..', 'Data', 'hl', 'kfile.js'), path.join(buildDir, 'kfile.js'), { overwrite: true });
+		fs.writeFileSync(path.join(options.to, 'kfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, korehl, icon));
 
 		try {
-			let name = await require(path.join(korepath.get(), 'out', 'main.js')).run(
-			{
-				from: options.from,
-				to: buildDir,
-				kincfile: path.resolve(options.to, 'kincfile.js'),
-				target: koreplatform(options.target),
-				graphics: options.graphics,
-				arch: options.arch,
-				vrApi: options.vr,
-				raytrace: options.raytrace,
-				visualstudio: options.visualstudio,
-				compile: options.compile,
-				run: options.run,
-				debug: options.debug,
-				noshaders: true,
-				nosigning: options.nosigning
-			},
-			{
-				info: log.info,
-				error: log.error
-			});
+			const kmakeOptions = ['--from', options.from, '--to', buildDir, '--kfile', path.resolve(options.to, 'kfile.js'), '-t', koreplatform(options.target), '--noshaders',
+				'--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-v', options.visualstudio
+			];
+			if (options.nosigning) {
+				kmakeOptions.push('--nosigning');
+			}
+			if (options.debug) {
+				kmakeOptions.push('--debug');
+			}
+			if (options.run) {
+				kmakeOptions.push('--run');
+			}
+			if (options.compile) {
+				kmakeOptions.push('--compile');
+			}
+			await runKmake(kmakeOptions);
+			for (let callback of Callbacks.postCppCompilation) {
+				callback();
+			}
 			log.info('Done.');
 			return name;
 		}
