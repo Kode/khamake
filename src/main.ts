@@ -223,8 +223,13 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			return name;
 		}
 		catch (error) {
-			log.error(error);
-			return '';
+			if (error) {
+				log.error('Error: ' + error);
+			}
+			else {
+				log.error('Error.');
+			}
+			process.exit(1);
 		}
 	}
 	else if (options.haxe !== '' && korehl && !options.noproject) {
@@ -256,8 +261,13 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			return name;
 		}
 		catch (error) {
-			log.error(error);
-			return '';
+			if (error) {
+				log.error('Error: ' + error);
+			}
+			else {
+				log.error('Error.');
+			}
+			process.exit(1);
 		}
 	}
 	else {
