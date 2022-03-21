@@ -423,6 +423,7 @@ else if (parsedOptions.server) {
 		}
 	});
 	server.listen(parsedOptions.port);
+	if (parsedOptions.watch) runKhamake();
 }
 else {
 	runKhamake();
