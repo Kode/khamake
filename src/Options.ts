@@ -34,6 +34,7 @@ export class Options {
 	quiet: boolean;
 	watch: boolean;
 	watchport: string;
+	livereload: boolean;
 	glsl2: boolean;
 	shaderversion: string;
 
