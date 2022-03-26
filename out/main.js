@@ -141,12 +141,14 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         haxeOptions.defines.push('kha_version=1810');
         haxeOptions.safeName = safeName(haxeOptions.name);
         haxeOptions.defines.push('kha_project_name=' + haxeOptions.name);
+        if (options.livereload)
+            haxeOptions.defines.push('kha_live_reload');
         if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
             haxeOptions.parameters.push('-debug');
         }
         (0, HaxeProject_1.writeHaxeProject)(options.to, !options.noproject, haxeOptions);
         if (!options.nohaxe) {
-            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir(), options.watchport);
+            let compiler = new HaxeCompiler_1.HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir(), options.watchport, options.livereload, options.port);
             lastHaxeCompiler = compiler;
             try {
                 await compiler.run(options.watch);

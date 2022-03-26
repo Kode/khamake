@@ -241,6 +241,11 @@ let options: Array<any> = [
 		default: '7000',
 	},
 	{
+		full: 'livereload',
+		description: 'Reload http server page on watch mode recompilations.',
+		value: false
+	},
+	{
 		full: 'glsl2',
 		description: 'Use experimental SPIRV-Cross glsl mode.',
 		value: false

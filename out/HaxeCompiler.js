@@ -8,11 +8,14 @@ const path = require("path");
 const chokidar = require("chokidar");
 const log = require("./log");
 const exec_1 = require("./exec");
+const ws_1 = require("ws");
 class HaxeCompiler {
-    constructor(from, temp, to, resourceDir, haxeDirectory, hxml, sourceDirectories, sysdir, port) {
+    constructor(from, temp, to, resourceDir, haxeDirectory, hxml, sourceDirectories, sysdir, port, isLiveReload, httpPort) {
         this.ready = true;
         this.todo = false;
         this.port = '7000';
+        this.isLiveReload = false;
+        this.wsClients = [];
         this.from = from;
         this.temp = temp;
         this.to = to;
@@ -21,9 +24,18 @@ class HaxeCompiler {
         this.hxml = hxml;
         this.sysdir = sysdir;
         this.port = port;
+        this.isLiveReload = isLiveReload;
         this.sourceMatchers = [];
         for (let dir of sourceDirectories) {
             this.sourceMatchers.push(path.join(dir, '**').replace(/\\/g, '/'));
+        }
+        if (isLiveReload) {
+            this.wss = new ws_1.WebSocketServer({
+                port: parseInt(httpPort) + 1
+            });
+            this.wss.on('connection', (client) => {
+                this.wsClients.push(client);
+            });
         }
     }
     close() {
@@ -31,6 +43,8 @@ class HaxeCompiler {
             this.watcher.close();
         if (this.compilationServer)
             this.compilationServer.kill();
+        if (this.isLiveReload)
+            this.wss.close();
     }
     async run(watch) {
         if (watch) {
@@ -159,6 +173,11 @@ class HaxeCompiler {
                 if (code === 0) {
                     process.stdout.write('\x1Bc');
                     log.info('Haxe compile end.');
+                    if (this.isLiveReload) {
+                        this.wsClients.forEach(client => {
+                            client.send(JSON.stringify({}));
+                        });
+                    }
                     for (let callback of ProjectFile_1.Callbacks.postHaxeRecompilation) {
                         callback();
                     }

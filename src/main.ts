@@ -113,7 +113,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: Options, t
 		out += '\tawait project.addProject(\'' + libPath + '\');\n';
 		out += '}\n';
 	}
-	
+
 	if (stackSize) {
 		out += 'project.stackSize = ' + stackSize + ';\n';
 	}
@@ -163,6 +163,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 		haxeOptions.defines.push('kha_version=1810');
 		haxeOptions.safeName = safeName(haxeOptions.name);
 		haxeOptions.defines.push('kha_project_name=' + haxeOptions.name);
+		if (options.livereload) haxeOptions.defines.push('kha_live_reload');
 
 		if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
 			haxeOptions.parameters.push('-debug');
@@ -171,7 +172,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 		writeHaxeProject(options.to, !options.noproject, haxeOptions);
 
 		if (!options.nohaxe) {
-			let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir(), options.watchport);
+			let compiler = new HaxeCompiler(options.to, haxeOptions.to, haxeOptions.realto, resourceDir, options.haxe, 'project-' + exporter.sysdir() + '.hxml', haxeOptions.sources, exporter.sysdir(), options.watchport, options.livereload, options.port);
 			lastHaxeCompiler = compiler;
 			try {
 				await compiler.run(options.watch);

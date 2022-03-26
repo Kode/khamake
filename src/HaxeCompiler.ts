@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as chokidar from 'chokidar';
 import * as log from './log';
 import {sys} from './exec';
+import { WebSocketServer, WebSocket } from 'ws';
 
 export class HaxeCompiler {
 	from: string;
@@ -15,13 +16,16 @@ export class HaxeCompiler {
 	ready: boolean = true;
 	todo: boolean = false;
 	port: string = '7000';
+	isLiveReload: boolean = false;
+	wss: WebSocketServer;
+	wsClients: Array<WebSocket> = [];
 	temp: string;
 	to: string;
 	resourceDir: string;
 	compilationServer: child_process.ChildProcess;
 	sysdir: string;
 
-	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>, sysdir: string, port: string) {
+	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>, sysdir: string, port: string, isLiveReload: boolean, httpPort: string) {
 		this.from = from;
 		this.temp = temp;
 		this.to = to;
@@ -30,16 +34,28 @@ export class HaxeCompiler {
 		this.hxml = hxml;
 		this.sysdir = sysdir;
 		this.port = port;
+		this.isLiveReload = isLiveReload;
 
 		this.sourceMatchers = [];
 		for (let dir of sourceDirectories) {
 			this.sourceMatchers.push(path.join(dir, '**').replace(/\\/g, '/'));
+		}
+
+		if (isLiveReload) {
+			this.wss = new WebSocketServer({
+				port: parseInt(httpPort) + 1
+			});
+			this.wss.on('connection', (client) => {
+				if (this.wsClients.includes(client)) return;
+				this.wsClients.push(client);
+			});
 		}
 	}
 
 	close(): void {
 		if (this.watcher) this.watcher.close();
 		if (this.compilationServer) this.compilationServer.kill();
+		if (this.isLiveReload) this.wss.close();
 	}
 
 	async run(watch: boolean) {
@@ -179,6 +195,11 @@ export class HaxeCompiler {
 				if (code === 0) {
 					process.stdout.write('\x1Bc');
 					log.info('Haxe compile end.');
+					if (this.isLiveReload) {
+						this.wsClients.forEach(client => {
+							client.send(JSON.stringify({}));
+						});
+					}
 					for (let callback of Callbacks.postHaxeRecompilation) {
 						callback();
 					}
