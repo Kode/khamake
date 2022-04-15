@@ -95,21 +95,29 @@ export class Project {
 		if (!path.isAbsolute(projectDir)) {
 			projectDir = path.join(this.scriptdir, projectDir);
 		}
-		let project = await loadProject(projectDir, 'khafile.js', Project.platform);
-		this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
-		this.sources = this.sources.concat(project.sources);
-		this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
-		this.defines = this.defines.concat(project.defines);
-		this.cdefines = this.cdefines.concat(project.cdefines);
-		this.cflags = this.cflags.concat(project.cflags);
-		this.cppflags = this.cppflags.concat(project.cppflags);
-		this.parameters = this.parameters.concat(project.parameters);
-		this.libraries = this.libraries.concat(project.libraries);
-		if (this.icon === null && project.icon !== null) this.icon = path.join(projectDir, project.icon);
-		for (let customTarget of project.customTargets.keys()) {
-			this.customTargets.set(customTarget, project.customTargets.get(customTarget));
+		if (!fs.existsSync(path.join(projectDir, 'khafile.js')) && (fs.existsSync(path.join(projectDir, 'kincfile.js')) || fs.existsSync(path.join(projectDir, 'korefile.js')) || fs.existsSync(path.join(projectDir, 'kfile.js')))) {
+			this.libraries.push({
+				libpath: projectDir,
+				libroot: projectDir
+			});
 		}
-		// windowOptions and targetOptions are ignored
+		else {
+			let project = await loadProject(projectDir, 'khafile.js', Project.platform);
+			this.assetMatchers = this.assetMatchers.concat(project.assetMatchers);
+			this.sources = this.sources.concat(project.sources);
+			this.shaderMatchers = this.shaderMatchers.concat(project.shaderMatchers);
+			this.defines = this.defines.concat(project.defines);
+			this.cdefines = this.cdefines.concat(project.cdefines);
+			this.cflags = this.cflags.concat(project.cflags);
+			this.cppflags = this.cppflags.concat(project.cppflags);
+			this.parameters = this.parameters.concat(project.parameters);
+			this.libraries = this.libraries.concat(project.libraries);
+			if (this.icon === null && project.icon !== null) this.icon = path.join(projectDir, project.icon);
+			for (let customTarget of project.customTargets.keys()) {
+				this.customTargets.set(customTarget, project.customTargets.get(customTarget));
+			}
+			// windowOptions and targetOptions are ignored
+		}
 	}
 
 	private unglob(str: string): string {

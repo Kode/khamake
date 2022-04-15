@@ -34,6 +34,8 @@ class HaxeCompiler {
                 port: parseInt(httpPort) + 1
             });
             this.wss.on('connection', (client) => {
+                if (this.wsClients.includes(client))
+                    return;
                 this.wsClients.push(client);
             });
         }
