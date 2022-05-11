@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 
-import {sys} from './exec';
+import {sys, sysdir} from './exec';
 import * as korepath from './korepath';
 import * as log from './log';
 import {Options} from './Options';
@@ -761,17 +761,17 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (!options.haxe) {
-		let haxepath = path.join(options.kha, 'Tools', 'haxe');
+		let haxepath = path.join(options.kha, 'Tools', sysdir());
 		if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory()) options.haxe = haxepath;
 	}
 
 	if (!options.krafix) {
-		let krafixpath = path.join(options.kha, 'Kinc', 'Tools', 'krafix', 'krafix' + sys());
+		let krafixpath = path.join(options.kha, 'Kinc', 'Tools', sysdir(), 'krafix' + sys());
 		if (fs.existsSync(krafixpath)) options.krafix = krafixpath;
 	}
 
 	if (!options.kraffiti) {
-		const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'kraffiti' + sys());
+		const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', sysdir(), 'kraffiti' + sys());
 		if (fs.existsSync(kraffitipath)) options.kraffiti = kraffitipath;
 	}
 	else {
@@ -787,12 +787,12 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (!options.ogg) {
-		let oggpath = path.join(options.kha, 'Tools', 'oggenc', 'oggenc' + sys());
+		let oggpath = path.join(options.kha, 'Tools', sysdir(), 'oggenc' + sys());
 		if (fs.existsSync(oggpath)) options.ogg = oggpath + ' {in} -o {out} --quiet';
 	}
 
 	if (!options.mp3) {
-		let lamepath = path.join(options.kha, 'Tools', 'lame', 'lame' + sys());
+		let lamepath = path.join(options.kha, 'Tools', sysdir(), 'lame' + sys());
 		if (fs.existsSync(lamepath)) options.mp3 = lamepath + ' {in} {out}';
 	}
 

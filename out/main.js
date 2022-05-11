@@ -679,17 +679,17 @@ async function run(options, loglog) {
         options.parallelAssetConversion = 0;
     }
     if (!options.haxe) {
-        let haxepath = path.join(options.kha, 'Tools', 'haxe');
+        let haxepath = path.join(options.kha, 'Tools', (0, exec_1.sysdir)());
         if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory())
             options.haxe = haxepath;
     }
     if (!options.krafix) {
-        let krafixpath = path.join(options.kha, 'Kinc', 'Tools', 'krafix', 'krafix' + (0, exec_1.sys)());
+        let krafixpath = path.join(options.kha, 'Kinc', 'Tools', (0, exec_1.sysdir)(), 'krafix' + (0, exec_1.sys)());
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
     }
     if (!options.kraffiti) {
-        const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'kraffiti' + (0, exec_1.sys)());
+        const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', (0, exec_1.sysdir)(), 'kraffiti' + (0, exec_1.sys)());
         if (fs.existsSync(kraffitipath))
             options.kraffiti = kraffitipath;
     }
@@ -703,12 +703,12 @@ async function run(options, loglog) {
         options.mp3 = options.ffmpeg + ' -nostdin -i {in} {out}';
     }
     if (!options.ogg) {
-        let oggpath = path.join(options.kha, 'Tools', 'oggenc', 'oggenc' + (0, exec_1.sys)());
+        let oggpath = path.join(options.kha, 'Tools', (0, exec_1.sysdir)(), 'oggenc' + (0, exec_1.sys)());
         if (fs.existsSync(oggpath))
             options.ogg = oggpath + ' {in} -o {out} --quiet';
     }
     if (!options.mp3) {
-        let lamepath = path.join(options.kha, 'Tools', 'lame', 'lame' + (0, exec_1.sys)());
+        let lamepath = path.join(options.kha, 'Tools', (0, exec_1.sysdir)(), 'lame' + (0, exec_1.sys)());
         if (fs.existsSync(lamepath))
             options.mp3 = lamepath + ' {in} {out}';
     }
