@@ -7,10 +7,11 @@ import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
 import {Library} from '../Project';
+import { sysdir } from '../exec';
 
 function findIcon(from: string, options: any) {
 	if (fs.existsSync(path.join(from, 'icon.png'))) return path.join(from, 'icon.png');
-	else return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'icon.png');
+	else return path.join(options.kha, 'Kinc', 'Tools', sysdir(), 'icon.png');
 }
 
 export class AndroidExporter extends KhaExporter {

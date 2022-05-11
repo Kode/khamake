@@ -6,11 +6,12 @@ const path = require("path");
 const KhaExporter_1 = require("./KhaExporter");
 const Converter_1 = require("../Converter");
 const ImageTool_1 = require("../ImageTool");
+const exec_1 = require("../exec");
 function findIcon(from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
     else
-        return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'icon.png');
+        return path.join(options.kha, 'Kinc', 'Tools', (0, exec_1.sysdir)(), 'icon.png');
 }
 class AndroidExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
