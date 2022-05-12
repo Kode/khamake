@@ -5,6 +5,7 @@ const cp = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const log = require("./log");
+const exec = require("./exec");
 function run(exe, from, to, width, height, format, background, transparent, callback) {
     let params = ['from=' + from, 'to=' + to, 'format=' + format, 'keepaspect'];
     if (width > 0)
@@ -37,7 +38,7 @@ function findIcon(icon, from, options) {
     if (fs.existsSync(path.join(from, 'icon.png')))
         return path.join(from, 'icon.png');
     else
-        return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'icon.png');
+        return path.join(options.kha, 'Kinc', 'Tools', exec.sysdir(), 'icon.png');
 }
 function exportIco(icon, to, from, options) {
     run(options.kraffiti, findIcon(icon, from.toString(), options), to.toString(), 0, 0, 'ico', undefined, false, function () { });

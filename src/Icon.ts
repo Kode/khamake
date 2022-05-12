@@ -34,7 +34,7 @@ function run(exe: string, from: string, to: string, width: number, height: numbe
 function findIcon(icon: string, from: string, options: any) {
 	if (icon && fs.existsSync(path.join(from, icon))) return path.join(from, icon);
 	if (fs.existsSync(path.join(from, 'icon.png'))) return path.join(from, 'icon.png');
-	else return path.join(options.kha, 'Kinc', 'Tools', 'kraffiti', 'icon.png');
+	else return path.join(options.kha, 'Kinc', 'Tools', exec.sysdir(), 'icon.png');
 }
 
 export function exportIco(icon: string, to: string, from: string, options: any) {

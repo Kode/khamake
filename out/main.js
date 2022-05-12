@@ -398,7 +398,7 @@ async function exportKhaProject(options) {
     let assetConverter = new AssetConverter_1.AssetConverter(exporter, options, project.assetMatchers);
     lastAssetConverter = assetConverter;
     let assets = await assetConverter.run(options.watch, temp);
-    if (target === Platform_1.Platform.DebugHTML5 && process.platform === 'win32' || target === Platform_1.Platform.HTML5) {
+    if ((target === Platform_1.Platform.DebugHTML5 && process.platform === 'win32') || target === Platform_1.Platform.HTML5) {
         Icon.exportIco(project.icon, path.join(options.to, exporter.sysdir(), 'favicon.ico'), options.from, options);
     }
     else if (target === Platform_1.Platform.DebugHTML5) {
