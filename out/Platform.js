@@ -17,8 +17,6 @@ exports.Platform = {
     WPF: 'wpf',
     Java: 'java',
     PlayStationMobile: 'psm',
-    Tizen: 'tizen',
-    Unity: 'unity',
     Node: 'node',
     DebugHTML5: 'debug-html5',
     Empty: 'empty',

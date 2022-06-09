@@ -25,7 +25,6 @@ const KromExporter_1 = require("./Exporters/KromExporter");
 const NodeExporter_1 = require("./Exporters/NodeExporter");
 const PlayStationMobileExporter_1 = require("./Exporters/PlayStationMobileExporter");
 const WpfExporter_1 = require("./Exporters/WpfExporter");
-const UnityExporter_1 = require("./Exporters/UnityExporter");
 const HaxeProject_1 = require("./HaxeProject");
 const Icon = require("./Icon");
 let lastAssetConverter;
@@ -256,7 +255,6 @@ function checkKorePlatform(platform) {
         || platform === 'android'
         || platform === 'linux'
         || platform === 'html5'
-        || platform === 'tizen'
         || platform === 'pi'
         || platform === 'tvos'
         || platform === 'ps4'
@@ -341,9 +339,6 @@ async function exportKhaProject(options) {
         case Platform_1.Platform.Node:
             exporter = new NodeExporter_1.NodeExporter(options);
             break;
-        case Platform_1.Platform.Unity:
-            exporter = new UnityExporter_1.UnityExporter(options);
-            break;
         case Platform_1.Platform.Empty:
             exporter = new EmptyExporter_1.EmptyExporter(options);
             break;
@@ -405,9 +400,6 @@ async function exportKhaProject(options) {
         Icon.exportPng(project.icon, path.join(options.to, exporter.sysdir(), 'favicon.png'), 256, 256, 0xffffffff, true, options.from, options);
     }
     let shaderDir = path.join(options.to, exporter.sysdir() + '-resources');
-    if (target === Platform_1.Platform.Unity) {
-        shaderDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Shaders');
-    }
     for (let callback of ProjectFile_1.Callbacks.preShaderCompilation) {
         callback();
     }
@@ -450,31 +442,6 @@ async function exportKhaProject(options) {
         }
         catch (err) {
             return Promise.reject(err);
-        }
-    }
-    if (target === Platform_1.Platform.Unity) {
-        fs.ensureDirSync(path.join(options.to, exporter.sysdir() + '-resources'));
-        for (let shader of exportedShaders) {
-            fs.writeFileSync(path.join(options.to, exporter.sysdir() + '-resources', shader.name + '.hlsl'), shader.name);
-        }
-        let proto = fs.readFileSync(path.join(options.from, options.kha, 'Tools', 'khamake', 'Data', 'unity', 'Shaders', 'proto.shader'), 'utf8');
-        for (let i1 = 0; i1 < exportedShaders.length; ++i1) {
-            if (exportedShaders[i1].name.endsWith('.vert')) {
-                for (let i2 = 0; i2 < exportedShaders.length; ++i2) {
-                    if (exportedShaders[i2].name.endsWith('.frag')) {
-                        let shadername = exportedShaders[i1].name + '.' + exportedShaders[i2].name;
-                        let proto2 = proto.replace(/{name}/g, shadername);
-                        proto2 = proto2.replace(/{vert}/g, exportedShaders[i1].name);
-                        proto2 = proto2.replace(/{frag}/g, exportedShaders[i2].name);
-                        fs.writeFileSync(path.join(shaderDir, shadername + '.shader'), proto2, 'utf8');
-                    }
-                }
-            }
-        }
-        let blobDir = path.join(options.to, exporter.sysdir(), 'Assets', 'Resources', 'Blobs');
-        fs.ensureDirSync(blobDir);
-        for (let i = 0; i < exportedShaders.length; ++i) {
-            fs.writeFileSync(path.join(blobDir, exportedShaders[i].files[0] + '.bytes'), exportedShaders[i].name, 'utf8');
         }
     }
     function findShader(name) {
@@ -752,14 +719,6 @@ async function run(options, loglog) {
             + 'runtimes. The html5-native target on the other hand\n'
             + 'has to provide its own garbage collector and many\n'
             + 'other performance critical pieces of infrastructure.');
-        console.log();
-    }
-    if (options.target === 'unity') {
-        console.log();
-        console.log('The Unity target hasn\'t been updated for years.\n'
-            + 'Rob thinks it is not needed anymore now that\n'
-            + 'proper console backends exist but please tell\n'
-            + 'Rob if you think he is wrong about that.');
         console.log();
     }
     let name = '';
