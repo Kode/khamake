@@ -85,7 +85,6 @@ export class ShaderCompiler {
 		case Platform.HTML5:
 		case Platform.DebugHTML5:
 		case Platform.HTML5Worker:
-		case Platform.Tizen:
 		case Platform.Pi:
 			return 'essl';
 		case Platform.tvOS:
@@ -140,8 +139,6 @@ export class ShaderCompiler {
 			else {
 				throw new Error('Unsupported shader language.');
 			}
-		case Platform.Unity:
-			return 'hlsl';
 		case Platform.Krom:
 			if (options.graphics === GraphicsApi.Default) {
 				if (process.platform === 'win32') {
