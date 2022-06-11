@@ -395,13 +395,10 @@ async function runKhamake() {
 				process.stderr.write(text);
 			}
 		};
-		await require('./main.js').run(parsedOptions, { info: logInfo, error: logError }, (name: string) => { });
+		await require('./main.js').run(parsedOptions, { info: logInfo, error: logError });
 	}
 	catch (error) {
 		console.log(error);
-		for (let callback of Callbacks.onFailure) {
-			callback(error);
-		}
 		process.exit(1);
 	}
 }
