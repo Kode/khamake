@@ -398,7 +398,9 @@ async function runKhamake() {
 		await require('./main.js').run(parsedOptions, { info: logInfo, error: logError });
 	}
 	catch (error) {
-		console.log(error);
+		if (error) {
+			console.log(error);
+		}
 		process.exit(1);
 	}
 }
