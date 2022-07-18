@@ -12,7 +12,6 @@ const ProjectFile_1 = require("./ProjectFile");
 const AssetConverter_1 = require("./AssetConverter");
 const HaxeCompiler_1 = require("./HaxeCompiler");
 const ShaderCompiler_1 = require("./ShaderCompiler");
-const AndroidExporter_1 = require("./Exporters/AndroidExporter");
 const DebugHtml5Exporter_1 = require("./Exporters/DebugHtml5Exporter");
 const EmptyExporter_1 = require("./Exporters/EmptyExporter");
 const FlashExporter_1 = require("./Exporters/FlashExporter");
@@ -170,7 +169,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         // Similar to khamake.js -> main.js -> run(...)
         // We now do kincmake.js -> main.js -> run(...)
         // This will create additional project folders for the target,
-        // e.g. 'build/android-native-build'
+        // e.g. 'build/pi-build'
         try {
             const kmakeOptions = ['--from', options.from, '--to', buildDir, '--kfile', path.resolve(options.to, 'kfile.js'), '-t', koreplatform(options.target), '--noshaders',
                 '--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-v', options.visualstudio
@@ -265,7 +264,6 @@ function checkKorePlatform(platform) {
         || platform === 'freebsd';
 }
 function koreplatform(platform) {
-    // 'android-native' becomes 'android'
     if (platform.endsWith('-native'))
         return platform.substr(0, platform.length - '-native'.length);
     else if (platform.endsWith('-native-hl'))
@@ -332,10 +330,6 @@ async function exportKhaProject(options) {
         case Platform_1.Platform.PlayStationMobile:
             exporter = new PlayStationMobileExporter_1.PlayStationMobileExporter(options);
             break;
-        case Platform_1.Platform.Android:
-            // 'android-native' bypasses this option
-            exporter = new AndroidExporter_1.AndroidExporter(options);
-            break;
         case Platform_1.Platform.Node:
             exporter = new NodeExporter_1.NodeExporter(options);
             break;
@@ -354,7 +348,6 @@ async function exportKhaProject(options) {
             }
             else {
                 kore = true;
-                // If target is 'android-native' then options.target becomes 'android'
                 options.target = koreplatform(baseTarget);
                 if (!checkKorePlatform(options.target)) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
@@ -367,7 +360,7 @@ async function exportKhaProject(options) {
     exporter.setSystemDirectory(target);
     let buildDir = path.join(options.to, exporter.sysdir() + '-build');
     // Create the target build folder
-    // e.g. 'build/android-native'
+    // e.g. 'build/pi'
     fs.ensureDirSync(path.join(options.to, exporter.sysdir()));
     let defaultWindowOptions = {
         width: 800,
@@ -525,25 +518,7 @@ async function exportKhaProject(options) {
     for (let callback of ProjectFile_1.Callbacks.preHaxeCompilation) {
         callback();
     }
-    if (options.onlydata) {
-        log.info('Exporting only data.');
-        // We need to copy assets into project folder for Android native
-        if (exporter.sysdir() === 'android-native') {
-            // Location of preprocessed assets
-            let dataDir = path.join(options.to, exporter.sysdir());
-            // Use the same 'safename' as kincmake
-            let safename = project.name.replace(/ /g, '-');
-            let assetsDir = path.resolve(buildDir, safename, 'app', 'src', 'main', 'assets');
-            // Create path if it does not exist (although it should)
-            fs.ensureDirSync(assetsDir);
-            log.info(assetsDir);
-            fs.copySync(path.resolve(dataDir), assetsDir);
-        }
-        return project.name;
-    }
-    else {
-        return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.icon, project.libraries, project.targetOptions, project.defines, project.cdefines, project.cflags, project.cppflags, project.stackSize, project.version, project.id);
-    }
+    return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.icon, project.libraries, project.targetOptions, project.defines, project.cdefines, project.cflags, project.cppflags, project.stackSize, project.version, project.id);
 }
 function isKhaProject(directory, projectfile) {
     return fs.existsSync(path.join(directory, 'Kha')) || fs.existsSync(path.join(directory, projectfile));
@@ -698,15 +673,6 @@ async function run(options, loglog) {
     if (!options.theora && options.ffmpeg) {
         options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
     }
-    if (options.target === 'android') {
-        console.log();
-        console.log('Please note that the android-native target\n'
-            + 'is usually a better choice.\n'
-            + 'The android target compiles faster but it is problematic\n'
-            + 'in many ways which we can not fix due to restrictions\n'
-            + 'in Android\'s Java APIs.');
-        console.log();
-    }
     if (options.target === 'html5-native') {
         console.log();
         console.log('Please note that the html5 target\n'
@@ -733,29 +699,6 @@ async function run(options, loglog) {
     }
     if ((options.target === Platform_1.Platform.Linux || options.target === Platform_1.Platform.FreeBSD) && options.run) {
         await runProject(options, name);
-    }
-    if (options.compile && options.target === Platform_1.Platform.Android && !kore && !korehl) {
-        let gradlew = (process.platform === 'win32') ? 'gradlew.bat' : 'bash';
-        let args = (process.platform === 'win32') ? [] : ['gradlew'];
-        args.push('assemble');
-        let make = child_process.spawn(gradlew, args, { cwd: path.join(options.to, 'android', name) });
-        make.stdout.on('data', function (data) {
-            log.info(data.toString());
-        });
-        make.stderr.on('data', function (data) {
-            log.error(data.toString());
-        });
-        make.on('error', () => {
-            log.error('Could not call gradle to compile the Android project.');
-        });
-        make.on('close', function (code) {
-            if (code === 0) {
-            }
-            else {
-                log.error('Compilation failed.');
-                process.exit(code);
-            }
-        });
     }
     return name;
 }
