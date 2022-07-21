@@ -51,9 +51,6 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     if (id) {
         out += 'project.id = \'' + id + '\';\n';
     }
-    if (korehl) {
-        out += 'project.cpp = true;\n';
-    }
     if (icon != null)
         out += 'project.icon = \'' + icon + '\';\n';
     for (let cdefine of cdefines) {
