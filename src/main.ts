@@ -81,13 +81,7 @@ function createKorefile(name: string, exporter: KhaExporter, options: Options, t
 	if (targetOptions) {
 		let koreTargetOptions: any = {};
 		for (let option in targetOptions) {
-			if (option.endsWith('_native')) continue;
 			koreTargetOptions[option] = targetOptions[option];
-		}
-		for (let option in targetOptions) {
-			if (option.endsWith('_native')) {
-				koreTargetOptions[option.substr(0, option.length - '_native'.length)] = targetOptions[option];
-			}
 		}
 		out += 'project.targetOptions = ' + JSON.stringify(koreTargetOptions) + ';\n';
 	}
@@ -280,7 +274,7 @@ function checkKorePlatform(platform: string) {
 		|| platform === 'osx'
 		|| platform === 'android'
 		|| platform === 'linux'
-		|| platform === 'html5'
+		|| platform === 'emscripten'
 		|| platform === 'pi'
 		|| platform === 'tvos'
 		|| platform === 'ps4'
@@ -292,9 +286,7 @@ function checkKorePlatform(platform: string) {
 }
 
 function koreplatform(platform: string) {
-	if (platform.endsWith('-native')) return platform.substr(0, platform.length - '-native'.length);
-	else if (platform.endsWith('-native-hl')) return platform.substr(0, platform.length - '-native-hl'.length);
-	else if (platform.endsWith('-hl')) return platform.substr(0, platform.length - '-hl'.length);
+	if (platform.endsWith('-hl')) return platform.substr(0, platform.length - '-hl'.length);
 	else return platform;
 }
 
@@ -760,16 +752,16 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
 	}
 
-	if (options.target === 'html5-native') {
+	if (options.target === 'emscripten') {
 		console.log();
 		console.log('Please note that the html5 target\n'
 		+ 'is usually a better choice.\n'
 		+ 'In particular the html5 target usually runs faster\n'
-		+ 'than the html5-native target. That is because\n'
+		+ 'than the emscripten target. That is because\n'
 		+ 'Haxe and JavaScript are similar in many ways and\n'
 		+ 'therefore the html5 target can make direct use of\n'
 		+ 'all of the optimizations in modern JavaScript\n'
-		+ 'runtimes. The html5-native target on the other hand\n'
+		+ 'runtimes. The emscripten target on the other hand\n'
 		+ 'has to provide its own garbage collector and many\n'
 		+ 'other performance critical pieces of infrastructure.'
 		);

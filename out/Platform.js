@@ -22,6 +22,7 @@ exports.Platform = {
     Empty: 'empty',
     Pi: 'pi',
     tvOS: 'tvos',
-    FreeBSD: 'freebsd'
+    FreeBSD: 'freebsd',
+    Emscripten: 'emscripten'
 };
 //# sourceMappingURL=Platform.js.map
