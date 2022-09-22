@@ -328,6 +328,9 @@ for (let i = 2; i < args.length; ++i) {
                         if (option.full === 'target') {
                             targetIsDefault = false;
                         }
+                        else if (option.full === 'parallelAssetConversion') {
+                            parsedOptions[option.full] = parseInt(parsedOptions[option.full]);
+                        }
                     }
                     else {
                         parsedOptions[option.full] = true;
