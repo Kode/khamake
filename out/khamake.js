@@ -100,7 +100,7 @@ let options = [
     {
         full: 'visualstudio',
         short: 'v',
-        description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013 and vs2015.',
+        description: 'Version of Visual Studio to use. Possible parameters are vs2010, vs2012, vs2013, vs2015, vs2017, vs2019 and vs2022.',
         value: true,
         default: VisualStudioVersion_1.VisualStudioVersion.VS2022
     },
