@@ -778,6 +778,10 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		}
 		throw err;
 	}
+	
+	for (let callback of Callbacks.postBuild) {
+		callback();
+	}
 
 	if ((options.target === Platform.Linux || options.target === Platform.FreeBSD) && options.run) {
 		await runProject(options, name);
