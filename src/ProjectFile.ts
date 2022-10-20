@@ -12,7 +12,7 @@ export let Callbacks = {
 	postHaxeRecompilation: [() => {}],
 	postCppCompilation:    [() => {}],
 	postAssetReexporting:  [(filePath: string) => {}],
-	postBuild:  					 [() => {}],
+	postBuild:             [() => {}],
 	onFailure:             [(error: any) => {}]
 };
 
