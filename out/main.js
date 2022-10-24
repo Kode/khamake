@@ -683,6 +683,9 @@ async function run(options, loglog) {
         }
         throw err;
     }
+    for (let callback of ProjectFile_1.Callbacks.postBuild) {
+        callback();
+    }
     if ((options.target === Platform_1.Platform.Linux || options.target === Platform_1.Platform.FreeBSD) && options.run) {
         await runProject(options, name);
     }
