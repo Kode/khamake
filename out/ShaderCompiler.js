@@ -50,10 +50,10 @@ class ShaderCompiler {
             case Platform_1.Platform.Flash:
                 return 'agal';
             case Platform_1.Platform.Android:
-                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'spirv';
                 }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
                     return 'essl';
                 }
                 else {
@@ -97,10 +97,10 @@ class ShaderCompiler {
             case Platform_1.Platform.PlayStation3:
                 return 'd3d9';
             case Platform_1.Platform.Linux:
-                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan) {
+                if (options.graphics === GraphicsApi_1.GraphicsApi.Vulkan || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
                     return 'spirv';
                 }
-                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || options.graphics === GraphicsApi_1.GraphicsApi.Default) {
+                else if (options.graphics === GraphicsApi_1.GraphicsApi.OpenGL) {
                     return 'glsl';
                 }
                 else {
