@@ -26,7 +26,7 @@ export class AssetConverter {
 		if (this.watcher) this.watcher.close();
 	}
 
-	static replacePattern(pattern: string, value: string, fileinfo: path.ParsedPath, options: any, from: string) {
+	static replacePattern(pattern: string, name: string, fileinfo: path.ParsedPath, options: any, from: string) {
 		let basePath: string = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
 		let dirValue: string = path.relative(basePath, fileinfo.dir);
 		if (basePath.length > 0 && basePath[basePath.length - 1] === path.sep
@@ -41,7 +41,7 @@ export class AssetConverter {
 			? /{dir}\//g
 			: /{dir}/g;
 
-		return pattern.replace(/{name}/g, value).replace(/{ext}/g, fileinfo.ext).replace(dirRegex, dirValue);
+		return pattern.replace(/{name}/g, name).replace(/{ext}/g, fileinfo.ext).replace(dirRegex, dirValue);
 	}
 
 	static createExportInfo(fileinfo: path.ParsedPath, keepextension: boolean, options: any, from: string): {name: string, destination: string} {
@@ -85,13 +85,11 @@ export class AssetConverter {
 
 			const onFileChange = async (file: string) => {
 				const fileinfo = path.parse(file);
-				let outPath = fileinfo.dir + path.sep + fileinfo.name;
+				let outPath = fileinfo.name;
 				// with subfolders
-				if (options.destination != null) {
-					outPath = path.relative(options.baseDir, outPath);
-				}
-				else { // flat
-					outPath = fileinfo.name;
+				if (options.destination) {
+					const from = path.resolve(options.baseDir, '..');
+					outPath = AssetConverter.replacePattern(options.destination, fileinfo.name, fileinfo, options, from);
 				}
 				log.info('Reexporting ' + outPath + fileinfo.ext);
 				switch (fileinfo.ext) {
