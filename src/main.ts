@@ -220,6 +220,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				log.error('Error.');
 			}
 			process.exit(1);
+			return name;
 		}
 	}
 	else if (options.haxe !== '' && korehl && !options.noproject) {
@@ -258,6 +259,7 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 				log.error('Error.');
 			}
 			process.exit(1);
+			return name;
 		}
 	}
 	else {
@@ -564,7 +566,7 @@ async function exportKhaProject(options: Options): Promise<string> {
 	for (let callback of Callbacks.preHaxeCompilation) {
 		callback();
 	}
-	
+
 	return await exportProjectFiles(project.name, path.join(options.to, exporter.sysdir() + '-resources'), options, exporter, kore, korehl, project.icon,
 		project.libraries, project.targetOptions, project.defines, project.cdefines, project.cflags, project.cppflags, project.stackSize, project.version, project.id);
 }
@@ -778,7 +780,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		}
 		throw err;
 	}
-	
+
 	for (let callback of Callbacks.postBuild) {
 		callback();
 	}
