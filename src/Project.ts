@@ -223,11 +223,6 @@ export class Project {
 				return { libpath: name, libroot: name };
 			}
 
-			// check relative path
-			if (fs.existsSync(path.resolve(name))) {
-				return { libpath: name, libroot: name };
-			}
-
 			// Tries to load the default library from inside the kha project.
 			// e.g. 'Libraries/wyngine'
 			let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
@@ -248,7 +243,11 @@ export class Project {
 			}
 			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
 				if (fs.existsSync(path.join(libpath, '.dev'))) {
-					return { libpath: fs.readFileSync(path.join(libpath, '.dev'), 'utf8'), libroot: libpath };
+					libpath = fs.readFileSync(path.join(libpath, '.dev'), 'utf8');
+					if (!path.isAbsolute(libpath)) {
+						libpath = path.resolve(libpath);
+					}
+					return { libpath: libpath, libroot: libpath };
 				}
 				else if (fs.existsSync(path.join(libpath, '.current'))) {
 					// Get the latest version of the haxelib path,
@@ -256,6 +255,11 @@ export class Project {
 					let current = fs.readFileSync(path.join(libpath, '.current'), 'utf8');
 					return { libpath: path.join(libpath, current.replace(/\./g, ',')), libroot: libpath };
 				}
+			}
+			// check relative path
+			if (fs.existsSync(path.resolve(name))) {
+				let libpath = path.resolve(name);
+				return { libpath: libpath, libroot: libpath };
 			}
 			// Show error if library isn't found in Libraries or haxelib folder
 			log.error('Error: Library ' + name + ' not found.');

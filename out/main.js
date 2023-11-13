@@ -191,6 +191,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 log.error('Error.');
             }
             process.exit(1);
+            return name;
         }
     }
     else if (options.haxe !== '' && korehl && !options.noproject) {
@@ -228,6 +229,7 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
                 log.error('Error.');
             }
             process.exit(1);
+            return name;
         }
     }
     else {
