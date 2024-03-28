@@ -282,7 +282,7 @@ function checkKorePlatform(platform: string) {
 		|| platform === 'ps4'
 		|| platform === 'xboxone'
 		|| platform === 'switch'
-		|| platform === 'xboxscarlett'
+		|| platform === 'xboxseries'
 		|| platform === 'ps5'
 		|| platform === 'freebsd';
 }
