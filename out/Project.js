@@ -7,6 +7,13 @@ const path = require("path");
 const log = require("./log");
 const ProjectFile_1 = require("./ProjectFile");
 class Library {
+    constructor() {
+        /**
+         * If haxelib `classPath` is specified,
+         * we don't add `libpath` as `-cp` to `hxml`.
+        */
+        this.classPathIsAdded = false;
+    }
 }
 exports.Library = Library;
 class Target {
@@ -231,17 +238,18 @@ class Project {
                 if (elem.libroot === libInfo.libroot)
                     return '';
             }
-            this.libraries.push({
+            const lib = {
                 libpath: dir,
                 libroot: libInfo.libroot
-            });
+            };
+            this.libraries.push(lib);
             // If this is a haxelib library, there must be a haxelib.json
             if (fs.existsSync(path.join(dir, 'haxelib.json'))) {
                 let options = JSON.parse(fs.readFileSync(path.join(dir, 'haxelib.json'), 'utf8'));
                 // If there is a classPath value, add that directory to be loaded.
                 // Otherwise, just load the current path.
                 if (options.classPath) {
-                    // TODO find an example haxelib that has a classPath value
+                    lib.classPathIsAdded = true;
                     this.sources.push(path.join(dir, options.classPath));
                 }
                 else {
