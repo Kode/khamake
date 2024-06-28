@@ -110,7 +110,7 @@ function hxml(projectdir: string, options: any) {
 		if (lines.indexOf(line) === -1) {
 			lines.push(line);
 			return line;
-		}		
+		}
 		return '';
 	}
 
@@ -122,12 +122,13 @@ function hxml(projectdir: string, options: any) {
 			data += unique('-cp ' + path.relative(projectdir, path.resolve(options.from, options.sources[i])) + '\n'); // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
-	for (let i = 0; i < options.libraries.length; ++i) {
-		if (path.isAbsolute(options.libraries[i].libpath)) {
-			data += unique('-cp ' + options.libraries[i].libpath + '\n');
+	for (const lib of options.libraries) {
+		if (lib.classPathIsAdded) continue
+		if (path.isAbsolute(lib.libpath)) {
+			data += unique('-cp ' + lib.libpath + '\n');
 		}
 		else {
-			data += unique('-cp ' + path.relative(projectdir, path.resolve(options.from, options.libraries[i].libpath)) + '\n'); // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
+			data += unique('-cp ' + path.relative(projectdir, path.resolve(options.from, lib.libpath)) + '\n'); // from.resolve('build').relativize(from.resolve(this.sources[i])).toString());
 		}
 	}
 	for (let d in options.defines) {
@@ -170,7 +171,7 @@ function hxml(projectdir: string, options: any) {
 
 	if (!options.parameters.some((param: string) => param.includes('-main '))) {
 		const entrypoint = options ? options.main ? options.main : 'Main' : 'Main';
-		data += unique('-main ' + entrypoint + '\n');	
+		data += unique('-main ' + entrypoint + '\n');
 	}
 
 	fs.outputFileSync(path.join(projectdir, 'project-' + options.system + '.hxml'), data);
