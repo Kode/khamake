@@ -197,14 +197,13 @@ class ShaderCompiler {
             this.watcher.on('ready', async () => {
                 ready = true;
                 let compiledShaders = [];
-                const self = this;
-                async function compile(shader, index) {
+                const compile = async (shader, index) => {
                     let parsed = path.parse(shader);
-                    if (self.isSupported(shader)) {
+                    if (this.isSupported(shader)) {
                         log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
                         let compiledShader = null;
                         try {
-                            compiledShader = await self.compileShader(shader, options, recompileAll);
+                            compiledShader = await this.compileShader(shader, options, recompileAll);
                         }
                         catch (error) {
                             log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
@@ -223,9 +222,9 @@ class ShaderCompiler {
                         }
                         if (compiledShader.files != null && compiledShader.files.length === 0) {
                             // TODO: Remove when krafix has been recompiled everywhere
-                            compiledShader.files.push(parsed.name + '.' + self.type);
+                            compiledShader.files.push(parsed.name + '.' + this.type);
                         }
-                        compiledShader.name = AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, self.exporter.options.from).name;
+                        compiledShader.name = AssetConverter_1.AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name;
                         compiledShaders.push(compiledShader);
                     }
                     else {
@@ -233,7 +232,7 @@ class ShaderCompiler {
                     }
                     ++index;
                     return Promise.resolve();
-                }
+                };
                 if (this.options.parallelAssetConversion !== 0) {
                     let todo = shaders.map((shader, index) => {
                         return async () => {

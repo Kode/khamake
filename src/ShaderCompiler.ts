@@ -223,14 +223,13 @@ export class ShaderCompiler {
 				ready = true;
 				let compiledShaders: CompiledShader[] = [];
 
-				const self = this;
-				async function compile(shader: any, index: number) {
+				const compile = async (shader: any, index: number) => {
 					let parsed = path.parse(shader);
-					if (self.isSupported(shader)) {
+					if (this.isSupported(shader)) {
 						log.info('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ').');
 						let compiledShader: CompiledShader = null;
 						try {
-							compiledShader = await self.compileShader(shader, options, recompileAll);
+							compiledShader = await this.compileShader(shader, options, recompileAll);
 						}
 						catch (error) {
 							log.error('Compiling shader ' + (index + 1) + ' of ' + shaders.length + ' (' + parsed.base + ') failed:');
@@ -249,9 +248,9 @@ export class ShaderCompiler {
 						}
 						if (compiledShader.files != null && compiledShader.files.length === 0) {
 							// TODO: Remove when krafix has been recompiled everywhere
-							compiledShader.files.push(parsed.name + '.' + self.type);
+							compiledShader.files.push(parsed.name + '.' + this.type);
 						}
-						compiledShader.name = AssetConverter.createExportInfo(parsed, false, options, self.exporter.options.from).name;
+						compiledShader.name = AssetConverter.createExportInfo(parsed, false, options, this.exporter.options.from).name;
 						compiledShaders.push(compiledShader);
 					}
 					else {
