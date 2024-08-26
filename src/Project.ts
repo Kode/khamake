@@ -34,6 +34,25 @@ function contains(main: string, sub: string) {
 	return sub.indexOf(main) === 0 && sub.slice(main.length)[0] === path.sep;
 }
 
+export type AssetMatcherOptions = {
+	name?: string;
+	nameBaseDir?: string;
+	baseDir?: string;
+	namePathSeparator?: string;
+	destination?: string;
+	destinationCallback?: (destination: string) => string;
+
+	noprocessing?: boolean;
+	notinlist?: boolean;
+	md5sum?: string;
+
+	original_height?: number;
+	original_width?: number;
+	readable?: boolean;
+}
+
+export type AssetMatcher = { match: string, options: AssetMatcherOptions }
+
 export class Project {
 	static platform: string;
 	static scriptdir: string;
@@ -51,7 +70,7 @@ export class Project {
 	localLibraryPath: string;
 	windowOptions: any;
 	targetOptions: any;
-	assetMatchers: { match: string, options: any }[];
+	assetMatchers: AssetMatcher[];
 	shaderMatchers: { match: string, options: any }[];
 	customTargets: Map<string, Target>;
 	stackSize: number;
@@ -156,7 +175,7 @@ export class Project {
 	 * Asset types are infered from the file suffix.
 	 * Glob syntax is very simple, the most important patterns are * for anything and ** for anything across directories.
 	 */
-	addAssets(match: string, options: any) {
+	addAssets(match: string, options: AssetMatcherOptions) {
 		if (!options) options = {};
 
 		if (!path.isAbsolute(match)) {

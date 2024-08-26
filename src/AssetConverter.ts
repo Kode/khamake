@@ -7,15 +7,16 @@ import * as chokidar from 'chokidar';
 import * as crypto from 'crypto';
 import * as Throttle from 'promise-parallel-throttle';
 import { Options } from './Options';
+import { AssetMatcher, AssetMatcherOptions } from './Project';
 
 export class AssetConverter {
 	options: Options;
 	exporter: KhaExporter;
 	platform: string;
-	assetMatchers: Array<{ match: string, options: any }>;
+	assetMatchers: Array<AssetMatcher>;
 	watcher: fs.FSWatcher;
 
-	constructor(exporter: KhaExporter, options: Options, assetMatchers: Array<{ match: string, options: any }>) {
+	constructor(exporter: KhaExporter, options: Options, assetMatchers: Array<AssetMatcher>) {
 		this.exporter = exporter;
 		this.options = options;
 		this.platform = options.target;
@@ -26,7 +27,7 @@ export class AssetConverter {
 		if (this.watcher) this.watcher.close();
 	}
 
-	static replacePattern(pattern: string, name: string, fileinfo: path.ParsedPath, options: any, from: string) {
+	static replacePattern(pattern: string, name: string, fileinfo: path.ParsedPath, options: AssetMatcherOptions, from: string) {
 		let basePath: string = options.nameBaseDir ? path.join(from, options.nameBaseDir) : from;
 		let dirValue: string = path.relative(basePath, fileinfo.dir);
 		if (basePath.length > 0 && basePath[basePath.length - 1] === path.sep
@@ -44,7 +45,7 @@ export class AssetConverter {
 		return pattern.replace(/{name}/g, name).replace(/{ext}/g, fileinfo.ext).replace(dirRegex, dirValue);
 	}
 
-	static createExportInfo(fileinfo: path.ParsedPath, keepextension: boolean, options: any, from: string): {name: string, destination: string} {
+	static createExportInfo(fileinfo: path.ParsedPath, keepextension: boolean, options: AssetMatcherOptions, from: string): {name: string, destination: string} {
 		let nameValue = fileinfo.name;
 
 		let destination = fileinfo.name;
@@ -77,7 +78,28 @@ export class AssetConverter {
 		return {name: nameValue, destination: destination};
 	}
 
-	watch(watch: boolean, match: string, temp: string, options: any): Promise<{ name: string, from: string, type: string, files: string[], file_sizes: number[], original_width: number, original_height: number, readable: boolean }[]> {
+	canDecodeFormat(ext: string): boolean {
+		// without ffmpeg we need to encode mp3 and ogg files
+		const hasFFmpeg = !!this.options.ffmpeg;
+		const hasFFmpegOgg = this.options.ogg?.includes('ffmpeg') ?? false;
+		const hasFFmpegMp3 = this.options.mp3?.includes('ffmpeg') ?? false;
+		const hasFFmpegAac = this.options.aac?.includes('ffmpeg') ?? false;
+		switch (ext) {
+			case '.wav':
+				return true;
+			case '.ogg':
+				return hasFFmpeg || (hasFFmpegOgg && (hasFFmpegMp3 || hasFFmpegAac));
+			case '.mp3':
+				// lame can decode mp3, so we only need ogg ffmpeg encoder
+				return hasFFmpeg || (hasFFmpegOgg && !!this.options.mp3);
+			case '.flac':
+				return hasFFmpeg;
+			default:
+				return false;
+		}
+	}
+
+	watch(watch: boolean, match: string, temp: string, options: AssetMatcherOptions): Promise<{ name: string, from: string, type: string, files: string[], file_sizes: number[], original_width: number, original_height: number, readable: boolean }[]> {
 		return new Promise<{ name: string, from: string, type: string, files: string[], file_sizes: number[], original_width: number, original_height: number, readable: boolean }[]>((resolve, reject) => {
 			let ready = false;
 			let files: string[] = [];
@@ -91,8 +113,9 @@ export class AssetConverter {
 					const from = path.resolve(options.baseDir, '..');
 					outPath = AssetConverter.replacePattern(options.destination, fileinfo.name, fileinfo, options, from);
 				}
-				log.info('Reexporting ' + outPath + fileinfo.ext);
-				switch (fileinfo.ext) {
+				const ext = fileinfo.ext.toLowerCase();
+				log.info('Reexporting ' + outPath + ext);
+				switch (ext) {
 					case '.png':
 					case '.jpg':
 					case '.jpeg':
@@ -104,6 +127,9 @@ export class AssetConverter {
 					case '.mp3':
 					case '.flac':
 					case '.wav': {
+						if (!this.canDecodeFormat(ext)) {
+							log.error(`Error: ${fileinfo.base} should be in wav format, or use \`--ffmpeg path/to/ffmpeg\` option to convert ogg/mp3/flac files`);
+						}
 						await this.exporter.copySound(this.platform, file, outPath, {});
 						break;
 					}
@@ -122,10 +148,10 @@ export class AssetConverter {
 						break;
 
 					default:
-						await this.exporter.copyBlob(this.platform, file, outPath + fileinfo.ext, {});
+						await this.exporter.copyBlob(this.platform, file, outPath + ext, {});
 				}
 				for (let callback of Callbacks.postAssetReexporting) {
-					callback(outPath + fileinfo.ext);
+					callback(outPath + ext);
 				}
 			};
 
