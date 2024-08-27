@@ -5,7 +5,7 @@ import {convert} from '../Converter';
 import {executeHaxe} from '../Haxe';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
-import {Library} from '../Project';
+import {AssetMatcherOptions, Library} from '../Project';
 import {VrApi} from '../VrApi';
 
 export class Html5Exporter extends KhaExporter {
@@ -215,7 +215,7 @@ export class Html5Exporter extends KhaExporter {
 		});
 	}*/
 
-	async copySound(platform: string, from: string, to: string,  options: any) {
+	async copySound(platform: string, from: string, to: string, options: AssetMatcherOptions) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
 		let ogg_size = (await fs.stat(path.join(this.options.to, this.sysdir(), to + '.ogg'))).size;

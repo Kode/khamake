@@ -42,6 +42,7 @@ export type AssetMatcherOptions = {
 	destination?: string;
 	destinationCallback?: (destination: string) => string;
 
+	quality?: number;
 	noprocessing?: boolean;
 	notinlist?: boolean;
 	md5sum?: string;
