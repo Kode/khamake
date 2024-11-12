@@ -59,6 +59,27 @@ class AssetConverter {
         }
         return { name: nameValue, destination: destination };
     }
+    canDecodeFormat(ext) {
+        var _a, _b, _c, _d, _e, _f;
+        // without ffmpeg we need to encode mp3 and ogg files
+        const hasFFmpeg = !!this.options.ffmpeg;
+        const hasFFmpegOgg = (_b = (_a = this.options.ogg) === null || _a === void 0 ? void 0 : _a.includes('ffmpeg')) !== null && _b !== void 0 ? _b : false;
+        const hasFFmpegMp3 = (_d = (_c = this.options.mp3) === null || _c === void 0 ? void 0 : _c.includes('ffmpeg')) !== null && _d !== void 0 ? _d : false;
+        const hasFFmpegAac = (_f = (_e = this.options.aac) === null || _e === void 0 ? void 0 : _e.includes('ffmpeg')) !== null && _f !== void 0 ? _f : false;
+        switch (ext) {
+            case '.wav':
+                return true;
+            case '.ogg':
+                return hasFFmpeg || (hasFFmpegOgg && (hasFFmpegMp3 || hasFFmpegAac));
+            case '.mp3':
+                // lame can decode mp3, so we only need ogg ffmpeg encoder
+                return hasFFmpeg || (hasFFmpegOgg && !!this.options.mp3);
+            case '.flac':
+                return hasFFmpeg;
+            default:
+                return false;
+        }
+    }
     watch(watch, match, temp, options) {
         return new Promise((resolve, reject) => {
             let ready = false;
@@ -72,8 +93,9 @@ class AssetConverter {
                     const from = path.resolve(options.baseDir, '..');
                     outPath = AssetConverter.replacePattern(options.destination, fileinfo.name, fileinfo, options, from);
                 }
-                log.info('Reexporting ' + outPath + fileinfo.ext);
-                switch (fileinfo.ext) {
+                const ext = fileinfo.ext.toLowerCase();
+                log.info('Reexporting ' + outPath + ext);
+                switch (ext) {
                     case '.png':
                     case '.jpg':
                     case '.jpeg':
@@ -85,6 +107,9 @@ class AssetConverter {
                     case '.mp3':
                     case '.flac':
                     case '.wav': {
+                        if (!this.canDecodeFormat(ext)) {
+                            log.error(`Error: ${fileinfo.base} should be in wav format, or use \`--ffmpeg path/to/ffmpeg\` option to convert ogg/mp3/flac files`);
+                        }
                         await this.exporter.copySound(this.platform, file, outPath, {});
                         break;
                     }
@@ -100,10 +125,10 @@ class AssetConverter {
                         await this.exporter.copyFont(this.platform, file, outPath, {});
                         break;
                     default:
-                        await this.exporter.copyBlob(this.platform, file, outPath + fileinfo.ext, {});
+                        await this.exporter.copyBlob(this.platform, file, outPath + ext, {});
                 }
                 for (let callback of ProjectFile_1.Callbacks.postAssetReexporting) {
-                    callback(outPath + fileinfo.ext);
+                    callback(outPath + ext);
                 }
             };
             this.watcher.on('add', (file) => {
@@ -129,8 +154,7 @@ class AssetConverter {
                 if (fs.existsSync(cachePath)) {
                     cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
                 }
-                const self = this;
-                async function convertAsset(file, index) {
+                const convertAsset = async (file, index) => {
                     let fileinfo = path.parse(file);
                     log.info('Exporting asset ' + (index + 1) + ' of ' + files.length + ' (' + fileinfo.base + ').');
                     const ext = fileinfo.ext.toLowerCase();
@@ -139,13 +163,13 @@ class AssetConverter {
                         case '.jpg':
                         case '.jpeg':
                         case '.hdr': {
-                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, self.exporter.options.from);
+                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
                             let images;
                             if (options.noprocessing) {
-                                images = await self.exporter.copyBlob(self.platform, file, exportInfo.destination, options);
+                                images = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
                             }
                             else {
-                                images = await self.exporter.copyImage(self.platform, file, exportInfo.destination, options, cache);
+                                images = await this.exporter.copyImage(this.platform, file, exportInfo.destination, options, cache);
                             }
                             if (!options.notinlist) {
                                 parsedFiles.push({ name: exportInfo.name, from: file, type: 'image', files: images.files, file_sizes: images.sizes, original_width: options.original_width, original_height: options.original_height, readable: options.readable });
@@ -156,13 +180,17 @@ class AssetConverter {
                         case '.mp3':
                         case '.flac':
                         case '.wav': {
-                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, self.exporter.options.from);
+                            if (!this.canDecodeFormat(ext)) {
+                                log.error(`Error: ${fileinfo.base} should be in wav format, or use \`--ffmpeg\` option to convert ogg/mp3/flac files`);
+                                process.exit(1);
+                            }
+                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
                             let sounds;
                             if (options.noprocessing) {
-                                sounds = await self.exporter.copyBlob(self.platform, file, exportInfo.destination, options);
+                                sounds = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
                             }
                             else {
-                                sounds = await self.exporter.copySound(self.platform, file, exportInfo.destination, options);
+                                sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination, options);
                             }
                             if (sounds.files.length === 0) {
                                 throw 'Audio file ' + file + ' could not be exported, you have to specify a path to ffmpeg.';
@@ -173,13 +201,13 @@ class AssetConverter {
                             break;
                         }
                         case '.ttf': {
-                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, self.exporter.options.from);
+                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
                             let fonts;
                             if (options.noprocessing) {
-                                fonts = await self.exporter.copyBlob(self.platform, file, exportInfo.destination, options);
+                                fonts = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
                             }
                             else {
-                                fonts = await self.exporter.copyFont(self.platform, file, exportInfo.destination, options);
+                                fonts = await this.exporter.copyFont(this.platform, file, exportInfo.destination, options);
                             }
                             if (!options.notinlist) {
                                 parsedFiles.push({ name: exportInfo.name, from: file, type: 'font', files: fonts.files, file_sizes: fonts.sizes, original_width: undefined, original_height: undefined, readable: undefined });
@@ -191,13 +219,13 @@ class AssetConverter {
                         case '.mov':
                         case '.wmv':
                         case '.avi': {
-                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, self.exporter.options.from);
+                            let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
                             let videos;
                             if (options.noprocessing) {
-                                videos = await self.exporter.copyBlob(self.platform, file, exportInfo.destination, options);
+                                videos = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
                             }
                             else {
-                                videos = await self.exporter.copyVideo(self.platform, file, exportInfo.destination, options);
+                                videos = await this.exporter.copyVideo(this.platform, file, exportInfo.destination, options);
                             }
                             if (videos.files.length === 0) {
                                 log.error('Video file ' + file + ' could not be exported, you have to specify a path to ffmpeg.');
@@ -208,15 +236,15 @@ class AssetConverter {
                             break;
                         }
                         default: {
-                            let exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, self.exporter.options.from);
-                            let blobs = await self.exporter.copyBlob(self.platform, file, exportInfo.destination, options);
+                            let exportInfo = AssetConverter.createExportInfo(fileinfo, true, options, this.exporter.options.from);
+                            let blobs = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
                             if (!options.notinlist) {
                                 parsedFiles.push({ name: exportInfo.name, from: file, type: 'blob', files: blobs.files, file_sizes: blobs.sizes, original_width: undefined, original_height: undefined, readable: undefined });
                             }
                             break;
                         }
                     }
-                }
+                };
                 if (this.options.parallelAssetConversion !== 0) {
                     let todo = files.map((file, index) => {
                         return async () => {

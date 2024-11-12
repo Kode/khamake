@@ -34,6 +34,26 @@ function contains(main: string, sub: string) {
 	return sub.indexOf(main) === 0 && sub.slice(main.length)[0] === path.sep;
 }
 
+export type AssetMatcherOptions = {
+	name?: string;
+	nameBaseDir?: string;
+	baseDir?: string;
+	namePathSeparator?: string;
+	destination?: string;
+	destinationCallback?: (destination: string) => string;
+
+	quality?: number;
+	noprocessing?: boolean;
+	notinlist?: boolean;
+	md5sum?: string;
+
+	original_height?: number;
+	original_width?: number;
+	readable?: boolean;
+}
+
+export type AssetMatcher = { match: string, options: AssetMatcherOptions }
+
 export class Project {
 	static platform: string;
 	static scriptdir: string;
@@ -51,7 +71,7 @@ export class Project {
 	localLibraryPath: string;
 	windowOptions: any;
 	targetOptions: any;
-	assetMatchers: { match: string, options: any }[];
+	assetMatchers: AssetMatcher[];
 	shaderMatchers: { match: string, options: any }[];
 	customTargets: Map<string, Target>;
 	stackSize: number;
@@ -156,7 +176,7 @@ export class Project {
 	 * Asset types are infered from the file suffix.
 	 * Glob syntax is very simple, the most important patterns are * for anything and ** for anything across directories.
 	 */
-	addAssets(match: string, options: any) {
+	addAssets(match: string, options: AssetMatcherOptions) {
 		if (!options) options = {};
 
 		if (!path.isAbsolute(match)) {
@@ -222,15 +242,15 @@ export class Project {
 
 	addLibrary(library: string): string {
 		this.addDefine(library);
-		let self = this;
-		function findLibraryDirectory(name: string) {
+
+		const findLibraryDirectory = (name: string) => {
 			if (path.isAbsolute(name)) {
 				return { libpath: name, libroot: name };
 			}
 
 			// Tries to load the default library from inside the kha project.
 			// e.g. 'Libraries/wyngine'
-			let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
+			let libpath = path.join(this.scriptdir, this.localLibraryPath, name);
 			if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
 				let dir = path.resolve(libpath);
 				return { libpath: dir, libroot: dir };

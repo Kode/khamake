@@ -9,6 +9,7 @@ const Converter_1 = require("../Converter");
 const GraphicsApi_1 = require("../GraphicsApi");
 const Platform_1 = require("../Platform");
 const ImageTool_1 = require("../ImageTool");
+const log = require("../log");
 class KincExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
@@ -89,7 +90,8 @@ class KincExporter extends KhaExporter_1.KhaExporter {
                 fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
             }
             else {
-                throw 'Can not convert ' + from + ' to wav format.';
+                log.error('Can not convert ' + from + ' to wav format.\nSet `{quality: 0.99}` in `project.addAssets` if you want to convert your files to `ogg`.');
+                process.exit(1);
             }
             return { files: [to + '.wav'], sizes: [1] };
         }

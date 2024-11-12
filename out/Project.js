@@ -183,14 +183,13 @@ class Project {
     }
     addLibrary(library) {
         this.addDefine(library);
-        let self = this;
-        function findLibraryDirectory(name) {
+        const findLibraryDirectory = (name) => {
             if (path.isAbsolute(name)) {
                 return { libpath: name, libroot: name };
             }
             // Tries to load the default library from inside the kha project.
             // e.g. 'Libraries/wyngine'
-            let libpath = path.join(self.scriptdir, self.localLibraryPath, name);
+            let libpath = path.join(this.scriptdir, this.localLibraryPath, name);
             if (fs.existsSync(libpath) && fs.statSync(libpath).isDirectory()) {
                 let dir = path.resolve(libpath);
                 return { libpath: dir, libroot: dir };
@@ -230,7 +229,7 @@ class Project {
             log.error('Error: Library ' + name + ' not found.');
             log.error('Add it to the \'Libraries\' subdirectory of your project. You may also install it via haxelib but that\'s less cool.');
             throw 'Library ' + name + ' not found.';
-        }
+        };
         let libInfo = findLibraryDirectory(library);
         let dir = libInfo.libpath;
         if (dir !== '') {

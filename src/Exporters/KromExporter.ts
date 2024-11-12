@@ -7,7 +7,8 @@ import {executeHaxe} from '../Haxe';
 import {GraphicsApi} from '../GraphicsApi';
 import {Options} from '../Options';
 import {exportImage} from '../ImageTool';
-import {Library} from '../Project';
+import {AssetMatcherOptions, Library} from '../Project';
+import * as log from '../log';
 
 export class KromExporter extends KhaExporter {
 	width: number;
@@ -72,14 +73,20 @@ export class KromExporter extends KhaExporter {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir()));
 	}
 
-	async copySound(platform: string, from: string, to: string, options: any) {
+	async copySound(platform: string, from: string, to: string, options: AssetMatcherOptions) {
 		if (options.quality < 1) {
 			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 			let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
 			return { files: [to + '.ogg'], sizes: [1] };
 		}
 		else {
-			fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+			if (from.endsWith('.wav')) {
+				fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+			}
+			else {
+				log.error('Can not convert ' + from + ' to wav format.\nSet `{quality: 0.99}` in `project.addAssets` if you want to convert your files to `ogg`.');
+				process.exit(1);
+			}
 			return { files: [to + '.wav'], sizes: [1] };
 		}
 	}

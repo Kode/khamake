@@ -8,7 +8,8 @@ import {GraphicsApi} from '../GraphicsApi';
 import {Platform} from '../Platform';
 import {exportImage} from '../ImageTool';
 import {Options} from '../Options';
-import {Library} from '../Project';
+import {AssetMatcherOptions, Library} from '../Project';
+import * as log from '../log';
 
 export class KincExporter extends KhaExporter {
 	slowgc: boolean;
@@ -92,7 +93,7 @@ export class KincExporter extends KhaExporter {
 
 	}
 
-	async copySound(platform: string, from: string, to: string, options: any) {
+	async copySound(platform: string, from: string, to: string, options: AssetMatcherOptions) {
 		if (options.quality < 1) {
 			fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 			await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
@@ -103,7 +104,8 @@ export class KincExporter extends KhaExporter {
 				fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
 			}
 			else {
-				throw 'Can not convert ' + from + ' to wav format.';
+				log.error('Can not convert ' + from + ' to wav format.\nSet `{quality: 0.99}` in `project.addAssets` if you want to convert your files to `ogg`.');
+				process.exit(1);
 			}
 			return { files: [to + '.wav'], sizes: [1] };
 		}
