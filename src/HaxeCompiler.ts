@@ -71,7 +71,9 @@ export class HaxeCompiler {
 				this.scheduleCompile();
 			});
 			this.startCompilationServer();
-			this.triggerCompilationServer();
+			setTimeout(() => {
+				this.triggerCompilationServer();
+		}, 50);
 		}
 		else {
 			try {
