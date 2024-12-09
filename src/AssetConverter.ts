@@ -110,7 +110,10 @@ export class AssetConverter {
 				let outPath = fileinfo.name;
 				// with subfolders
 				if (options.destination) {
-					const from = path.resolve(options.baseDir, '..');
+					// remove trailing slash
+					const nameBaseDir = options.nameBaseDir.replace(/\/$/, '');
+					const lastIndex = options.baseDir.lastIndexOf(nameBaseDir)
+					const from = path.resolve(options.baseDir.substring(0, lastIndex));
 					outPath = AssetConverter.replacePattern(options.destination, fileinfo.name, fileinfo, options, from);
 				}
 				const ext = fileinfo.ext.toLowerCase();
