@@ -38,6 +38,9 @@ function convert(inFilename, outFilename, encoder, args = null) {
             else
                 options.push(parts[i]);
         }
+        if (fs.existsSync(outFilename.toString())) {
+            fs.unlinkSync(outFilename.toString());
+        }
         // About stdio ignore: https://stackoverflow.com/a/20792428
         let process = child_process.spawn(exe, options, { stdio: 'ignore' });
         process.on('close', (code) => {
