@@ -11,7 +11,7 @@ import {Options} from '../Options';
 import {AssetMatcherOptions, Library} from '../Project';
 import * as log from '../log';
 
-export class KincExporter extends KhaExporter {
+export class KoreExporter extends KhaExporter {
 	slowgc: boolean;
 
 	constructor(options: Options) {
@@ -21,7 +21,7 @@ export class KincExporter extends KhaExporter {
 	}
 
 	backend(): string {
-		return 'Kinc-hxcpp';
+		return 'Kore-hxcpp';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

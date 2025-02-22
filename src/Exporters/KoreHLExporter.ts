@@ -11,14 +11,14 @@ import {Options} from '../Options';
 import {AssetMatcher, AssetMatcherOptions, Library} from '../Project';
 import * as log from '../log';
 
-export class KincHLExporter extends KhaExporter {
+export class KoreHLExporter extends KhaExporter {
 	constructor(options: Options) {
 		super(options);
 		// Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
 	}
 
 	backend(): string {
-		return 'Kinc-HL';
+		return 'Kore-HL';
 	}
 
 	haxeOptions(name: string, targetOptions: any, defines: Array<string>) {

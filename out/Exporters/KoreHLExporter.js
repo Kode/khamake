@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.KoreHLExporter = void 0;
 const fs = require("fs-extra");
 const path = require("path");
 const defaults = require("../defaults");
@@ -8,13 +9,14 @@ const Converter_1 = require("../Converter");
 const GraphicsApi_1 = require("../GraphicsApi");
 const Platform_1 = require("../Platform");
 const ImageTool_1 = require("../ImageTool");
+const log = require("../log");
 class KoreHLExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
         // Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
     }
     backend() {
-        return 'KoreHL';
+        return 'Kore-HL';
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('no-compilation');
@@ -72,26 +74,32 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     async copySound(platform, from, to, options) {
         if (options.quality < 1) {
             fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
-            let ogg = await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
+            let ogg = await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
             return { files: [to + '.ogg'], sizes: [1] };
         }
         else {
-            fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+            if (from.endsWith('.wav')) {
+                fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to + '.wav'), { overwrite: true });
+            }
+            else {
+                log.error('Can not convert ' + from + ' to wav format.\nSet `{quality: 0.99}` in `project.addAssets` if you want to convert your files to `ogg`.');
+                process.exit(1);
+            }
             return { files: [to + '.wav'], sizes: [1] };
         }
     }
     async copyImage(platform, from, to, options, cache) {
         if (platform === Platform_1.Platform.iOS && options.quality < 1) {
-            let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true, false, cache);
+            let format = await (0, ImageTool_1.exportImage)(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'pvr', true, false, cache);
             return { files: [to + '.' + format], sizes: [1] };
         }
         else if (platform === Platform_1.Platform.Windows && options.quality < 1 && (this.options.graphics === GraphicsApi_1.GraphicsApi.OpenGL || this.options.graphics === GraphicsApi_1.GraphicsApi.Vulkan)) {
             // let format = await exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'ASTC', true, false, cache);
-            let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true, false, cache);
+            let format = await (0, ImageTool_1.exportImage)(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'DXT5', true, false, cache);
             return { files: [to + '.' + format], sizes: [1] };
         }
         else {
-            let format = await ImageTool_1.exportImage(this.options.kha, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true, false, cache);
+            let format = await (0, ImageTool_1.exportImage)(this.options.kha, this.options.kraffiti, from, path.join(this.options.to, this.sysdir(), to), options, 'lz4', true, false, cache);
             return { files: [to + '.' + format], sizes: [1] };
         }
     }
@@ -102,19 +110,19 @@ class KoreHLExporter extends KhaExporter_1.KhaExporter {
     async copyVideo(platform, from, to) {
         fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
         if (platform === Platform_1.Platform.Windows) {
-            await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.avi'), this.options.h264);
+            await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.avi'), this.options.h264);
             return { files: [to + '.avi'], sizes: [1] };
         }
         else if (platform === Platform_1.Platform.iOS || platform === Platform_1.Platform.OSX) {
-            await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
+            await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
             return { files: [to + '.mp4'], sizes: [1] };
         }
         else if (platform === Platform_1.Platform.Android) {
-            await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ts'), this.options.h264);
+            await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.ts'), this.options.h264);
             return { files: [to + '.ts'], sizes: [1] };
         }
         else {
-            await Converter_1.convert(from, path.join(this.options.to, this.sysdir(), to + '.ogv'), this.options.theora);
+            await (0, Converter_1.convert)(from, path.join(this.options.to, this.sysdir(), to + '.ogv'), this.options.theora);
             return { files: [to + '.ogv'], sizes: [1] };
         }
     }

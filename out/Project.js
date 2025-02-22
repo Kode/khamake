@@ -73,7 +73,7 @@ class Project {
         if (!path.isAbsolute(projectDir)) {
             projectDir = path.join(this.scriptdir, projectDir);
         }
-        if (!fs.existsSync(path.join(projectDir, 'khafile.js')) && (fs.existsSync(path.join(projectDir, 'kincfile.js')) || fs.existsSync(path.join(projectDir, 'korefile.js')) || fs.existsSync(path.join(projectDir, 'kfile.js')))) {
+        if (!fs.existsSync(path.join(projectDir, 'khafile.js')) && (fs.existsSync(path.join(projectDir, 'kfile.js')) || fs.existsSync(path.join(projectDir, 'korefile.js')) || fs.existsSync(path.join(projectDir, 'kincfile.js')))) {
             this.libraries.push({
                 libpath: projectDir,
                 libroot: projectDir

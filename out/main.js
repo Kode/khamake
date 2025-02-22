@@ -18,8 +18,8 @@ const FlashExporter_1 = require("./Exporters/FlashExporter");
 const Html5Exporter_1 = require("./Exporters/Html5Exporter");
 const Html5WorkerExporter_1 = require("./Exporters/Html5WorkerExporter");
 const JavaExporter_1 = require("./Exporters/JavaExporter");
-const KincExporter_1 = require("./Exporters/KincExporter");
-const KincHLExporter_1 = require("./Exporters/KincHLExporter");
+const KoreExporter_1 = require("./Exporters/KoreExporter");
+const KoreHLExporter_1 = require("./Exporters/KoreHLExporter");
 const KromExporter_1 = require("./Exporters/KromExporter");
 const NodeExporter_1 = require("./Exporters/NodeExporter");
 const PlayStationMobileExporter_1 = require("./Exporters/PlayStationMobileExporter");
@@ -78,12 +78,12 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     let buildpath = path.relative(options.from, path.join(options.to, exporter.sysdir() + '-build')).replace(/\\/g, '/');
     if (buildpath.startsWith('..'))
         buildpath = path.resolve(path.join(options.from.toString(), buildpath));
-    out += 'await project.addProject(\'' + path.join(options.kha, 'Kinc').replace(/\\/g, '/') + '\');\n';
+    out += 'await project.addProject(\'' + path.join(options.kha, 'Kore').replace(/\\/g, '/') + '\');\n';
     out += 'await project.addProject(\'' + buildpath.replace(/\\/g, '/') + '\');\n';
     if (korehl)
-        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-HL').replace(/\\/g, '/') + '\');\n';
+        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kore-HL').replace(/\\/g, '/') + '\');\n';
     else
-        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kinc-hxcpp').replace(/\\/g, '/') + '\');\n';
+        out += 'await project.addProject(\'' + path.join(options.kha, 'Backends', 'Kore-hxcpp').replace(/\\/g, '/') + '\');\n';
     for (let lib of libraries) {
         let libPath = lib.libpath.replace(/\\/g, '/');
         out += 'if (fs.existsSync(path.join(\'' + libPath + '\', \'kfile.js\')) || fs.existsSync(path.join(\'' + libPath + '\', \'kincfile.js\')) || fs.existsSync(path.join(\'' + libPath + '\', \'korefile.js\'))) {\n';
@@ -153,11 +153,10 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
     let buildDir = path.join(options.to, exporter.sysdir() + '-build');
     if (options.haxe !== '' && kore && !options.noproject) {
         // If target is a Kore project, generate additional project folders here.
-        // generate the kincfile.js
+        // generate the kfile.js
         fs.copySync(path.join(__dirname, '..', 'Data', 'hxcpp', 'kfile.js'), path.join(buildDir, 'kfile.js'), { overwrite: true });
         fs.writeFileSync(path.join(options.to, 'kfile.js'), createKorefile(name, exporter, options, targetOptions, libraries, cdefines, cflags, cppflags, stackSize, version, id, false, icon));
         // Similar to khamake.js -> main.js -> run(...)
-        // We now do kincmake.js -> main.js -> run(...)
         // This will create additional project folders for the target,
         // e.g. 'build/pi-build'
         try {
@@ -332,7 +331,7 @@ async function exportKhaProject(options) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
-                exporter = new KincHLExporter_1.KincHLExporter(options);
+                exporter = new KoreHLExporter_1.KoreHLExporter(options);
             }
             else {
                 kore = true;
@@ -341,7 +340,7 @@ async function exportKhaProject(options) {
                     log.error(`Unknown platform: ${target} (baseTarget=$${baseTarget})`);
                     return Promise.reject('');
                 }
-                exporter = new KincExporter_1.KincExporter(options);
+                exporter = new KoreExporter_1.KoreExporter(options);
             }
             break;
     }
@@ -614,12 +613,12 @@ async function run(options, loglog) {
             options.haxe = haxepath;
     }
     if (!options.krafix) {
-        let krafixpath = path.join(options.kha, 'Kinc', 'Tools', (0, exec_1.sysdir)(), 'krafix' + (0, exec_1.sys)());
+        let krafixpath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir)(), 'krafix' + (0, exec_1.sys)());
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
     }
     if (!options.kraffiti) {
-        const kraffitipath = path.join(options.kha, 'Kinc', 'Tools', (0, exec_1.sysdir)(), 'kraffiti' + (0, exec_1.sys)());
+        const kraffitipath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir)(), 'kraffiti' + (0, exec_1.sys)());
         if (fs.existsSync(kraffitipath))
             options.kraffiti = kraffitipath;
     }
