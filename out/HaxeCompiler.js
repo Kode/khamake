@@ -178,9 +178,11 @@ class HaxeCompiler {
                     process.stdout.write('\x1Bc');
                     log.info('Haxe compile end.');
                     if (this.isLiveReload) {
-                        this.wsClients.forEach(client => {
-                            client.send(JSON.stringify({}));
-                        });
+                        setTimeout(() => {
+                            this.wsClients.forEach(client => {
+                                client.send(JSON.stringify({}));
+                            });
+                        }, 200);
                     }
                     for (let callback of ProjectFile_1.Callbacks.postHaxeRecompilation) {
                         callback();
@@ -217,14 +219,6 @@ class HaxeCompiler {
                 }
             });
         });
-    }
-    static spinRename(from, to) {
-        for (;;) {
-            if (fs.existsSync(from)) {
-                fs.renameSync(from, to);
-                return;
-            }
-        }
     }
 }
 exports.HaxeCompiler = HaxeCompiler;
