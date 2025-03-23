@@ -198,9 +198,11 @@ export class HaxeCompiler {
 					process.stdout.write('\x1Bc');
 					log.info('Haxe compile end.');
 					if (this.isLiveReload) {
-						this.wsClients.forEach(client => {
-							client.send(JSON.stringify({}));
-						});
+						setTimeout(() => {
+							this.wsClients.forEach(client => {
+								client.send(JSON.stringify({}));
+							});
+						}, 200);
 					}
 					for (let callback of Callbacks.postHaxeRecompilation) {
 						callback();
@@ -239,14 +241,5 @@ export class HaxeCompiler {
 				}
 			});
 		});
-	}
-
-	private static spinRename(from: string, to: string): void {
-		for (; ; ) {
-			if (fs.existsSync(from)) {
-				fs.renameSync(from, to);
-				return;
-			}
-		}
 	}
 }
