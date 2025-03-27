@@ -208,16 +208,16 @@ export class AssetConverter {
 						case '.mp3':
 						case '.flac':
 						case '.wav': {
-							if (!this.canDecodeFormat(ext)) {
-								log.error(`Error: ${fileinfo.base} should be in wav format, or use \`--ffmpeg\` option to convert ogg/mp3/flac files`);
-								process.exit(1);
-							}
 							let exportInfo = AssetConverter.createExportInfo(fileinfo, false, options, this.exporter.options.from);
 							let sounds: { files: string[], sizes: number[] };
 							if (options.noprocessing) {
 								sounds = await this.exporter.copyBlob(this.platform, file, exportInfo.destination, options);
 							}
 							else {
+								if (!this.canDecodeFormat(ext)) {
+									log.error(`Error: ${fileinfo.base} should be in wav format, or use \`--ffmpeg\` option to convert ogg/mp3/flac files`);
+									process.exit(1);
+								}
 								sounds = await this.exporter.copySound(this.platform, file, exportInfo.destination, options);
 							}
 							if (sounds.files.length === 0) {
