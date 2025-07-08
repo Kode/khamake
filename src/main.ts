@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 
-import {sys, sysdir} from './exec';
+import {sys, sysdir, sysdir2} from './exec';
 import * as korepath from './korepath';
 import * as log from './log';
 import {Options} from './Options';
@@ -698,12 +698,12 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (!options.krafix) {
-		let krafixpath = path.join(options.kha, 'Kore', 'Tools', sysdir(), 'krafix' + sys());
+		let krafixpath = path.join(options.kha, 'Kore', 'Tools', sysdir2(), 'krafix' + sys());
 		if (fs.existsSync(krafixpath)) options.krafix = krafixpath;
 	}
 
 	if (!options.kraffiti) {
-		const kraffitipath = path.join(options.kha, 'Kore', 'Tools', sysdir(), 'kraffiti' + sys());
+		const kraffitipath = path.join(options.kha, 'Kore', 'Tools', sysdir2(), 'kraffiti' + sys());
 		if (fs.existsSync(kraffitipath)) options.kraffiti = kraffitipath;
 	}
 	else {

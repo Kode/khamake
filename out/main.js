@@ -613,12 +613,12 @@ async function run(options, loglog) {
             options.haxe = haxepath;
     }
     if (!options.krafix) {
-        let krafixpath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir)(), 'krafix' + (0, exec_1.sys)());
+        let krafixpath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir2)(), 'krafix' + (0, exec_1.sys)());
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
     }
     if (!options.kraffiti) {
-        const kraffitipath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir)(), 'kraffiti' + (0, exec_1.sys)());
+        const kraffitipath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir2)(), 'kraffiti' + (0, exec_1.sys)());
         if (fs.existsSync(kraffitipath))
             options.kraffiti = kraffitipath;
     }
