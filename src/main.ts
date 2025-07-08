@@ -700,11 +700,16 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	if (!options.krafix) {
 		let krafixpath = path.join(options.kha, 'Kore', 'Tools', sysdir2(), 'krafix' + sys());
 		if (fs.existsSync(krafixpath)) options.krafix = krafixpath;
+		else log.error('krafix not found at ' + krafixpath);
+	}
+	else {
+		log.info('Using krafix from ' + options.krafix);
 	}
 
 	if (!options.kraffiti) {
 		const kraffitipath = path.join(options.kha, 'Kore', 'Tools', sysdir2(), 'kraffiti' + sys());
 		if (fs.existsSync(kraffitipath)) options.kraffiti = kraffitipath;
+		else log.error('kraffiti not found at ' + kraffitipath);
 	}
 	else {
 		log.info('Using kraffiti from ' + options.kraffiti);
@@ -754,8 +759,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (options.target === 'emscripten') {
-		console.log();
-		console.log('Please note that the html5 target\n'
+		log.info('\nPlease note that the html5 target\n'
 		+ 'is usually a better choice.\n'
 		+ 'In particular the html5 target usually runs faster\n'
 		+ 'than the emscripten target. That is because\n'
@@ -764,9 +768,8 @@ export async function run(options: Options, loglog: any): Promise<string> {
 		+ 'all of the optimizations in modern JavaScript\n'
 		+ 'runtimes. The emscripten target on the other hand\n'
 		+ 'has to provide its own garbage collector and many\n'
-		+ 'other performance critical pieces of infrastructure.'
+		+ 'other performance critical pieces of infrastructure.\n'
 		);
-		console.log();
 	}
 
 	let name = '';

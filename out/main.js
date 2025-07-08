@@ -616,11 +616,18 @@ async function run(options, loglog) {
         let krafixpath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir2)(), 'krafix' + (0, exec_1.sys)());
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
+        else
+            log.error('krafix not found at ' + krafixpath);
+    }
+    else {
+        log.info('Using krafix from ' + options.krafix);
     }
     if (!options.kraffiti) {
         const kraffitipath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir2)(), 'kraffiti' + (0, exec_1.sys)());
         if (fs.existsSync(kraffitipath))
             options.kraffiti = kraffitipath;
+        else
+            log.error('kraffiti not found at ' + kraffitipath);
     }
     else {
         log.info('Using kraffiti from ' + options.kraffiti);
@@ -661,8 +668,7 @@ async function run(options, loglog) {
         options.theora = options.ffmpeg + ' -nostdin -i {in} {out}';
     }
     if (options.target === 'emscripten') {
-        console.log();
-        console.log('Please note that the html5 target\n'
+        log.info('\nPlease note that the html5 target\n'
             + 'is usually a better choice.\n'
             + 'In particular the html5 target usually runs faster\n'
             + 'than the emscripten target. That is because\n'
@@ -671,8 +677,7 @@ async function run(options, loglog) {
             + 'all of the optimizations in modern JavaScript\n'
             + 'runtimes. The emscripten target on the other hand\n'
             + 'has to provide its own garbage collector and many\n'
-            + 'other performance critical pieces of infrastructure.');
-        console.log();
+            + 'other performance critical pieces of infrastructure.\n');
     }
     let name = '';
     try {
