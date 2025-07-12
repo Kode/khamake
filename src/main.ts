@@ -695,6 +695,10 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	if (!options.haxe) {
 		let haxepath = path.join(options.kha, 'Tools', sysdir());
 		if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory()) options.haxe = haxepath;
+		else log.error('Haxe not found at ' + haxepath);
+	}
+	else {
+		log.info('Using Haxe from ' + options.haxe);
 	}
 
 	if (!options.krafix) {
@@ -726,11 +730,13 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	if (!options.ogg) {
 		let oggpath = path.join(options.kha, 'Tools', sysdir(), 'oggenc' + sys());
 		if (fs.existsSync(oggpath)) options.ogg = oggpath + ' {in} -o {out} --quiet';
+		else log.error('oggenc not found at ' + oggpath);
 	}
 
 	if (!options.mp3) {
 		let lamepath = path.join(options.kha, 'Tools', sysdir(), 'lame' + sys());
 		if (fs.existsSync(lamepath)) options.mp3 = lamepath + ' {in} {out}';
+		else log.error('lame not found at ' + lamepath);
 	}
 
 	// if (!options.kravur) {

@@ -611,6 +611,8 @@ async function run(options, loglog) {
         let haxepath = path.join(options.kha, 'Tools', (0, exec_1.sysdir)());
         if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory())
             options.haxe = haxepath;
+        else
+            log.error('Haxe not found at ' + haxepath);
     }
     if (!options.krafix) {
         let krafixpath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir2)(), 'krafix' + (0, exec_1.sys)());
