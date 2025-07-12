@@ -614,8 +614,11 @@ async function run(options, loglog) {
         else
             log.error('Haxe not found at ' + haxepath);
     }
+    else {
+        log.info('Using Haxe from ' + options.haxe);
+    }
     if (!options.krafix) {
-        let krafixpath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir2)(), 'krafix' + (0, exec_1.sys)());
+        let krafixpath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir)(), 'krafix' + (0, exec_1.sys)());
         if (fs.existsSync(krafixpath))
             options.krafix = krafixpath;
         else
@@ -625,7 +628,7 @@ async function run(options, loglog) {
         log.info('Using krafix from ' + options.krafix);
     }
     if (!options.kraffiti) {
-        const kraffitipath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir2)(), 'kraffiti' + (0, exec_1.sys)());
+        const kraffitipath = path.join(options.kha, 'Kore', 'Tools', (0, exec_1.sysdir)(), 'kraffiti' + (0, exec_1.sys)());
         if (fs.existsSync(kraffitipath))
             options.kraffiti = kraffitipath;
         else
@@ -644,11 +647,15 @@ async function run(options, loglog) {
         let oggpath = path.join(options.kha, 'Tools', (0, exec_1.sysdir)(), 'oggenc' + (0, exec_1.sys)());
         if (fs.existsSync(oggpath))
             options.ogg = oggpath + ' {in} -o {out} --quiet';
+        else
+            log.error('oggenc not found at ' + oggpath);
     }
     if (!options.mp3) {
         let lamepath = path.join(options.kha, 'Tools', (0, exec_1.sysdir)(), 'lame' + (0, exec_1.sys)());
         if (fs.existsSync(lamepath))
             options.mp3 = lamepath + ' {in} {out}';
+        else
+            log.error('lame not found at ' + lamepath);
     }
     // if (!options.kravur) {
     //     let kravurpath = path.join(options.kha, 'Tools', 'kravur', 'kravur' + sys());
