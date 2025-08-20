@@ -192,6 +192,11 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			const kmakeOptions = ['--from', options.from, '--to', buildDir, '--kfile', path.resolve(options.to, 'kfile.js'), '-t', koreplatform(options.target), '--noshaders',
 				'--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-v', options.visualstudio
 			];
+			if (process.env.KMAKE_DEV_PATH) {
+				log.info(`Using kmake repo dev path: ${process.env.KMAKE_DEV_PATH}`);
+				kmakeOptions.push(`--dev`);
+				kmakeOptions.push(`${process.env.KMAKE_DEV_PATH}`);
+			}
 			if (options.nosigning) {
 				kmakeOptions.push('--nosigning');
 			}
@@ -231,6 +236,11 @@ async function exportProjectFiles(name: string, resourceDir: string, options: Op
 			const kmakeOptions = ['--from', options.from, '--to', buildDir, '--kfile', path.resolve(options.to, 'kfile.js'), '-t', koreplatform(options.target), '--noshaders',
 				'--graphics', options.graphics, '--arch', options.arch, '--audio', options.audio, '--vr', options.vr, '-v', options.visualstudio
 			];
+			if (process.env.KMAKE_DEV_PATH) {
+				log.info(`Using kmake repo dev path: ${process.env.KMAKE_DEV_PATH}`);
+				kmakeOptions.push(`--dev`);
+				kmakeOptions.push(`${process.env.KMAKE_DEV_PATH}`);
+			}
 			if (options.nosigning) {
 				kmakeOptions.push('--nosigning');
 			}
