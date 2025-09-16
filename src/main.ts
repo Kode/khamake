@@ -242,7 +242,8 @@ function checkKorePlatform(platform: string) {
 		|| platform === 'xboxone'
 		|| platform === 'switch'
 		|| platform === 'xboxscarlett'
-		|| platform === 'ps5';
+		|| platform === 'ps5'
+		|| platform === 'switch2';
 }
 
 function koreplatform(platform: string) {

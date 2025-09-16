@@ -218,7 +218,8 @@ function checkKorePlatform(platform) {
         || platform === 'xboxone'
         || platform === 'switch'
         || platform === 'xboxscarlett'
-        || platform === 'ps5';
+        || platform === 'ps5'
+        || platform === 'switch2';
 }
 function koreplatform(platform) {
     // 'android-native' becomes 'android'
