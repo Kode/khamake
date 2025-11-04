@@ -1,6 +1,4 @@
 const electron = require('electron');
-const fs = require('fs');
-const path = require('path');
 
 let blobId = 0;
 let blobRequests = {};
