@@ -677,7 +677,7 @@ async function run(options, loglog) {
         log.info('Using kraffiti from ' + options.kraffiti);
     }
     if (!options.ogg && options.ffmpeg) {
-        options.ogg = options.ffmpeg + ' -nostdin -i {in} {out} -y';
+        options.ogg = options.ffmpeg + ' -nostdin -i {in} {ffmpeg_ogg_options} {out} -y';
     }
     if (!options.mp3 && options.ffmpeg) {
         options.mp3 = options.ffmpeg + ' -nostdin -i {in} {out}';
