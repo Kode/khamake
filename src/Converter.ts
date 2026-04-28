@@ -24,14 +24,11 @@ export function convert(inFilename: string, outFilename: string, encoder: string
 				if (part === '{' + i + '}') return args[i];
 			}
 
-			if (part == '{ffmpeg_ogg_options}') {
-				return ['-c:a', 'libvorbis', '-vn'];
-			}
 			if (part === '{in}') return inFilename.toString();
 			if (part === '{out}') return outFilename.toString();
 
 			return part;
-		}).flat().filter(option => option != undefined);
+		}).filter(option => option != undefined);
 
 		if (fs.existsSync(outFilename.toString())) {
 			fs.unlinkSync(outFilename.toString());

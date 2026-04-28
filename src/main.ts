@@ -763,7 +763,7 @@ export async function run(options: Options, loglog: any): Promise<string> {
 	}
 
 	if (!options.ogg && options.ffmpeg) {
-		options.ogg = options.ffmpeg + ' -nostdin -i {in} {ffmpeg_ogg_options} {out} -y';
+		options.ogg = options.ffmpeg + ' -nostdin -i {in} -c:a libvorbis -vn {out}';
 	}
 
 	if (!options.mp3 && options.ffmpeg) {

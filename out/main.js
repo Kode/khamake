@@ -375,7 +375,7 @@ async function exportKhaProject(options) {
     lastAssetConverter = assetConverter;
     let assets = await assetConverter.run(options.watch, temp);
     if (options.watch) {
-        assetConverter.onAssetChanged = (changedAsset) => {
+        assetConverter.onAssetChanged = changedAsset => {
             const fixedName = fixName(changedAsset.name);
             const filesI = files.findIndex(f => f.name === fixedName);
             const entry = {
@@ -400,7 +400,7 @@ async function exportKhaProject(options) {
             }
             writeResourcesJson(files);
         };
-        assetConverter.onAssetRemoved = (name) => {
+        assetConverter.onAssetRemoved = name => {
             const fixedName = fixName(name);
             const filesI = files.findIndex(f => f.name === fixedName);
             if (filesI >= 0) {
@@ -677,7 +677,7 @@ async function run(options, loglog) {
         log.info('Using kraffiti from ' + options.kraffiti);
     }
     if (!options.ogg && options.ffmpeg) {
-        options.ogg = options.ffmpeg + ' -nostdin -i {in} {ffmpeg_ogg_options} {out} -y';
+        options.ogg = options.ffmpeg + ' -nostdin -i {in} -c:a libvorbis -vn {out}';
     }
     if (!options.mp3 && options.ffmpeg) {
         options.mp3 = options.ffmpeg + ' -nostdin -i {in} {out}';
