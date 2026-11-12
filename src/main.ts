@@ -10,7 +10,6 @@ import {Options} from './Options';
 import {Platform} from './Platform';
 import {Project, Target, Library} from './Project';
 import {loadProject, Callbacks} from './ProjectFile';
-import {VisualStudioVersion} from './VisualStudioVersion';
 import {AssetConverter, AssetInfo} from './AssetConverter';
 import {HaxeCompiler} from './HaxeCompiler';
 import {ShaderCompiler, CompiledShader} from './ShaderCompiler';

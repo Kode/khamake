@@ -8,6 +8,7 @@ exports.VisualStudioVersion = {
     VS2015: 'vs2015',
     VS2017: 'vs2017',
     VS2019: 'vs2019',
-    VS2022: 'vs2022'
+    VS2022: 'vs2022',
+    VS2026: 'vs2026'
 };
 //# sourceMappingURL=VisualStudioVersion.js.map
